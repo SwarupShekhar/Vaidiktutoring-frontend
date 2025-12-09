@@ -20,7 +20,7 @@ export default function HeroCard() {
 
     const handleGetStartedClick = () => {
         if (user) {
-            router.push(user.role === 'student' ? '/student/dashboard' : '/parent/dashboard');
+            router.push(user.role === 'student' ? '/students/dashboard' : '/parent/dashboard');
         } else {
             router.push('/signup');
         }
