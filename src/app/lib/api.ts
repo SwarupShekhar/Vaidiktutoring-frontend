@@ -2,7 +2,7 @@
 import axios, { AxiosError } from 'axios';
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+  process.env.NEXT_PUBLIC_API_BASE_URL || 'https://k-12-backend.onrender.com';
 
 export const api = axios.create({
   baseURL: API_URL,

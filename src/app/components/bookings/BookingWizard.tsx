@@ -138,8 +138,8 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                                 <div
                                     key={s.id}
                                     className={`flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer ${studentId === s.id
-                                            ? 'border-[var(--color-primary)] bg-blue-50/50 ring-1 ring-[var(--color-primary)]'
-                                            : 'border-[var(--color-border)] bg-white hover:border-gray-300'
+                                        ? 'border-[var(--color-primary)] bg-blue-50/50 ring-1 ring-[var(--color-primary)]'
+                                        : 'border-[var(--color-border)] bg-white hover:border-gray-300'
                                         }`}
                                     onClick={() => setStudentId(s.id)}
                                 >

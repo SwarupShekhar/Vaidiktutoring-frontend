@@ -14,13 +14,8 @@ export function useParentDashboard() {
     const { data: upcomingSessions, isLoading: loadingSessions, error: sessionsError } = useQuery({
         queryKey: ['parent-upcoming-sessions'],
         queryFn: async () => {
-            // Assuming GET /bookings/mine returns a list that can be filtered for upcoming sessions
-            // Or ideally GET /sessions/parent if it exists. 
-            // Falling back to existing pattern if unsure, but prompt mentioned GET /bookings/mine
-            const res = await api.get('/bookings/parent') as any[]; // Aligning with likely existing endpoint
-            // Mock filtering for "upcoming" if backend doesn't do it
-            // For now, return raw list or basic slice
-            return res || [];
+            const res = await api.get('/bookings/parent');
+            return Array.isArray(res) ? res : [];
         }
     });
 
@@ -34,7 +29,7 @@ export function useParentDashboard() {
     });
 
     return {
-        studentCount,
+        studentCount: studentCount || 0,
         loadingStudents,
         studentsError,
         upcomingSessions: upcomingSessions?.slice(0, 5) || [], // Limit to 5
