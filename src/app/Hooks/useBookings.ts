@@ -6,7 +6,7 @@ import { api } from '@/app/lib/api';
 // Ideally I'd import a type but I don't see one yet.
 
 const fetchBookings = async () => {
-    const { data } = await api.get('/bookings');
+    const { data } = await api.get('/bookings/parent');
     return data;
 };
 
