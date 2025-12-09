@@ -26,8 +26,20 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
     const [step, setStep] = useState<Step>(0);
 
     const [studentId, setStudentId] = useState<string | null>(null);
-    const [subjectId, setSubjectId] = useState<string | null>(null);
+    const [subjectIds, setSubjectIds] = useState<string[]>([]);
     const [curriculumId, setCurriculumId] = useState<string | null>(null);
+
+    const toggleSubject = (id: string) => {
+        setSubjectIds(prev => {
+            if (prev.includes(id)) {
+                return prev.filter(s => s !== id);
+            }
+            if (prev.length >= 5) {
+                return prev;
+            }
+            return [...prev, id];
+        });
+    };
     const [packageId, setPackageId] = useState<string | null>(null);
 
     const [start, setStart] = useState('');
@@ -46,15 +58,15 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
 
     useEffect(() => {
         if (!loadingCatalog) {
-            if (!subjectId && subjects?.length) setSubjectId(subjects[0].id);
+            // Default select none for subjects
             if (!curriculumId && curricula?.length) setCurriculumId(curricula[0].id);
             if (!packageId && packages?.length) setPackageId(packages[0].id);
         }
-    }, [loadingCatalog, subjects, curricula, packages, subjectId, curriculumId, packageId]);
+    }, [loadingCatalog, curricula, packages, curriculumId, packageId]);
 
     async function submitBooking() {
-        if (!studentId || !subjectId || !curriculumId || !packageId || !start || !end) {
-            setError('Please complete all required fields before submitting.');
+        if (!studentId || subjectIds.length === 0 || !curriculumId || !packageId || !start || !end) {
+            setError('Please complete all required fields. Select at least one subject.');
             return;
         }
 
@@ -65,7 +77,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
             const payload = {
                 student_id: studentId,
                 package_id: packageId,
-                subject_id: subjectId,
+                subject_ids: subjectIds,
                 curriculum_id: curriculumId,
                 // Convert from datetime-local (local time) -> ISO string (UTC)
                 requested_start: new Date(start).toISOString(),
@@ -215,20 +227,34 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
             {step === 1 && (
                 <div className="space-y-5">
                     <div>
-                        <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
-                            Subject
-                        </label>
-                        <select
-                            value={subjectId ?? ''}
-                            onChange={(e) => setSubjectId(e.target.value)}
-                            className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-shadow"
-                        >
-                            {subjects?.map((s: any) => (
-                                <option key={s.id} value={s.id}>
-                                    {s.name}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="block text-sm font-medium text-[var(--color-text-primary)]">
+                                Subjects (Select up to 5)
+                            </label>
+                            <span className="text-xs text-[var(--color-text-secondary)]">
+                                {subjectIds.length}/5 selected
+                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto pr-1">
+                            {subjects?.map((s: any) => {
+                                const isSelected = subjectIds.includes(s.id);
+                                return (
+                                    <button
+                                        key={s.id}
+                                        type="button"
+                                        onClick={() => toggleSubject(s.id)}
+                                        className={`flex items-center justify-between px-4 py-3 rounded-xl border text-sm font-medium transition-all ${isSelected
+                                                ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-md'
+                                                : 'bg-[var(--color-surface)] text-[var(--color-text-primary)] border-[var(--color-border)] hover:border-[var(--color-primary)]'
+                                            }`}
+                                    >
+                                        <span>{s.name}</span>
+                                        {isSelected && <span>✓</span>}
+                                    </button>
+                                );
+                            })}
+                        </div>
                     </div>
 
                     <div>
@@ -318,7 +344,13 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[var(--color-surface)]/50 p-4 rounded-xl border border-[var(--color-border)]">
                         {[
                             { label: 'Student', value: students.find((s) => s.id === studentId)?.name ?? '—' },
-                            { label: 'Subject', value: subjects?.find((s: any) => s.id === subjectId)?.name ?? '—' },
+                            {
+                                label: 'Subjects',
+                                value: subjects
+                                    ?.filter((s: any) => subjectIds.includes(s.id))
+                                    .map((s: any) => s.name)
+                                    .join(', ') ?? '—'
+                            },
                             { label: 'Curriculum', value: curricula?.find((c: any) => c.id === curriculumId)?.name ?? '—' },
                             { label: 'Package', value: packages?.find((p: any) => p.id === packageId)?.name ?? '—' },
                             { label: 'Start', value: start || '—' },
