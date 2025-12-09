@@ -23,12 +23,29 @@ This document outlines the API endpoints, database schema, and logic required to
 - `created_at`: timestamp
 
 ### Subjects Table
-- `id`: String (Primary Key, e.g., 'math')
-- `name`: String (e.g., 'Mathematics')
+- `id`: String (Primary Key)
+- `name`: String
+*Example Data:*
+- Math, English, Science, Social Studies
+- Physics, Chemistry, Biology, Environmental Science
+- Algebra, Geometry, Calculus, Statistics
+- History, Geography, Economics, Philosophy
+- Spanish, French, German, Mandarin, Hindi, Arabic
+- Coding, Python, JavaScript, Web Dev, AI Basics
+- Art, Music, Drama, Creative Writing
+- Public Speaking, Critical Thinking, Study Skills
 
 ### Curricula Table
-- `id`: String (Primary Key, e.g., 'ngss')
-- `name`: String (e.g., 'NGSS')
+- `id`: String (Primary Key)
+- `name`: String
+*Example Data:*
+- US: CCSS, NGSS, AP
+- International: IB (PYP, MYP, DP)
+- UK: IGCSE, GCSE, A-Levels
+- India: CBSE, ICSE, State Boards
+- Canada/Australia: Ontario, Alberta, Australian National
+- Middle East: UAE MoE, American/British International
+- Other: Homeschool, Custom
 
 ### Packages Table
 - `id`: String (Primary Key)

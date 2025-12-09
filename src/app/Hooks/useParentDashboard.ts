@@ -7,7 +7,7 @@ export function useParentDashboard() {
         queryKey: ['parent-students-count'],
         queryFn: async () => {
             const res = await api.get('/students/parent');
-            return Array.isArray(res) ? res.length : 0;
+            return Array.isArray(res.data) ? res.data.length : 0;
         }
     });
 
@@ -15,7 +15,7 @@ export function useParentDashboard() {
         queryKey: ['parent-upcoming-sessions'],
         queryFn: async () => {
             const res = await api.get('/bookings/parent');
-            return Array.isArray(res) ? res : [];
+            return Array.isArray(res.data) ? res.data : [];
         }
     });
 
@@ -24,7 +24,7 @@ export function useParentDashboard() {
         queryKey: ['parent-students-list'],
         queryFn: async () => {
             const res = await api.get('/students/parent');
-            return Array.isArray(res) ? res : [];
+            return Array.isArray(res.data) ? res.data : [];
         }
     });
 
