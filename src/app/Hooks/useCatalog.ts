@@ -25,6 +25,7 @@ export default function useCatalog() {
     });
 
     const [subjectsQ, curriculaQ, packagesQ] = results;
+
     return {
         subjects: subjectsQ?.data ?? [],
         curricula: curriculaQ?.data ?? [],
