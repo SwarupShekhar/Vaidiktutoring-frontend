@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import api from '@/app/lib/api';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import BookingWizard from '@/app/components/bookings/BookingWizard';
+import { useAuthContext } from '@/app/context/AuthContext';
 
 interface StudentSummary {
     id: string;
@@ -13,14 +14,22 @@ interface StudentSummary {
 }
 
 export default function NewBookingPage() {
+    const { user } = useAuthContext();
+    const isParent = user?.role === 'parent';
+
     const {
         data: students = [],
         isError,
         error,
         isLoading,
     } = useQuery<StudentSummary[]>({
-        queryKey: ['students', 'parent'],
+        queryKey: ['students', isParent ? 'parent' : 'self'],
         queryFn: async () => {
+            // If user is a student, they can only book for themselves
+            if (!isParent && user) {
+                return [{ id: user.id, name: user.first_name || 'Me' }];
+            }
+
             try {
                 // this is the backend route we built earlier
                 const res = await api.get('/students/parent');
@@ -37,6 +46,7 @@ export default function NewBookingPage() {
                 throw err;
             }
         },
+        enabled: !!user, // only run if user is loaded
         staleTime: 30_000,
     });
 
@@ -45,7 +55,7 @@ export default function NewBookingPage() {
         isError && (error as any)?.response?.status !== 404;
 
     return (
-        <ProtectedClient roles={['parent']}>
+        <ProtectedClient roles={['parent', 'student']}>
             <div className="max-w-5xl mx-auto px-6 py-10">
                 {hardError && (
                     <div className="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
