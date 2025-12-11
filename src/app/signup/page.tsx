@@ -41,9 +41,10 @@ export default function SignupPage() {
 
     try {
       await signup(signupPayload);
-      await login(form.email, form.password);
+      // Login without auto-redirect so we can route to onboarding
+      await login(form.email, form.password, false);
 
-      // Redirect handled by login or useEffect, but explicit push here for safety
+      // Redirect explicitly based on role
       if (validRole === 'student') {
         router.push('/onboarding/student-welcome');
       } else {
@@ -53,6 +54,7 @@ export default function SignupPage() {
       console.error(err);
       setError(err?.message || 'Signup failed. Please try again.');
     } finally {
+      // If we redirected, we might be unmounted, but safe to setBusy false if error
       setBusy(false);
     }
   }

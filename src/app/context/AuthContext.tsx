@@ -16,7 +16,7 @@ type AuthContextValue = {
   user: User | null;
   token: string | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, shouldRedirect?: boolean) => Promise<void>;
   signup: (payload: any) => Promise<void>;
   logout: () => void;
 };
@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('storage', onStorage);
   }, []);
 
-  async function login(email: string, password: string) {
+  async function login(email: string, password: string, shouldRedirect = true) {
     setLoading(true);
     try {
       const data = await authLib.login(email, password);
@@ -92,17 +92,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(userData);
 
         // 3. Redirect immediately based on role
-        // Note: We do NOT set loading to false here to prevent UI flash before redirect
         console.log('[Auth] Login successful. User:', userData);
 
-        if (userData?.role === 'parent') {
-          router.push('/parent/dashboard');
-        } else if (userData?.role === 'student') {
-          router.push('/students/dashboard');
-        } else if (userData?.role === 'tutor') {
-          router.push('/tutor/dashboard');
+        if (shouldRedirect) {
+          if (userData?.role === 'parent') {
+            router.push('/parent/dashboard');
+          } else if (userData?.role === 'student') {
+            router.push('/student/dashboard'); // Fixed path
+          } else if (userData?.role === 'tutor') {
+            router.push('/tutor/dashboard');
+          } else {
+            router.push('/parent/dashboard');
+          }
         } else {
-          router.push('/parent/dashboard');
+          setLoading(false); // Stop loading if not redirecting
         }
       } else {
         // No token? unexpected
@@ -119,10 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     try {
       await authLib.signup(payload);
-      // Determine redirect based on requested role if possible, or default to login
-      // If the backend auto-logs in, we would handle token here.
-      // For now, we assume signup -> login page or verify email
-      router.push('/login?signedUp=true');
+      // Removed automatic redirect to login
     } catch (error) {
       console.error("Signup failed:", error);
       throw error;
