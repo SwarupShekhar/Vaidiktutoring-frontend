@@ -1,0 +1,67 @@
+[
+    {
+        "id": "r1",
+        "name": "Tony",
+        "role": "Grade 10 Student",
+        "rating": 5,
+        "short": "Concepts finally clicked",
+        "long": "I was struggling with Quadratic equations for weeks. My tutor used a digital whiteboard to break it down step-by-step. Now I'm actually helping my friends in class.",
+        "highlightMetrics": {
+            "mockScoreBefore": 65,
+            "mockScoreAfter": 88
+        },
+        "tag": "Student Win"
+    },
+    {
+        "id": "r2",
+        "name": "Robert Smith",
+        "role": "Parent",
+        "rating": 5,
+        "short": "Professional and consistent",
+        "long": "We've tried other platforms, but the quality of tutors here is on another level. Robert started seeing results in his Physics grades within just 4 sessions.",
+        "highlightMetrics": {
+            "gradeImprovement": 1,
+            "sessions": 4
+        },
+        "tag": "Quality"
+    },
+    {
+        "id": "r3",
+        "name": "Alex M.",
+        "role": "Parent",
+        "rating": 5,
+        "short": "My son actually enjoys studying now",
+        "long": "The biggest change hasn't just been grades, it's his attitude. He used to dread math homework, but now he logs in early for his sessions. Huge relief for us.",
+        "highlightMetrics": {
+            "confidenceLevel": 100,
+            "activeMonths": 6
+        },
+        "tag": "Parent Relief"
+    },
+    {
+        "id": "r4",
+        "name": "Max",
+        "role": "Student, Grade 8",
+        "rating": 5,
+        "short": "Science isn't scary anymore",
+        "long": "I used to get so nervous before science tests. My tutor helped me make better notes and we practiced with real past papers. I got an A on my last unit test!",
+        "highlightMetrics": {
+            "testScore": 92,
+            "prevScore": 74
+        },
+        "tag": "Confidence"
+    },
+    {
+        "id": "r5",
+        "name": "Justin C.",
+        "role": "Parent",
+        "rating": 5,
+        "short": "Easy to track progress",
+        "long": "I love the dashboard. I can see exactly what topics they covered and how Justin is improving week over week. It feels very transparent and organized.",
+        "highlightMetrics": {
+            "weeklyReports": 12,
+            "topicsMastered": 8
+        },
+        "tag": "Transparency"
+    }
+]

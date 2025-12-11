@@ -1,0 +1,93 @@
+[
+    {
+        "id": "math",
+        "title": "K-12 Math Tutoring",
+        "description": "Master everything from basic arithmetic to advanced calculus.",
+        "icon": "📐",
+        "keywords": [
+            "math tutor",
+            "algebra help",
+            "calculus tutoring",
+            "geometry",
+            "pre-algebra",
+            "trigonometry"
+        ],
+        "subTopics": [
+            "Algebra I & II",
+            "Geometry",
+            "Pre-Calculus",
+            "AP Calculus (AB & BC)",
+            "Statistics",
+            "Elementary Math",
+            "Middle School Math"
+        ],
+        "gradient": "from-blue-500 to-cyan-400"
+    },
+    {
+        "id": "science",
+        "title": "Science & STEM Tutoring",
+        "description": "Explore the wonders of biology, chemistry, and physics.",
+        "icon": "🧬",
+        "keywords": [
+            "science tutor online",
+            "chemistry help",
+            "physics tutoring",
+            "biology classes",
+            "STEM education"
+        ],
+        "subTopics": [
+            "Biology",
+            "Chemistry",
+            "Physics",
+            "Environmental Science",
+            "AP Science Courses",
+            "Earth Science",
+            "Life Science"
+        ],
+        "gradient": "from-emerald-500 to-teal-400"
+    },
+    {
+        "id": "english",
+        "title": "Reading & English Tutoring",
+        "description": "Build strong reading comprehension and writing skills.",
+        "icon": "📚",
+        "keywords": [
+            "english tutoring",
+            "reading comprehension",
+            "writing skills",
+            "grammar help",
+            "literature classes"
+        ],
+        "subTopics": [
+            "Reading Comprehension",
+            "Essay Writing",
+            "Grammar & Mechanics",
+            "Literature Analysis",
+            "Vocabulary Building",
+            "Public Speaking"
+        ],
+        "gradient": "from-orange-500 to-amber-400"
+    },
+    {
+        "id": "history",
+        "title": "History & Social Studies",
+        "description": "Understand the past to shape the future.",
+        "icon": "🏛️",
+        "keywords": [
+            "history tutor",
+            "world history",
+            "US history help",
+            "government classes",
+            "social science tutoring"
+        ],
+        "subTopics": [
+            "U.S. History",
+            "World History",
+            "Civics & Government",
+            "Geography",
+            "Economics",
+            "AP European History"
+        ],
+        "gradient": "from-purple-500 to-pink-400"
+    }
+]
