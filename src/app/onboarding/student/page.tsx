@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter, useSearchParams } from 'next/navigation';
 import useCatalog from '@/app/Hooks/useCatalog';
@@ -21,7 +22,7 @@ const studentSchema = z.object({
 
 type FormValues = z.infer<typeof studentSchema>;
 
-export default function StudentOnboardingPage() {
+function StudentOnboardingContent() {
     const router = useRouter();
     const queryClient = useQueryClient();
     const { curricula } = useCatalog();
@@ -204,5 +205,19 @@ export default function StudentOnboardingPage() {
                 </div>
             </div>
         </ProtectedClient>
+    );
+}
+
+export default function StudentOnboardingPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1C3A5A]"></div>
+                </div>
+            }
+        >
+            <StudentOnboardingContent />
+        </Suspense>
     );
 }
