@@ -3,20 +3,35 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 
 export function useTutorDashboard() {
+    // Fetch tutor's assigned bookings
     const { data: bookings, isLoading: loadingBookings, error: bookingsError } = useQuery({
         queryKey: ['tutor-bookings'],
         queryFn: async () => {
-            // Endpoint suggested in prompt
             const res = await api.get('/tutor/bookings');
-            return Array.isArray(res) ? res : [];
+            return Array.isArray(res.data) ? res.data : [];
         }
+    });
+
+    // Fetch AVAILABLE (unclaimed) bookings matching tutor's subjects
+    const { data: availableJobs, isLoading: loadingAvailable } = useQuery({
+        queryKey: ['tutor-available-jobs'],
+        queryFn: async () => {
+            try {
+                const res = await api.get('/bookings/available');
+                return Array.isArray(res.data) ? res.data : [];
+            } catch (e) {
+                // Endpoint may not exist yet, gracefully return empty
+                console.warn('Available jobs endpoint not ready', e);
+                return [];
+            }
+        },
+        refetchInterval: 30000, // Poll every 30 seconds for new jobs
     });
 
     // Calculate stats and filtered lists locally for now
     const today = new Date().toDateString();
 
     const todaySessions = bookings?.filter((b: any) => {
-        // Assuming booking has a date field, e.g., 'date' or 'start_time'
         const bookingDate = new Date(b.date || b.start_time).toDateString();
         return bookingDate === today;
     }) || [];
@@ -30,11 +45,14 @@ export function useTutorDashboard() {
     return {
         todaySessions,
         upcomingBookings,
+        availableJobs: availableJobs || [],
         stats: {
             todayCount: todaySessions.length,
-            weekCount: bookings?.length || 0 // Simplified for now
+            weekCount: bookings?.length || 0,
+            availableCount: availableJobs?.length || 0
         },
-        loading: loadingBookings,
+        loading: loadingBookings || loadingAvailable,
         error: bookingsError
     };
 }
+

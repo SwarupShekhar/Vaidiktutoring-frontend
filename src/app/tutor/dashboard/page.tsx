@@ -8,11 +8,39 @@ import { useTutorDashboard } from '@/app/Hooks/useTutorDashboard';
 
 export default function TutorDashboardPage() {
   const { user } = useAuthContext();
-  const { todaySessions, upcomingBookings, stats, loading } = useTutorDashboard();
+  const { todaySessions, upcomingBookings, availableJobs, stats, loading } = useTutorDashboard();
 
   return (
     <ProtectedClient roles={['tutor']}>
       <div className="min-h-screen p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
+
+        {/* AVAILABLE JOBS ALERT */}
+        {availableJobs.length > 0 && (
+          <section className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-[2rem] p-6 border border-orange-300 shadow-lg animate-pulse-slow">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                🚨 {availableJobs.length} New Session{availableJobs.length > 1 ? 's' : ''} Available!
+              </h2>
+              <span className="text-sm text-orange-100">First come, first served</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {availableJobs.slice(0, 6).map((job: any) => (
+                <div key={job.id} className="bg-white/90 rounded-xl p-4 shadow-md">
+                  <h3 className="font-bold text-gray-800 mb-1">{job.subject_name || job.subject?.name || 'Subject TBD'}</h3>
+                  <p className="text-sm text-gray-600 mb-2">
+                    {job.requested_start ? new Date(job.requested_start).toLocaleString() : 'Time TBD'}
+                  </p>
+                  <Link
+                    href={`/tutor/claim-session/${job.id}`}
+                    className="block w-full py-2 bg-green-500 hover:bg-green-600 text-white font-bold text-center rounded-lg transition-colors text-sm"
+                  >
+                    Accept Job →
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* HERO SECTION */}
         <section className="bg-glass rounded-[2rem] p-8 md:p-10 border border-white/20 shadow-lg relative overflow-hidden">
@@ -46,6 +74,17 @@ export default function TutorDashboardPage() {
                   </p>
                 </div>
               </div>
+              {stats.availableCount > 0 && (
+                <div className="px-6 py-3 rounded-2xl bg-orange-100 border border-orange-300 flex items-center gap-3 shadow-sm">
+                  <span className="text-2xl">🔥</span>
+                  <div>
+                    <p className="text-xs font-bold text-orange-700 uppercase tracking-wider">Available</p>
+                    <p className="text-xl font-bold text-orange-600">
+                      {stats.availableCount}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
