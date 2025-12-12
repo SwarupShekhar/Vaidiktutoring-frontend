@@ -122,10 +122,11 @@ export default function ParentDashboardPage() {
                       <span className="text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-700 uppercase tracking-wide">
                         {session.status || 'Scheduled'}
                       </span>
-                      {session.meet_link && (
-                        <a href={session.meet_link} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[var(--color-primary)] hover:underline">
+                      {/* Join Session Link - Show when confirmed */}
+                      {(session.status === 'confirmed' || session.status === 'scheduled') && session.id && (
+                        <Link href={`/session/${session.id}`} className="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-full transition-colors">
                           Join Session →
-                        </a>
+                        </Link>
                       )}
                     </div>
                     <h3 className="font-bold text-[var(--color-text-primary)] mb-1">
