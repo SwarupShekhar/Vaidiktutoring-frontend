@@ -25,9 +25,9 @@ export default function NewTutorPage() {
         setLoading(true);
         try {
             // NOTE: Backend needs to support this endpoint or allow 'role' in register
-            const res = await api.post('/auth/signup', {
+            const res = await api.post('/admin/tutors', {
                 ...formData,
-                role: 'tutor'
+                // role: 'tutor' // Role should be inferred by endpoint or forced by backend
             });
             alert('Tutor created successfully!');
             router.push('/admin/dashboard'); // Assuming exists, or back to home
