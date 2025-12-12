@@ -5,6 +5,7 @@ import QueryProvider from './providers';            // <-- uses src/app/provider
 import { AuthProvider } from './context/AuthContext'; // <-- uses src/app/context/AuthContext.tsx
 import Navbar from './components/navbar';
 import Footer from './components/Footer';
+import Script from 'next/script';
 
 export const metadata = {
   title: 'K12 Frontend',
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Footer />
           </AuthProvider>
         </QueryProvider>
+        <Script src="https://meet.jit.si/external_api.js" strategy="afterInteractive" />
       </body>
     </html>
   );

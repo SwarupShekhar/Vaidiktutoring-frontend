@@ -68,20 +68,12 @@ export default function StudentDashboardPage() {
                     </p>
 
                     <div className="flex gap-3">
-                      {nextSession.meeting_link ? (
-                        <a
-                          href={nextSession.meeting_link}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="w-full text-center px-4 py-2 bg-white text-blue-700 font-bold rounded-lg hover:bg-blue-50 transition-colors shadow-sm text-sm"
-                        >
-                          Join Now
-                        </a>
-                      ) : (
-                        <button disabled className="w-full px-4 py-2 bg-white/20 text-white font-bold rounded-lg opacity-80 cursor-not-allowed text-sm">
-                          Link pending
-                        </button>
-                      )}
+                      <button
+                        onClick={() => router.push(`/session/${nextSession.id}`)}
+                        className="w-full text-center px-4 py-2 bg-white text-blue-700 font-bold rounded-lg hover:bg-blue-50 transition-colors shadow-sm text-sm"
+                      >
+                        Join Now
+                      </button>
                     </div>
                   </div>
                   {/* Decoration */}

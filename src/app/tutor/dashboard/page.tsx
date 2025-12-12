@@ -68,10 +68,10 @@ export default function TutorDashboardPage() {
                       <span className="font-bold text-[var(--color-primary)]">
                         {session.start_time ? new Date(session.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Time TBD'}
                       </span>
-                      {session.meet_link && (
-                        <a href={session.meet_link} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full hover:opacity-90 transition-opacity">
-                          Join Class
-                        </a>
+                      {(session.id) && (
+                        <Link href={`/session/${session.id}`} className="px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full hover:opacity-90 transition-opacity">
+                          Start Class
+                        </Link>
                       )}
                     </div>
                     <h3 className="font-bold text-[var(--color-text-primary)]">
