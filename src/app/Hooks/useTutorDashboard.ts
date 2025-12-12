@@ -7,7 +7,7 @@ export function useTutorDashboard() {
         queryKey: ['tutor-bookings'],
         queryFn: async () => {
             // Endpoint suggested in prompt
-            const res = await api.get('/bookings/tutor');
+            const res = await api.get('/tutor/bookings');
             return Array.isArray(res) ? res : [];
         }
     });
