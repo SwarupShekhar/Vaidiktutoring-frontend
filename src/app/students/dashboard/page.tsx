@@ -14,14 +14,19 @@ export default function StudentDashboardPage() {
   const nextSession = upcomingSessions.length > 0 ? upcomingSessions[0] : null;
   const otherUpcoming = upcomingSessions.length > 1 ? upcomingSessions.slice(1) : [];
 
-  const formatDate = (isoString: string) => {
-    return new Date(isoString).toLocaleString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
+  const formatDate = (isoString?: string) => {
+    if (!isoString) return 'Date TBD';
+    try {
+      return new Date(isoString).toLocaleString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      });
+    } catch (e) {
+      return 'Invalid Date';
+    }
   };
 
   return (
