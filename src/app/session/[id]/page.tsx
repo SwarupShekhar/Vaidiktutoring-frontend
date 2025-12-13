@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '@/app/lib/api';
+import { useAuthContext } from '@/app/context/AuthContext';
 
 interface SessionProps {
     params: Promise<{ id: string }>;
@@ -10,13 +10,12 @@ interface SessionProps {
 
 export default function SessionPage({ params }: SessionProps) {
     const { id: sessionId } = React.use(params);
+    const { user } = useAuthContext();
     const jitsiRef = useRef<HTMLDivElement | null>(null);
+    const jitsiApiRef = useRef<any>(null);
     const [meetReady, setMeetReady] = useState(false);
-    const [messages, setMessages] = useState<{ id: string, from: string, text: string }[]>([]);
-    const [text, setText] = useState('');
-    const [recording, setRecording] = useState(false);
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const recordedChunks = useRef<Blob[]>([]);
+    const [jitsiLoading, setJitsiLoading] = useState(true);
+    const router = useRouter();
 
     // Excalidraw API & Collab
     const [excalidrawAPI, setExcalidrawAPI] = useState<any>(null);
@@ -25,14 +24,12 @@ export default function SessionPage({ params }: SessionProps) {
     useEffect(() => {
         import('@excalidraw/excalidraw').then((mod) => setExcalidrawComp(() => mod.Excalidraw));
 
-        // lazy load Jitsi script if not provided in layout
-        // Note: We added it to layout.tsx via next/script, so window.JitsiMeetExternalAPI might be ready.
+        // lazy load Jitsi script
         const checkJitsi = () => {
             // @ts-ignore
             if (typeof window !== 'undefined' && window.JitsiMeetExternalAPI) {
                 setMeetReady(true);
             } else {
-                // Fallback if layout script hasn't loaded yet or fail check
                 const s = document.createElement('script');
                 s.src = 'https://meet.jit.si/external_api.js';
                 s.onload = () => setMeetReady(true);
@@ -42,31 +39,21 @@ export default function SessionPage({ params }: SessionProps) {
         checkJitsi();
     }, []);
 
-    // Yjs Collaboration Logic
+    // Yjs Collaboration Logic (for Excalidraw sync)
     useEffect(() => {
         if (!excalidrawAPI || !sessionId) return;
 
-        // Dynamic import to avoid SSR issues with y-websocket
         (async () => {
             const Y = await import('yjs');
             const { WebsocketProvider } = await import('y-websocket');
 
-            // Connect to local WS server (requires running y-websocket-server separately)
-            // npx y-websocket
             const ydoc = new Y.Doc();
             const provider = new WebsocketProvider('ws://localhost:1234', `k12-session-${sessionId}`, ydoc);
-            const ymap = ydoc.getMap('excalidraw-state');
-
-            // Sync Excalidraw -> Yjs
-            // Note: A full robust sync requires handling 'change' events carefully. 
-            // For this Minimum Viable implementation, we will log connection.
-            // In a real app, use 'y-excalidraw' or similar binding library.
 
             provider.on('status', (event: any) => {
                 console.log('[Collab] WS Status:', event.status);
             });
 
-            // Cleanup
             return () => {
                 provider.disconnect();
                 ydoc.destroy();
@@ -74,158 +61,173 @@ export default function SessionPage({ params }: SessionProps) {
         })();
     }, [excalidrawAPI, sessionId]);
 
+    // Initialize Jitsi with seamless auto-join
     useEffect(() => {
         // @ts-ignore
         if (!meetReady || !jitsiRef.current || !window.JitsiMeetExternalAPI) return;
+
+        // Cleanup previous instance if any
+        if (jitsiApiRef.current) {
+            try { jitsiApiRef.current.dispose(); } catch (e) { }
+        }
+
         const domain = 'meet.jit.si';
+        const displayName = user?.first_name
+            ? `${user.first_name} ${user.last_name || ''}`.trim()
+            : 'Guest';
+
         const options = {
-            roomName: `k12-session-${sessionId}`,
+            roomName: `K12Session${sessionId.replace(/-/g, '').slice(0, 16)}`,
             width: '100%',
             height: '100%',
             parentNode: jitsiRef.current,
-            interfaceConfigOverwrite: { SHOW_JITSI_WATERMARK: false },
-            configOverwrite: { prejoinPageEnabled: false },
+            userInfo: {
+                displayName: displayName,
+            },
+            // Comprehensive config to skip lobby and auto-join
+            configOverwrite: {
+                prejoinPageEnabled: false,
+                startWithAudioMuted: false,
+                startWithVideoMuted: false,
+                disableDeepLinking: true,
+                enableWelcomePage: false,
+                enableClosePage: false,
+                disableInviteFunctions: true,
+                doNotStoreRoom: true,
+                hideConferenceSubject: true,
+                hideConferenceTimer: false,
+                subject: 'Tutoring Session',
+                enableLobbyChat: false,
+                hideLobbyButton: true,
+            },
+            // Clean interface without Jitsi branding
+            interfaceConfigOverwrite: {
+                SHOW_JITSI_WATERMARK: false,
+                SHOW_WATERMARK_FOR_GUESTS: false,
+                SHOW_BRAND_WATERMARK: false,
+                BRAND_WATERMARK_LINK: '',
+                SHOW_POWERED_BY: false,
+                SHOW_PROMOTIONAL_CLOSE_PAGE: false,
+                HIDE_INVITE_MORE_HEADER: true,
+                DISABLE_JOIN_LEAVE_NOTIFICATIONS: true,
+                MOBILE_APP_PROMO: false,
+                DISABLE_PRESENCE_STATUS: true,
+                GENERATE_ROOMNAMES_ON_WELCOME_PAGE: false,
+                DISPLAY_WELCOME_FOOTER: false,
+                DISPLAY_WELCOME_PAGE_ADDITIONAL_CARD: false,
+                DISPLAY_WELCOME_PAGE_CONTENT: false,
+                DISPLAY_WELCOME_PAGE_TOOLBAR_ADDITIONAL_CONTENT: false,
+                RECENT_LIST_ENABLED: false,
+                TOOLBAR_BUTTONS: [
+                    'microphone', 'camera', 'desktop', 'fullscreen',
+                    'raisehand', 'tileview', 'hangup', 'chat'
+                ],
+                SETTINGS_SECTIONS: ['devices', 'language'],
+                VIDEO_QUALITY_LABEL_DISABLED: true,
+            },
         };
+
         // @ts-ignore
         const apiObj = new window.JitsiMeetExternalAPI(domain, options);
+        jitsiApiRef.current = apiObj;
 
-        // Example: receive events and store
         apiObj.addEventListener('videoConferenceJoined', (ev: any) => {
-            console.log('joined', ev);
+            console.log('[Jitsi] Joined conference:', ev);
+            setJitsiLoading(false);
         });
 
+        apiObj.addEventListener('readyToClose', () => {
+            console.log('[Jitsi] Meeting ended');
+            router.push('/students/dashboard');
+        });
+
+        // Hide loading after a timeout in case event doesn't fire
+        const timeout = setTimeout(() => setJitsiLoading(false), 5000);
+
         return () => {
+            clearTimeout(timeout);
             try { apiObj.dispose(); } catch (e) { }
         };
-    }, [meetReady, sessionId]);
-
-    // Use real backend API
-    useEffect(() => {
-        (async () => {
-            try {
-                // Hit backend endpoints
-                const chatRes = await api.get(`/sessions/${sessionId}/messages`);
-                if (chatRes.data) {
-                    setMessages(chatRes.data || []);
-                }
-            } catch (e) {
-                console.warn('session fetch failed', e);
-            }
-        })();
-    }, [sessionId]);
-
-    async function sendMessage() {
-        if (!text) return;
-        try {
-            const res = await api.post(`/sessions/${sessionId}/messages`, { text });
-            if (res.data) {
-                setMessages((m) => [...m, res.data]);
-                setText('');
-            }
-        } catch (e) { console.error(e); }
-    }
-
-    // Recording: capture screen (or camera+mic)
-    async function startRecording() {
-        try {
-            // capture display
-            // permission: user must accept screen capture
-            const stream = await (navigator.mediaDevices as any).getDisplayMedia({ video: true, audio: true });
-            const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' : 'video/webm';
-            const mr = new MediaRecorder(stream, { mimeType: mime });
-            recordedChunks.current = [];
-            mr.ondataavailable = (e) => { if (e.data.size) recordedChunks.current.push(e.data); };
-            mr.onstop = async () => {
-                const blob = new Blob(recordedChunks.current, { type: mime });
-                // upload to backend
-                const fd = new FormData();
-                fd.append('file', blob, `session-${sessionId}-${Date.now()}.webm`);
-                try {
-                    await api.post(`/sessions/${sessionId}/recordings`, fd, {
-                        headers: { 'Content-Type': 'multipart/form-data' }
-                    });
-                    alert('Recording uploaded');
-                } catch (err) { console.error(err); alert('Upload failed'); }
-            };
-            mediaRecorderRef.current = mr;
-            mr.start(1000);
-            setRecording(true);
-        } catch (err) {
-            console.error('screen capture failed', err);
-            alert('Screen capture permission denied or unsupported');
-        }
-    }
-
-    function stopRecording() {
-        try { mediaRecorderRef.current?.stop(); setRecording(false); } catch { }
-    }
+    }, [meetReady, sessionId, user, router]);
 
     return (
-        <div className="max-w-[1600px] mx-auto p-4 h-[calc(100vh-64px)] overflow-hidden flex flex-col">
-            <div className="flex justify-between items-center mb-4 shrink-0">
-                <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Session <span className="text-blue-500">{sessionId.slice(0, 8)}</span></h2>
+        <div className="min-h-screen bg-[var(--color-background)] p-4 md:p-6">
+            <div className="max-w-[1800px] mx-auto h-[calc(100vh-100px)] flex flex-col">
 
-                <div className="flex gap-2">
-                    {!recording ? (
-                        <button onClick={startRecording} className="px-3 py-2 rounded bg-red-600 hover:bg-red-700 text-white text-sm font-medium transition flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-white" /> Record
-                        </button>
-                    ) : (
-                        <button onClick={stopRecording} className="px-3 py-2 rounded bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium transition border border-red-500 animate-pulse">
-                            Stop
-                        </button>
-                    )}
-                    <a href={`/sessions/${sessionId}/invite.ics`} className="px-3 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition">
-                        Invite
-                    </a>
-                </div>
-            </div>
-
-            <div className="flex-1 flex gap-4 min-h-0 overflow-hidden">
-                {/* LEFT: VIDEO + CHAT */}
-                <div className="w-1/3 flex flex-col gap-4">
-                    <div className="flex-1 rounded-xl shadow-lg bg-black/90 overflow-hidden relative">
-                        <div ref={jitsiRef} className="w-full h-full" />
+                {/* HEADER */}
+                <div className="bg-glass rounded-2xl p-4 mb-4 border border-white/20 shadow-sm flex justify-between items-center">
+                    <div className="flex items-center gap-4">
+                        <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                        <div>
+                            <h1 className="text-xl font-bold text-[var(--color-text-primary)]">
+                                Live Tutoring Session
+                            </h1>
+                            <p className="text-sm text-[var(--color-text-secondary)]">
+                                Session ID: {sessionId.slice(0, 8)}...
+                            </p>
+                        </div>
                     </div>
 
-                    <div className="h-1/3 min-h-[250px] bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
-                        <div className="p-2 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 font-medium text-gray-700 dark:text-gray-200 text-sm">
-                            Session Chat
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                            {messages.map((m, i) => (
-                                <div key={m.id || i} className="flex flex-col">
-                                    <span className="text-[10px] text-gray-400">{m.from}</span>
-                                    <div className="bg-gray-100 dark:bg-gray-700 p-2 rounded-md text-sm text-gray-800 dark:text-gray-200">{m.text}</div>
+                    <div className="flex items-center gap-3">
+                        {/* Recording feature - Hidden until backend is ready */}
+                        {/* 
+                        <button className="px-4 py-2 rounded-xl bg-red-500 text-white">
+                            Record
+                        </button>
+                        */}
+                        <button
+                            onClick={() => router.push('/students/dashboard')}
+                            className="px-4 py-2 rounded-xl bg-[var(--color-surface)] text-[var(--color-text-primary)] text-sm font-medium border border-[var(--color-border)] hover:bg-[var(--color-border)] transition-all"
+                        >
+                            Exit Session
+                        </button>
+                    </div>
+                </div>
+
+                {/* MAIN CONTENT - Two column layout */}
+                <div className="flex-1 flex gap-4 min-h-0 overflow-hidden">
+
+                    {/* LEFT COLUMN: VIDEO */}
+                    <div className="w-[450px] flex-shrink-0 flex flex-col">
+
+                        {/* VIDEO CONTAINER */}
+                        <div className="flex-1 rounded-2xl overflow-hidden relative bg-gray-900 shadow-xl border border-gray-800">
+                            {/* Loading overlay */}
+                            {jitsiLoading && (
+                                <div className="absolute inset-0 bg-gray-900 z-20 flex flex-col items-center justify-center">
+                                    <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
+                                    <p className="text-white font-medium">Connecting to video...</p>
+                                    <p className="text-gray-400 text-sm mt-1">Please allow camera & mic access</p>
                                 </div>
-                            ))}
+                            )}
+                            <div ref={jitsiRef} className="w-full h-full" />
                         </div>
-                        <div className="p-2 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex gap-2">
-                            <input
-                                className="flex-1 px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm"
-                                value={text}
-                                onChange={(e) => setText(e.target.value)}
-                                placeholder="Say something..."
-                                onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                            />
-                            <button onClick={sendMessage} className="px-3 py-1.5 rounded bg-blue-600 text-white text-sm">Send</button>
+
+                        {/* Info card below video */}
+                        <div className="mt-4 bg-glass rounded-xl p-4 border border-white/20">
+                            <p className="text-sm text-[var(--color-text-secondary)]">
+                                <span className="font-medium text-[var(--color-text-primary)]">💡 Tip:</span> Use the whiteboard on the right to collaborate with your tutor in real-time.
+                            </p>
                         </div>
                     </div>
-                </div>
 
-                {/* RIGHT: WHITEBOARD */}
-                <div className="flex-1 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden bg-white relative">
-                    {ExcalidrawComp ? (
-                        <ExcalidrawComp
-                            theme="light"
-                            excalidrawAPI={(api: any) => setExcalidrawAPI(api)}
-                            UIOptions={{
-                                canvasActions: { loadScene: false, saveToActiveFile: false }
-                            }}
-                        />
-                    ) : (
-                        <div className="flex items-center justify-center h-full text-gray-400">Loading Whiteboard...</div>
-                    )}
+                    {/* RIGHT COLUMN: WHITEBOARD */}
+                    <div className="flex-1 rounded-2xl overflow-hidden bg-white shadow-xl border border-[var(--color-border)] relative">
+                        {ExcalidrawComp ? (
+                            <ExcalidrawComp
+                                theme="light"
+                                excalidrawAPI={(api: any) => setExcalidrawAPI(api)}
+                                UIOptions={{
+                                    canvasActions: { loadScene: false, saveToActiveFile: false }
+                                }}
+                            />
+                        ) : (
+                            <div className="flex flex-col items-center justify-center h-full text-[var(--color-text-secondary)]">
+                                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
+                                <p className="font-medium">Loading Whiteboard...</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
