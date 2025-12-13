@@ -60,8 +60,14 @@ export default function Navbar() {
           {/* Show Dashboard link if logged in */}
           {user && (
             <Link
-              href={user.role === 'student' ? '/students/dashboard' : '/parent/dashboard'}
-              className={`text-sm lg:text-base font-medium transition-colors ${isActive('/parent/dashboard') || isActive('/students/dashboard')
+              href={
+                user.role === 'tutor' ? '/tutor/dashboard' :
+                  user.role === 'student' ? '/students/dashboard' :
+                    '/parent/dashboard'
+              }
+              className={`text-sm lg:text-base font-medium transition-colors ${isActive('/parent/dashboard') ||
+                  isActive('/students/dashboard') ||
+                  isActive('/tutor/dashboard')
                   ? 'text-[var(--color-primary)]'
                   : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
                 }`}
@@ -73,13 +79,16 @@ export default function Navbar() {
 
         {/* Right: Auth & Toggle */}
         <div className="flex items-center gap-4">
-          <Link
-            href={user ? 'https://calendly.com/swarupshekhar-vaidikedu/30min' : '/signup?type=assessment'}
-            className="hidden lg:block px-5 py-2 rounded-full bg-[var(--color-primary)] text-white font-bold text-sm hover:opacity-90 hover:scale-105 transition-all shadow-lg shadow-blue-500/20"
-            {...(user ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-          >
-            Book Free Demo Session
-          </Link>
+          {/* Hide Demo button for Tutors */}
+          {(!user || user.role !== 'tutor') && (
+            <Link
+              href={user ? 'https://calendly.com/swarupshekhar-vaidikedu/30min' : '/signup?type=assessment'}
+              className="hidden lg:block px-5 py-2 rounded-full bg-[var(--color-primary)] text-white font-bold text-sm hover:opacity-90 hover:scale-105 transition-all shadow-lg shadow-blue-500/20"
+              {...(user ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            >
+              Book Free Demo Session
+            </Link>
+          )}
 
           {user ? (
             <button
