@@ -112,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (data.user) {
           userData = data.user;
           // Ensure ID is set if mixed formats
-          if (!userData.id && userData._id) userData.id = userData._id;
+          if (userData && !userData.id && userData._id) userData.id = userData._id;
         } else {
           const payload: any = decodeToken(data.token);
           userData = payload ? {
