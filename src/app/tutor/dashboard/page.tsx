@@ -157,7 +157,7 @@ export default function TutorDashboardPage() {
             </div>
           </section>
 
-          {/* UPCOMING BOOKINGS TO SCHEDULE */}
+          {/* UPCOMING BOOKINGS */}
           <section className="bg-glass rounded-[2rem] p-6 border border-white/20 shadow-sm flex flex-col h-full">
             <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-6 flex items-center gap-2">
               <span>📝</span> Confirmed & Upcoming
@@ -167,24 +167,32 @@ export default function TutorDashboardPage() {
               {loading ? (
                 <p className="text-[var(--color-text-secondary)]">Loading bookings...</p>
               ) : upcomingBookings.length > 0 ? (
-                upcomingBookings.map((booking: any) => (
-                  <div key={booking.id} className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)]">
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="font-bold text-[var(--color-text-primary)]">
-                        {booking.subject || 'Subject'}
-                      </h3>
-                      <Link href={`/tutor/bookings/${booking.id}/create-session`} className="text-xs font-bold text-[var(--color-primary)] bg-blue-50 px-3 py-1 rounded-full hover:bg-blue-100 transition-colors">
-                        Create Session →
-                      </Link>
+                upcomingBookings.map((booking: any) => {
+                  // Extract data with fallbacks
+                  const startTime = booking.start_time || booking.requested_start || booking.date;
+                  const subjectName = booking.subject_name || booking.subject?.name || 'Subject';
+                  const studentName = booking.child_name || booking.student_name ||
+                    (booking.student ? `${booking.student.first_name} ${booking.student.last_name}` : 'Student');
+
+                  return (
+                    <div key={booking.id} className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-primary)]/30 transition-colors">
+                      <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-bold text-[var(--color-text-primary)]">
+                          {subjectName}
+                        </h3>
+                        <Link href={`/session/${booking.id}`} className="px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full hover:opacity-90 transition-opacity">
+                          Join Session
+                        </Link>
+                      </div>
+                      <p className="text-sm text-[var(--color-text-secondary)]">
+                        Student: {studentName}
+                      </p>
+                      <p className="text-xs text-[var(--color-text-secondary)] opacity-80 mt-1">
+                        {startTime ? new Date(startTime).toLocaleString() : 'Date TBD'}
+                      </p>
                     </div>
-                    <p className="text-sm text-[var(--color-text-secondary)]">
-                      Student: {booking.student_name || 'Student'}
-                    </p>
-                    <p className="text-xs text-[var(--color-text-secondary)] opacity-80 mt-1">
-                      Requested: {booking.requested_time || booking.date ? new Date(booking.requested_time || booking.date).toLocaleDateString() : 'Date TBD'}
-                    </p>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="text-center py-12 rounded-xl bg-[var(--color-surface)]/50 border border-[var(--color-border)] border-dashed">
                   <p className="text-[var(--color-text-secondary)]">No upcoming bookings to show.</p>
