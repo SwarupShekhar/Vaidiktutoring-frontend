@@ -113,12 +113,10 @@ export default function AdminDashboardPage() {
                 </div>
             </div>
         </div>
-            </div >
-
-        {/* MODALS */ }
-        < StudentListModal isOpen = { showStudents } onClose = {() => setShowStudents(false)
-} />
-    < TutorAllocationModal isOpen = { showAllocation } onClose = {() => setShowAllocation(false)} />
+            
+            {/* MODALS */ }
+            <StudentListModal isOpen={showStudents} onClose={() => setShowStudents(false)} />
+            <TutorAllocationModal isOpen={showAllocation} onClose={() => setShowAllocation(false)} />
         </ProtectedClient >
     );
 }
