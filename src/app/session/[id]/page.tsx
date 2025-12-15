@@ -33,7 +33,7 @@ export default function SessionPage({ params }: SessionProps) {
     // Fetch Booking Details
     useEffect(() => {
         if (sessionId) {
-            api.get(\`/bookings/\${sessionId}\`)
+            api.get(`/bookings/${sessionId}`)
                 .then(res => setBooking(res.data))
                 .catch(err => console.error("Failed to load session details", err));
         }
@@ -68,7 +68,7 @@ export default function SessionPage({ params }: SessionProps) {
             const Y = await import('yjs');
             const { WebsocketProvider } = await import('y-websocket');
             const ydoc = new Y.Doc();
-            const provider = new WebsocketProvider('ws://localhost:1234', `k12 - session - ${ sessionId }`, ydoc);
+            const provider = new WebsocketProvider('ws://localhost:1234', `k12 - session - ${sessionId}`, ydoc);
 
             // Clean slate for whiteboard
             // const ymap = ydoc.getMap('excalidraw-state');
@@ -96,13 +96,13 @@ export default function SessionPage({ params }: SessionProps) {
 
         const domain = 'meet.jit.si';
         const displayName = user?.first_name
-            ? `${ user.first_name } ${ user.last_name || '' }`.trim()
+            ? `${user.first_name} ${user.last_name || ''}`.trim()
             : 'Guest';
 
         const isTutor = user?.role === 'tutor'; // Determine role
 
         const options = {
-            roomName: `K12Session${ sessionId.replace(/-/g, '').slice(0, 16) }`,
+            roomName: `K12Session${sessionId.replace(/-/g, '').slice(0, 16)}`,
             width: '100%',
             height: '100%',
             parentNode: jitsiRef.current,
@@ -113,8 +113,8 @@ export default function SessionPage({ params }: SessionProps) {
             },
             configOverwrite: {
                 prejoinPageEnabled: true,       // ENABLE PREJOIN for consistent experience
-                startWithAudioMuted: false,     
-                startWithVideoMuted: false,     
+                startWithAudioMuted: false,
+                startWithVideoMuted: false,
                 disableDeepLinking: true,
                 enableWelcomePage: false,
                 enableClosePage: false,
@@ -179,8 +179,8 @@ export default function SessionPage({ params }: SessionProps) {
                         </p>
                     )}
                     <p className="text-[var(--color-text-secondary)] mb-8">
-                        {user?.role === 'student' 
-                            ? "Waiting for your tutor to start the class." 
+                        {user?.role === 'student'
+                            ? "Waiting for your tutor to start the class."
                             : "Ready to start teaching?"}
                     </p>
 
@@ -224,7 +224,7 @@ export default function SessionPage({ params }: SessionProps) {
                         </div>
                     </div>
 
-                    <button 
+                    <button
                         onClick={() => setIsWhiteboardMode(!isWhiteboardMode)}
                         className="mr-auto ml-4 px-4 py-2 rounded-xl bg-blue-100 text-blue-700 font-bold hover:bg-blue-200 transition-colors"
                     >
@@ -246,69 +246,67 @@ export default function SessionPage({ params }: SessionProps) {
                     {/* VIDEO CONTAINER */}
                     <div className={`
                         transition - all duration - 300 ease -in -out flex flex - col gap - 4
-                        ${
-                isWhiteboardMode
-                ? 'absolute bottom-4 left-4 w-64 h-48 z-20 shadow-2xl rounded-2xl ring-2 ring-white'
-                    : 'w-[450px] flex-shrink-0 relative z-0'
-            }
+                        ${isWhiteboardMode
+                            ? 'absolute bottom-4 left-4 w-64 h-48 z-20 shadow-2xl rounded-2xl ring-2 ring-white'
+                            : 'w-[450px] flex-shrink-0 relative z-0'
+                        }
                 `}>
                         <div className="flex-1 rounded-2xl overflow-hidden relative bg-black shadow-xl border border-gray-800 ring-1 ring-white/10 h-full">
                             {/* Removed blocking overlay so user can see Jitsi errors/prompts */}
                             <div ref={jitsiRef} className="w-full h-full" />
                         </div>
 
+                    </div>
+
+                    {/* Tip Card - Only show when NOT in whiteboard mode */}
+                    {!isWhiteboardMode && (
+                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4 flex gap-3">
+                            <span className="text-2xl">💡</span>
+                            <div className="text-sm text-[var(--color-text-secondary)]">
+                                <p className="font-bold text-[var(--color-text-primary)] mb-1">Collaborative Whiteboard</p>
+                                Use the canvas to verify math problems! Toggle "Whiteboard Mode" for full screen.
+                            </div>
                         </div>
-
-                        {/* Tip Card - Only show when NOT in whiteboard mode */}
-                        {!isWhiteboardMode && (
-                            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4 flex gap-3">
-                                <span className="text-2xl">💡</span>
-                                <div className="text-sm text-[var(--color-text-secondary)]">
-                                    <p className="font-bold text-[var(--color-text-primary)] mb-1">Collaborative Whiteboard</p>
-                                    Use the canvas to verify math problems! Toggle "Whiteboard Mode" for full screen.
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* WHITEBOARD CONTAINER */}
-                    <div className={`
-                        flex - 1 rounded - 2xl overflow - hidden bg - white shadow - xl border border - [var(--color - border)] relative group transition - all duration - 300
-                        ${ isWhiteboardMode ? 'col-span-2' : '' }
-            `}>
-                        {ExcalidrawComp ? (
-                            <ExcalidrawComp
-                                theme="light"
-                                excalidrawAPI={(api: any) => setExcalidrawAPI(api)}
-                                initialData={{
-                                    elements: [],
-                                    appState: {
-                                        viewBackgroundColor: '#ffffff',
-                                        currentItemFontFamily: 1,
-                                        showWelcomeScreen: false
-                                    },
-                                    scrollToContent: true
-                                }}
-                                UIOptions={{
-                                    canvasActions: {
-                                        loadScene: false,
-                                        saveToActiveFile: false,
-                                        export: { saveFileToDisk: true },
-                                        saveAsImage: true,
-                                        toggleTheme: false
-                                    }
-                                }}
-                            />
-                        ) : (
-                            <div className="flex flex-col items-center justify-center h-full text-[var(--color-text-secondary)] bg-gray-50">
-                                <div className="w-10 h-10 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin mb-4" />
-                                <p className="font-medium">Loading Canvas...</p>
-                            </div>
-                        )}
-                    </div>
+                    )}
                 </div>
-                <SessionChat />
+
+                {/* WHITEBOARD CONTAINER */}
+                <div className={`
+                        flex - 1 rounded - 2xl overflow - hidden bg - white shadow - xl border border - [var(--color - border)] relative group transition - all duration - 300
+                        ${isWhiteboardMode ? 'col-span-2' : ''}
+            `}>
+                    {ExcalidrawComp ? (
+                        <ExcalidrawComp
+                            theme="light"
+                            excalidrawAPI={(api: any) => setExcalidrawAPI(api)}
+                            initialData={{
+                                elements: [],
+                                appState: {
+                                    viewBackgroundColor: '#ffffff',
+                                    currentItemFontFamily: 1,
+                                    showWelcomeScreen: false
+                                },
+                                scrollToContent: true
+                            }}
+                            UIOptions={{
+                                canvasActions: {
+                                    loadScene: false,
+                                    saveToActiveFile: false,
+                                    export: { saveFileToDisk: true },
+                                    saveAsImage: true,
+                                    toggleTheme: false
+                                }
+                            }}
+                        />
+                    ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-[var(--color-text-secondary)] bg-gray-50">
+                            <div className="w-10 h-10 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin mb-4" />
+                            <p className="font-medium">Loading Canvas...</p>
+                        </div>
+                    )}
+                </div>
             </div>
+            <SessionChat />
         </div>
     );
 }
