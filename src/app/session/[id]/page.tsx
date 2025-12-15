@@ -20,7 +20,17 @@ interface SessionProps {
 
 export default function SessionPage({ params }: SessionProps) {
     const { id: sessionId } = React.use(params);
-    const { user } = useAuthContext();
+    const { user, loading: authLoading } = useAuthContext();
+    const router = useRouter();
+
+    // Protect the route - redirect if not authenticated
+    useEffect(() => {
+        if (!authLoading && !user) {
+            console.log('[Session] No user found, redirecting to login');
+            router.push('/login');
+        }
+    }, [user, authLoading, router]);
+
     const jitsiRef = useRef<HTMLDivElement | null>(null);
     const jitsiApiRef = useRef<any>(null);
     const [hasJoined, setHasJoined] = useState(false); // New state for Join Overlay
@@ -28,7 +38,6 @@ export default function SessionPage({ params }: SessionProps) {
     const [jitsiLoading, setJitsiLoading] = useState(true);
     const [isWhiteboardMode, setIsWhiteboardMode] = useState(false); // New Layout Toggle
     const [booking, setBooking] = useState<BookingDetails | null>(null);
-    const router = useRouter();
 
     // Fetch Booking Details
     useEffect(() => {
@@ -190,6 +199,15 @@ export default function SessionPage({ params }: SessionProps) {
             try { apiObj.dispose(); } catch (e) { }
         };
     }, [hasJoined, meetReady, sessionId, user, router, booking]);
+
+    // Show loading while auth is initializing
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-[var(--color-background)] flex items-center justify-center">
+                <div className="text-[var(--color-text-primary)]">Loading...</div>
+            </div>
+        );
+    }
 
     // Render JOIN OVERLAY if not joined
     if (!hasJoined) {
