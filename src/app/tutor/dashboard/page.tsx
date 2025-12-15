@@ -113,32 +113,42 @@ export default function TutorDashboardPage() {
               {loading ? (
                 <p className="text-[var(--color-text-secondary)]">Loading sessions...</p>
               ) : todaySessions.length > 0 ? (
-                todaySessions.map((session: any) => (
-                  <div key={session.id} className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-primary)]/30 transition-colors">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="font-bold text-[var(--color-primary)]">
-                        {session.start_time ? new Date(session.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Time TBD'}
-                      </span>
-                      {(session.id) && (
-                        <Link href={`/session/${session.id}`} className="px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full hover:opacity-90 transition-opacity">
-                          Start Class
-                        </Link>
+                todaySessions.map((session: any) => {
+                  // Extract time from multiple possible fields
+                  const startTime = session.start_time || session.requested_start || session.date;
+                  // Extract subject name from multiple possible fields
+                  const subjectName = session.subject_name || session.subject?.name || 'Tutoring Session';
+                  // Extract student name from multiple possible fields
+                  const studentName = session.child_name || session.student_name ||
+                    (session.student ? `${session.student.first_name} ${session.student.last_name}` : 'Unknown');
+
+                  return (
+                    <div key={session.id} className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-primary)]/30 transition-colors">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="font-bold text-[var(--color-primary)]">
+                          {startTime ? new Date(startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Time TBD'}
+                        </span>
+                        {(session.id) && (
+                          <Link href={`/session/${session.id}`} className="px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full hover:opacity-90 transition-opacity">
+                            Start Class
+                          </Link>
+                        )}
+                      </div>
+                      <h3 className="font-bold text-[var(--color-text-primary)]">
+                        {subjectName}
+                      </h3>
+                      <p className="text-sm text-[var(--color-text-secondary)] mb-3">
+                        Student: {studentName}
+                      </p>
+
+                      {session.whiteboard_link && (
+                        <a href={session.whiteboard_link} target="_blank" rel="noopener noreferrer" className="inline-block text-xs font-medium text-[var(--color-secondary)] hover:underline">
+                          Open Whiteboard →
+                        </a>
                       )}
                     </div>
-                    <h3 className="font-bold text-[var(--color-text-primary)]">
-                      {session.subject_name || 'Tutoring Session'}
-                    </h3>
-                    <p className="text-sm text-[var(--color-text-secondary)] mb-3">
-                      Student: {session.child_name || 'Unknown'}
-                    </p>
-
-                    {session.whiteboard_link && (
-                      <a href={session.whiteboard_link} target="_blank" rel="noopener noreferrer" className="inline-block text-xs font-medium text-[var(--color-secondary)] hover:underline">
-                        Open Whiteboard →
-                      </a>
-                    )}
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="text-center py-12 rounded-xl bg-[var(--color-surface)]/50 border border-[var(--color-border)] border-dashed">
                   <p className="text-[var(--color-text-secondary)]">You have no sessions scheduled for today.</p>

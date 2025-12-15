@@ -8,6 +8,7 @@ export function useTutorDashboard() {
         queryKey: ['tutor-bookings'],
         queryFn: async () => {
             const res = await api.get('/tutor/bookings');
+            console.log('[useTutorDashboard] Raw bookings response:', res.data);
             return Array.isArray(res.data) ? res.data : [];
         }
     });
@@ -28,19 +29,58 @@ export function useTutorDashboard() {
         refetchInterval: 30000, // Poll every 30 seconds for new jobs
     });
 
-    // Calculate stats and filtered lists locally for now
-    const today = new Date().toDateString();
+    // Helper function to extract date from booking
+    const getBookingDate = (booking: any): Date | null => {
+        // Try multiple possible date fields
+        const dateValue = booking.start_time || booking.requested_start || booking.date || booking.created_at;
+        if (!dateValue) return null;
+
+        try {
+            return new Date(dateValue);
+        } catch {
+            return null;
+        }
+    };
+
+    // Get today's date range (start and end of day in local time)
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+    const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+
+    console.log('[useTutorDashboard] Today range:', { todayStart, todayEnd });
+    console.log('[useTutorDashboard] All bookings:', bookings);
 
     const todaySessions = bookings?.filter((b: any) => {
-        const bookingDate = new Date(b.date || b.start_time).toDateString();
-        return bookingDate === today;
+        const bookingDate = getBookingDate(b);
+        if (!bookingDate) {
+            console.log('[useTutorDashboard] Booking has no valid date:', b);
+            return false;
+        }
+
+        const isToday = bookingDate >= todayStart && bookingDate <= todayEnd;
+        console.log('[useTutorDashboard] Checking booking:', {
+            id: b.id,
+            date: bookingDate,
+            isToday,
+            subject: b.subject_name || b.subject?.name
+        });
+
+        return isToday;
     }) || [];
 
     const upcomingBookings = bookings?.filter((b: any) => {
-        const bookingDate = new Date(b.date || b.start_time);
-        return bookingDate > new Date() && b.status === 'confirmed';
+        const bookingDate = getBookingDate(b);
+        if (!bookingDate) return false;
+
+        // Upcoming = future dates (not today)
+        return bookingDate > todayEnd;
     }) || [];
 
+    console.log('[useTutorDashboard] Filtered results:', {
+        todayCount: todaySessions.length,
+        upcomingCount: upcomingBookings.length,
+        totalCount: bookings?.length || 0
+    });
 
     return {
         todaySessions,
