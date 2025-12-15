@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import StudentListModal from '@/app/components/admin/StudentListModal';
 import TutorAllocationModal from '@/app/components/admin/TutorAllocationModal';
+import TutorListModal from '@/app/components/admin/TutorListModal';
 import { useAuthContext } from '@/app/context/AuthContext';
 import Link from 'next/link';
 import api from '@/app/lib/api';
@@ -16,6 +17,7 @@ export default function AdminDashboardPage() {
     // Modal states
     const [showStudents, setShowStudents] = useState(false);
     const [showAllocation, setShowAllocation] = useState(false);
+    const [showTutors, setShowTutors] = useState(false);
 
     React.useEffect(() => {
         // Fetch stats
@@ -69,11 +71,15 @@ export default function AdminDashboardPage() {
                         </div>
                     </div>
 
-                    <div className="bg-glass rounded-2xl p-6 border border-white/20 shadow-sm flex items-center gap-4">
-                        <div className="p-3 bg-orange-100 rounded-lg text-2xl">🎓</div>
+                    <div
+                        onClick={() => setShowTutors(true)}
+                        className="bg-glass rounded-2xl p-6 border border-white/20 shadow-sm flex items-center gap-4 cursor-pointer hover:scale-105 transition-transform group"
+                    >
+                        <div className="p-3 bg-orange-100 rounded-lg text-2xl group-hover:bg-orange-200 transition-colors">🎓</div>
                         <div>
                             <p className="text-sm font-bold text-[var(--color-text-secondary)] uppercase">Total Tutors</p>
                             <p className="text-2xl font-bold text-[var(--color-primary)]">{loading ? '...' : stats.tutors}</p>
+                            <span className="text-xs text-orange-500 underline opacity-0 group-hover:opacity-100 transition-opacity">View Details</span>
                         </div>
                     </div>
 
@@ -116,6 +122,7 @@ export default function AdminDashboardPage() {
             {/* MODALS */}
             <StudentListModal isOpen={showStudents} onClose={() => setShowStudents(false)} />
             <TutorAllocationModal isOpen={showAllocation} onClose={() => setShowAllocation(false)} />
-        </ProtectedClient >
+            <TutorListModal isOpen={showTutors} onClose={() => setShowTutors(false)} />
+        </ProtectedClient>
     );
 }
