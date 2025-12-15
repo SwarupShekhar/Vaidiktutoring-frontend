@@ -34,8 +34,15 @@ export default function SessionPage({ params }: SessionProps) {
     useEffect(() => {
         if (sessionId) {
             api.get(`/bookings/${sessionId}`)
-                .then(res => setBooking(res.data))
-                .catch(err => console.error("Failed to load session details", err));
+                .then(res => {
+                    console.log('[Session] Booking details loaded:', res.data);
+                    setBooking(res.data);
+                })
+                .catch(err => {
+                    console.error("Failed to load session details", err);
+                    console.error("Error details:", err.response?.data);
+                    // Continue anyway - Jitsi will still work
+                });
         }
     }, [sessionId]);
 
@@ -64,23 +71,43 @@ export default function SessionPage({ params }: SessionProps) {
     // Yjs Collaboration Logic
     useEffect(() => {
         if (!excalidrawAPI || !sessionId) return;
+
+        let cleanup: (() => void) | undefined;
+
         (async () => {
-            const Y = await import('yjs');
-            const { WebsocketProvider } = await import('y-websocket');
-            const ydoc = new Y.Doc();
-            const provider = new WebsocketProvider('ws://localhost:1234', `k12 - session - ${sessionId}`, ydoc);
+            try {
+                const Y = await import('yjs');
+                const { WebsocketProvider } = await import('y-websocket');
+                const ydoc = new Y.Doc();
 
-            // Clean slate for whiteboard
-            // const ymap = ydoc.getMap('excalidraw-state');
+                // Use environment variable or fallback to localhost
+                const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:1234';
+                // Remove spaces from room name
+                const roomName = `k12-session-${sessionId}`;
 
-            provider.on('status', (event: any) => {
-                console.log('[Collab] WS Status:', event.status);
-            });
-            return () => {
-                provider.disconnect();
-                ydoc.destroy();
-            };
+                console.log('[Collab] Connecting to:', wsUrl, 'Room:', roomName);
+                const provider = new WebsocketProvider(wsUrl, roomName, ydoc);
+
+                provider.on('status', (event: any) => {
+                    console.log('[Collab] WS Status:', event.status);
+                });
+
+                provider.on('connection-error', (error: any) => {
+                    console.warn('[Collab] Connection error (whiteboard will work locally):', error);
+                });
+
+                cleanup = () => {
+                    provider.disconnect();
+                    ydoc.destroy();
+                };
+            } catch (error) {
+                console.warn('[Collab] Failed to initialize (whiteboard will work locally):', error);
+            }
         })();
+
+        return () => {
+            if (cleanup) cleanup();
+        };
     }, [excalidrawAPI, sessionId]);
 
     // Initialize Jitsi ONLY after user clicks "Join"
