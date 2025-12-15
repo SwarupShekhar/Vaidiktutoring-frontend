@@ -19,7 +19,18 @@ export default function useStudentDashboard() {
         queryKey: ['student-bookings'],
         queryFn: async () => {
             const res = await api.get('/bookings/student');
-            return res.data || [];
+            const rawBookings = res.data || [];
+
+            // Normalize data structure
+            return rawBookings.map((b: any) => ({
+                ...b,
+                start_time: b.start_time || b.requested_start, // Fallback for pending sessions
+                end_time: b.end_time || b.requested_end,
+                subject: {
+                    ...b.subject,
+                    name: b.subject?.title || b.subject?.name || 'Tutoring Session' // Handle title vs name mismatch
+                }
+            }));
         },
     });
 
