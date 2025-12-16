@@ -38,30 +38,51 @@ export async function GET(
         console.log(`[Jitsi Token] Verifying booking access for User: ${userId} (${userEmail}) in Session: ${sessionId}`);
 
         // 3. Verify Booking Access via Backend
-        // We call the backend with the user's token. If they can access the booking, they are a participant.
-        const bookingRes = await axios.get(`${API_URL}/bookings/${sessionId}`, {
+        // Try to fetch with relations if supported by backend conventions (e.g. ?include=tutor)
+        const bookingRes = await axios.get(`${API_URL}/bookings/${sessionId}?include=tutor`, {
             headers: { Authorization: authHeader }
         });
 
-        console.log('[Jitsi Token] Backend verification success. Booking:', bookingRes.data?.id);
+        console.log('[Jitsi Token] Backend verification success.');
         const booking = bookingRes.data;
 
+        // DEBUG: Log key fields
+        console.log('[Jitsi Token] Booking Data Keys:', Object.keys(booking));
+        if (booking.tutor) console.log('[Jitsi Token] Booking.tutor:', booking.tutor);
+
         // 4. Determine Role
-        // Check if user is Tutor or Student for this booking
         let isModerator = false;
 
-        // Ensure IDs match. Assuming booking returns objects with ids or just ids.
+        // Ensure IDs match. 
         const tutorId = booking.tutor_id || booking.tutor?.id;
         const tutorEmail = booking.tutor?.email;
 
-        console.log(`[Jitsi Token] Checking role. UserID: ${userId}, TutorID: ${tutorId}`);
-        console.log(`[Jitsi Token] Checking role by Email. UserEmail: ${userEmail}, TutorEmail: ${tutorEmail}`);
+        // Debug Values
+        console.log(`[Jitsi Token] Role Check:
+            UserID: ${userId} (Type: ${typeof userId})
+            TutorID: ${tutorId} (Type: ${typeof tutorId})
+            UserEmail: ${userEmail}
+            TutorEmail: ${tutorEmail}
+            UserRole: ${decodedUser.role}
+        `);
 
-        if (tutorId === userId || (tutorEmail && userEmail && tutorEmail === userEmail)) {
+        // Check 1: Admin Override
+        if (decodedUser.role === 'admin') {
             isModerator = true;
-            console.log('[Jitsi Token] User verified as MODERATOR.');
-        } else {
-            console.log('[Jitsi Token] User verified as PARTICIPANT.');
+            console.log('[Jitsi Token] MATCH: User is Admin. Granted Moderator.');
+        }
+        // Check 2: ID Match (Loose equality for string/number diffs)
+        else if (tutorId && userId && tutorId == userId) {
+            isModerator = true;
+            console.log('[Jitsi Token] MATCH: Tutor ID matches.');
+        }
+        // Check 3: Email Match
+        else if (tutorEmail && userEmail && tutorEmail === userEmail) {
+            isModerator = true;
+            console.log('[Jitsi Token] MATCH: Email matches.');
+        }
+        else {
+            console.log('[Jitsi Token] NO MATCH. User is Participant.');
         }
 
         // 5. Generate Jitsi Token
@@ -74,9 +95,13 @@ export async function GET(
         };
 
         const jitsiToken = generateJitsiToken(jitsiUser, sessionId);
-        console.log('[Jitsi Token] Token generated successfully.');
+        console.log('[Jitsi Token] Token generated. Moderator:', isModerator);
 
-        return NextResponse.json({ token: jitsiToken });
+        return NextResponse.json({
+            token: jitsiToken,
+            // Return debug info in response for frontend inspection if needed
+            debug: { isModerator, tutorId, userId, match: isModerator }
+        });
 
     } catch (error: any) {
         console.error('[Jitsi Token] Error verifying booking:', error.message);
