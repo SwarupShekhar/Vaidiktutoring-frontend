@@ -126,16 +126,20 @@ export async function GET(
         });
 
     } catch (error: any) {
-        console.error('[Jitsi Token] Error verifying booking:', error.message);
-        if (error.response) {
-            console.error('[Jitsi Token] Backend Error Data:', error.response.data);
-            console.error('[Jitsi Token] Backend Error Status:', error.response.status);
+        console.error('[Jitsi Token] Fatal Error:', error);
 
-            if (error.response.status === 403 || error.response.status === 401) {
-                return NextResponse.json({ message: 'Unauthorized to access this session' }, { status: 403 });
+        // return detailed debug info appropriately
+        return NextResponse.json({
+            message: 'Failed to generate session token',
+            error: error.message,
+            stack: error.stack,
+            envCheck: {
+                hasAppID: !!process.env.JITSI_APP_ID,
+                hasSecret: !!process.env.JITSI_SECRET, // Check both just in case
+                hasAppSecret: !!process.env.JITSI_APP_SECRET,
+                hasKid: !!process.env.JITSI_KID
             }
-        }
-
-        return NextResponse.json({ message: 'Failed to verify session access', error: error.message }, { status: 500 });
+        }, { status: 500 });
     }
 }
+```
