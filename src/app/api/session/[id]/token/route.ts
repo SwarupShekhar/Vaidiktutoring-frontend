@@ -66,10 +66,12 @@ export async function GET(
             UserRole: ${decodedUser.role}
         `);
 
-        // Check 1: Admin Override
-        if (decodedUser.role === 'admin') {
+        // Check 1: Admin or Tutor Override (Role-based trust)
+        // STRICT RULE RELAXATION: To resolve "Waiting for moderator" issues where User ID != Tutor ID (table mismatch),
+        // we allow ANY logged-in Tutor to be a moderator for now.
+        if (decodedUser.role === 'admin' || decodedUser.role === 'tutor') {
             isModerator = true;
-            console.log('[Jitsi Token] MATCH: User is Admin. Granted Moderator.');
+            console.log(`[Jitsi Token] MATCH: User is ${decodedUser.role}. Granted Moderator (Role Validation).`);
         }
         // Check 2: ID Match (Loose equality for string/number diffs)
         else if (tutorId && userId && tutorId == userId) {

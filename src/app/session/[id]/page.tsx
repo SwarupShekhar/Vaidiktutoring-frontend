@@ -190,7 +190,18 @@ export default function SessionPage({ params }: SessionProps) {
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then(res => {
+                    // DEBUG LOGGING
+                    console.log('[Jitsi] Token API Response:', res.data);
+                    if (res.data.debug) {
+                        console.log('[Jitsi] Token Debug Info:', res.data.debug);
+                    }
+
                     const jwt = res.data.token;
+                    if (!jwt) {
+                        console.warn('[Jitsi] No token received.');
+                        alert('Authentication failed. Please try again.');
+                        return;
+                    }
 
                     // @ts-ignore
                     const apiObj = new window.JitsiMeetExternalAPI(domain, {
