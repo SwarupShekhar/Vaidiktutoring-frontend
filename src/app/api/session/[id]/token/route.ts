@@ -34,112 +34,53 @@ export async function GET(
         return NextResponse.json({ message: 'Invalid token payload' }, { status: 401 });
     }
 
+    // 4. NEW: Fetch Token from Backend Service
+    // The backend now handles role checks, secrets, and strict token generation.
     try {
-        // 3. Verify Booking Access via Backend
-        let booking: { tutor_id: string | null; tutor: { id: string; email: string } | null } = { tutor_id: null, tutor: null };
-        try {
-            console.log(`[Jitsi Token] Verifying booking access for User: ${userId} (${userEmail}) in Session: ${sessionId}`);
-            const bookingRes = await axios.get(`${API_URL}/bookings/${sessionId}?include=tutor`, {
-                headers: { Authorization: authHeader }
-            });
-            console.log('[Jitsi Token] Backend verification success.');
-            booking = bookingRes.data;
+        console.log(`[Jitsi Proxy] Fetching token from Backend: ${API_URL}/sessions/${sessionId}/jitsi-token`);
 
-            // DEBUG: Log key fields
-            console.log('[Jitsi Token] Booking Data Keys:', Object.keys(booking));
-            if (booking.tutor) console.log('[Jitsi Token] Booking.tutor:', booking.tutor);
+        const backendRes = await axios.get(`${API_URL}/sessions/${sessionId}/jitsi-token`, {
+            headers: { Authorization: authHeader }
+        });
 
-        } catch (err: any) {
-            console.warn('[Jitsi Token] Backend verification failed (likely 500 Error). Proceeding with JWT Role Check safely.');
-            console.error('[Jitsi Token] Backend Error:', err.message);
-            // Fallback: If backend is down, we trust the JWT role for now to unblock the session.
-        }
+        const data = backendRes.data;
+        const jitsiToken = data.token;
 
-        // 4. Determine Role
-        let isModerator = false;
-
-        // Ensure IDs match. 
-        const tutorId = booking.tutor_id || booking.tutor?.id;
-        const tutorEmail = booking.tutor?.email;
-
-        // Debug Values
-        console.log(`[Jitsi Token] Role Check:
-            UserID: ${userId} (Type: ${typeof userId})
-            TutorID: ${tutorId} (Type: ${typeof tutorId})
-            UserEmail: ${userEmail}
-            TutorEmail: ${tutorEmail}
-            UserRole: ${decodedUser.role}
-        `);
-
-        // Check 1: Admin or Tutor Override (Role-based trust)
-        // If Backend failed, we rely ENTIRELY on this check.
-        // STRICT RULE RELAXATION: To resolve "Waiting for moderator" issues where User ID != Tutor ID (table mismatch),
-        // we allow ANY logged-in Tutor to be a moderator for now.
-        if (decodedUser.role === 'admin' || decodedUser.role === 'tutor') {
-            isModerator = true;
-            console.log(`[Jitsi Token] MATCH: User is ${decodedUser.role}. Granted Moderator (Role Validation).`);
-        }
-        // Check 2: ID Match (Loose equality for string/number diffs)
-        else if (tutorId && userId && tutorId == userId) {
-            isModerator = true;
-            console.log('[Jitsi Token] MATCH: Tutor ID matches.');
-        }
-        // Check 3: Email Match
-        else if (tutorEmail && userEmail && tutorEmail === userEmail) {
-            isModerator = true;
-            console.log('[Jitsi Token] MATCH: Email matches.');
-        }
-        else {
-            console.log('[Jitsi Token] NO MATCH. User is Participant.');
-        }
-
-        // 5. Generate Jitsi Token
-        // CRITICAL FIX: JaaS requires `Tenant/RoomName` format.
+        // Backend might return roomName, or we derive it. 
+        // Ideally backend returns the room name encoded in the token.
+        // We will default to the standard format if missing.
         const JITSI_APP_ID = process.env.JITSI_APP_ID || 'my-app-id';
         const isJaaS = JITSI_APP_ID.startsWith('vpaas-magic-cookie');
 
-        let roomName = `K12Session${sessionId.replace(/-/g, '').slice(0, 16)}`;
-        let scriptUrl = 'https://meet.jit.si/external_api.js';
-
-        if (isJaaS) {
-            roomName = `${JITSI_APP_ID}/${roomName}`;
-            scriptUrl = `https://8x8.vc/${JITSI_APP_ID}/external_api.js`;
-            console.log('[Jitsi Token] JaaS detected. Added Tenant Prefix to Room Name and using JaaS Script URL.');
+        let roomName = data.roomName;
+        if (!roomName) {
+            roomName = `K12Session${sessionId.replace(/-/g, '').slice(0, 16)}`;
+            if (isJaaS) roomName = `${JITSI_APP_ID}/${roomName}`;
         }
 
-        const jitsiUser = {
-            id: userId,
-            name: userName,
-            email: userEmail,
-            avatar: '',
-            moderator: isModerator
-        };
+        let scriptUrl = data.scriptUrl;
+        if (!scriptUrl) {
+            scriptUrl = isJaaS
+                ? `https://8x8.vc/${JITSI_APP_ID}/external_api.js`
+                : 'https://meet.jit.si/external_api.js';
+        }
 
-        const jitsiToken = generateJitsiToken(jitsiUser, roomName);
-        console.log(`[Jitsi Token] Generated for Room: ${roomName}. Moderator: ${isModerator}`);
+        console.log('[Jitsi Proxy] Success. Room:', roomName);
 
         return NextResponse.json({
             token: jitsiToken,
             roomName: roomName,
-            scriptUrl: scriptUrl, // Send to frontend so it loads the correct library
-            debug: { isModerator, tutorId, userId, match: isModerator, roomName }
+            scriptUrl: scriptUrl,
+            debug: { proxy: true, backendData: data }
         });
 
     } catch (error: any) {
-        console.error('[Jitsi Token] Fatal Error:', error);
-
-        // return detailed debug info appropriately
-        return NextResponse.json({
-            message: 'Failed to generate session token',
-            error: error.message,
-            stack: error.stack,
-            envCheck: {
-                hasAppID: !!process.env.JITSI_APP_ID,
-                hasSecret: !!process.env.JITSI_SECRET, // Check both just in case
-                hasAppSecret: !!process.env.JITSI_APP_SECRET,
-                hasKid: !!process.env.JITSI_KID
-            }
-        }, { status: 500 });
+        console.error('[Jitsi Proxy] Backend Failed:', error.message);
+        if (error.response) {
+            console.error('[Jitsi Proxy] Status:', error.response.status);
+            console.error('[Jitsi Proxy] Data:', error.response.data);
+            return NextResponse.json(error.response.data, { status: error.response.status });
+        }
+        return NextResponse.json({ message: 'Failed to fetch token from backend', error: error.message }, { status: 500 });
     }
 }
-```
