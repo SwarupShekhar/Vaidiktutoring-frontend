@@ -163,49 +163,47 @@ export default function SessionPage({ params }: SessionProps) {
         // Cleanup previous instance if any
         if (jitsiApiRef.current) {
             try { jitsiApiRef.current.dispose(); } catch (e) { }
+            jitsiApiRef.current.dispose();
+            jitsiApiRef.current = null;
         }
 
         const domain = process.env.NEXT_PUBLIC_JITSI_DOMAIN || 'meet.jit.si';
-        const currentUser = userRef.current;
-        const currentBooking = bookingRef.current;
-
-        const displayName = currentUser?.first_name
-            ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim()
-            : 'Guest';
-
-        const isTutor = currentUser?.role === 'tutor'; // Determine role
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://k-12-backend.onrender.com';
 
         const options = {
-            // Append config to roomName as a robust fallback (Magic Hash)
             roomName: `K12Session${sessionId.replace(/-/g, '').slice(0, 16)}`,
             width: '100%',
             height: '100%',
             parentNode: jitsiRef.current,
             userInfo: {
-                displayName: displayName,
-                email: currentUser?.email,
-                role: isTutor ? 'moderator' : 'participant'
+                displayName: user?.name,
+                email: user?.email
             },
             configOverwrite: {
-                prejoinPageEnabled: false,
-                startWithAudioMuted: false,
-                startWithVideoMuted: false
+                startWithAudioMuted: true,
+                startWithVideoMuted: true,
+                prejoinPageEnabled: false
             },
             interfaceConfigOverwrite: {
-                // Minimal interface config
                 TOOLBAR_BUTTONS: [
-                    'microphone', 'camera', 'desktop', 'fullscreen',
-                    'raisehand', 'tileview', 'hangup', 'chat'
+                    'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
+                    'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
+                    'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
+                    'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
+                    'tileview', 'videobackgroundblur', 'download', 'help', 'mute-everyone',
+                    'security'
                 ],
-            },
+            }
         };
 
+        setJitsiLoading(true);
 
-
-        // Fetch JWT Token First from Next.js API (Not Backend directly)
+        // Fetch JWT Token DIRECTLY from Backend (Bypassing Next.js Proxy to avoid 404s)
         const token = localStorage.getItem('K12_TOKEN');
         import('axios').then(axios => {
-            axios.default.get(`/api/session/${sessionId}/token`, {
+            console.log(`[Jitsi] Fetching token from Backend: ${API_URL}/sessions/${sessionId}/jitsi-token`);
+
+            axios.default.get(`${API_URL}/sessions/${sessionId}/jitsi-token`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
                 .then(res => {
@@ -213,12 +211,17 @@ export default function SessionPage({ params }: SessionProps) {
                     console.log('[Jitsi] Token API Response:', res.data);
 
                     const jwt = res.data.token;
-                    const authorizedRoomName = res.data.roomName; // Use the room name signed by the backend
+                    const authorizedRoomName = res.data.roomName;
+                    // Backend logic for script URL or fallback
+                    const JITSI_APP_ID = process.env.NEXT_PUBLIC_JITSI_APP_ID;
+                    // Note: Frontend doesn't strictly know App ID unless env var is exposed,
+                    // but we rely on Backend's scriptUrl or fallback to public.
                     const scriptUrl = res.data.scriptUrl || 'https://meet.jit.si/external_api.js';
 
                     if (!jwt) {
-                        console.warn('[Jitsi] No token received.');
+                        console.warn('[Jitsi] No token received from backend.');
                         alert('Authentication failed. Please try again.');
+                        setJitsiLoading(false);
                         return;
                     }
 
@@ -237,6 +240,7 @@ export default function SessionPage({ params }: SessionProps) {
                         // @ts-ignore
                         if (!window.JitsiMeetExternalAPI) {
                             console.error('[Jitsi] Library not loaded even after script load.');
+                            setJitsiLoading(false);
                             return;
                         }
                         // @ts-ignore
@@ -270,13 +274,15 @@ export default function SessionPage({ params }: SessionProps) {
                         s.onerror = (e) => {
                             console.error('[Jitsi] Failed to load Jitsi script:', e);
                             alert('Failed to load video library.');
+                            setJitsiLoading(false);
                         };
                         document.head.appendChild(s);
                     }
                 })
                 .catch(err => {
                     console.error('[Jitsi] Failed to get token:', err);
-                    alert('Failed to join secure session. Please try again.');
+                    alert('Failed to initialize secure session.');
+                    setJitsiLoading(false);
                 });
         });
 
