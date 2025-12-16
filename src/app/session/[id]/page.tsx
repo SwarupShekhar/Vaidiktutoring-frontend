@@ -184,7 +184,7 @@ export default function SessionPage({ params }: SessionProps) {
 
 
         // Fetch JWT Token First from Next.js API (Not Backend directly)
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('K12_TOKEN');
         import('axios').then(axios => {
             axios.default.get(`/api/session/${sessionId}/token`, {
                 headers: { Authorization: `Bearer ${token}` }
