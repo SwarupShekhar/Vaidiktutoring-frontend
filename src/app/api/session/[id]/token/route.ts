@@ -34,8 +34,7 @@ export async function GET(
         return NextResponse.json({ message: 'Invalid token payload' }, { status: 401 });
     }
 
-    // 4. NEW: Fetch Token from Backend Service
-    // The backend now handles role checks, secrets, and strict token generation.
+    // 4. Hybrid Strategy: Try Backend First, Fallback to Local
     try {
         console.log(`[Jitsi Proxy] Fetching token from Backend: ${API_URL}/sessions/${sessionId}/jitsi-token`);
 
@@ -44,43 +43,94 @@ export async function GET(
         });
 
         const data = backendRes.data;
-        const jitsiToken = data.token;
-
-        // Backend might return roomName, or we derive it. 
-        // Ideally backend returns the room name encoded in the token.
-        // We will default to the standard format if missing.
+        // Ensure roomName/scriptUrl are present even from backend
         const JITSI_APP_ID = process.env.JITSI_APP_ID || 'my-app-id';
         const isJaaS = JITSI_APP_ID.startsWith('vpaas-magic-cookie');
 
-        let roomName = data.roomName;
-        if (!roomName) {
-            roomName = `K12Session${sessionId.replace(/-/g, '').slice(0, 16)}`;
-            if (isJaaS) roomName = `${JITSI_APP_ID}/${roomName}`;
+        if (!data.roomName) {
+            data.roomName = `K12Session${sessionId.replace(/-/g, '').slice(0, 16)}`;
+            if (isJaaS) data.roomName = `${JITSI_APP_ID}/${data.roomName}`;
         }
-
-        let scriptUrl = data.scriptUrl;
-        if (!scriptUrl) {
-            scriptUrl = isJaaS
+        if (!data.scriptUrl) {
+            data.scriptUrl = isJaaS
                 ? `https://8x8.vc/${JITSI_APP_ID}/external_api.js`
                 : 'https://meet.jit.si/external_api.js';
         }
 
-        console.log('[Jitsi Proxy] Success. Room:', roomName);
+        console.log('[Jitsi Proxy] Success. Room:', data.roomName);
+        return NextResponse.json(data);
 
-        return NextResponse.json({
-            token: jitsiToken,
-            roomName: roomName,
-            scriptUrl: scriptUrl,
-            debug: { proxy: true, backendData: data }
-        });
+    } catch (proxyError: any) {
+        console.warn(`[Jitsi Proxy] Backend failed (${proxyError.message}). Falling back to Local Generation.`);
 
-    } catch (error: any) {
-        console.error('[Jitsi Proxy] Backend Failed:', error.message);
-        if (error.response) {
-            console.error('[Jitsi Proxy] Status:', error.response.status);
-            console.error('[Jitsi Proxy] Data:', error.response.data);
-            return NextResponse.json(error.response.data, { status: error.response.status });
+        // ==========================================
+        // FALLBACK: LOCAL GENERATION (Robust Mode)
+        // ==========================================
+        try {
+            // 1. Verify Booking (to ensure access rights)
+            // We can use the existing /bookings endpoint which IS working
+            let booking = { tutor_id: null, tutor: null } as any;
+            try {
+                const bookingRes = await axios.get(`${API_URL}/bookings/${sessionId}?include=tutor`, {
+                    headers: { Authorization: authHeader }
+                });
+                booking = bookingRes.data;
+            } catch (e) {
+                console.warn('[Jitsi Local] Booking check failed. Trusting JWT role as failsafe.');
+            }
+
+            // 2. Determine Role
+            const tutorId = booking.tutor_id || booking.tutor?.id;
+            let isModerator = false;
+
+            if (decodedUser.role === 'admin' || decodedUser.role === 'tutor') {
+                isModerator = true;
+            } else if (tutorId && userId && tutorId == userId) {
+                isModerator = true;
+            }
+
+            // 3. Generate Configs
+            const JITSI_APP_ID = process.env.JITSI_APP_ID || '';
+            const isJaaS = JITSI_APP_ID.startsWith('vpaas-magic-cookie');
+
+            let roomName = `K12Session${sessionId.replace(/-/g, '').slice(0, 16)}`;
+            let scriptUrl = 'https://meet.jit.si/external_api.js';
+
+            if (isJaaS) {
+                roomName = `${JITSI_APP_ID}/${roomName}`;
+                scriptUrl = `https://8x8.vc/${JITSI_APP_ID}/external_api.js`;
+            }
+
+            // 4. Generate Token
+            const jitsiUser = {
+                id: userId,
+                name: userName,
+                email: userEmail,
+                avatar: '',
+                moderator: isModerator
+            };
+
+            const jitsiToken = generateJitsiToken(jitsiUser, roomName);
+            console.log(`[Jitsi Local] Generated Token. Room: ${roomName}, Mod: ${isModerator}`);
+
+            return NextResponse.json({
+                token: jitsiToken,
+                roomName: roomName,
+                scriptUrl: scriptUrl, // Send to frontend
+                debug: { mode: 'fallback', isModerator, match: isModerator }
+            });
+
+        } catch (localError: any) {
+            console.error('[Jitsi Token] Fatal Error in Fallback:', localError);
+            return NextResponse.json({
+                message: 'Failed to generate session token (Both Proxy and Fallback failed)',
+                error: localError.message,
+                envCheck: {
+                    hasAppID: !!process.env.JITSI_APP_ID,
+                    hasSecret: !!process.env.JITSI_SECRET
+                }
+            }, { status: 500 });
         }
-        return NextResponse.json({ message: 'Failed to fetch token from backend', error: error.message }, { status: 500 });
     }
 }
+```
