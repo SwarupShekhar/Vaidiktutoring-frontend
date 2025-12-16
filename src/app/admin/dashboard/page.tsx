@@ -9,6 +9,7 @@ import { useAuthContext } from '@/app/context/AuthContext';
 import Link from 'next/link';
 import api from '@/app/lib/api';
 import BookingsTableSection from '@/app/components/admin/BookingsTableSection';
+import BlogManagementSection from '@/app/components/admin/BlogManagementSection';
 
 export default function AdminDashboardPage() {
     const { user } = useAuthContext();
@@ -125,6 +126,11 @@ export default function AdminDashboardPage() {
                 {/* BOOKINGS TABLE SECTION */}
                 <div className="mt-8">
                     <BookingsTableSection />
+                </div>
+
+                {/* BLOG MANAGEMENT SECTION */}
+                <div className="mt-8">
+                    <BlogManagementSection />
                 </div>
             </div>
 
