@@ -23,7 +23,7 @@ export default function TutorAllocationModal({ isOpen, onClose }: TutorAllocatio
         if (isOpen) {
             // Load required data
             Promise.all([
-                api.get('/admin/students').catch(() => ({ data: [{ id: '1', first_name: 'Alice', last_name: 'Doe' }] })), // Mock
+                api.get('/admin/students?limit=100').catch(() => ({ data: [{ id: '1', first_name: 'Alice', last_name: 'Doe' }] })), // Mock
                 api.get('/admin/tutors').catch(() => ({ data: [{ id: 't1', first_name: 'John', last_name: 'Tutor', subjects: ['math', 'physics'] }] }))
             ]).then(([studentsRes, tutorsRes]) => {
                 console.log('[TutorAllocation] Fetched students:', studentsRes.data);
