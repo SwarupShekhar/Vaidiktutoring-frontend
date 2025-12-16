@@ -152,7 +152,7 @@ export default function SessionPage({ params }: SessionProps) {
 
         const options = {
             // Append config to roomName as a robust fallback (Magic Hash)
-            roomName: `K12Session${sessionId.replace(/-/g, '').slice(0, 16)}#config.prejoinPageEnabled=false&userInfo.displayName="${encodeURIComponent(displayName)}"`,
+            roomName: `K12Session${sessionId.replace(/-/g, '').slice(0, 16)}`,
             width: '100%',
             height: '100%',
             parentNode: jitsiRef.current,
