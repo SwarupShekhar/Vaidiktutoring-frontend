@@ -26,11 +26,14 @@ export function generateJitsiToken(user: JitsiUser, room: string) {
     }
 
     const JITSI_DOMAIN = process.env.JITSI_DOMAIN || 'meet.jit.si';
+    const JITSI_KID = process.env.JITSI_KID; // Key ID for JaaS
     // END: Environment variables
 
     const now = Math.floor(Date.now() / 1000);
     const exp = now + 7200; // 2 hours
     const nbf = now - 10;
+
+    const isJaaS = JITSI_APP_ID.startsWith('vpaas-magic-cookie');
 
     const payload = {
         context: {
@@ -49,12 +52,17 @@ export function generateJitsiToken(user: JitsiUser, room: string) {
             }
         },
         aud: 'jitsi',
-        iss: JITSI_APP_ID,
-        sub: JITSI_DOMAIN,
+        iss: isJaaS ? 'chat' : JITSI_APP_ID,
+        sub: isJaaS ? JITSI_APP_ID : JITSI_DOMAIN,
         room: room,
         exp: exp,
         nbf: nbf
     };
 
-    return jwt.sign(payload, JITSI_SECRET);
+    const signOptions: any = {};
+    if (isJaaS && JITSI_KID) {
+        signOptions.header = { kid: JITSI_KID };
+    }
+
+    return jwt.sign(payload, JITSI_SECRET, signOptions);
 }

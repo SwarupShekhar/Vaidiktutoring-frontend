@@ -146,7 +146,7 @@ export default function SessionPage({ params }: SessionProps) {
             try { jitsiApiRef.current.dispose(); } catch (e) { }
         }
 
-        const domain = 'meet.jit.si';
+        const domain = process.env.NEXT_PUBLIC_JITSI_DOMAIN || 'meet.jit.si';
         const currentUser = userRef.current;
         const currentBooking = bookingRef.current;
 
