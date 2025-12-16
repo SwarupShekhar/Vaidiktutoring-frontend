@@ -61,6 +61,7 @@ export default function SessionPage({ params }: SessionProps) {
 
     // Draggable Video State
     const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [isExpanded, setIsExpanded] = useState(false);
     const isDragging = useRef(false);
     const dragStart = useRef({ x: 0, y: 0 });
     const startPos = useRef({ x: 0, y: 0 });
@@ -224,11 +225,19 @@ export default function SessionPage({ params }: SessionProps) {
                     }
 
                     // Update options with the correct room name from the backend
-                    const finalOptions = {
+                    const finalOptions: any = {
                         ...options,
-                        roomName: authorizedRoomName || options.roomName,
-                        jwt: jwt
+                        roomName: authorizedRoomName || options.roomName
                     };
+
+                    // Only add JWT if NOT using public Jitsi (which doesn't support it properly)
+                    const isPublicJitsi = domain === 'meet.jit.si';
+                    if (!isPublicJitsi && jwt) {
+                        finalOptions.jwt = jwt;
+                        console.log('[Jitsi] Using JWT authentication');
+                    } else {
+                        console.log('[Jitsi] Skipping JWT (public Jitsi or no token)');
+                    }
 
                     console.log('[Jitsi] Joining Room:', finalOptions.roomName);
                     console.log('[Jitsi] Using Script URL:', scriptUrl);
@@ -385,6 +394,49 @@ export default function SessionPage({ params }: SessionProps) {
                 )}
             </div>
 
+            {/* JITSI VIDEO FEED OVERLAY */}
+            {hasJoined && (
+                <div
+                    className="fixed z-50 bg-glass rounded-2xl border border-white/20 shadow-2xl overflow-hidden"
+                    style={{
+                        left: `${position.x}px`,
+                        top: `${position.y}px`,
+                        width: isExpanded ? '80vw' : '400px',
+                        height: isExpanded ? '80vh' : '300px',
+                        transition: 'width 0.3s, height 0.3s'
+                    }}
+                >
+                    {/* Drag Handle */}
+                    <div
+                        onMouseDown={handleMouseDown}
+                        className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-r from-purple-600/80 to-indigo-600/80 cursor-move flex items-center justify-between px-3"
+                    >
+                        <span className="text-white text-xs font-bold">📹 Live Session</span>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                className="text-white hover:bg-white/20 rounded px-2 py-1 text-xs transition-colors"
+                                title={isExpanded ? "Minimize" : "Expand"}
+                            >
+                                {isExpanded ? '🗕' : '🗖'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Jitsi Container */}
+                    <div ref={jitsiRef} className="w-full h-full pt-8" />
+
+                    {/* Loading Overlay */}
+                    {jitsiLoading && (
+                        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+                            <div className="text-white text-center">
+                                <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto mb-4"></div>
+                                <p className="font-bold">Connecting to session...</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
             {/* 2. OVERLAY LAYER: FLOATING HEADER */}
             <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-start pointer-events-none">
                 {/* Header Card */}
