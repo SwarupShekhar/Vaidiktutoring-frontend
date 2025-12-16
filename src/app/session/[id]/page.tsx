@@ -183,7 +183,15 @@ export default function SessionPage({ params }: SessionProps) {
             configOverwrite: {
                 startWithAudioMuted: true,
                 startWithVideoMuted: true,
-                prejoinPageEnabled: false
+                prejoinPageEnabled: false,
+                // CRITICAL: Disable lobby/waiting room for public Jitsi
+                enableLobbyChat: false,
+                disableModeratorIndicator: false,
+                // Allow anyone to join without waiting
+                requireDisplayName: false,
+                enableWelcomePage: false,
+                // Disable authentication requirements
+                enableUserRolesBasedOnToken: false
             },
             interfaceConfigOverwrite: {
                 TOOLBAR_BUTTONS: [
