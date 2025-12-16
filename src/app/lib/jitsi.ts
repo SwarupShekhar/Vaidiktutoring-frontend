@@ -56,7 +56,9 @@ export function generateJitsiToken(user: JitsiUser, room: string) {
         sub: isJaaS ? JITSI_APP_ID : JITSI_DOMAIN,
         room: room,
         exp: exp,
-        nbf: nbf
+        nbf: nbf,
+        // CRITICAL: Root-level moderator claim for Jitsi authentication
+        moderator: user.moderator ? true : false
     };
 
     // Auto-detect algorithm based on key format
