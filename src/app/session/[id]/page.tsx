@@ -82,8 +82,8 @@ export default function SessionPage({ params }: SessionProps) {
                     setBooking(res.data);
                 })
                 .catch(err => {
-                    console.error(\"Failed to load session details\", err);
-                    console.error(\"Error details:\", err.response?.data);
+                    console.error('Failed to load session details', err);
+                    console.error('Error details:', err.response?.data);
                 });
         }
     }, [sessionId]);
