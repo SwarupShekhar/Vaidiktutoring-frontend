@@ -198,3 +198,19 @@ After implementing these changes:
 - ❌ Backend needs `GET /tutor/bookings` endpoint
 - ❌ Backend needs to update `booking.tutor_id` when allocating
 - ❌ Optional: Add `GET /bookings/available` for claim-based workflow
+
+### 5. Automated Booking Cleanup (Archival)
+
+**Requirement**: Past bookings should be removed from Student/Tutor dashboards but remain visible to Admins.
+
+**Implementation**:
+1.  **Create Cleanup Service**: `src/bookings/bookings.cleanup.service.ts`
+    *   Use `@nestjs/schedule` and `@Cron(CronExpression.EVERY_HOUR)`.
+    *   Logic: Update `status = 'archived'` where `end_time < NOW` and `status != 'archived'`.
+2.  **Filter Endpoints**:
+    *   `GET /bookings/student` and `GET /tutor/bookings` must `where: { status: { not: 'archived' } }`.
+    *   `GET /admin/bookings` should **include** 'archived' bookings.
+
+**Verification**:
+*   Bookings older than 1 hour (or immediate cron run) disappear from Student/Tutor views.
+*   Admin dashboard shows them with status 'archived' (frontend handles generic statuses gracefully).
