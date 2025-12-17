@@ -246,7 +246,8 @@ export default function SessionPage({ params }: SessionProps) {
             }
 
             {/* 1. BASE LAYER: EXCALIDRAW WHITEBOARD */}
-            <div className="absolute inset-0 z-0">
+            {/* Validating role: {user?.role} - Enforcing View Mode via CSS for students */}
+            <div className={`absolute inset-0 z-0 ${user?.role === 'student' || user?.role === 'parent' ? 'pointer-events-none' : ''}`}>
                 {
                     ExcalidrawComp ? (
                         <ExcalidrawComp
