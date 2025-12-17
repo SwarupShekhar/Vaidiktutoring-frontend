@@ -58,14 +58,27 @@ export function useTutorDashboard() {
         }
 
         const isToday = bookingDate >= todayStart && bookingDate <= todayEnd;
+
+        // STRICT FILTER: Hide sessions that have already ended
+        const now = new Date();
+        const endStr = b.end_time || b.requested_end;
+        // If end time is missing, assume 1 hour duration from start
+        const sessionEnd = endStr
+            ? new Date(endStr)
+            : new Date(bookingDate.getTime() + 60 * 60 * 1000);
+
+        const hasNotEnded = sessionEnd > now;
+
         console.log('[useTutorDashboard] Checking booking:', {
             id: b.id,
             date: bookingDate,
+            sessionEnd,
             isToday,
+            hasNotEnded,
             subject: b.subject_name || b.subject?.name
         });
 
-        return isToday;
+        return isToday && hasNotEnded;
     }) || [];
 
     const upcomingBookings = bookings?.filter((b: any) => {
