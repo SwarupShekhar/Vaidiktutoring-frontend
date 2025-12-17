@@ -254,7 +254,7 @@ export default function SessionPage({ params }: SessionProps) {
                             excalidrawAPI={(api: any) => setExcalidrawAPI(api)}
                             zenModeEnabled={false}
                             gridModeEnabled={false}
-                            viewModeEnabled={false}
+                            viewModeEnabled={user?.role === 'student' || user?.role === 'parent'}
                             theme="light"
                             name="K12 Board"
                             initialData={{
@@ -263,7 +263,7 @@ export default function SessionPage({ params }: SessionProps) {
                                     currentItemFontFamily: 1,
                                     theme: 'light',
                                     zenModeEnabled: false,
-                                    viewModeEnabled: false,
+                                    viewModeEnabled: user?.role === 'student' || user?.role === 'parent',
                                 },
                             }}
                             UIOptions={{
