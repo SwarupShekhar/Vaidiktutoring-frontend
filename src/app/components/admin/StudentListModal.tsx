@@ -8,6 +8,12 @@ interface Student {
     last_name: string;
     email: string;
     grade?: string;
+    // Potentially nested user object from backend
+    user?: {
+        first_name: string;
+        last_name: string;
+        email?: string;
+    };
 }
 
 interface StudentListModalProps {
@@ -68,8 +74,12 @@ export default function StudentListModal({ isOpen, onClose }: StudentListModalPr
                             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                                 {students.map(student => (
                                     <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                                        <td className="p-4 text-gray-800 dark:text-gray-200">{student.first_name}</td>
-                                        <td className="p-4 text-gray-800 dark:text-gray-200">{student.last_name}</td>
+                                        <td className="p-4 text-gray-800 dark:text-gray-200">
+                                            {student.user?.first_name || student.first_name || '—'}
+                                        </td>
+                                        <td className="p-4 text-gray-800 dark:text-gray-200">
+                                            {student.user?.last_name || student.last_name || '—'}
+                                        </td>
                                         <td className="p-4 text-gray-600 dark:text-gray-400">Grade {student.grade || 'N/A'}</td>
                                         <td className="p-4 text-gray-500 dark:text-gray-400 font-mono text-xs">{student.email || 'N/A'}</td>
                                     </tr>
