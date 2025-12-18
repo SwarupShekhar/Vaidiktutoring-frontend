@@ -25,6 +25,10 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
     // NOTE: For correct chat, this MUST be the real Session UUID, not booking UUID
     const sessionId = propSessionId || (params?.id as string);
 
+    useEffect(() => {
+        console.log('[SessionChat] Mounted with Session ID:', sessionId);
+    }, [sessionId]);
+
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
