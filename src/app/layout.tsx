@@ -12,15 +12,21 @@ export const metadata = {
   description: 'Vaidik Tutoring Platform',
 };
 
+import { NotificationProvider } from './context/NotificationContext';
+import GlobalNotification from './components/GlobalNotification';
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <QueryProvider>
           <AuthProvider>
-            <Navbar />
-            {children}
-            <Footer />
+            <NotificationProvider>
+              <Navbar />
+              <GlobalNotification />
+              {children}
+              <Footer />
+            </NotificationProvider>
           </AuthProvider>
         </QueryProvider>
         <Script src="https://meet.jit.si/external_api.js" strategy="afterInteractive" />
