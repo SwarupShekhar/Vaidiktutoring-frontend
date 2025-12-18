@@ -46,6 +46,18 @@ export default function TutorListModal({ isOpen, onClose }: TutorListModalProps)
         return subjects || 'N/A';
     };
 
+    const handleDelete = async (id: string) => {
+        if (!confirm('Are you sure you want to remove this tutor?')) return;
+        try {
+            await api.delete(`/admin/tutors/${id}`);
+            // Optimistic update
+            setTutors(prev => prev.filter(t => t.id !== id));
+        } catch (error) {
+            console.error('Failed to delete tutor', error);
+            alert('Failed to delete tutor. The feature might not be implemented on the backend.');
+        }
+    };
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl border border-white/10">
@@ -67,6 +79,7 @@ export default function TutorListModal({ isOpen, onClose }: TutorListModalProps)
                                     <th className="p-4 text-xs font-bold text-gray-500 uppercase">Last Name</th>
                                     <th className="p-4 text-xs font-bold text-gray-500 uppercase">Email</th>
                                     <th className="p-4 text-xs font-bold text-gray-500 uppercase">Subjects</th>
+                                    <th className="p-4 text-xs font-bold text-gray-500 uppercase text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -77,6 +90,14 @@ export default function TutorListModal({ isOpen, onClose }: TutorListModalProps)
                                         <td className="p-4 text-gray-500 dark:text-gray-400 font-mono text-xs">{tutor.email || 'N/A'}</td>
                                         <td className="p-4 text-gray-600 dark:text-gray-400 text-sm">
                                             {formatSubjects(tutor.subjects)}
+                                        </td>
+                                        <td className="p-4 text-right">
+                                            <button
+                                                onClick={() => handleDelete(tutor.id)}
+                                                className="text-red-500 hover:text-red-700 font-bold text-xs px-2 py-1 rounded bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
+                                            >
+                                                REMOVE
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
