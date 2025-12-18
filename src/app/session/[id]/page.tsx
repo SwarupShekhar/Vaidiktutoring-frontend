@@ -78,7 +78,11 @@ export default function SessionPage({ params }: SessionProps) {
         if (sessionId) {
             api.get(`/bookings/${sessionId}`)
                 .then(res => {
-                    console.log('[Session] Booking details loaded:', res.data);
+                    console.log('[Session] Booking details raw:', res.data);
+                    // Check if there is a nested session object or ID
+                    if (res.data.session) console.log('[Session] Found nested session:', res.data.session);
+                    if (res.data.sessionId) console.log('[Session] Found sessionId:', res.data.sessionId);
+
                     setBooking(res.data);
                 })
                 .catch(err => {
