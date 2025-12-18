@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { io, Socket } from 'socket.io-client';
 import { useParams } from 'next/navigation';
+import api from '@/app/lib/api';
+import ChatLoader from './ChatLoader';
 
 type Message = {
     id: string;
@@ -21,6 +23,19 @@ export default function SessionChat() {
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [hasInteracted, setHasInteracted] = useState(false);
+
+    // Sound Effect
+    const notificationSound = useRef<HTMLAudioElement | null>(null);
+
+    useEffect(() => {
+        notificationSound.current = new Audio('/sounds/notification.mp3');
+    }, []);
+
+    const playNotification = () => {
+        if (notificationSound.current) {
+            notificationSound.current.play().catch(e => console.log('Audio play failed', e));
+        }
+    };
 
     // Socket State
     const [socket, setSocket] = useState<Socket | null>(null);
@@ -69,7 +84,12 @@ export default function SessionChat() {
                     timestamp: new Date(payload.timestamp || payload.created_at || Date.now()),
                     senderName: payload.senderName || payload.from || 'Anonymous'
                 };
-                setMessages(prev => [...prev, msg]);
+                setMessages(prev => {
+                    if (prev.some(m => m.id === msg.id)) return prev;
+                    return [...prev, msg];
+                });
+
+                playNotification();
             }
         };
 
@@ -95,9 +115,9 @@ export default function SessionChat() {
         }
     }, [messages, isOpen]);
 
-    const handleSend = (e?: React.FormEvent) => {
+    const handleSend = async (e?: React.FormEvent) => {
         e?.preventDefault();
-        if (!newMessage.trim() || !socket) return;
+        if (!newMessage.trim()) return;
 
         const text = newMessage.trim();
         const msg: Message = {
@@ -112,13 +132,15 @@ export default function SessionChat() {
         setMessages(prev => [...prev, msg]);
         setNewMessage('');
 
-        // Emit to server
-        socket.emit('sendMessage', {
-            sessionId,
-            text,
-            senderName: user?.first_name || 'User',
-            senderId: user?.sub || user?.id
-        });
+        try {
+            await api.post(`/sessions/${sessionId}/messages`, {
+                text,
+                senderName: user?.first_name || 'User',
+            });
+            console.log('[Chat] Message sent via API');
+        } catch (error) {
+            console.error('[Chat] Failed to send message:', error);
+        }
     };
 
     const toggleChat = () => {
@@ -214,23 +236,14 @@ export default function SessionChat() {
                     </div>
                 )}
 
-                {/* Trigger Button - Always visible, stops bouncing after interaction */}
-                <button
+                {/* ANIMATED LOADER TRIGGER */}
+                <div
                     onClick={toggleChat}
-                    className={`
-                        pointer-events-auto w-14 h-14 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-purple-600 
-                        shadow-2xl shadow-blue-500/30 text-white flex items-center justify-center 
-                        hover:scale-110 active:scale-95 transition-all duration-300
-                        ${!hasInteracted && !isOpen ? 'animate-bounce' : ''}
-                        ${socket?.connected ? 'ring-2 ring-green-400 ring-offset-2 ring-offset-transparent' : ''}
-                    `}
+                    className="pointer-events-auto cursor-pointer hover:scale-105 transition-transform"
+                    title={isOpen ? "Close Chat" : "Open Chat"}
                 >
-                    {isOpen ? (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                    ) : (
-                        <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-                    )}
-                </button>
+                    <ChatLoader />
+                </div>
             </div>
         </>
     );
