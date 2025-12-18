@@ -85,36 +85,6 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
             console.error('[Chat] Socket connection error:', err);
         });
 
-        // Backend guide suggests 'newMessage', while current code uses 'receiveMessage'
-        // Listening to both to ensure compatibility
-        const handleNewMessage = (payload: any) => {
-            console.log('[Chat] Message received:', payload);
-            console.log('[Chat] Current User:', user.sub || user.id);
-
-            const senderId = payload.senderId || payload.user_id || payload.from_id;
-            // Relaxed check: Only filter if we initiated it locally via handleSend (which adds to state immediately)
-            // But since receiving via socket is the source of truth for others, we generally process it.
-            // The issue might be that 'senderId' from payload doesn't match 'user.sub' exactly due to string/number diffs.
-
-            const isMe = String(senderId) === String(user.sub || user.id);
-            console.log(`[Chat] Is sender me? ${isMe} (Sender: ${senderId}, Me: ${user.sub || user.id})`);
-
-            if (!isMe) {
-                const msg: Message = {
-                    id: payload.id || Date.now().toString() + Math.random(),
-                    text: payload.text || payload.message,
-                    sender: 'them',
-                    timestamp: new Date(payload.timestamp || payload.created_at || Date.now()),
-                    senderName: payload.senderName || payload.from || 'Anonymous'
-                };
-                setMessages(prev => {
-                    if (prev.some(m => m.id === msg.id)) return prev;
-                    return [...prev, msg];
-                });
-
-                playNotification();
-            }
-        };
 
         // Gateway emits: client.broadcast.to(...).emit('receiveMessage', ...)
         // And emitNewMessage uses: .emit('newMessage', ...)
