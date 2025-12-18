@@ -72,7 +72,11 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
 
         newSocket.on('connect', () => {
             console.log('[Chat] Connected to socket! ID:', newSocket.id);
+            // Try multiple formats to ensure we hit the backend's expected signature
             newSocket.emit('joinSession', { sessionId });
+            newSocket.emit('joinSession', sessionId);
+            newSocket.emit('join_room', sessionId);
+            console.log('[Chat] Emitted joinSession for:', sessionId);
         });
 
         newSocket.on('connect_error', (err) => {
@@ -83,9 +87,15 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
         // Listening to both to ensure compatibility
         const handleNewMessage = (payload: any) => {
             console.log('[Chat] Message received:', payload);
+            console.log('[Chat] Current User:', user.sub || user.id);
 
             const senderId = payload.senderId || payload.user_id || payload.from_id;
-            const isMe = senderId === (user.sub || user.id);
+            // Relaxed check: Only filter if we initiated it locally via handleSend (which adds to state immediately)
+            // But since receiving via socket is the source of truth for others, we generally process it.
+            // The issue might be that 'senderId' from payload doesn't match 'user.sub' exactly due to string/number diffs.
+
+            const isMe = String(senderId) === String(user.sub || user.id);
+            console.log(`[Chat] Is sender me? ${isMe} (Sender: ${senderId}, Me: ${user.sub || user.id})`);
 
             if (!isMe) {
                 const msg: Message = {
