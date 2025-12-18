@@ -57,7 +57,8 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
 
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://k-12-backend.onrender.com';
 
-        console.log('[Chat] Connecting to socket at:', API_URL, 'Session:', sessionId);
+        const bookingId = params?.id as string;
+        console.log('[Chat] Connecting to socket. Session:', sessionId, 'Booking:', bookingId);
 
         const newSocket = io(API_URL, {
             query: {
@@ -77,6 +78,14 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
             newSocket.emit('joinSession', sessionId);
             newSocket.emit('join_room', sessionId);
             console.log('[Chat] Emitted joinSession for:', sessionId);
+
+            // Also join the Booking room if different
+            if (bookingId && bookingId !== sessionId) {
+                console.log('[Chat] Also joining Booking Room:', bookingId);
+                newSocket.emit('joinSession', { sessionId: bookingId });
+                newSocket.emit('joinSession', bookingId);
+                newSocket.emit('join_room', bookingId);
+            }
         });
 
         newSocket.on('connect_error', (err) => {
