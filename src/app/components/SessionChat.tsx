@@ -79,13 +79,6 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
             newSocket.emit('join_room', sessionId);
             console.log('[Chat] Emitted joinSession for:', sessionId);
 
-            // Also join the Booking room if different
-            if (bookingId && bookingId !== sessionId) {
-                console.log('[Chat] Also joining Booking Room:', bookingId);
-                newSocket.emit('joinSession', { sessionId: bookingId });
-                newSocket.emit('joinSession', bookingId);
-                newSocket.emit('join_room', bookingId);
-            }
         });
 
         newSocket.on('connect_error', (err) => {
@@ -123,8 +116,33 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
             }
         };
 
-        newSocket.on('newMessage', handleNewMessage);
-        newSocket.on('receiveMessage', handleNewMessage);
+        // Gateway emits: client.broadcast.to(...).emit('receiveMessage', ...)
+        // And emitNewMessage uses: .emit('newMessage', ...)
+        const handleNewMessage = (payload: any) => {
+            console.log('[Chat] Message received:', payload);
+
+            const senderId = payload.senderId || payload.user_id || payload.from_id;
+            const isMe = String(senderId) === String(user.sub || user.id);
+
+            if (!isMe) {
+                const msg: Message = {
+                    id: payload.id || Date.now().toString() + Math.random(),
+                    text: payload.text || payload.message,
+                    sender: 'them',
+                    timestamp: new Date(payload.timestamp || payload.created_at || Date.now()),
+                    senderName: payload.senderName || payload.from || 'Anonymous'
+                };
+                setMessages(prev => {
+                    if (prev.some(m => m.id === msg.id)) return prev;
+                    return [...prev, msg];
+                });
+
+                playNotification();
+            }
+        };
+
+        newSocket.on('receiveMessage', handleNewMessage); // From handleSendMessage broadcast
+        newSocket.on('newMessage', handleNewMessage);     // From emitNewMessage
 
         return () => {
             console.log('[Chat] Disconnecting socket');
