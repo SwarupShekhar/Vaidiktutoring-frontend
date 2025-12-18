@@ -84,6 +84,12 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             socketInstance.emit('join_personal_room', { userId: user.sub || user.id });
         });
 
+        socketInstance.on('connect_error', (err) => {
+            console.error('[Notification] Socket Connection Error:', err);
+        });
+
+        // Debug: Log any event received (wildcard not standard in client, but we can log specific ones)
+
         // ---------------- EVENTS ----------------
 
         // 1. ADMIN: New Session Booking
