@@ -83,6 +83,10 @@ export default function SessionPage({ params }: SessionProps) {
                     // Check if there is a nested session object or ID
                     if (res.data.session) console.log('[Session] Found nested session:', res.data.session);
                     if (res.data.sessionId) console.log('[Session] Found sessionId:', res.data.sessionId);
+                    if (res.data.sessions && res.data.sessions.length > 0) {
+                        console.log('[Session] Found sessions array:', res.data.sessions);
+                        console.log('[Session] First session ID:', res.data.sessions[0].id);
+                    }
 
                     setBooking(res.data);
                 })
@@ -406,9 +410,12 @@ export default function SessionPage({ params }: SessionProps) {
             </div >
 
             {/* 3. OVERLAY LAYER: CHAT SIDEBAR */}
-            < div className="absolute right-4 top-20 bottom-4 z-10 w-80 pointer-events-auto">
-                <SessionChat />
-            </div >
+            <div className="absolute right-4 top-20 bottom-4 z-10 w-80 pointer-events-auto">
+                <SessionChat
+                    key={booking?.sessions?.[0]?.id || sessionId}
+                    sessionId={booking?.sessions?.[0]?.id || sessionId}
+                />
+            </div>
         </div >
     );
 }
