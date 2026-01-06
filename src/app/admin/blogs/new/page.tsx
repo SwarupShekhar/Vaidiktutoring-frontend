@@ -6,6 +6,8 @@ import ProtectedClient from '@/app/components/ProtectedClient';
 import ReactMarkdown from 'react-markdown';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { blogsApi } from '@/app/lib/blogs';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 
 export default function NewBlogPage() {
     const router = useRouter();
@@ -175,12 +177,29 @@ export default function NewBlogPage() {
                                         value={form.content}
                                         onChange={handleChange}
                                         className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none font-mono text-sm"
-                                        placeholder="# Hello World..."
+                                        placeholder={`# Main Title\n\n## Section Header\n\nWrite your content here...`}
                                     />
                                 ) : (
                                     <div className="w-full h-[380px] overflow-y-auto px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)]">
                                         <div className="prose prose-sm dark:prose-invert max-w-none">
-                                            <ReactMarkdown>{form.content || '*Nothing to preview*'}</ReactMarkdown>
+                                            <ReactMarkdown
+                                                remarkPlugins={[remarkGfm, remarkBreaks]}
+                                                components={{
+                                                    h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mt-6 mb-3 text-[var(--color-text-primary)]" {...props} />,
+                                                    h2: ({ node, ...props }) => <h2 className="text-xl font-bold mt-5 mb-2 text-[var(--color-text-primary)]" {...props} />,
+                                                    h3: ({ node, ...props }) => <h3 className="text-lg font-bold mt-4 mb-2 text-[var(--color-text-primary)]" {...props} />,
+                                                    p: ({ node, ...props }) => <p className="mb-4 leading-relaxed text-[var(--color-text-secondary)]" {...props} />,
+                                                    ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4 space-y-1" {...props} />,
+                                                    ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4 space-y-1" {...props} />,
+                                                    blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-[var(--color-primary)] pl-4 italic my-4 bg-[var(--color-background)] py-2 rounded-r" {...props} />,
+                                                    a: ({ node, ...props }) => <a className="text-[var(--color-primary)] hover:underline font-medium" {...props} />,
+                                                    table: ({ node, ...props }) => <div className="overflow-x-auto mb-4"><table className="min-w-full divide-y divide-[var(--color-border)]" {...props} /></div>,
+                                                    th: ({ node, ...props }) => <th className="px-3 py-2 bg-[var(--color-background)] text-left text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider" {...props} />,
+                                                    td: ({ node, ...props }) => <td className="px-3 py-2 whitespace-nowrap text-sm text-[var(--color-text-secondary)] border-b border-[var(--color-border)]" {...props} />,
+                                                }}
+                                            >
+                                                {form.content || '*Nothing to preview*'}
+                                            </ReactMarkdown>
                                         </div>
                                     </div>
                                 )}
@@ -191,8 +210,8 @@ export default function NewBlogPage() {
                                     type="submit"
                                     disabled={loading}
                                     className={`w-full py-4 rounded-xl text-white font-bold text-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${isAdmin
-                                            ? 'bg-gradient-to-r from-purple-600 to-indigo-600 shadow-purple-500/25'
-                                            : 'bg-gradient-to-r from-orange-500 to-amber-500 shadow-orange-500/25'
+                                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 shadow-purple-500/25'
+                                        : 'bg-gradient-to-r from-orange-500 to-amber-500 shadow-orange-500/25'
                                         } ${loading ? 'opacity-70 cursor-wait' : ''}`}
                                 >
                                     {loading ? (
@@ -217,9 +236,20 @@ export default function NewBlogPage() {
                             <p className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">Live Preview</p>
 
                             <div className="bg-glass rounded-[2rem] border border-white/20 shadow-xl overflow-hidden pointer-events-none opacity-90 scale-90 origin-top">
-                                <div className="h-48 bg-gray-200 relative">
-                                    {form.imageUrl && (
-                                        <img src={form.imageUrl} className="w-full h-full object-cover" alt="Preview" />
+                                <div className="h-48 bg-gray-200 relative w-full group">
+                                    {form.imageUrl ? (
+                                        <img
+                                            src={form.imageUrl}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                            alt="Preview"
+                                            onError={(e) => {
+                                                e.currentTarget.src = 'https://placehold.co/800x400?text=Invalid+Image+URL';
+                                            }}
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100 font-medium">
+                                            No Image Selected
+                                        </div>
                                     )}
                                     <div className="absolute top-4 left-4 px-3 py-1 bg-black/50 backdrop-blur-md rounded-full text-white text-xs font-bold">
                                         {form.category}
