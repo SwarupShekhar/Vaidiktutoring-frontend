@@ -173,7 +173,7 @@ export const WavyBackground = ({
         <div
             ref={containerRef}
             className={cn(
-                "h-screen flex flex-col items-center justify-center transition-colors duration-500",
+                "min-h-screen flex flex-col items-center justify-center transition-colors duration-500",
                 containerClassName
             )}
         >
