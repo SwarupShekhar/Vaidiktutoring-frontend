@@ -90,3 +90,13 @@ export async function changePassword(payload: { currentPassword?: string; newPas
     throw new Error(message);
   }
 }
+
+export async function getMe() {
+  try {
+    const res = await api.get('/auth/me');
+    return res.data;
+  } catch (error: any) {
+    // If 401, it might be expected during auth transitions
+    throw error;
+  }
+}

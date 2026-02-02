@@ -14,9 +14,24 @@ export default function OnboardingPage() {
   const [role, setRole] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // If we already have a specialized role from our backend context, use it.
-  // However, new signups might be 'student' by default but actually be parents.
-  // So we might want to force a selection if they are "new" or just landed here.
+  // Redirect if role is already known and valid (Admin protection)
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      // Admins shouldn't be here, send them to admin dashboard (or home for now if admin dash doesn't exist)
+      // Assuming /admin/dashboard exists, or fallback to /
+      router.push('/admin/dashboard');
+    } else if (user?.role === 'parent') {
+      // If already a parent in our DB, go to dashboard
+      router.push('/parent/dashboard');
+    } else if (user?.role === 'student' && user?.id) {
+      // If student and NOT a fresh signup (id exists), go to dashboard.
+      // But fresh signups are default student, so we might still want to show choice?
+      // Let's rely on if they have metadata.
+      if (clerkUser?.publicMetadata?.role) {
+        router.push('/students/dashboard');
+      }
+    }
+  }, [user, clerkUser, router]);
 
   // Simple Logic: If they are here, we let them confirm their role if they want to be a parent?
   // Or we just present the choice.
@@ -66,6 +81,8 @@ export default function OnboardingPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-2xl text-center">
+        {/* ... existing content ... */}
+
 
         <div className="bg-white/60 dark:bg-black/40 backdrop-blur-2xl border border-white/50 dark:border-white/10 rounded-[2.5rem] shadow-2xl p-10 md:p-14 mb-8">
 

@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { decodeToken } from '@/app/lib/jwt';
 import * as authLib from '@/app/lib/auth';
+import { setAuthToken } from '@/app/lib/api';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUser, useAuth } from '@clerk/nextjs';
 
@@ -37,30 +38,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
+  const [backendUser, setBackendUser] = useState<User | null>(null);
 
-  // Sync token
+  // Sync token and fetch user
   useEffect(() => {
     if (isClerkLoaded) {
       if (clerkUser) {
         getToken().then((t) => {
           setToken(t);
-          setLoading(false);
+          setAuthToken(t); // <--- SYNC WITH AXIOS
+
+          // Fetch authoritative user data from backend
+          // We import 'api' directly or use useAuthContext's not-yet-ready api instance?
+          // We imported setAuthToken, let's assume api is available or just use fetch?
+          // We'll use the 'api' instance from lib which now has the token.
+
+          setLoading(true);
+          authLib.getMe().then(u => { // We'll add getMe to authLib or call api directly
+            setBackendUser(u);
+            setLoading(false);
+          }).catch(err => {
+            console.error("Failed to fetch backend user", err);
+            setLoading(false);
+          });
         });
       } else {
         setToken(null);
+        setAuthToken(null); // <--- CLEAR AXIOS
+        setBackendUser(null);
         setLoading(false);
       }
     }
   }, [isClerkLoaded, clerkUser, getToken]);
 
+  // Merge Clerk User + Backend User
+  // Backend User takes precedence for ID, Role, etc.
   const user: User | null = clerkUser ? {
-    id: clerkUser.id,
+    id: backendUser?.id || clerkUser.id,
     email: clerkUser.primaryEmailAddress?.emailAddress,
-    role: (clerkUser.publicMetadata?.role as string) || 'student', // Default or fetch from metadata
+    role: backendUser?.role || (clerkUser.publicMetadata?.role as string) || 'student',
     imageUrl: clerkUser.imageUrl,
     firstName: clerkUser.firstName,
     lastName: clerkUser.lastName,
     ...clerkUser.publicMetadata,
+    ...backendUser, // Overwrite with backend data
   } : null;
 
   async function login(email: string, password: string, shouldRedirect = true) {
