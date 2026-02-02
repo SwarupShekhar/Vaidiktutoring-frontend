@@ -15,19 +15,20 @@ export const api = axios.create({
 });
 
 /**
- * Request interceptor -> attach token from localStorage
+ * Helper to update token from AuthContext
+ */
+export const setAuthToken = (token: string | null) => {
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete api.defaults.headers.common['Authorization'];
+  }
+};
+
+/**
+ * Request interceptor - simplified
  */
 api.interceptors.request.use((config) => {
-  try {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('K12_TOKEN');
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    }
-  } catch (e) {
-    // ignore
-  }
   return config;
 });
 
@@ -69,7 +70,8 @@ api.interceptors.response.use(
           localStorage.removeItem('K12_TOKEN');
           localStorage.removeItem('K12_USER');
           // optional: show message here (toast)
-          window.location.href = '/login';
+          // window.location.href = '/login';
+          console.warn('401 Unauthorized - would redirect to login');
         }
       } catch { }
       return new Promise(() => { }); // Also halt for 401 redirect

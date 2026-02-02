@@ -69,15 +69,17 @@ export default function Navbar() {
           {user && (
             <Link
               href={
-                user.role === 'tutor' ? '/tutor/dashboard' :
-                  user.role === 'student' ? '/students/dashboard' :
-                    '/parent/dashboard'
+                user.role === 'admin' ? '/admin/dashboard' :
+                  user.role === 'tutor' ? '/tutor/dashboard' :
+                    user.role === 'student' ? '/students/dashboard' :
+                      '/parent/dashboard'
               }
-              className={`text-sm lg:text-base font-medium transition-colors ${isActive('/parent/dashboard') ||
-                isActive('/students/dashboard') ||
-                isActive('/tutor/dashboard')
-                ? 'text-[var(--color-primary)]'
-                : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
+              className={`text-sm lg:text-base font-medium transition-colors ${isActive('/admin/dashboard') ||
+                  isActive('/parent/dashboard') ||
+                  isActive('/students/dashboard') ||
+                  isActive('/tutor/dashboard')
+                  ? 'text-[var(--color-primary)]'
+                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
                 }`}
             >
               Dashboard
