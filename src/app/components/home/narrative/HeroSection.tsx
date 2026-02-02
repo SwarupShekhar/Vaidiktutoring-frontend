@@ -45,7 +45,7 @@ export default function HeroSection() {
 
     return (
         <section className="relative min-h-screen overflow-hidden bg-background">
-            <WavyBackground blur={30} className="max-w-4xl mx-auto px-6 text-center flex flex-col items-center justify-center min-h-screen">
+            <WavyBackground blur={30} className="max-w-4xl mx-auto px-6 text-center flex flex-col items-center justify-center min-h-screen pt-28 pb-10">
                 <div className="mb-8 flex flex-wrap justify-center gap-x-3 gap-y-1">
                     {words.map((word, i) => (
                         <motion.span

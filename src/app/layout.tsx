@@ -12,6 +12,8 @@ import GlobalNotification from './components/GlobalNotification';
 import VerificationModal from './components/auth/VerificationModal';
 import VerificationBanner from './components/auth/VerificationBanner';
 
+import { ClerkProvider } from '@clerk/nextjs';
+
 export const metadata = {
   title: 'Vaidik Tutoring',
   description: 'Vaidik Tutoring Platform',
@@ -19,24 +21,26 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning>
-        <StyledComponentsRegistry>
-          <QueryProvider>
-            <AuthProvider>
-              <NotificationProvider>
-                <Navbar />
-                <VerificationBanner />
-                <GlobalNotification />
-                <VerificationModal />
-                {children}
-                <Footer />
-              </NotificationProvider>
-            </AuthProvider>
-          </QueryProvider>
-        </StyledComponentsRegistry>
-        <Script src="https://meet.jit.si/external_api.js" strategy="afterInteractive" />
-      </body>
-    </html >
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body suppressHydrationWarning>
+          <StyledComponentsRegistry>
+            <QueryProvider>
+              <AuthProvider>
+                <NotificationProvider>
+                  <Navbar />
+                  <VerificationBanner />
+                  <GlobalNotification />
+                  <VerificationModal />
+                  {children}
+                  <Footer />
+                </NotificationProvider>
+              </AuthProvider>
+            </QueryProvider>
+          </StyledComponentsRegistry>
+          <Script src="https://meet.jit.si/external_api.js" strategy="afterInteractive" />
+        </body>
+      </html >
+    </ClerkProvider>
   );
 }
