@@ -13,7 +13,10 @@ export default function SignupPage() {
       </div>
 
       <div className="relative z-10 w-full max-w-md flex justify-center">
-        <SignUp />
+        <SignUp
+          forceRedirectUrl="/onboarding"
+          signInUrl="/login"
+        />
       </div>
     </main>
   );
