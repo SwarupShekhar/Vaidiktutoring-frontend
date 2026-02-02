@@ -32,7 +32,6 @@ export default function TutorListModal({ isOpen, onClose }: TutorListModalProps)
                     // Fallback / Mock data
                     setTutors([
                         { id: '1', first_name: 'John', last_name: 'Doe', email: 'john@tutor.com', subjects: ['Math', 'Physics'], status: 'active' },
-                        { id: '2', first_name: 'Jane', last_name: 'Smith', email: 'jane@tutor.com', subjects: 'English, History', status: 'suspended' },
                         { id: '3', first_name: 'Robert', last_name: 'Taylor', email: 'robert@tutor.com', subjects: ['Chemistry'], status: 'active' },
                     ]);
                 })
