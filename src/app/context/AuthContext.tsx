@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { decodeToken } from '@/app/lib/jwt';
 import * as authLib from '@/app/lib/auth';
-import { setAuthToken } from '@/app/lib/api';
+import { setAuthToken, setTokenGetter } from '@/app/lib/api';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUser, useAuth } from '@clerk/nextjs';
 
@@ -37,56 +37,105 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { getToken, signOut } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [initialCheckDone, setInitialCheckDone] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [backendUser, setBackendUser] = useState<User | null>(null);
 
   // Sync token and fetch user
   useEffect(() => {
-    if (isClerkLoaded) {
-      if (clerkUser) {
-        getToken().then((t) => {
-          setToken(t);
-          setAuthToken(t); // <--- SYNC WITH AXIOS
-
-          // Fetch authoritative user data from backend
-          // We import 'api' directly or use useAuthContext's not-yet-ready api instance?
-          // We imported setAuthToken, let's assume api is available or just use fetch?
-          // We'll use the 'api' instance from lib which now has the token.
-
-          setLoading(true);
-          authLib.getMe().then(u => { // We'll add getMe to authLib or call api directly
-            setBackendUser(u);
-            setLoading(false);
-          }).catch(err => {
-            console.error("Failed to fetch backend user", err);
-            setLoading(false);
-          });
-        });
-      } else {
-        setToken(null);
-        setAuthToken(null); // <--- CLEAR AXIOS
-        setBackendUser(null);
+    async function initAuth() {
+      // 1. Try Local Token
+      const savedToken = localStorage.getItem('auth_token');
+      if (savedToken) {
+        setToken(savedToken);
+        setAuthToken(savedToken);
+        try {
+          const u = await authLib.getMe();
+          setBackendUser(u);
+          if (u.force_password_change) {
+            router.push('/change-password');
+          }
+        } catch (err) {
+          console.error("Manual session invalid:", err);
+          localStorage.removeItem('auth_token');
+          setToken(null);
+          setBackendUser(null);
+        }
         setLoading(false);
+        setInitialCheckDone(true);
+        return;
+      }
+
+      // 2. Try Clerk if no Local Token
+      if (isClerkLoaded) {
+        if (clerkUser) {
+          setTokenGetter(getToken);
+          try {
+            const t = await getToken();
+            if (t) {
+              setToken(t);
+              setAuthToken(t);
+              const u = await authLib.getMe();
+              setBackendUser(u);
+            }
+          } catch (err) {
+            console.error("Clerk session sync failed:", err);
+          }
+        } else {
+          // No Clerk + No Local = Not Logged In
+          setToken(null);
+          setBackendUser(null);
+        }
+        setLoading(false);
+        setInitialCheckDone(true);
       }
     }
+
+    initAuth();
   }, [isClerkLoaded, clerkUser, getToken]);
 
   // Merge Clerk User + Backend User
-  // Backend User takes precedence for ID, Role, etc.
-  const user: User | null = clerkUser ? {
-    id: backendUser?.id || clerkUser.id,
+  // If Clerk is not present, we rely solely on backendUser for manual logins
+  const user: User | null = backendUser || (clerkUser ? {
+    id: clerkUser.id,
     email: clerkUser.primaryEmailAddress?.emailAddress,
-    role: backendUser?.role || (clerkUser.publicMetadata?.role as string) || 'student',
+    role: (clerkUser.publicMetadata?.role as string) || 'student',
     imageUrl: clerkUser.imageUrl,
     firstName: clerkUser.firstName,
     lastName: clerkUser.lastName,
     ...clerkUser.publicMetadata,
-    ...backendUser, // Overwrite with backend data
-  } : null;
+  } : null);
 
   async function login(email: string, password: string, shouldRedirect = true) {
-    // Redirect to Clerk Sign In
-    router.push('/login');
+    setLoading(true);
+    try {
+      const res = await authLib.login(email, password);
+      const { token: newToken, user: u } = res;
+
+      setToken(newToken);
+      setAuthToken(newToken);
+      setBackendUser(u);
+
+      localStorage.setItem('auth_token', newToken); // Persist for session
+
+      if (u.force_password_change) {
+        router.push('/change-password');
+        return;
+      }
+
+      if (shouldRedirect) {
+        if (u.role === 'admin') router.push('/admin/dashboard');
+        else if (u.role === 'tutor') router.push('/tutor/dashboard');
+        else if (u.role === 'parent') router.push('/parent/dashboard');
+        else if (u.role === 'student') router.push('/students/dashboard');
+        else router.push('/');
+      }
+    } catch (err: any) {
+      console.error('Login failed:', err);
+      throw new Error(err.response?.data?.message || 'Invalid credentials');
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function signup(payload: any) {
@@ -104,8 +153,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function changePassword(current: string, newPass: string) {
-    // Redirect to Clerk User Profile for password change
-    router.push('/profile');
+    setLoading(true);
+    try {
+      const res = await authLib.changePassword({ currentPassword: current, password: newPass });
+      if (res.token) {
+        setToken(res.token);
+        setAuthToken(res.token);
+        localStorage.setItem('auth_token', res.token);
+
+        // Refresh profile to ensure force_password_change flag is updated locally
+        const u = await authLib.getMe();
+        setBackendUser(u);
+      }
+    } catch (err: any) {
+      console.error('Password change failed:', err);
+      throw new Error(err.message || 'Failed to change password');
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Verification Modal State (Keep as dummy or handle via logic)
@@ -114,7 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: AuthContextValue = {
     user,
     token,
-    loading: loading || !isClerkLoaded,
+    loading: loading, // Use our own loading state which covers both Clerk and Backend sync
     login,
     signup,
     logout,

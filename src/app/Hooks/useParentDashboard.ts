@@ -30,11 +30,21 @@ export function useParentDashboard() {
         enabled: !!userId
     });
 
+    const allSessions = Array.isArray(upcomingSessions) ? upcomingSessions : [];
+
+    const now = new Date();
+    const sorted = [...allSessions].sort((a, b) => new Date(a.requested_start).getTime() - new Date(b.requested_start).getTime());
+
+    const upcoming = sorted.filter(s => new Date(s.requested_end) > now);
+    const past = sorted.filter(s => new Date(s.requested_end) <= now).reverse();
+
     return {
         studentCount: students?.length || 0,
         loadingStudents: loadingStudentList,
         studentsError,
-        upcomingSessions: upcomingSessions?.slice(0, 5) || [], // Limit to 5
+        upcomingSessions: upcoming,
+        pastSessions: past,
+        allSessions: sorted,
         loadingSessions,
         sessionsError,
         students: students || [],

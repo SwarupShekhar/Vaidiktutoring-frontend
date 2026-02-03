@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import NarrativeButton from './NarrativeButton';
 
+import BookSessionButton from '../BookSessionButton';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { WavyBackground } from '../../ui/wavy-background';
@@ -81,9 +82,7 @@ export default function HeroSection() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 1.8, duration: 0.8 }}
                 >
-                    <NarrativeButton className="text-lg px-12 py-5" onClick={handleBookSession}>
-                        Book Free Session
-                    </NarrativeButton>
+                    <BookSessionButton onClick={handleBookSession} />
                     <p className="mt-4 text-[10px] uppercase tracking-widest font-black text-gray-400">
                         Limited availability for personalized attention
                     </p>

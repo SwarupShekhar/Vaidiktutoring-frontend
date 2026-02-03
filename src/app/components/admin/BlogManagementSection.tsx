@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { blogsApi, BlogPost } from '@/app/lib/blogs';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import { RefreshCw, PenTool, CheckCircle, XCircle, Eye, Plus } from 'lucide-react';
 
 export default function BlogManagementSection() {
     const [blogs, setBlogs] = useState<BlogPost[]>([]);
@@ -58,24 +59,26 @@ export default function BlogManagementSection() {
     };
 
     return (
-        <section className="bg-glass rounded-[2rem] p-8 border border-white/20 shadow-lg mt-8">
+        <div className="w-full">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">
-                    Blog Management (Approvals)
+                <h2 className="text-xl font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+                    <PenTool size={20} className="text-pink-500" />
+                    Content Management
                 </h2>
                 <div className="flex gap-2">
                     <button
                         onClick={fetchBlogs}
-                        className="p-2 rounded-full hover:bg-[var(--color-surface)] text-[var(--color-text-secondary)]"
+                        className="p-2 rounded-xl hover:bg-white/10 text-[var(--color-text-secondary)] transition-colors"
                         title="Refresh"
                     >
-                        ↻
+                        <RefreshCw size={18} />
                     </button>
                     <Link
                         href="/admin/blogs/new"
-                        className="px-4 py-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-sm font-bold rounded-xl shadow-lg hover:shadow-pink-500/25 transition-all"
+                        className="px-4 py-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-sm font-bold rounded-xl shadow-lg hover:shadow-pink-500/25 transition-all flex items-center gap-2"
                     >
-                        + Write New
+                        <Plus size={16} />
+                        Write Post
                     </Link>
                 </div>
             </div>
@@ -191,6 +194,6 @@ export default function BlogManagementSection() {
                     Next
                 </button>
             </div>
-        </section>
+        </div>
     );
 }

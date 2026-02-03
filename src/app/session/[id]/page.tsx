@@ -18,7 +18,14 @@ interface BookingDetails {
     start_time: string;
     subject: { name: string; icon?: string };
     tutor: { id: string; first_name: string; last_name: string };
-    student: { id: string; first_name: string; last_name: string };
+    students: {
+        id: string;
+        first_name: string;
+        last_name: string;
+        interests?: string[];
+        recent_focus?: string;
+        struggle_areas?: string[];
+    };
     sessions: { id: string }[];
 }
 
@@ -75,12 +82,12 @@ export default function SessionPage({ params }: SessionProps) {
     const [currentPhase, setCurrentPhase] = useState<SessionPhase>('WARM_CONNECT');
     const [suggestedPhase, setSuggestedPhase] = useState<SessionPhase | null>(null);
 
-    // Mock Student Data (In production, fetch from student profile)
-    const mockStudentData = {
-        name: booking?.student?.first_name ? `${booking.student.first_name} ${booking.student.last_name}` : 'Student',
-        interests: ['Minecraft', 'Space Exploration', 'Piano'],
-        recentProgress: 'Mastered 2D geometry, now moving to coordinate planes.',
-        struggleAreas: ['Word problems with fractions']
+    // REAL Student Data from Backend
+    const studentData = {
+        name: booking?.students ? `${booking.students.first_name} ${booking.students.last_name || ''}`.trim() : 'Student',
+        interests: booking?.students?.interests || [],
+        recentProgress: booking?.students?.recent_focus || 'Waiting for initial session assessment.',
+        struggleAreas: booking?.students?.struggle_areas || []
     };
 
     // Initialize Shared Socket for Attention Events
@@ -94,7 +101,7 @@ export default function SessionPage({ params }: SessionProps) {
 
         const newSocket = io(SOCKET_URL, {
             query: { sessionId, userId: user.id },
-            transports: ['websocket', 'polling'],
+            transports: ['websocket'], // Force websocket to resolve "xhr poll error"
             withCredentials: true
         });
 
@@ -390,7 +397,7 @@ export default function SessionPage({ params }: SessionProps) {
             )}
 
             {/* 2. OVERLAY LAYER: FLOATING HEADER */}
-            <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-start pointer-events-none">
+            <div className="absolute top-16 left-4 right-4 z-10 flex justify-between items-start pointer-events-none">
                 <div className="bg-glass/90 backdrop-blur-md rounded-2xl p-3 border border-white/20 shadow-lg pointer-events-auto flex items-center gap-4 max-w-sm">
                     <div className="relative">
                         <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse relative z-10" />
@@ -429,7 +436,7 @@ export default function SessionPage({ params }: SessionProps) {
             </div>
 
             {/* 3. OVERLAY LAYER: CHAT SIDEBAR */}
-            <div className="absolute right-4 top-20 bottom-4 z-10 w-80 pointer-events-auto">
+            <div className="absolute right-4 top-32 bottom-24 z-10 w-80 pointer-events-auto">
                 <SessionChat
                     key={booking?.sessions?.[0]?.id || sessionId}
                     sessionId={booking?.sessions?.[0]?.id || sessionId}
@@ -448,8 +455,8 @@ export default function SessionPage({ params }: SessionProps) {
             {/* ATTENTION DESIGN FRAMEWORK OVERLAYS (TUTOR ONLY) */}
             {user?.role === 'tutor' && hasJoined && (
                 <>
-                    {/* 0. Top: Session Flow Bar */}
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-[600px] pointer-events-auto">
+                    {/* 0. Top: Session Flow Bar -> Moved to Bottom */}
+                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 w-[600px] pointer-events-auto">
                         <SessionFlowBar
                             currentPhase={currentPhase}
                             onPhaseChange={handlePhaseUpdate}
@@ -457,13 +464,13 @@ export default function SessionPage({ params }: SessionProps) {
                     </div>
 
                     {/* 1. Left Sidebar: Student Snapshot & Attention Panel */}
-                    <div className="absolute left-4 top-20 bottom-4 w-80 z-10 flex flex-col gap-4 pointer-events-none">
+                    <div className="absolute left-4 top-32 bottom-24 w-80 z-10 flex flex-col gap-4 pointer-events-none">
                         <div className="pointer-events-auto">
                             <StudentSnapshotCard
-                                studentName={mockStudentData.name}
-                                interests={mockStudentData.interests}
-                                recentProgress={mockStudentData.recentProgress}
-                                struggleAreas={mockStudentData.struggleAreas}
+                                studentName={studentData.name}
+                                interests={studentData.interests}
+                                recentProgress={studentData.recentProgress}
+                                struggleAreas={studentData.struggleAreas}
                             />
                         </div>
 
@@ -474,7 +481,7 @@ export default function SessionPage({ params }: SessionProps) {
                         <div className="flex-1 pointer-events-auto min-h-0">
                             <AttentionFrameworkPanel
                                 sessionId={sessionId}
-                                studentId={booking?.student?.id || 'student-id'}
+                                studentId={booking?.students?.id || 'student-id'}
                                 tutorId={user?.id || 'tutor-id'}
                                 socket={socket}
                             />

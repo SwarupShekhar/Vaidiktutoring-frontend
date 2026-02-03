@@ -7,9 +7,10 @@ interface StudentSnapshotProps {
     interests: string[];
     recentProgress: string;
     struggleAreas: string[];
+    status?: string;
 }
 
-export default function StudentSnapshotCard({ studentName, interests, recentProgress, struggleAreas }: StudentSnapshotProps) {
+export default function StudentSnapshotCard({ studentName, interests, recentProgress, struggleAreas, status = 'Active Learner' }: StudentSnapshotProps) {
     return (
         <div className="bg-gradient-to-br from-indigo-700 via-indigo-800 to-purple-900 rounded-3xl p-6 text-white shadow-2xl relative overflow-hidden border border-white/10 group">
             {/* Background elements */}
@@ -25,7 +26,7 @@ export default function StudentSnapshotCard({ studentName, interests, recentProg
                         <h3 className="font-black text-xl tracking-tight">{studentName}</h3>
                         <div className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                            <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">Active Learner</p>
+                            <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest">{status}</p>
                         </div>
                     </div>
                 </div>
