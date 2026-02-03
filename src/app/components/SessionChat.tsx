@@ -89,7 +89,7 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
                 sessionId,
                 userId: user.sub || user.id
             },
-            transports: ['websocket', 'polling'],
+            transports: ['websocket'], // Force websocket to resolve "xhr poll error"
             reconnectionAttempts: 5,
             withCredentials: true
         });

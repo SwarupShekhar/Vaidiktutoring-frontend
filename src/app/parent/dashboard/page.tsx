@@ -1,10 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { useParentDashboard } from '@/app/Hooks/useParentDashboard';
+import { StatCard } from '@/app/components/dashboard/StatCard';
+import { SessionCommandCard } from '@/app/components/dashboard/SessionCommandCard';
+import {
+  Users,
+  CheckCircle2,
+  Calendar,
+  Plus,
+  Baby,
+  CreditCard,
+  ChevronRight,
+  Clock
+} from 'lucide-react';
 
 export default function ParentDashboardPage() {
   const { user } = useAuthContext();
@@ -12,172 +24,227 @@ export default function ParentDashboardPage() {
     studentCount,
     loadingStudents,
     upcomingSessions,
+    pastSessions,
+    allSessions,
     loadingSessions,
     students,
     loadingStudentList
   } = useParentDashboard();
 
+  // DERIVE STATS
+  const stats = useMemo(() => {
+    return {
+      totalCompleted: pastSessions.length,
+      nextChildClass: upcomingSessions[0] ? upcomingSessions[0].students?.first_name : 'None',
+      upcomingCount: upcomingSessions.length
+    };
+  }, [pastSessions, upcomingSessions]);
+
+  const nextSession = upcomingSessions[0] || null;
+
   return (
     <ProtectedClient roles={['parent']}>
-      <div className="min-h-screen p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
+      <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-        {/* HERO SECTION */}
-        <section className="bg-glass rounded-[2rem] p-8 md:p-10 border border-white/20 shadow-lg relative overflow-hidden">
-          {/* Decorative background */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-primary)] opacity-5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-
-          <div className="relative z-10">
-            <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-text-primary)] mb-2">
-              Welcome back, {user?.first_name || 'Parent'}
+        {/* HEADER */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-[var(--color-text-primary)] tracking-tight">
+              Welcome back, {user?.firstName || user?.first_name || 'Parent'}
             </h1>
-            <p className="text-[var(--color-text-secondary)] text-lg mb-8">
-              Here is what is coming up for your child or children
+            <p className="text-[var(--color-text-secondary)] opacity-80">
+              Here is an overview of your family's learning progress.
             </p>
+          </div>
+          <div className="flex gap-3">
+            <Link
+              href="/bookings/new"
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-[var(--color-primary)] text-white font-bold rounded-2xl shadow-lg hover:scale-[1.03] transition-all text-sm"
+            >
+              <Plus size={18} />
+              Book Session
+            </Link>
+          </div>
+        </header>
 
-            <div className="flex flex-wrap gap-4">
-              <div className="px-6 py-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center gap-3 shadow-sm">
-                <span className="text-2xl">🎓</span>
-                <div>
-                  <p className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">Active Students</p>
-                  <p className="text-xl font-bold text-[var(--color-primary)]">
-                    {loadingStudents ? '...' : studentCount}
-                  </p>
-                </div>
+        {/* FAMILY STATS */}
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <StatCard
+            icon={Users}
+            label="Active Students"
+            value={studentCount}
+            color="#8b5cf6"
+            description="Your children"
+          />
+          <StatCard
+            icon={CheckCircle2}
+            label="Total Classes"
+            value={stats.totalCompleted}
+            description="Completed so far"
+            color="#10b981"
+          />
+          <StatCard
+            icon={Calendar}
+            label="Upcoming"
+            value={stats.upcomingCount}
+            description="Scheduled sessions"
+            color="#3b82f6"
+          />
+        </section>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            {/* PRIMARY ACTION: NEXT SESSION */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+                <Clock className="text-blue-500" size={20} />
+                Next Activity
+              </h3>
+              <SessionCommandCard session={nextSession} loading={loadingSessions} />
+            </div>
+
+            {/* MY CHILDREN (Grid of Cards) */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+                  <Baby className="text-purple-500" size={20} />
+                  My Children
+                </h3>
+                <Link href="/onboarding/student" className="text-xs font-bold text-purple-600 hover:underline">
+                  + Add Child
+                </Link>
               </div>
-              <div className="px-6 py-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center gap-3 shadow-sm">
-                <span className="text-2xl">📅</span>
-                <div>
-                  <p className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">Upcoming Sessions</p>
-                  <p className="text-xl font-bold text-[var(--color-primary)]">
-                    {loadingSessions ? '...' : upcomingSessions.length}
-                  </p>
-                </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {loadingStudentList ? (
+                  Array(2).fill(0).map((_, i) => <div key={i} className="h-24 bg-white/50 animate-pulse rounded-2xl" />)
+                ) : students.length > 0 ? (
+                  students.map((student: any) => {
+                    const childNext = upcomingSessions.find(s => s.students?.id === student.id);
+                    return (
+                      <div key={student.id} className="bg-glass border border-white/20 p-5 rounded-2xl flex items-center gap-4 hover:border-purple-300/50 transition-all group cursor-default">
+                        <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">
+                          {student.gender === 'female' ? '👧' : '👦'}
+                        </div>
+                        <div className="flex-1 overflow-hidden">
+                          <h4 className="font-bold text-[var(--color-text-primary)] truncate">
+                            {student.first_name} {student.last_name}
+                          </h4>
+                          <p className="text-[10px] uppercase font-black text-purple-500 tracking-tighter mb-1">
+                            Grade {student.grade}
+                          </p>
+                          {childNext ? (
+                            <p className="text-[10px] text-[var(--color-text-secondary)] truncate">
+                              Next: {childNext.subject?.name} @ {new Date(childNext.requested_start).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                            </p>
+                          ) : (
+                            <p className="text-[10px] text-gray-400 italic">No classes booked</p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="col-span-full p-8 text-center bg-white/10 rounded-2xl border border-dashed border-white/20">
+                    <p className="text-sm text-[var(--color-text-secondary)] mb-4">You haven't added any children yet.</p>
+                    <Link href="/onboarding/student" className="inline-block px-4 py-2 bg-purple-100 text-purple-700 rounded-lg text-xs font-bold">
+                      Add your first child
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* UNIFIED SCHEDULE (Recent Flow) */}
+            <div className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm">
+              <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-6 flex items-center gap-2">
+                <Calendar size={20} className="text-blue-500" />
+                Unified Schedule
+              </h2>
+
+              <div className="space-y-3">
+                {loadingSessions ? (
+                  <div className="py-10 text-center opacity-30">Loading sessions...</div>
+                ) : upcomingSessions.length > 1 ? (
+                  upcomingSessions.slice(1).map((session: any) => (
+                    <div key={session.id} className="p-4 rounded-xl bg-white/40 border border-white/20 flex justify-between items-center group hover:bg-white/60 transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-lg">
+                          📚
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-sm text-[var(--color-text-primary)]">
+                            {session.subject?.name}
+                          </h3>
+                          <p className="text-[10px] text-[var(--color-text-secondary)]">
+                            <span className="font-bold text-blue-600 mr-2 uppercase">{session.students?.first_name}</span>
+                            {new Date(session.requested_start).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                          </p>
+                        </div>
+                      </div>
+                      <Link href={`/session/${session.id}`} className="p-2 rounded-full hover:bg-white shadow-sm transition-all opacity-0 group-hover:opacity-100">
+                        <ChevronRight size={16} className="text-blue-500" />
+                      </Link>
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-8 text-center opacity-40 italic text-sm">
+                    No other sessions scheduled.
+                  </div>
+                )}
               </div>
             </div>
           </div>
-        </section>
 
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* SIDEBAR: RECENT ACTIVITY & QUICK ACTIONS */}
+          <aside className="space-y-6">
+            <div className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm shadow-purple-500/5">
+              <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-6 flex items-center gap-2 text-purple-600">
+                ⚡ Quick Actions
+              </h2>
+              <div className="grid grid-cols-1 gap-3">
+                <Link href="/bookings/new" className="p-4 rounded-xl bg-white/50 border border-white/30 hover:border-blue-400 group transition-all flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">➕</div>
+                  <span className="font-bold text-sm">New Booking</span>
+                </Link>
+                <Link href="/onboarding/student" className="p-4 rounded-xl bg-white/50 border border-white/30 hover:border-purple-400 group transition-all flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">👶</div>
+                  <span className="font-bold text-sm">Add Student</span>
+                </Link>
+                <button disabled className="p-4 rounded-xl bg-white/20 border border-white/10 flex items-center gap-3 opacity-50 cursor-not-allowed text-left">
+                  <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-xl">💳</div>
+                  <div>
+                    <span className="font-bold text-sm block">Billing</span>
+                    <span className="text-[10px] font-medium opacity-60 italic">Coming Soon</span>
+                  </div>
+                </button>
+              </div>
+            </div>
 
-          {/* MY CHILDREN COLUMN */}
-          <div className="bg-glass rounded-[2rem] p-6 border border-white/20 shadow-sm flex flex-col h-full">
-            <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-6 flex items-center gap-2">
-              <span>👶</span> My Children
-            </h2>
-
-            <div className="flex-1 space-y-4">
-              {loadingStudentList ? (
-                <p className="text-[var(--color-text-secondary)]">Loading students...</p>
-              ) : students.length > 0 ? (
-                students.map((student: any) => (
-                  <div key={student.id} className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] flex justify-between items-center group hover:border-[var(--color-primary)]/30 transition-colors">
+            {/* RECENT COMPLETED LOG */}
+            <div className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm">
+              <h2 className="text-sm font-black uppercase tracking-widest text-[var(--color-text-secondary)] mb-6 flex items-center gap-2 opacity-50">
+                Recent Activity
+              </h2>
+              <div className="space-y-4">
+                {pastSessions.slice(0, 3).map((session: any) => (
+                  <div key={session.id} className="flex gap-3">
+                    <div className="w-1 h-8 bg-green-400 rounded-full mt-1" />
                     <div>
-                      <h3 className="font-bold text-[var(--color-text-primary)]">
-                        {student.first_name} {student.last_name}
-                      </h3>
-                      <p className="text-sm text-[var(--color-text-secondary)]">
-                        Grade {student.grade}
+                      <p className="text-xs font-bold text-[var(--color-text-primary)]">{session.subject?.name}</p>
+                      <p className="text-[10px] text-[var(--color-text-secondary)] opacity-70">
+                        Completed by {session.students?.first_name}
                       </p>
                     </div>
-                    {/* Placeholder for analysis/focus tag if data available later */}
-                    <div className="hidden sm:block text-xs font-medium px-2 py-1 rounded-md bg-blue-50 text-blue-600">
-                      Student
-                    </div>
                   </div>
-                ))
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-[var(--color-text-primary)] font-bold mb-1">No children added yet</p>
-                  <p className="text-sm text-[var(--color-text-secondary)] mb-4">Add your child to start personalised tutoring sessions</p>
-                  <Link href="/onboarding/student" className="text-sm text-[var(--color-primary)] font-bold underline decoration-2 underline-offset-4 hover:opacity-80">
-                    Add your first child
-                  </Link>
-                </div>
-              )}
+                ))}
+                {pastSessions.length === 0 && (
+                  <p className="text-xs italic text-[var(--color-text-secondary)] opacity-50 text-center">No recent activity</p>
+                )}
+              </div>
             </div>
-
-            <div className="mt-8 pt-6 border-t border-[var(--color-border)]">
-              <Link
-                href="/onboarding/student"
-                className="flex items-center justify-center w-full py-3 rounded-xl bg-[var(--color-primary)] text-white font-bold hover:opacity-90 transition-all shadow-md"
-              >
-                + Add another child
-              </Link>
-            </div>
-          </div>
-
-          {/* UPCOMING SESSIONS COLUMN */}
-          <div className="bg-glass rounded-[2rem] p-6 border border-white/20 shadow-sm flex flex-col h-full">
-            <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-6 flex items-center gap-2">
-              <span>🗓️</span> Upcoming Sessions
-            </h2>
-
-            <div className="flex-1 space-y-4">
-              {loadingSessions ? (
-                <p className="text-[var(--color-text-secondary)]">Loading sessions...</p>
-              ) : upcomingSessions.length > 0 ? (
-                upcomingSessions.map((session: any) => (
-                  <div key={session.id} className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-primary)]/30 transition-colors">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-700 uppercase tracking-wide">
-                        {session.status || 'Scheduled'}
-                      </span>
-                      {/* Join Session Link - Show when confirmed */}
-                      {(session.status === 'confirmed' || session.status === 'scheduled') && session.id && (
-                        <Link href={`/session/${session.id}`} className="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-full transition-colors">
-                          Join Session →
-                        </Link>
-                      )}
-                    </div>
-                    <h3 className="font-bold text-[var(--color-text-primary)] mb-1">
-                      {session.subject_name || 'Tutoring Session'}
-                    </h3>
-                    <p className="text-sm text-[var(--color-text-secondary)] mb-1">
-                      with {session.child_name || 'Child'}
-                      {session.tutor_name && (
-                        <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
-                          Tutor: {session.tutor_name}
-                        </span>
-                      )}
-                    </p>
-                    <p className="text-xs text-[var(--color-text-secondary)] opacity-80">
-                      {session.start_time ? new Date(session.start_time).toLocaleString() : 'Date TBD'}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-[var(--color-text-primary)] font-bold mb-1">You haven&apos;t booked any sessions yet.</p>
-                  <Link href="/bookings/new" className="inline-block mt-4 px-6 py-2 rounded-full border border-[var(--color-primary)] text-[var(--color-primary)] font-bold text-sm hover:bg-[var(--color-primary)] hover:text-white transition-all">
-                    Book your first session
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
-
-        </section>
-
-        {/* QUICK ACTIONS */}
-        <section className="bg-glass rounded-[2rem] p-8 border border-white/20 shadow-sm">
-          <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-6">
-            ⚡ Quick Actions
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Link href="/bookings/new" className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:scale-[1.02] transition-all group">
-              <span className="block text-2xl mb-2">➕</span>
-              <span className="font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)]">Book a new session</span>
-            </Link>
-            <Link href="/onboarding/student" className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:scale-[1.02] transition-all group">
-              <span className="block text-2xl mb-2">👶</span>
-              <span className="font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)]">Add Student</span>
-            </Link>
-            <button disabled className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] opacity-60 cursor-not-allowed text-left">
-              <span className="block text-2xl mb-2">📊</span>
-              <span className="font-bold text-[var(--color-text-primary)]">View progress reports <span className="text-xs font-normal opacity-70 block">(Coming Soon)</span></span>
-            </button>
-          </div>
-        </section>
+          </aside>
+        </div>
 
       </div>
     </ProtectedClient>

@@ -4,8 +4,9 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Layers, User, GraduationCap, Calendar, CheckCircle } from 'lucide-react';
+import { Layers, User, GraduationCap, Calendar, CheckCircle, ChevronDown } from 'lucide-react';
 
 import useCatalog from '@/app/Hooks/useCatalog';
 import api from '@/app/lib/api';
@@ -13,6 +14,78 @@ import { useAuthContext } from '@/app/context/AuthContext';
 
 import { SelectionCard } from '@/app/components/ui/SelectionCard';
 import { TimeSlotPicker } from '@/app/components/ui/TimeSlotPicker';
+
+// --- COMPONENTS ---
+interface GlassSelectProps {
+    label: string;
+    value: string | null;
+    options: { id: string; label: string }[];
+    onChange: (val: string) => void;
+    placeholder?: string;
+    icon?: React.ReactNode;
+}
+
+function GlassSelect({ label, value, options, onChange, placeholder, icon }: GlassSelectProps) {
+    const [open, setOpen] = useState(false);
+    const selected = options.find(o => o.id === value);
+
+    return (
+        <div className="relative">
+            <label className="text-xs font-bold text-gray-500 uppercase mb-2 block ml-1">{label}</label>
+            <button
+                onClick={() => setOpen(!open)}
+                onBlur={() => setTimeout(() => setOpen(false), 200)} // Delay to allow click
+                className={`
+                    w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all
+                    bg-black/20 hover:bg-black/30 text-left
+                    ${open ? 'border-blue-500 shadow-lg shadow-blue-500/20' : 'border-white/10 hover:border-white/20'}
+                `}
+            >
+                <div className="flex items-center gap-3">
+                    {icon && <span className="opacity-50">{icon}</span>}
+                    <span className={selected ? 'text-white' : 'text-gray-400'}>
+                        {selected?.label || placeholder}
+                    </span>
+                </div>
+                <ChevronDown size={16} className={`transition-transform duration-300 ${open ? 'rotate-180' : ''} opacity-50`} />
+            </button>
+
+            <AnimatePresence>
+                {open && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute top-full left-0 right-0 mt-2 bg-[#1a1a2e] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-[250px] overflow-y-auto scrollbar-thin"
+                    >
+                        {options.length === 0 ? (
+                            <div className="p-3 text-gray-500 text-sm text-center italic">No options available</div>
+                        ) : (
+                            options.map(opt => (
+                                <button
+                                    key={opt.id}
+                                    onMouseDown={(e) => {
+                                        e.preventDefault(); // Prevent blur
+                                        onChange(opt.id);
+                                        setOpen(false);
+                                    }}
+                                    className={`
+                                        w-full text-left px-4 py-3 text-sm transition-colors flex items-center justify-between
+                                        ${value === opt.id ? 'bg-blue-600/20 text-blue-200' : 'hover:bg-white/5 text-gray-300'}
+                                    `}
+                                >
+                                    {opt.label}
+                                    {value === opt.id && <CheckCircle size={14} className="text-blue-400" />}
+                                </button>
+                            ))
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
 
 // TYPES
 type Step = 0 | 1 | 2; // Reduced to 3 steps
@@ -33,14 +106,21 @@ interface BookingWizardProps {
 
 // MOCK TUTORS (Ideally fetch /programs/:id/staffing)
 const MOCK_TUTORS = [
-    { id: 't1', name: 'Dr. Sarah Cohen', bio: 'Expert in Advanced Mathematics', programId: '1' },
-    { id: 't2', name: 'James Wilson', bio: 'Physics & Chemistry Specialist', programId: '1' },
-    { id: 't3', name: 'Emily Blunt', bio: 'Literature & Arts', programId: '2' },
+    { id: 'E43E0C7C-AB33-4509-AF51-70AA40C19E79', name: 'Dr. Sarah Cohen', bio: 'Expert in Advanced Mathematics', programId: '043E5B59-A4EE-4BE0-9101-440043279A50' },
+    { id: '8B126AD8-FEA0-4817-97F5-89E752E52611', name: 'James Wilson', bio: 'Physics & Chemistry Specialist', programId: '043E5B59-A4EE-4BE0-9101-440043279A50' },
+    { id: '387C72DD-47C1-421A-94BE-9B253A1E7BD9', name: 'Emily Blunt', bio: 'Literature & Arts', programId: '9BF3F499-AC9C-4502-B737-65FD135C024B' },
+];
+
+const MOCK_PROGRAMS = [
+    { id: '043E5B59-A4EE-4BE0-9101-440043279A50', name: 'K-12 Academic Tutoring' },
+    { id: '9BF3F499-AC9C-4502-B737-65FD135C024B', name: 'Standardized Test Prep (SAT/ACT)' },
+    { id: '12345678-1234-1234-1234-123456789abc', name: 'College Admissions Counseling' } // Placeholder UUID
 ];
 
 export default function BookingWizard({ students, isStudentsLoading = false }: BookingWizardProps) {
     const router = useRouter();
     const { user } = useAuthContext();
+    const queryClient = useQueryClient();
     const { subjects, curricula, packages, loading: loadingCatalog } = useCatalog();
 
     // STATE
@@ -74,9 +154,37 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
     // Fetch Programs
     useEffect(() => {
         api.get('/admin/programs')
-            .then(res => setPrograms(res.data))
-            .catch(err => console.error(err));
+            .then(res => {
+                let data = res.data;
+                if (!data || data.length === 0) {
+                    console.warn('No programs found in DB. Using MOCK data for design validation.');
+                    data = MOCK_PROGRAMS;
+                }
+                setPrograms(data);
+                // Auto-select if only one program
+                if (data.length === 1) {
+                    setProgramId(data[0].id);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                // Fallback to mocks on error too for resilience during design phase
+                setPrograms(MOCK_PROGRAMS);
+                // setError('Failed to load programs. Using mock data.'); 
+            });
     }, []);
+
+    // Auto-select student if logged in as student OR if only 1 student available
+    useEffect(() => {
+        if (students.length > 0) {
+            if (user?.role === 'student') {
+                setStudentId(students[0]?.id || null);
+            } else if (students.length === 1) {
+                // Auto-select for parent if only 1 student
+                setStudentId(students[0].id);
+            }
+        }
+    }, [user, students]);
 
     // Derived Lists
     const availableStudents = students.filter(s => !programId || s.programId === programId || true);
@@ -91,47 +199,73 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
     const submitBooking = async () => {
         setSubmitting(true);
         setError(null);
+
+        // Auto-select first package if not explicitly chosen
+        const pkgId = packages?.[0]?.id;
+        if (!pkgId) {
+            setError('System Error: No service packages available. Please contact admin.');
+            setSubmitting(false);
+            return;
+        }
+
         try {
-            await api.post('/bookings', {
+            await api.post('/bookings/create', {
                 program_id: programId,
                 student_id: studentId,
-                tutor_id: tutorId,
-                subject_ids: subjectId ? [subjectId] : [], // Array for backend
+                // tutor_id: tutorId, 
+                subject_ids: subjectId ? [subjectId] : [],
                 curriculum_id: curriculumId,
-                start_time: start,
-                end_time: end,
+                package_id: pkgId, // Required by backend
+                requested_start: start, // Matches DTO
+                requested_end: end,     // Matches DTO
                 note
             });
+
+            // Invalidate queries to refresh dashboard
+            queryClient.invalidateQueries({ queryKey: ['student-bookings'] });
+            queryClient.invalidateQueries({ queryKey: ['parent-upcoming-sessions'] });
+
             // Success Animation or Redirect
-            router.push('/admin/dashboard');
-        } catch (e) {
-            console.error(e);
-            setError('Failed to book session. Please try again.');
+            // Role-based redirect
+            if (user?.role === 'admin') {
+                router.push('/admin/dashboard');
+            } else if (user?.role === 'parent') {
+                router.push('/parent/dashboard');
+            } else {
+                router.push('/students/dashboard');
+            }
+        } catch (e: any) {
+            console.error('Booking Error:', e);
+            if (e.response && e.response.data) {
+                console.error('Validation Errors:', JSON.stringify(e.response.data, null, 2));
+            }
+            const msg = e.response?.data?.message || 'Failed to book session. Please try again.';
+            setError(msg);
             setSubmitting(false);
         }
     };
 
     const canProceed = () => {
         if (step === 0) return !!programId && !!studentId && !!curriculumId && !!subjectId;
-        if (step === 1) return !!tutorId && !!start && !!end;
+        if (step === 1) return !!start && !!end;
         return true;
     };
 
     const steps = [
         { title: 'Context', subtitle: 'Program & details' },
-        { title: 'Logistics', subtitle: 'Staff & Time' },
-        { title: 'Review', subtitle: 'Confirm booking' }
+        { title: 'Schedule', subtitle: 'Select Time' },
+        { title: 'Review', subtitle: 'Confirm Request' }
     ];
 
     return (
-        <div className="w-full max-w-5xl mx-auto">
+        <div className="w-full max-w-xl mx-auto">
             {/* Header / Progress */}
-            <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
+            <div className="mb-10 flex flex-col items-center justify-between gap-6">
+                <div className="text-center">
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-400">
                         New Session
                     </h1>
-                    <p className="text-gray-400 mt-1">Book a new learning session in 3 simple steps.</p>
+                    <p className="text-gray-400 mt-1">Request a session in 3 simple steps.</p>
                 </div>
 
                 {/* Steps Visual */}
@@ -189,132 +323,75 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                             exit={{ opacity: 0, x: -20 }}
                             className="space-y-8 relative z-10"
                         >
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                                {/* Left Col: Program & Student */}
-                                <div className="space-y-6">
-                                    <h2 className="text-xl font-bold flex items-center gap-2"><Layers className="text-blue-400" size={20} /> Program Context</h2>
-                                    <div className="grid grid-cols-1 gap-3 max-h-[220px] overflow-y-auto pr-2 scrollbar-thin">
-                                        {programs.map(p => (
-                                            <SelectionCard
-                                                key={p.id}
-                                                id={p.id}
-                                                title={p.name}
-                                                selected={programId === p.id}
-                                                onClick={() => setProgramId(p.id)}
-                                                icon={<Layers size={18} />}
-                                            />
-                                        ))}
-                                    </div>
+                            <div className="max-w-xl mx-auto space-y-6">
+                                <h2 className="text-xl font-bold flex items-center gap-2 mb-6">
+                                    <Layers className="text-blue-400" size={20} /> Session Configuration
+                                </h2>
 
-                                    {/* Student Selection (Hidden if Student Role) */}
-                                    {user?.role !== 'student' && (
-                                        <>
-                                            <h2 className="text-xl font-bold flex items-center gap-2 mt-4"><User className="text-violet-400" size={20} /> Student</h2>
-                                            <div className="grid grid-cols-1 gap-3 max-h-[200px] overflow-y-auto pr-2 scrollbar-thin">
-                                                {availableStudents.map(s => (
-                                                    <SelectionCard
-                                                        key={s.id}
-                                                        id={s.id}
-                                                        title={s.name}
-                                                        subtitle={s.programId ? 'Program Enrolled' : 'General'}
-                                                        selected={studentId === s.id}
-                                                        onClick={() => setStudentId(s.id)}
-                                                        icon={<User size={18} />}
-                                                    />
-                                                ))}
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
+                                {/* Program Dropdown */}
+                                <GlassSelect
+                                    label="Program"
+                                    value={programId}
+                                    options={programs.map(p => ({ id: p.id, label: p.name }))}
+                                    onChange={setProgramId}
+                                    placeholder="Select a Program"
+                                    icon={<Layers size={16} />}
+                                />
 
-                                {/* Right Col: Curriculum & Subject */}
-                                <div className="space-y-6">
-                                    <h2 className="text-xl font-bold flex items-center gap-2"><GraduationCap className="text-pink-400" size={20} /> Curriculum Details</h2>
+                                {/* Student Dropdown (Hidden if Student Role) */}
+                                {user?.role !== 'student' && (
+                                    <GlassSelect
+                                        label="Student"
+                                        value={studentId}
+                                        options={availableStudents.map(s => ({ id: s.id, label: s.name }))}
+                                        onChange={setStudentId}
+                                        placeholder="Select a Student"
+                                        icon={<User size={16} />}
+                                    />
+                                )}
 
-                                    <div className="space-y-4">
-                                        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                                            <label className="text-xs font-bold text-gray-500 uppercase mb-3 block">Curriculum</label>
-                                            <div className="flex flex-wrap gap-2">
-                                                {curricula?.map((c: any) => (
-                                                    <button
-                                                        key={c.id}
-                                                        onClick={() => setCurriculumId(c.id)}
-                                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${curriculumId === c.id
-                                                            ? 'bg-blue-600 border-blue-500 text-white shadow-lg'
-                                                            : 'bg-transparent border-white/10 hover:bg-white/5 text-gray-300'
-                                                            }`}
-                                                    >
-                                                        {c.name}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
+                                {/* Curriculum Dropdown */}
+                                <GlassSelect
+                                    label="Curriculum"
+                                    value={curriculumId}
+                                    options={curricula?.map((c: any) => ({ id: c.id, label: c.name })) || []}
+                                    onChange={setCurriculumId}
+                                    placeholder="Select a Curriculum"
+                                    icon={<GraduationCap size={16} />}
+                                />
 
-                                        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                                            <label className="text-xs font-bold text-gray-500 uppercase mb-3 block">Primary Subject</label>
-                                            <div className="flex flex-wrap gap-2">
-                                                {subjects?.map((s: any) => (
-                                                    <button
-                                                        key={s.id}
-                                                        onClick={() => setSubjectId(s.id)}
-                                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${subjectId === s.id
-                                                            ? 'bg-violet-600 border-violet-500 text-white shadow-lg'
-                                                            : 'bg-transparent border-white/10 hover:bg-white/5 text-gray-300'
-                                                            }`}
-                                                    >
-                                                        {s.name}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                {/* Subject Dropdown */}
+                                <GlassSelect
+                                    label="Subject"
+                                    value={subjectId}
+                                    options={subjects?.map((s: any) => ({ id: s.id, label: s.name })) || []}
+                                    onChange={setSubjectId}
+                                    placeholder="Select a Subject"
+                                    icon={<Layers size={16} />} // Using Layers as generic placeholder if no specific subject icon
+                                />
                             </div>
                         </motion.div>
                     )}
 
-                    {/* STEP 1: LOGISTICS */}
+                    {/* STEP 1: LOGISTICS (SCHEDULE ONLY) */}
                     {step === 1 && (
                         <motion.div
                             key="step1"
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
-                            className="space-y-8 relative z-10"
+                            className="max-w-xl mx-auto space-y-8 relative z-10"
                         >
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                                {/* Left: Tutors (4 cols) */}
-                                <div className="lg:col-span-4 space-y-6">
-                                    <h2 className="text-xl font-bold flex items-center gap-2">
-                                        <User className="text-orange-400" size={20} /> Select Tutor
-                                    </h2>
-                                    <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin">
-                                        {availableTutors.map(t => (
-                                            <SelectionCard
-                                                key={t.id}
-                                                id={t.id}
-                                                title={t.name}
-                                                subtitle={t.bio}
-                                                selected={tutorId === t.id}
-                                                onClick={() => setTutorId(t.id)}
-                                            />
-                                        ))}
-                                        {availableTutors.length === 0 && <p className="text-gray-500 italic">No tutors found for this program.</p>}
-                                    </div>
-                                </div>
-
-                                {/* Right: Time Picker (8 cols) */}
-                                <div className="lg:col-span-8 space-y-6">
-                                    <h2 className="text-xl font-bold flex items-center gap-2">
-                                        <Calendar className="text-green-400" size={20} /> Schedule Session
-                                    </h2>
-                                    <div className="bg-black/20 p-6 rounded-2xl border border-white/5">
-                                        <TimeSlotPicker
-                                            start={start}
-                                            end={end}
-                                            onSelect={handleTimeSelect}
-                                        />
-                                    </div>
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-bold flex items-center gap-2">
+                                    <Calendar className="text-green-400" size={20} /> Schedule Session
+                                </h2>
+                                <div className="bg-black/20 p-6 rounded-2xl border border-white/5">
+                                    <TimeSlotPicker
+                                        start={start}
+                                        end={end}
+                                        onSelect={handleTimeSelect}
+                                    />
                                 </div>
                             </div>
                         </motion.div>
@@ -347,7 +424,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                                     </div>
                                     <div className="text-right">
                                         <p className="text-xs text-gray-500 uppercase font-bold mb-1">Tutor</p>
-                                        <p className="text-lg font-medium text-orange-200">{MOCK_TUTORS.find(t => t.id === tutorId)?.name}</p>
+                                        <p className="text-lg font-medium text-orange-200 italic">To Be Assigned</p>
                                     </div>
                                 </div>
 
@@ -402,13 +479,28 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                 </button>
 
                 {step < 2 ? (
-                    <button
-                        onClick={() => setStep(s => Math.min(2, s + 1) as Step)}
-                        disabled={!canProceed()}
-                        className="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold shadow-lg shadow-blue-900/40 transform hover:scale-105 transition-all disabled:opacity-50 disabled:grayscale disabled:pointer-events-none"
-                    >
-                        Continue
-                    </button>
+                    <div className="flex flex-col items-end">
+                        <button
+                            onClick={() => setStep(s => Math.min(2, s + 1) as Step)}
+                            disabled={!canProceed()}
+                            className="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold shadow-lg shadow-blue-900/40 transform hover:scale-105 transition-all disabled:opacity-50 disabled:grayscale disabled:pointer-events-none"
+                        >
+                            Continue
+                        </button>
+                        {!canProceed() && step === 0 && (
+                            <p className="text-xs text-red-400 mt-2 font-medium">
+                                {!programId ? 'Select a Program' :
+                                    !studentId ? 'Select a Student' :
+                                        !curriculumId ? 'Select a Curriculum' :
+                                            !subjectId ? 'Select a Subject' : ''}
+                            </p>
+                        )}
+                        {!canProceed() && step === 1 && (
+                            <p className="text-xs text-red-400 mt-2 font-medium">
+                                {(!start || !end) ? 'Select a Time' : ''}
+                            </p>
+                        )}
+                    </div>
                 ) : (
                     <button
                         onClick={submitBooking}

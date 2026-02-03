@@ -1,15 +1,16 @@
-'use client';
 import React, { useEffect, useState } from 'react';
 import api from '@/app/lib/api';
 import { format } from 'date-fns';
+import { RefreshCw, Clock, User, BookOpen, CheckCircle2, AlertCircle, Calendar } from 'lucide-react';
 
 interface Booking {
     id: string;
-    student: {
+    student?: {
         first_name: string;
         last_name: string;
+        email?: string;
         // Backend might send nested user with login name
-        user?: { first_name: string; last_name: string };
+        user?: { first_name: string; last_name: string; email?: string };
     };
     tutor?: { first_name: string; last_name: string };
     subject: { name: string };
@@ -53,17 +54,17 @@ export default function BookingsTableSection() {
     }, [page]);
 
     return (
-        <section className="bg-glass rounded-[2rem] p-8 border border-white/20 shadow-lg">
+        <div className="w-full">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">
+                <h2 className="text-xl font-bold text-[var(--color-text-primary)]">
                     All Bookings & Allocations
                 </h2>
                 <button
                     onClick={() => window.location.reload()}
-                    className="p-2 rounded-full hover:bg-[var(--color-surface)] text-[var(--color-text-secondary)]"
+                    className="p-2 rounded-xl hover:bg-white/10 text-[var(--color-text-secondary)] transition-colors"
                     title="Refresh"
                 >
-                    ↻
+                    <RefreshCw size={18} />
                 </button>
             </div>
 
@@ -99,8 +100,22 @@ export default function BookingsTableSection() {
                             bookings.map((b) => (
                                 <tr key={b.id} className="hover:bg-[var(--color-surface)]/50 transition-colors">
                                     <td className="py-4 px-4 font-medium text-[var(--color-text-primary)]">
-                                        {/* Prefer User Login Name (Thomas) over Student Profile Name (Student) */}
-                                        {b.student?.user?.first_name || b.student?.first_name} {b.student?.user?.last_name || b.student?.last_name}
+                                        {(() => {
+                                            const fName = b.student?.user?.first_name || b.student?.first_name;
+                                            const lName = b.student?.user?.last_name || b.student?.last_name;
+                                            const email = b.student?.user?.email || b.student?.email;
+
+                                            // Filter out literal placeholders
+                                            const isPlaceholder = (s: string | null | undefined) =>
+                                                !s || s.toLowerCase() === 'new' || s.toLowerCase() === 'user' || s.toLowerCase() === 'student';
+
+                                            const validFName = !isPlaceholder(fName) ? fName : '';
+                                            const validLName = !isPlaceholder(lName) ? lName : '';
+
+                                            if (validFName || validLName) return `${validFName || ''} ${validLName || ''}`.trim();
+                                            if (email) return email.split('@')[0];
+                                            return 'Student User';
+                                        })()}
                                     </td>
                                     <td className="py-4 px-4 text-[var(--color-text-primary)]">
                                         {b.subject?.name}
@@ -152,6 +167,6 @@ export default function BookingsTableSection() {
                 </button>
             </div>
 
-        </section>
+        </div >
     );
 }

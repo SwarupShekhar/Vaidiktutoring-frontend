@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { useAuthContext } from '@/app/context/AuthContext';
+import BookSessionButton from '@/app/components/home/BookSessionButton';
 
 export default function HomeHero() {
     const router = useRouter();
@@ -56,12 +57,7 @@ export default function HomeHero() {
                         >
                             Get started
                         </button>
-                        <button
-                            onClick={handleBookClick}
-                            className="px-8 py-4 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)] font-bold text-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-all"
-                        >
-                            Book a free academic consultation
-                        </button>
+                        <BookSessionButton onClick={handleBookClick} />
                     </div>
 
                     <p className="mt-6 text-sm text-[var(--color-text-secondary)] opacity-80">

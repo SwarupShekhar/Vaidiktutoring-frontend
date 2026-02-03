@@ -27,7 +27,9 @@ export default function NewBookingPage() {
         queryFn: async () => {
             // If user is a student, they can only book for themselves
             if (!isParent && user) {
-                return [{ id: user.id, name: user.first_name || 'Me' }];
+                // Use a valid UUID placeholder because backend DTO requires UUID, 
+                // but Backend Service ignores valid UUID and uses req.user.id to find/create student profile.
+                return [{ id: '00000000-0000-0000-0000-000000000000', name: user.first_name || 'Me' }];
             }
 
             try {

@@ -13,6 +13,9 @@ type CreateStudentForm = {
     grade: string;
     school: string;
     curriculum_preference?: string;
+    interests_raw?: string;
+    recent_focus?: string;
+    struggle_areas_raw?: string;
 };
 
 export default function AddStudentOnboardingPage() {
@@ -34,6 +37,9 @@ export default function AddStudentOnboardingPage() {
                 grade: values.grade,
                 school: values.school,
                 curriculum_preference: values.curriculum_preference || null,
+                interests: values.interests_raw ? values.interests_raw.split(',').map(i => i.trim()).filter(Boolean) : [],
+                recent_focus: values.recent_focus || '',
+                struggle_areas: values.struggle_areas_raw ? values.struggle_areas_raw.split(',').map(i => i.trim()).filter(Boolean) : [],
             });
 
             // Redirect to dashboard after successful add
@@ -65,7 +71,7 @@ export default function AddStudentOnboardingPage() {
                             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                                 Add your child
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-300">
+                            <p className="text-gray-600 dark:text-gray-300 text-sm">
                                 Tell us about your child so we can personalize their learning experience.
                             </p>
                         </div>
@@ -73,36 +79,36 @@ export default function AddStudentOnboardingPage() {
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
                             {error && (
-                                <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 text-sm text-red-600 dark:text-red-400 font-medium">
+                                <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 text-sm text-red-600 dark:text-red-400 font-medium text-center">
                                     {error}
                                 </div>
                             )}
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">First Name</label>
+                                    <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">First Name</label>
                                     <input
                                         {...register('first_name', { required: true })}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all"
-                                        placeholder="e.g. Alex"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all font-medium"
+                                        placeholder="Alex"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Last Name</label>
+                                    <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Last Name</label>
                                     <input
                                         {...register('last_name', { required: true })}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all"
-                                        placeholder="e.g. Smith"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all font-medium"
+                                        placeholder="Smith"
                                     />
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Current Grade</label>
+                                    <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Current Grade</label>
                                     <select
                                         {...register('grade', { required: true })}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all appearance-none"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all appearance-none font-medium"
                                     >
                                         <option value="">Select Grade</option>
                                         {Array.from({ length: 12 }).map((_, idx) => (
@@ -111,49 +117,68 @@ export default function AddStudentOnboardingPage() {
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">School Name</label>
+                                    <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">School Name</label>
                                     <input
                                         {...register('school', { required: true })}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all"
-                                        placeholder="e.g. Springfield High"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all font-medium"
+                                        placeholder="Springfield High"
                                     />
                                 </div>
                             </div>
 
+                            <hr className="border-gray-100 dark:border-gray-800" />
+
                             <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Curriculum Preference (Optional)</label>
-                                <select
-                                    {...register('curriculum_preference')}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all appearance-none"
-                                >
-                                    <option value="">No preference / Not sure</option>
-                                    {curricula?.map((c: any) => (
-                                        <option key={c.id} value={c.id}>{c.name}</option>
-                                    ))}
-                                </select>
+                                <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">What are their interests?</label>
+                                <input
+                                    {...register('interests_raw')}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all font-medium"
+                                    placeholder="e.g. Minecraft, Space Exploration, Piano"
+                                />
+                                <p className="text-[10px] text-gray-400 ml-1">Separate interests with commas</p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Current Learning Focus</label>
+                                <textarea
+                                    {...register('recent_focus')}
+                                    rows={2}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all font-medium"
+                                    placeholder="e.g. Mastered 2D geometry, now moving to coordinate planes."
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Known Challenges / Struggles</label>
+                                <input
+                                    {...register('struggle_areas_raw')}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent outline-none transition-all font-medium"
+                                    placeholder="e.g. Word problems, fractions, focus"
+                                />
+                                <p className="text-[10px] text-gray-400 ml-1">Separate with commas</p>
                             </div>
 
                             <div className="pt-4 flex items-center justify-between gap-4">
                                 <button
                                     type="button"
                                     onClick={() => router.back()}
-                                    className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                                    className="px-6 py-3 rounded-xl font-bold text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors uppercase text-xs tracking-widest"
                                 >
-                                    Back
+                                    Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="flex-1 px-6 py-3 rounded-xl bg-[var(--color-primary)] text-white font-bold hover:opacity-90 transition-all shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className="flex-1 px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black hover:opacity-90 transition-all shadow-xl shadow-blue-500/20 disabled:opacity-70 disabled:cursor-not-allowed uppercase text-xs tracking-widest"
                                 >
-                                    {isSubmitting ? 'Saving...' : 'Complete Setup →'}
+                                    {isSubmitting ? 'Syncing...' : 'Activate Student Account →'}
                                 </button>
                             </div>
 
                         </form>
                     </div>
-                    <p className="text-center mt-6 text-xs font-medium text-gray-400 uppercase tracking-widest">
-                        Step 2 of 2
+                    <p className="text-center mt-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+                        Student Initialization Core
                     </p>
                 </div>
             </div>

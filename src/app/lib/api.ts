@@ -17,6 +17,12 @@ export const api = axios.create({
 /**
  * Helper to update token from AuthContext
  */
+let authTokenPromise: (() => Promise<string | null>) | null = null;
+
+export const setTokenGetter = (fn: () => Promise<string | null>) => {
+  authTokenPromise = fn;
+};
+
 export const setAuthToken = (token: string | null) => {
   if (token) {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -26,9 +32,19 @@ export const setAuthToken = (token: string | null) => {
 };
 
 /**
- * Request interceptor - simplified
+ * Request interceptor - ensures token is fresh if getter is provided
  */
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(async (config) => {
+  if (authTokenPromise) {
+    try {
+      const token = await authTokenPromise();
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+    } catch (e) {
+      console.error('[API] Failed to get fresh token', e);
+    }
+  }
   return config;
 });
 
@@ -44,14 +60,13 @@ api.interceptors.response.use(
 
     // Check for specific 403 regarding verification
     // Match leniently: "verify" and "email"
-    const msg = data?.message?.toLowerCase() || '';
+    const msg = (typeof data?.message === 'string') ? data.message.toLowerCase() : '';
     if (status === 403 && (msg.includes('verify') && msg.includes('email'))) {
       // Emit event for AuthContext to pick up
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new Event('k12:auth:verification_needed'));
       }
-      // Return a non-resolving promise to halt downstream error handling (prevents generic toasts)
-      return new Promise(() => { });
+      return Promise.reject(err);
     }
 
     // Password Reset Required
@@ -59,7 +74,7 @@ api.interceptors.response.use(
       if (typeof window !== 'undefined') {
         window.location.href = '/change-password';
       }
-      return new Promise(() => { });
+      return Promise.reject(err);
     }
 
 
@@ -67,14 +82,15 @@ api.interceptors.response.use(
     if (status === 401) {
       try {
         if (typeof window !== 'undefined') {
-          localStorage.removeItem('K12_TOKEN');
-          localStorage.removeItem('K12_USER');
+          localStorage.removeItem('auth_token');
           // optional: show message here (toast)
           // window.location.href = '/login';
+          // window.location.href = '/login'; // Force redirect to refresh session
+          console.warn('401 Unauthorized - redirect DISABLED for debugging');
           console.warn('401 Unauthorized - would redirect to login');
         }
       } catch { }
-      return new Promise(() => { }); // Also halt for 401 redirect
+      return Promise.reject(err);
     }
     return Promise.reject(err);
   }

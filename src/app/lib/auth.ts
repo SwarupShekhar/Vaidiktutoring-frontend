@@ -81,7 +81,7 @@ export async function resendVerification(email?: string) {
 
 
 
-export async function changePassword(payload: { currentPassword?: string; newPassword: string }) {
+export async function changePassword(payload: { currentPassword?: string; password: string }) {
   try {
     const res = await api.post('/auth/change-password', payload);
     return res.data;

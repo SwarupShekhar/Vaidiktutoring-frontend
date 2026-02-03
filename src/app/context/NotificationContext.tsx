@@ -73,7 +73,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         // Let's stick to root first as it's safer for global events unless specified.
         const socketInstance = io(API_URL, {
             query: { userId: user.sub || user.id, role: user.role },
-            transports: ['websocket', 'polling'],
+            transports: ['polling', 'websocket'], // Use polling first for stability
         });
 
         setSocket(socketInstance);

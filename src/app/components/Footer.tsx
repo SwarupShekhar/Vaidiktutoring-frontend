@@ -1,8 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+    const pathname = usePathname();
+    if (pathname?.startsWith('/session')) return null;
+
     return (
         <footer className="relative bg-white/40 dark:bg-black/40 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 pt-16 pb-8 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

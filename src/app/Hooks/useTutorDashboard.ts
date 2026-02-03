@@ -4,13 +4,23 @@ import { api } from '../lib/api';
 
 export function useTutorDashboard() {
     // Fetch tutor's assigned bookings
-    const { data: bookings, isLoading: loadingBookings, error: bookingsError } = useQuery({
+    const { data: bookings, isLoading: loadingBookings, error: bookingsError, refetch: refetchBookings } = useQuery({
         queryKey: ['tutor-bookings'],
         queryFn: async () => {
             const res = await api.get('/tutor/bookings');
-            console.log('[useTutorDashboard] Raw bookings response:', res.data);
             return Array.isArray(res.data) ? res.data : [];
-        }
+        },
+        refetchInterval: 5000, // Sync every 5 seconds
+    });
+
+    // Fetch REAL-TIME Stats from backend
+    const { data: backendStats, isLoading: loadingStats } = useQuery({
+        queryKey: ['tutor-stats'],
+        queryFn: async () => {
+            const res = await api.get('/tutor/stats');
+            return res.data;
+        },
+        refetchInterval: 5000,
     });
 
     // Fetch AVAILABLE (unclaimed) bookings matching tutor's subjects
@@ -21,12 +31,11 @@ export function useTutorDashboard() {
                 const res = await api.get('/bookings/available');
                 return Array.isArray(res.data) ? res.data : [];
             } catch (e) {
-                // Endpoint may not exist yet, gracefully return empty
                 console.warn('Available jobs endpoint not ready', e);
                 return [];
             }
         },
-        refetchInterval: 30000, // Poll every 30 seconds for new jobs
+        refetchInterval: 10000, // Poll every 10 seconds for new jobs
     });
 
     // Helper function to extract date from booking
@@ -104,12 +113,23 @@ export function useTutorDashboard() {
         upcomingBookings,
         availableJobs: availableJobs || [],
         stats: {
-            todayCount: todaySessions.length,
-            weekCount: bookings?.length || 0,
-            availableCount: availableJobs?.length || 0
+            todayCount: backendStats?.todayCount ?? todaySessions.length,
+            completedCount: backendStats?.completedCount ?? 0,
+            totalHours: backendStats?.totalHours ?? 0,
+            earnings: backendStats?.earnings ?? 0,
+            availableCount: backendStats?.availableCount ?? availableJobs?.length ?? 0,
+            quality: backendStats?.quality ?? {
+                rating: 0,
+                reviewsCount: 0,
+                engagement: 0,
+                punctuality: 0,
+                techScore: 0,
+                isInitial: true
+            }
         },
-        loading: loadingBookings || loadingAvailable,
-        error: bookingsError
+        loading: loadingBookings || loadingAvailable || loadingStats,
+        error: bookingsError,
+        refetch: refetchBookings
     };
 }
 

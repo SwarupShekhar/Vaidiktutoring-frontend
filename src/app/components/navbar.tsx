@@ -14,6 +14,8 @@ export default function Navbar() {
 
   const isActive = (path: string) => pathname?.startsWith(path);
 
+  if (pathname?.startsWith('/session')) return null;
+
   return (
     <nav className="w-full sticky top-0 z-50 bg-white/40 dark:bg-black/40 backdrop-blur-md border-b border-white/10 dark:border-white/5 transition-all-fast">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
@@ -75,11 +77,11 @@ export default function Navbar() {
                       '/parent/dashboard'
               }
               className={`text-sm lg:text-base font-medium transition-colors ${isActive('/admin/dashboard') ||
-                  isActive('/parent/dashboard') ||
-                  isActive('/students/dashboard') ||
-                  isActive('/tutor/dashboard')
-                  ? 'text-[var(--color-primary)]'
-                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
+                isActive('/parent/dashboard') ||
+                isActive('/students/dashboard') ||
+                isActive('/tutor/dashboard')
+                ? 'text-[var(--color-primary)]'
+                : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
                 }`}
             >
               Dashboard
