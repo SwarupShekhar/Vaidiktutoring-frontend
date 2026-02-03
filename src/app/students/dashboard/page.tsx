@@ -16,11 +16,32 @@ import {
   GraduationCap
 } from 'lucide-react';
 import { differenceInMinutes } from 'date-fns';
+import { api } from '@/app/lib/api';
+import { EditStudentProfileModal } from '@/app/components/dashboard/EditStudentProfileModal';
 
 export default function StudentDashboardPage() {
   const { user } = useAuthContext();
   const router = useRouter();
   const { upcomingSessions, pastSessions, bookings, loading } = useStudentDashboard();
+
+  // Profile State
+  const [isEditProfileOpen, setIsEditProfileOpen] = React.useState(false);
+  const [studentProfile, setStudentProfile] = React.useState<any>(null);
+
+  const fetchProfile = React.useCallback(async () => {
+    try {
+      const res = await api.get('/students/me');
+      setStudentProfile(res.data);
+    } catch (err) {
+      console.error('Failed to fetch student profile:', err);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (user) {
+      fetchProfile();
+    }
+  }, [user, fetchProfile]);
 
   // DERIVE STATS
   const stats = useMemo(() => {
@@ -76,9 +97,17 @@ export default function StudentDashboardPage() {
             <h1 className="text-3xl md:text-4xl font-extrabold text-[var(--color-text-primary)] tracking-tight">
               {getGreeting()}, {user?.firstName || user?.first_name || 'Student'}
             </h1>
-            <p className="text-[var(--color-text-secondary)] opacity-80">
-              Your learning dashboard is up to date.
-            </p>
+            <div className="flex items-center gap-3">
+              <p className="text-[var(--color-text-secondary)] opacity-80">
+                Your learning dashboard is up to date.
+              </p>
+              <button
+                onClick={() => setIsEditProfileOpen(true)}
+                className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline transition-all flex items-center gap-1"
+              >
+                ✏️ Edit Profile
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
@@ -243,6 +272,16 @@ export default function StudentDashboardPage() {
         </div>
 
       </div>
+
+      {/* Edit Profile Modal */}
+      {studentProfile && (
+        <EditStudentProfileModal
+          isOpen={isEditProfileOpen}
+          onClose={() => setIsEditProfileOpen(false)}
+          student={studentProfile}
+          onUpdate={fetchProfile}
+        />
+      )}
     </ProtectedClient>
   );
 }
