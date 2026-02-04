@@ -17,6 +17,7 @@ const studentSchema = z.object({
     last_name: z.string().optional(),
     grade: z.string().min(1, 'Grade is required'),
     school: z.string().min(1, 'School is required'),
+    email: z.string().email('Invalid email address').optional().or(z.literal('')),
     curriculum_preference: z.string().optional(),
 });
 
@@ -41,6 +42,7 @@ export default function OnboardingStudentForm() {
             grade: '',
             school: '',
             curriculum_preference: '',
+            email: '',
         },
     });
 
@@ -50,6 +52,7 @@ export default function OnboardingStudentForm() {
             last_name: values.last_name || '',
             grade: values.grade,
             school: values.school,
+            email: values.email || null,
             curriculum_preference: values.curriculum_preference || null,
         });
 
@@ -109,6 +112,26 @@ export default function OnboardingStudentForm() {
                                 className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] text-[var(--color-text-primary)] px-3 py-2 text-sm focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
                             />
                         </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
+                            Student Email (Optional)
+                        </label>
+                        <input
+                            type="email"
+                            {...register('email')}
+                            placeholder="student@example.com"
+                            className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] text-[var(--color-text-primary)] px-3 py-2 text-sm focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+                        />
+                        <p className="text-[10px] text-[var(--color-text-secondary)] mt-1 opacity-70">
+                            Provide this if your child has their own account to sync progress automatically!
+                        </p>
+                        {errors.email && (
+                            <p className="text-xs text-red-500 mt-1">
+                                {errors.email.message}
+                            </p>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

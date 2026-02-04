@@ -18,6 +18,7 @@ import {
 import { differenceInMinutes } from 'date-fns';
 import { api } from '@/app/lib/api';
 import { EditStudentProfileModal } from '@/app/components/dashboard/EditStudentProfileModal';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 
 export default function StudentDashboardPage() {
   const { user } = useAuthContext();
@@ -27,6 +28,30 @@ export default function StudentDashboardPage() {
   // Profile State
   const [isEditProfileOpen, setIsEditProfileOpen] = React.useState(false);
   const [studentProfile, setStudentProfile] = React.useState<any>(null);
+
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      } as any
+    }
+  };
 
   const fetchProfile = React.useCallback(async () => {
     try {
@@ -45,10 +70,15 @@ export default function StudentDashboardPage() {
 
   // DERIVE STATS
   const stats = useMemo(() => {
-    const completed = bookings.filter((b: any) => b.status === 'completed' || b.status === 'confirmed' && new Date(b.requested_end) < new Date());
+    const now = new Date();
+    const completed = bookings.filter((b: any) => {
+      const endTime = new Date(b.end_time || b.requested_end);
+      return b.status === 'completed' || (['confirmed', 'scheduled'].includes(b.status) && endTime < now);
+    });
+
     const totalMinutes = completed.reduce((acc: number, curr: any) => {
-      const start = new Date(curr.requested_start);
-      const end = new Date(curr.requested_end);
+      const start = new Date(curr.start_time || curr.requested_start);
+      const end = new Date(curr.end_time || curr.requested_end);
       return acc + Math.max(0, differenceInMinutes(end, start));
     }, 0);
 
@@ -81,21 +111,34 @@ export default function StudentDashboardPage() {
 
   return (
     <ProtectedClient roles={['student']}>
-      <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8 relative"
+      >
+        {/* Decorative Background Blobs */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+          <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-blob" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-blob animation-delay-2000" />
+        </div>
 
         {/* TOP COMMAND BAR */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <motion.header variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                {user?.first_name?.[0] || 'S'}
-              </div>
+              <motion.div
+                whileHover={{ rotate: 10 }}
+                className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold"
+              >
+                {user?.first_name?.[0] || user?.firstName?.[0] || 'S'}
+              </motion.div>
               <p className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-tighter">
                 Student Portal
               </p>
             </div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-[var(--color-text-primary)] tracking-tight">
-              {getGreeting()}, {user?.firstName || user?.first_name || 'Student'}
+              {getGreeting()}, {user?.firstName && user.firstName !== 'New' ? user.firstName : (user?.first_name !== 'New' ? user?.first_name : 'Scholar')}
             </h1>
             <div className="flex items-center gap-3">
               <p className="text-[var(--color-text-secondary)] opacity-80">
@@ -119,10 +162,10 @@ export default function StudentDashboardPage() {
               Book New Session
             </button>
           </div>
-        </header>
+        </motion.header>
 
         {/* STATS OVERVIEW */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <motion.section variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <StatCard
             icon={CheckCircle2}
             label="Completed Classes"
@@ -144,10 +187,10 @@ export default function StudentDashboardPage() {
             description={nextSession ? formatDate(nextSession.start_time).split(',')[1] : 'Book one today'}
             color="#3b82f6"
           />
-        </section>
+        </motion.section>
 
         {/* HERO AREA: NEXT CLASS */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             <div className="space-y-4">
               <h3 className="text-lg font-bold text-[var(--color-text-primary)] flex items-center gap-2">
@@ -157,19 +200,25 @@ export default function StudentDashboardPage() {
               <SessionCommandCard session={nextSession} loading={loading} />
             </div>
 
-            {/* EMAIL VERIFICATION CALLOUT */}
-            {user?.email_verified === false && (
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start gap-4 text-amber-800 shadow-sm animate-pulse">
-                <AlertCircle className="shrink-0 mt-0.5" size={20} />
-                <div>
-                  <p className="font-bold text-sm">Action Needed: Verify your email</p>
-                  <p className="text-xs opacity-90">You won't be able to book new sessions until your email is verified.</p>
-                </div>
-              </div>
-            )}
+            <AnimatePresence>
+              {user?.email_verified === false && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start gap-4 text-amber-800 shadow-sm"
+                >
+                  <AlertCircle className="shrink-0 mt-0.5" size={20} />
+                  <div>
+                    <p className="font-bold text-sm">Action Needed: Verify your email</p>
+                    <p className="text-xs opacity-90">You won't be able to book new sessions until your email is verified.</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* UPCOMING MINI LIST */}
-            <div className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm">
+            <motion.div variants={itemVariants} className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-[var(--color-text-primary)] flex items-center gap-2">
                   <Calendar size={20} className="text-blue-500" />
@@ -210,7 +259,7 @@ export default function StudentDashboardPage() {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           </div>
 
           {/* SIDEBAR: CLASS HISTORY */}
@@ -258,10 +307,10 @@ export default function StudentDashboardPage() {
               <div className="absolute top-[-10px] right-[-10px] w-20 h-20 bg-white/10 rounded-full blur-xl" />
             </div>
           </aside>
-        </div>
+        </motion.div>
 
         {/* MOBILE CTA */}
-        <div className="flex sm:hidden">
+        <motion.div variants={itemVariants} className="flex sm:hidden">
           <button
             onClick={() => router.push('/bookings/new')}
             className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[var(--color-primary)] text-white font-bold rounded-2xl shadow-xl hover:bg-blue-600 transition-all"
@@ -269,9 +318,9 @@ export default function StudentDashboardPage() {
             <Plus size={20} />
             Book Session
           </button>
-        </div>
+        </motion.div>
 
-      </div>
+      </motion.div>
 
       {/* Edit Profile Modal */}
       {studentProfile && (

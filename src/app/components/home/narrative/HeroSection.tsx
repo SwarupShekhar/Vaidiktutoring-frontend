@@ -74,6 +74,9 @@ export default function HeroSection() {
                             In crowded classrooms and batch coaching, questions go unasked and confusion goes unnoticed.
                             We built a system where every session is designed around one child’s understanding.
                         </p>
+                        <p className="relative z-10 mt-4 text-base md:text-lg text-text-secondary font-medium italic opacity-80">
+                            Expert tutors guided by intelligent systems, aligned with major global curricula.
+                        </p>
                     </div>
                 </motion.div>
 

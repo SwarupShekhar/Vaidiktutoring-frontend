@@ -105,6 +105,40 @@ export default function ShiftSection() {
                         </motion.div>
                     </div>
                 </div>
+
+                <div className="mt-32">
+                    <FadeUpSection className="text-center mb-16">
+                        <h3 className="text-2xl md:text-3xl font-black text-foreground tracking-tight">Why this works</h3>
+                    </FadeUpSection>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[
+                            {
+                                title: "Curriculum-Aligned",
+                                desc: "Mapped to major global frameworks (US, UK, IB, and more).",
+                                icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                            },
+                            {
+                                title: "System + Human Hybrid",
+                                desc: "Expert tutors supported by intelligent feedback systems.",
+                                icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" /></svg>
+                            },
+                            {
+                                title: "Outcome-Focused",
+                                desc: "Clear goals, artifacts, and measurable progress.",
+                                icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                            }
+                        ].map((card, i) => (
+                            <FadeUpSection key={i} delay={i * 0.1} className="p-8 rounded-[2rem] bg-surface/50 dark:bg-white/5 border border-border/50 backdrop-blur-xl hover:border-primary/50 transition-colors group">
+                                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    {card.icon}
+                                </div>
+                                <h4 className="text-xl font-black text-foreground mb-3">{card.title}</h4>
+                                <p className="text-sm text-text-secondary font-medium leading-relaxed">{card.desc}</p>
+                            </FadeUpSection>
+                        ))}
+                    </div>
+                </div>
             </div>
         </section>
     );
