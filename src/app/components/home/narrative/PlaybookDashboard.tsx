@@ -92,7 +92,7 @@ const STEPS = [
 ];
 
 export default function PlaybookDashboard() {
-    const containerRef = useRef(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
         offset: ["start start", "end end"]
@@ -111,39 +111,40 @@ export default function PlaybookDashboard() {
     }, [scrollYProgress]);
 
     const activeStep = STEPS[activeIndex];
-    const yRange = useTransform(scrollYProgress, [0, 1], ["0%", "-85%"]);
 
     return (
         <section ref={containerRef} className="relative bg-background h-[300vh]">
-            <div className="sticky top-0 h-screen overflow-hidden flex flex-col justify-center">
+            <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
                 {/* Background Decorative Neural Node Graphics */}
-                <div className="absolute inset-0 pointer-events-none opacity-20 z-0">
+                <div className="absolute inset-0 pointer-events-none opacity-20 z-0 text-foreground">
                     <div className="absolute top-[20%] left-[5%] w-[400px] h-[400px] border border-primary/10 rounded-full animate-pulse" />
                     <div className="absolute top-[60%] left-[15%] w-[300px] h-[300px] border border-indigo-500/10 rounded-full animate-ping [animation-duration:10s]" />
                 </div>
 
-                <div className="container mx-auto px-6 relative z-10 h-full flex flex-col">
-                    <FadeUpSection className="text-center pt-8 pb-8 shrink-0 relative z-20 bg-background/80 backdrop-blur-md">
+                <div className="container mx-auto px-6 relative z-10 flex flex-col h-full max-h-[90vh]">
+                    <FadeUpSection className="text-center pt-4 pb-4 shrink-0 relative z-20">
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-2 block">Engineered Pedagogy</span>
                         <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tighter">
                             What happens inside a session
                         </h2>
                     </FadeUpSection>
 
-                    <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 h-full items-center">
+                    <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 flex-grow items-center min-h-0 overflow-hidden">
                         {/* Left Side: Focus Stack Architecture */}
-                        <div className="lg:w-1/2 relative h-[600px] flex gap-8 items-start">
+                        <div className="lg:w-1/2 relative flex gap-8 items-start h-full min-h-[400px]">
                             {/* 1. The Timeline Sidebar (Navigation) */}
-                            <div className="flex flex-col h-full py-4 relative">
+                            <div className="flex flex-col h-full py-4 relative shrink-0">
                                 {/* Track Line */}
                                 <div className="absolute left-3 top-4 bottom-4 w-px bg-border/30" />
 
                                 {/* Progress Indicators */}
-                                <div className="space-y-12 relative z-10">
+                                <div className="space-y-8 relative z-10">
                                     {STEPS.map((step, i) => (
                                         <div key={i} className="flex items-center gap-4 group cursor-pointer" onClick={() => {
                                             const targetScroll = i / (STEPS.length - 1);
-                                            window.scrollTo({ top: window.scrollY + (targetScroll * window.innerHeight), behavior: 'smooth' });
+                                            if (containerRef.current) {
+                                                window.scrollTo({ top: containerRef.current.offsetTop + (targetScroll * window.innerHeight * 2), behavior: 'smooth' });
+                                            }
                                         }}>
                                             <div
                                                 className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-500 bg-background ${activeIndex === i
@@ -161,7 +162,7 @@ export default function PlaybookDashboard() {
                             </div>
 
                             {/* 2. The Active Content Stage */}
-                            <div className="flex-1 relative h-full pt-2">
+                            <div className="flex-1 relative h-full pt-2 overflow-y-auto custom-scrollbar">
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={activeIndex}
@@ -169,7 +170,7 @@ export default function PlaybookDashboard() {
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: -20 }}
                                         transition={{ duration: 0.4, ease: "easeOut" }}
-                                        className="space-y-8"
+                                        className="space-y-6"
                                     >
                                         {/* Header Tags */}
                                         <div className="flex flex-wrap items-center gap-3">
@@ -182,11 +183,11 @@ export default function PlaybookDashboard() {
                                         </div>
 
                                         {/* Title & Description */}
-                                        <div className="space-y-6">
-                                            <h3 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter leading-[1.1]">
+                                        <div className="space-y-4">
+                                            <h3 className="text-3xl md:text-5xl font-black text-foreground tracking-tighter leading-[1.1]">
                                                 {activeStep.title}
                                             </h3>
-                                            <p className="text-lg md:text-xl text-text-secondary font-medium leading-relaxed max-w-xl">
+                                            <p className="text-base md:text-lg text-text-secondary font-medium leading-relaxed max-w-xl">
                                                 {activeStep.description}
                                             </p>
                                         </div>
@@ -209,13 +210,11 @@ export default function PlaybookDashboard() {
                         </div>
 
                         {/* Right Side: Sticky Interactive Mockup (The "Engine") */}
-                        <div className="hidden lg:block lg:w-1/2 h-[600px]">
+                        <div className="hidden lg:block lg:w-1/2 h-full max-h-[600px]">
                             <div className="h-full w-full bg-gray-950 rounded-[3.5rem] p-1 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden border border-white/5 relative transform transition-transform duration-700">
-                                {/* Bezel Interior */}
                                 <div className="h-full w-full bg-[#050505] rounded-[3.2rem] p-8 flex flex-col relative overflow-hidden">
-
                                     {/* Top OS Bar */}
-                                    <div className="flex items-center justify-between mb-12 relative z-20">
+                                    <div className="flex items-center justify-between mb-8 relative z-20">
                                         <div className="flex items-center gap-6">
                                             <div className="flex gap-2">
                                                 <div className="w-2.5 h-2.5 rounded-full bg-red-500/30" />
@@ -236,9 +235,9 @@ export default function PlaybookDashboard() {
                                     </div>
 
                                     {/* Content Grid */}
-                                    <div className="flex-grow flex gap-8 relative z-10">
+                                    <div className="flex-grow flex gap-8 relative z-10 min-h-0">
                                         {/* Sidebar Navigation (Mock) */}
-                                        <div className="w-12 flex flex-col gap-6">
+                                        <div className="w-12 flex flex-col gap-6 shrink-0">
                                             {[...Array(4)].map((_, i) => (
                                                 <div key={i} className={`w-12 h-12 rounded-2xl flex items-center justify-center border transition-all ${i === 0 ? 'bg-primary/20 border-primary/50 text-primary' : 'bg-white/5 border-white/10 text-white/20'}`}>
                                                     <div className="w-4 h-4 rounded-sm border-2 border-current opacity-50" />
@@ -247,7 +246,7 @@ export default function PlaybookDashboard() {
                                         </div>
 
                                         {/* Main Workspace */}
-                                        <div className="flex-grow">
+                                        <div className="flex-grow min-h-0 overflow-y-auto custom-scrollbar">
                                             <AnimatePresence mode="wait">
                                                 <motion.div
                                                     key={activeStep.id}
@@ -255,14 +254,14 @@ export default function PlaybookDashboard() {
                                                     animate={{ opacity: 1, x: 0 }}
                                                     exit={{ opacity: 0, x: -20 }}
                                                     transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
-                                                    className="space-y-8 h-full flex flex-col"
+                                                    className="space-y-6 h-full flex flex-col"
                                                 >
-                                                    <div className="p-6 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-sm">
+                                                    <div className="p-6 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-sm shrink-0">
                                                         <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-2">{activeStep.mock.status}</p>
-                                                        <h4 className="text-3xl font-black text-white tracking-tighter leading-tight">{activeStep.mock.title}</h4>
+                                                        <h4 className="text-2xl font-black text-white tracking-tighter leading-tight">{activeStep.mock.title}</h4>
                                                     </div>
 
-                                                    <div className="grid grid-cols-1 gap-4 flex-grow content-start">
+                                                    <div className="grid grid-cols-1 gap-3 flex-grow content-start">
                                                         {activeStep.mock.elements.map((el, i) => (
                                                             <motion.div
                                                                 key={i}
@@ -281,7 +280,7 @@ export default function PlaybookDashboard() {
                                                     </div>
 
                                                     {/* Bottom Telemetry Bar */}
-                                                    <div className="mt-auto p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-between">
+                                                    <div className="mt-auto p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-between shrink-0">
                                                         <div className="flex items-center gap-4">
                                                             <div className="flex -space-x-2">
                                                                 <div className="w-6 h-6 rounded-full bg-primary/30 border-2 border-[#050505]" />
@@ -301,22 +300,6 @@ export default function PlaybookDashboard() {
                                             </AnimatePresence>
                                         </div>
                                     </div>
-
-                                    {/* Decorative HUD elements */}
-                                    <div className="absolute bottom-12 right-12 pointer-events-none opacity-20">
-                                        <div className="relative w-24 h-24">
-                                            <svg className="w-full h-full text-primary" viewBox="0 0 100 100">
-                                                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="0.5" strokeDasharray="1 5" />
-                                                <motion.circle
-                                                    animate={{ rotate: 360 }}
-                                                    transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
-                                                    cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="10 90"
-                                                    style={{ transformOrigin: 'center' }}
-                                                />
-                                            </svg>
-                                        </div>
-                                    </div>
-
                                     {/* Grid Overlay */}
                                     <div className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none"
                                         style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}
@@ -325,65 +308,6 @@ export default function PlaybookDashboard() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Session Outputs Visual Element */}
-                    <FadeUpSection className="mt-20 mb-12 p-10 md:p-16 rounded-[3rem] bg-indigo-950/40 border border-white/10 backdrop-blur-3xl relative overflow-hidden group shadow-2xl">
-                        {/* Decorative background glow */}
-                        <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
-                        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
-
-                        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-12">
-                            <h4 className="text-2xl md:text-3xl font-black text-white tracking-tighter flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary shadow-inner">
-                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                </div>
-                                Session Outputs
-                            </h4>
-                            <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-                                Continuous Evidence Generation
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-                            {[
-                                {
-                                    label: "3 Key Takeaways",
-                                    icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>,
-                                    color: "bg-green-500/20 text-green-400"
-                                },
-                                {
-                                    label: "Next Goal",
-                                    icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
-                                    color: "bg-blue-500/20 text-blue-400"
-                                },
-                                {
-                                    label: "Saved Learning Artifact",
-                                    icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /></svg>,
-                                    color: "bg-amber-500/20 text-amber-400"
-                                },
-                                {
-                                    label: "Confidence Signal",
-                                    icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>,
-                                    color: "bg-purple-500/20 text-purple-400"
-                                }
-                            ].map((output, i) => (
-                                <div key={i} className="group cursor-default">
-                                    <div className={`w-12 h-12 rounded-xl ${output.color} flex items-center justify-center mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}>
-                                        {output.icon}
-                                    </div>
-                                    <p className="text-xs font-black uppercase tracking-[0.15em] text-white/80 mb-4">{output.label}</p>
-                                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                        <motion.div
-                                            initial={{ width: 0 }}
-                                            whileInView={{ width: "70%" }}
-                                            transition={{ delay: 1 + i * 0.1, duration: 1 }}
-                                            className="h-full bg-white/30 rounded-full"
-                                        />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </FadeUpSection>
                 </div>
             </div>
         </section>
