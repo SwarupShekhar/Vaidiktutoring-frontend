@@ -11,6 +11,12 @@
   --color-text-secondary: #7F8C8D;
   --color-border: #DCDFE6;
 
+  /* New Redesign Palette */
+  --color-ice-blue: #D6E6F3;
+  --color-powder-blue: #A6C5D7;
+  --color-sapphire: #0F52BA;
+  --color-deep-navy: #000926;
+
   /* NextJS defaults mapped to theme */
   --background: var(--color-background);
   --foreground: var(--color-text-primary);
@@ -24,6 +30,16 @@
   --color-text-primary: #EAEAEA;
   --color-text-secondary: #B0B0B0;
   --color-border: #30363D;
+
+  /* Redesign Palette Dark Mode Overrides */
+  --color-ice-blue: #1C2433;
+  /* Darker blue-grey for backgrounds */
+  --color-powder-blue: #3A4B5C;
+  /* Muted blue for borders/accents */
+  --color-sapphire: #5C9DFF;
+  /* Lighter sapphire for text readability */
+  --color-deep-navy: #EAEAEA;
+  /* Map Deep Navy text to light grey in dark mode */
 
   --background: var(--color-background);
   --foreground: var(--color-text-primary);

@@ -48,9 +48,28 @@ export default function TrustSection() {
                         ))}
                     </div>
 
+                    {/* Badge Row */}
+                    <FadeUpSection className="mt-20 pt-12 border-t border-border/50">
+                        <div className="flex flex-wrap justify-center gap-x-12 gap-y-8">
+                            {[
+                                "Background Verified",
+                                "Pedagogy Trained",
+                                "Curriculum Certified",
+                                "Continuous Quality Reviews"
+                            ].map((badge, i) => (
+                                <div key={i} className="flex items-center gap-3 group">
+                                    <div className="w-6 h-6 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                                    </div>
+                                    <span className="text-xs font-black uppercase tracking-widest text-text-secondary/80 group-hover:text-foreground transition-colors">{badge}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </FadeUpSection>
+
                     {/* Background Graphic */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 opacity-5">
-                        <span className="text-[200px] font-black pointer-events-none">TRUST</span>
+                        <span className="text-[200px] font-black pointer-events-none text-foreground dark:text-white">TRUST</span>
                     </div>
                 </div>
             </div>

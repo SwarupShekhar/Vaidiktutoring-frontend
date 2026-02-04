@@ -51,7 +51,7 @@ export default function ProblemSection() {
                     </h2>
                 </FadeUpSection>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
                     {PROBLEMS.map((problem, i) => (
                         <FadeUpSection key={i} delay={i * 0.15} className="group p-8 rounded-3xl bg-surface border border-border/50 hover:border-primary/30 hover:shadow-2xl transition-all duration-500">
                             <div className="w-14 h-14 rounded-2xl bg-background flex items-center justify-center text-3xl mb-8 shadow-sm group-hover:scale-110 transition-transform">
@@ -64,6 +64,32 @@ export default function ProblemSection() {
                         </FadeUpSection>
                     ))}
                 </div>
+
+                {/* New Bridge Section */}
+                <FadeUpSection className="max-w-4xl mx-auto p-12 rounded-[2.5rem] bg-foreground text-background shadow-2xl relative overflow-hidden">
+                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
+                        <div className="md:w-1/3">
+                            <h3 className="text-3xl font-black tracking-tighter leading-tight">
+                                What actually changes in our system
+                            </h3>
+                        </div>
+                        <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            {[
+                                "Every session is structured, not improvised",
+                                "Misconceptions are caught in real time",
+                                "Learning is measured, not guessed",
+                                "Progress compounds week over week"
+                            ].map((bullet, idx) => (
+                                <div key={idx} className="flex items-start gap-3">
+                                    <div className="mt-1 w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 text-primary">
+                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 14.14L8.707 14.707a1 1 0 010-1.414L16.707 5.293z" clipRule="evenodd" /></svg>
+                                    </div>
+                                    <p className="text-sm font-bold opacity-80 leading-snug">{bullet}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </FadeUpSection>
             </motion.div>
         </section>
     );

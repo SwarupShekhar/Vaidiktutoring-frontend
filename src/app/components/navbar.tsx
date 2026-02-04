@@ -17,57 +17,43 @@ export default function Navbar() {
   if (pathname?.startsWith('/session')) return null;
 
   return (
-    <nav className="w-full sticky top-0 z-50 bg-white/40 dark:bg-black/40 backdrop-blur-md border-b border-white/10 dark:border-white/5 transition-all-fast">
-      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+    <nav className="w-full sticky top-0 z-50 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-white/20 dark:border-white/5 transition-all duration-300">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-4 flex items-center justify-between gap-8">
         {/* Left: Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center text-white font-bold shadow-md group-hover:scale-105 transition-transform">
+        <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-sapphire)] flex items-center justify-center text-white font-black shadow-lg group-hover:rotate-6 transition-all duration-300">
             VT
           </div>
-          <div className="text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
+          <div className="text-xl font-black tracking-tighter text-[var(--color-deep-navy)] dark:text-white group-hover:opacity-80 transition-all">
             Vaidik Tutoring
           </div>
         </Link>
 
-        {/* Center: Navigation */}
-        <div className="hidden md:flex items-center gap-6 lg:gap-8">
-          <Link
-            href="/subjects"
-            className={`text-sm lg:text-base font-medium transition-colors ${isActive('/subjects') ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
-              }`}
-          >
-            Subjects
-          </Link>
-          <Link
-            href="/experts"
-            className={`text-sm lg:text-base font-medium transition-colors ${isActive('/experts') ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
-              }`}
-          >
-            Experts
-          </Link>
-          <Link
-            href="/about"
-            className={`text-sm lg:text-base font-medium transition-colors ${isActive('/about') ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
-              }`}
-          >
-            About
-          </Link>
-          <Link
-            href="/pricing"
-            className={`text-sm lg:text-base font-medium transition-colors ${isActive('/pricing') ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
-              }`}
-          >
-            Pricing
-          </Link>
-          <Link
-            href="/blogs"
-            className={`text-sm lg:text-base font-medium transition-colors ${isActive('/blogs') ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
-              }`}
-          >
-            Blogs
-          </Link>
+        {/* Center: Navigation - Centered Pill */}
+        <div className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-slate-100/50 dark:bg-white/5 border border-white/20 dark:border-white/5">
+          {[
+            { name: 'Subjects', href: '/subjects' },
+            { name: 'Methodology', href: '/methodology' },
+            { name: 'About', href: '/about' },
+            { name: 'Pricing', href: '/pricing' },
+            { name: 'Blogs', href: '/blogs' },
+          ].map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all ${isActive(link.href)
+                  ? 'bg-white dark:bg-white/10 text-[var(--color-primary)] shadow-sm'
+                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
+                }`}
+            >
+              {link.name}
+            </Link>
+          ))}
+        </div>
 
-          {/* Show Dashboard link if logged in */}
+        {/* Right: Auth & Toggle Group */}
+        <div className="flex items-center gap-3 lg:gap-6 flex-shrink-0">
+          {/* Dashboard Link - Moved here to keep center clean */}
           {user && (
             <Link
               href={
@@ -76,53 +62,47 @@ export default function Navbar() {
                     user.role === 'student' ? '/students/dashboard' :
                       '/parent/dashboard'
               }
-              className={`text-sm lg:text-base font-medium transition-colors ${isActive('/admin/dashboard') ||
-                isActive('/parent/dashboard') ||
-                isActive('/students/dashboard') ||
-                isActive('/tutor/dashboard')
-                ? 'text-[var(--color-primary)]'
-                : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
+              className={`hidden md:block text-xs font-bold tracking-wide transition-all ${isActive('/dashboard') ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
                 }`}
             >
               Dashboard
             </Link>
           )}
-        </div>
 
-        {/* Right: Auth & Toggle */}
-        <div className="flex items-center gap-4">
-          {/* Hide Demo button for Tutors */}
+          {/* Primary CTA */}
           {(!user || user.role !== 'tutor') && (
             <Link
               href={user ? 'https://calendly.com/swarupshekhar-vaidikedu/30min' : '/signup?type=assessment'}
-              className="hidden lg:block px-5 py-2 rounded-full bg-[var(--color-primary)] text-white font-bold text-sm hover:opacity-90 hover:scale-105 transition-all shadow-lg shadow-blue-500/20"
+              className="hidden sm:inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-[var(--color-primary)] text-white font-black text-xs tracking-wide hover:bg-[var(--color-sapphire)] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-blue-500/20"
               {...(user ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
             >
-              Book Free Demo Session
+              Book Free Demo
             </Link>
           )}
+
+          <div className="h-4 w-px bg-slate-200 dark:bg-white/10 hidden lg:block" />
 
           {user ? (
             <button
               onClick={logout}
-              className="hidden sm:block px-4 py-2 text-sm rounded-full border border-[var(--color-border)] text-[var(--color-text-primary)] font-medium hover:bg-[var(--color-surface)] transition-all"
+              className="px-4 py-2 text-xs font-bold text-[var(--color-text-secondary)] hover:text-red-500 transition-colors"
             >
               Logout
             </button>
           ) : (
             <Link
               href="/login"
-              className="hidden sm:block px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] font-medium transition-all"
+              className="px-4 py-2 text-xs font-bold text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
             >
               Login
             </Link>
           )}
 
-          {/* Notifications */}
-          {user && <NotificationsBtn />}
-
-          <div className="scale-75 origin-right">
-            <ThemeToggle />
+          <div className="flex items-center gap-2">
+            {user && <NotificationsBtn />}
+            <div className="scale-75 origin-right">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </div>

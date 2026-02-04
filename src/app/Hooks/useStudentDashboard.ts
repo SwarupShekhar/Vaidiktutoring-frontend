@@ -20,6 +20,7 @@ export default function useStudentDashboard() {
         queryFn: async () => {
             const res = await api.get('/bookings/student');
             const rawBookings = res.data || [];
+            console.log('useStudentDashboard: raw bookings:', rawBookings);
 
             // Normalize data structure
             return rawBookings.map((b: any) => ({
@@ -79,10 +80,14 @@ export default function useStudentDashboard() {
     });
     console.log('StudentDashboard: Upcoming Filtered', upcomingSessions);
 
-    // Past: end_time < now
-    const pastSessions = sortedBookings.filter((b: any) =>
-        new Date(b.end_time) <= now || b.status === 'completed'
-    ).reverse(); // Most recent past first
+    // Past: end_time < now OR status is completed
+    const pastSessions = sortedBookings.filter((b: any) => {
+        const endStr = b.end_time || b.requested_end;
+        if (!endStr) return b.status === 'completed';
+
+        const endTime = new Date(endStr);
+        return endTime <= now || b.status === 'completed';
+    }).reverse(); // Most recent past first
 
     return {
         bookings,
