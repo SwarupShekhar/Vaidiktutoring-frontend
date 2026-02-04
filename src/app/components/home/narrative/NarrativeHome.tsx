@@ -6,6 +6,7 @@ import HeroSection from './HeroSection';
 import ProblemSection from './ProblemSection';
 import ShiftSection from './ShiftSection';
 import PlaybookDashboard from './PlaybookDashboard';
+import SessionOutputs from './SessionOutputs';
 import TrustSection from './TrustSection';
 import ResultsSection from './ResultsSection';
 import ReviewCarousel from './ReviewCarousel';
@@ -18,6 +19,7 @@ export default function NarrativeHome() {
             <ProblemSection />
             <ShiftSection />
             <PlaybookDashboard />
+            <SessionOutputs />
             <TrustSection />
             <ResultsSection />
             <ReviewCarousel />
