@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import FadeUpSection from './FadeUpSection';
+import HighDosageBadge from './HighDosageBadge';
 
 const STEPS = [
     {
@@ -309,6 +310,7 @@ export default function PlaybookDashboard() {
                         </div>
                     </div>
                 </div>
+                <HighDosageBadge />
             </div>
         </section>
     );

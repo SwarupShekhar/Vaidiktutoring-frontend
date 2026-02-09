@@ -29,7 +29,7 @@ export default function ReviewCard({ review }: { review: any }) {
             }}
             className="max-w-[320px] sm:w-[360px] lg:w-[380px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl p-6 border border-white/30 dark:border-slate-700/50 shadow-lg flex-shrink-0"
             tabIndex={0}
-            aria-label={`${review.name} — ${review.short}`}
+            aria-label={`${review.name} - ${review.short}`}
         >
             <div className="flex items-center gap-4 mb-4">
                 {review.avatar && (

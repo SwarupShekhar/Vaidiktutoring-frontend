@@ -46,7 +46,7 @@ export default function SessionsList({ sessions }: { sessions: Session[] }) {
                 <div key={s.id} className="p-3 rounded-lg border hover:shadow-md flex justify-between items-start">
                     <div>
                         <div className="text-sm text-gray-500">
-                            {new Date(s.start_time || '').toLocaleString()} — {new Date(s.end_time || '').toLocaleTimeString()}
+                            {new Date(s.start_time || '').toLocaleString()} - {new Date(s.end_time || '').toLocaleTimeString()}
                         </div>
                         <div className="font-medium">Session for booking {s.booking_id}</div>
                         <div className="text-sm text-gray-600">Status: <span className="font-semibold">{s.status}</span></div>

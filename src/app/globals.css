@@ -32,14 +32,12 @@
   --color-border: #30363D;
 
   /* Redesign Palette Dark Mode Overrides */
-  --color-ice-blue: #1C2433;
-  /* Darker blue-grey for backgrounds */
-  --color-powder-blue: #3A4B5C;
-  /* Muted blue for borders/accents */
+  --color-ice-blue: #D6E6F3;
+  /* Keep light for text visibility */
+  --color-powder-blue: #A6C5D7;
+  /* Keep light-ish for text visibility */
   --color-sapphire: #5C9DFF;
-  /* Lighter sapphire for text readability */
-  --color-deep-navy: #EAEAEA;
-  /* Map Deep Navy text to light grey in dark mode */
+  /* Brighter sapphire for dark mode */
 
   --background: var(--color-background);
   --foreground: var(--color-text-primary);
@@ -55,6 +53,10 @@
   --color-secondary: var(--color-secondary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-ice-blue: var(--color-ice-blue);
+  --color-powder-blue: var(--color-powder-blue);
+  --color-sapphire: var(--color-sapphire);
+  --color-deep-navy: var(--color-deep-navy);
 }
 
 .mask-linear-fade {
@@ -78,21 +80,58 @@ body {
 
 /* Glass & Smokey Effects */
 .bg-glass {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03),
+    inset 0 0 20px rgba(255, 255, 255, 0.5);
 }
 
 .dark .bg-glass,
 .dark .bg-white\/80 {
-  /* Override existing inline classes */
-  background: rgba(22, 27, 34, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  background: rgba(13, 17, 23, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.02);
+}
+
+/* Premium Utilities */
+.text-gradient-primary {
+  background: linear-gradient(135deg, var(--color-sapphire) 0%, var(--color-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .text-gradient-primary {
+  background: linear-gradient(135deg, var(--color-ice-blue) 0%, var(--color-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card-hover {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.dark .card-hover:hover {
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.5),
+    0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  border-color: rgba(92, 157, 255, 0.3);
 }
 
 /* Smokey Texture overlay for dark mode */

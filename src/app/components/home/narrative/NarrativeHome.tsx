@@ -12,17 +12,24 @@ import ResultsSection from './ResultsSection';
 import ReviewCarousel from './ReviewCarousel';
 import FinalCTASection from './FinalCTASection';
 
+import HighDosageIntroStrip from './HighDosageIntroStrip';
+import HighDosageDefinitionSection from './HighDosageDefinitionSection';
+import HighDosageProcessFlow from './HighDosageProcessFlow';
+
 export default function NarrativeHome() {
     return (
         <main className="min-h-screen bg-background selection:bg-primary/20 selection:text-primary transition-colors duration-500">
             <HeroSection />
+            <HighDosageIntroStrip />
             <ProblemSection />
+            <HighDosageDefinitionSection />
             <ShiftSection />
             <PlaybookDashboard />
             <SessionOutputs />
             <TrustSection />
             <ResultsSection />
             <ReviewCarousel />
+            <HighDosageProcessFlow />
             <FinalCTASection />
 
             {/* Shared Layout Background Elements for "Presence" */}

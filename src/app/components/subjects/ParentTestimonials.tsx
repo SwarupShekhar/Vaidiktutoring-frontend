@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Star, Quote } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function ParentTestimonials() {
     const testimonials = [
@@ -22,12 +23,15 @@ export default function ParentTestimonials() {
             author: "Priya R.",
             role: "Parent of IB Diploma Student",
             rating: 5
-        }
+        },
+        // Duplicate for more content in the loop if needed, or just repeat the array below
     ];
 
+    const duplicatedTestimonials = [...testimonials, ...testimonials, ...testimonials, ...testimonials]; // Quadruple for safety on large screens
+
     return (
-        <section className="py-24 px-6 bg-[var(--color-surface)]">
-            <div className="max-w-7xl mx-auto">
+        <section className="py-24 px-6 bg-[var(--color-surface)] overflow-hidden">
+            <div className="max-w-[100vw] mx-auto">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl font-extrabold text-[var(--color-deep-navy)] mb-4">
                         Trusted by Parents
@@ -42,30 +46,45 @@ export default function ParentTestimonials() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {testimonials.map((testimonial, idx) => (
-                        <div key={idx} className="bg-[var(--color-surface)] p-8 rounded-[2rem] relative border border-[var(--color-border)] hover:shadow-lg transition-shadow">
-                            <div className="absolute top-8 right-8 text-[var(--color-ice-blue)]">
-                                <Quote size={48} fill="currentColor" className="opacity-50" />
-                            </div>
+                <div className="relative w-full overflow-hidden mask-linear-fade">
+                    {/* Gradient Masks */}
+                    <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[var(--color-surface)] to-transparent z-20 pointer-events-none" />
+                    <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[var(--color-surface)] to-transparent z-20 pointer-events-none" />
 
-                            <div className="flex gap-1 text-yellow-500 mb-6">
-                                {[...Array(testimonial.rating)].map((_, i) => (
-                                    <Star key={i} size={16} fill="currentColor" />
-                                ))}
-                            </div>
+                    <div className="flex w-fit hover:pause-animation">
+                        <motion.div
+                            className="flex gap-8 pr-8"
+                            animate={{ x: ["0%", "-50%"] }}
+                            transition={{
+                                repeat: Infinity,
+                                ease: "linear",
+                                duration: 50, // Adjust speed
+                            }}
+                        >
+                            {duplicatedTestimonials.map((testimonial, idx) => (
+                                <div key={idx} className="w-[350px] md:w-[450px] flex-shrink-0 bg-[var(--color-background)] p-8 rounded-[2rem] relative border border-[var(--color-border)] hover:shadow-lg transition-shadow">
+                                    <div className="absolute top-8 right-8 text-[var(--color-ice-blue)]">
+                                        <Quote size={48} fill="currentColor" className="opacity-50" />
+                                    </div>
 
-                            <p className="text-[var(--color-text-primary)] text-lg leading-relaxed mb-8 relative z-10 italic">
-                                "{testimonial.text}"
-                            </p>
+                                    <div className="flex gap-1 text-yellow-500 mb-6">
+                                        {[...Array(testimonial.rating)].map((_, i) => (
+                                            <Star key={i} size={16} fill="currentColor" />
+                                        ))}
+                                    </div>
 
+                                    <p className="text-[var(--color-text-primary)] text-lg leading-relaxed mb-8 relative z-10 italic">
+                                        "{testimonial.text}"
+                                    </p>
 
-                            <div className="mt-auto">
-                                <p className="font-bold text-[var(--color-deep-navy)]">{testimonial.author}</p>
-                                <p className="text-sm text-[var(--color-text-secondary)] uppercase tracking-wider font-semibold">{testimonial.role}</p>
-                            </div>
-                        </div>
-                    ))}
+                                    <div className="mt-auto">
+                                        <p className="font-bold text-[var(--color-deep-navy)]">{testimonial.author}</p>
+                                        <p className="text-sm text-[var(--color-text-secondary)] uppercase tracking-wider font-semibold">{testimonial.role}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </motion.div>
+                    </div>
                 </div>
             </div>
         </section>

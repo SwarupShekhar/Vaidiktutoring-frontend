@@ -63,5 +63,57 @@
             "topicsMastered": 8
         },
         "tag": "Transparency"
+    },
+    {
+        "id": "r6",
+        "name": "Sarah J.",
+        "role": "Parent",
+        "rating": 5,
+        "short": "More than just tutoring",
+        "long": "It’s not just about solving problems, it’s about learning how to think. My daughter’s problem-solving skills have improved across all subjects, not just math.",
+        "highlightMetrics": {
+            "criticalThinking": "Improved",
+            "subjects": "All"
+        },
+        "tag": "Holistic Growth"
+    },
+    {
+        "id": "r7",
+        "name": "David L.",
+        "role": "Grade 11 Student",
+        "rating": 5,
+        "short": "Chemistry finally makes sense",
+        "long": "Balancing equations was a nightmare until my tutor showed me a simple method to visualize it. I actually look forward to Chemistry class now.",
+        "highlightMetrics": {
+            "labGrades": "A",
+            "confidence": "High"
+        },
+        "tag": "Subject Mastery"
+    },
+    {
+        "id": "r8",
+        "name": "Emily R.",
+        "role": "Parent",
+        "rating": 5,
+        "short": "Worth every penny",
+        "long": "We were hesitant about online tutoring, but the platform is so interactive it feels like the tutor is right there. The consistent progress updates are a game changer.",
+        "highlightMetrics": {
+            "convenience": 10,
+            "value": 10
+        },
+        "tag": "Value"
+    },
+    {
+        "id": "r9",
+        "name": "Michael T.",
+        "role": "Grade 9 Student",
+        "rating": 5,
+        "short": "From struggling to soaring",
+        "long": "I was failing algebra at the start of the year. After 3 months of consistent sessions, I finished with a B+. My tutor never gave up on me.",
+        "highlightMetrics": {
+            "finalGrade": "B+",
+            "improvement": "Huge"
+        },
+        "tag": "Turnaround"
     }
 ]

@@ -3,27 +3,28 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import FadeUpSection from './FadeUpSection';
+import Image from 'next/image';
 
 const PROBLEMS = [
     {
         title: "The Silent Struggle",
         description: "“They say they understand… but they don’t.” Many students learn to mimic understanding to keep up with the class.",
-        icon: "😶"
+        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770624224/perseverance_aoy0rb.gif"
     },
     {
         title: "Overlooked Gaps",
         description: "“They’re afraid to ask.” In a group, the fear of looking slow prevents the most important questions from being asked.",
-        icon: "❓"
+        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770624223/question_i8yvhk.gif"
     },
     {
         title: "Correction Delay",
         description: "“Mistakes go uncorrected.” Homework feedback that arrives days later is too late to fix cognitive misconceptions.",
-        icon: "🎯"
+        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770624221/target_uhmfxn.gif"
     },
     {
         title: "Presence Decay",
         description: "“Confidence slowly drops.” Without personalized wins, students begin to define themselves as 'bad at math' or 'slow'.",
-        icon: "📉"
+        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770624219/hand-gesture_g3kcbf.gif"
     }
 ];
 
@@ -54,8 +55,14 @@ export default function ProblemSection() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
                     {PROBLEMS.map((problem, i) => (
                         <FadeUpSection key={i} delay={i * 0.15} className="group p-8 rounded-3xl bg-surface border border-border/50 hover:border-primary/30 hover:shadow-2xl transition-all duration-500">
-                            <div className="w-14 h-14 rounded-2xl bg-background flex items-center justify-center text-3xl mb-8 shadow-sm group-hover:scale-110 transition-transform">
-                                {problem.icon}
+                            <div className="w-14 h-14 rounded-2xl bg-background flex items-center justify-center mb-8 shadow-sm group-hover:scale-110 transition-transform relative overflow-hidden p-2">
+                                <Image
+                                    src={problem.icon}
+                                    alt={problem.title}
+                                    fill
+                                    className="object-contain"
+                                    unoptimized
+                                />
                             </div>
                             <h3 className="text-xl font-black text-foreground mb-4 tracking-tight">{problem.title}</h3>
                             <p className="text-sm text-text-secondary font-medium leading-relaxed italic">

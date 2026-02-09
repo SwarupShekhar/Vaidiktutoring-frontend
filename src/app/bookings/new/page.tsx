@@ -37,7 +37,7 @@ export default function NewBookingPage() {
                 const res = await api.get('/students/parent');
                 return res.data.map((s: any) => ({
                     id: s.id,
-                    name: s.name || (s.school ? `${s.school} — Grade ${s.grade}` : s.id),
+                    name: s.name || (s.school ? `${s.school} - Grade ${s.grade}` : s.id),
                 }));
             } catch (err: any) {
                 // If backend hasn't implemented /students/parent yet or returns 404,

@@ -76,10 +76,10 @@ export default function StudentListModal({ isOpen, onClose }: StudentListModalPr
                                 {students.map(student => (
                                     <tr key={student.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                                         <td className="p-4 text-gray-800 dark:text-gray-200">
-                                            {student.user?.first_name || student.first_name || '—'}
+                                            {student.user?.first_name || student.first_name || '-'}
                                         </td>
                                         <td className="p-4 text-gray-800 dark:text-gray-200">
-                                            {student.user?.last_name || student.last_name || '—'}
+                                            {student.user?.last_name || student.last_name || '-'}
                                         </td>
                                         <td className="p-4 text-gray-600 dark:text-gray-400">Grade {student.grade || 'N/A'}</td>
                                         <td className="p-4 text-gray-500 dark:text-gray-400 font-mono text-xs">{student.email || 'N/A'}</td>

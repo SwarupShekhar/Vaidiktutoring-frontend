@@ -14,6 +14,14 @@ import VerificationBanner from './components/auth/VerificationBanner';
 
 import { ClerkProvider } from '@clerk/nextjs';
 
+import { Luckiest_Guy } from 'next/font/google';
+
+const luckiestGuy = Luckiest_Guy({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-luckiest-guy',
+});
+
 export const metadata = {
   title: 'Vaidik Tutoring',
   description: 'Vaidik Tutoring Platform',
@@ -23,7 +31,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        <body suppressHydrationWarning>
+        <body suppressHydrationWarning className={`${luckiestGuy.variable}`}>
           <StyledComponentsRegistry>
             <QueryProvider>
               <AuthProvider>

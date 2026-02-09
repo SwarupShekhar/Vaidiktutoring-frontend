@@ -20,7 +20,7 @@ interface Booking {
 
 // Safe formatting helper
 const safeFormatDate = (dateString: string | undefined | null) => {
-    if (!dateString) return '—';
+    if (!dateString) return '-';
     try {
         const d = new Date(dateString);
         if (isNaN(d.getTime())) return 'Invalid Date';

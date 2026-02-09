@@ -44,7 +44,7 @@ export default function MethodologyPage() {
                         <ShieldCheck size={16} className="animate-pulse" />
                         Verified Learning Model
                     </div>
-                    <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold text-[var(--color-deep-navy)] mb-6 tracking-tight leading-[1.1]">
+                    <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold text-[var(--color-deep-navy)] dark:text-white mb-6 tracking-tight leading-[1.1]">
                         Expert-Guided Learning, <br className="hidden md:block" />
                         <span className="text-[var(--color-sapphire)] bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-sapphire)] to-blue-400">Powered by AI</span>
                     </h1>
@@ -206,7 +206,7 @@ export default function MethodologyPage() {
                                 </div>
                                 <div className="text-5xl font-black text-[var(--color-sapphire)]/10 dark:text-white/10">01</div>
                             </div>
-                            <h3 className="text-2xl font-bold mb-4 text-[var(--color-deep-navy)] dark:text-white">Step 1 — Diagnose</h3>
+                            <h3 className="text-2xl font-bold mb-4 text-[var(--color-deep-navy)] dark:text-white">Step 1 - Diagnose</h3>
                             <p className="text-[var(--color-text-primary)] dark:text-blue-100/80 leading-relaxed text-lg font-medium opacity-90">
                                 Initial diagnostic assessment to understand strengths, identify curriculum gaps, and establish a clear academic baseline.
                             </p>
@@ -226,7 +226,7 @@ export default function MethodologyPage() {
                                 </div>
                                 <div className="text-5xl font-black text-[var(--color-sapphire)]/10 dark:text-white/10">02</div>
                             </div>
-                            <h3 className="text-2xl font-bold mb-4 text-[var(--color-deep-navy)] dark:text-white font-outfit">Step 2 — Guide</h3>
+                            <h3 className="text-2xl font-bold mb-4 text-[var(--color-deep-navy)] dark:text-white font-outfit">Step 2 - Guide</h3>
                             <p className="text-[var(--color-text-primary)] dark:text-blue-100/80 leading-relaxed text-lg font-medium opacity-90">
                                 Live expert instruction aligned with the student’s curriculum, focused on active recall, conceptual depth, and confidence.
                             </p>
@@ -246,7 +246,7 @@ export default function MethodologyPage() {
                                 </div>
                                 <div className="text-5xl font-black text-[var(--color-sapphire)]/10 dark:text-white/10">03</div>
                             </div>
-                            <h3 className="text-2xl font-bold mb-4 text-[var(--color-deep-navy)] dark:text-white">Step 3 — Measure</h3>
+                            <h3 className="text-2xl font-bold mb-4 text-[var(--color-deep-navy)] dark:text-white">Step 3 - Measure</h3>
                             <p className="text-[var(--color-text-primary)] dark:text-blue-100/80 leading-relaxed text-lg font-medium opacity-90">
                                 AI-powered analytics track every response to report improvement and inform precise next steps for the tutor.
                             </p>

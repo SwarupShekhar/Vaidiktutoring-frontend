@@ -8,7 +8,7 @@ export default function SessionOutputs() {
     return (
         <section className="py-20 bg-background relative z-10">
             <div className="container mx-auto px-6">
-                <FadeUpSection className="p-10 md:p-16 rounded-[3rem] bg-indigo-950/40 border border-white/10 backdrop-blur-3xl relative overflow-hidden group shadow-2xl">
+                <FadeUpSection className="p-10 md:p-16 rounded-[3rem] bg-[#020617] border border-white/10 backdrop-blur-3xl relative overflow-hidden group shadow-2xl">
                     {/* Decorative background glow */}
                     <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
                     <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />

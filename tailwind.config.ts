@@ -12,6 +12,13 @@ const config: Config = {
             colors: {
                 background: "var(--background)",
                 foreground: "var(--foreground)",
+                'ice-blue': 'var(--color-ice-blue)',
+                'powder-blue': 'var(--color-powder-blue)',
+                'sapphire': 'var(--color-sapphire)',
+                'deep-navy': 'var(--color-deep-navy)',
+            },
+            fontFamily: {
+                luckiest: ['var(--font-luckiest-guy)'],
             },
         },
     },
