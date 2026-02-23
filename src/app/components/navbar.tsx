@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import ThemeToggle from './ThemeToggle';
 import NotificationsBtn from './NotificationsBtn';
+import SHLogo from './SHLogo';
 
 import { useAuthContext } from '@/app/context/AuthContext';
 
@@ -21,11 +22,11 @@ export default function Navbar() {
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-4 flex items-center justify-between gap-8">
         {/* Left: Logo */}
         <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-sapphire)] flex items-center justify-center text-white font-black shadow-lg group-hover:rotate-6 transition-all duration-300">
-            VT
+          <div className="w-11 h-11 rounded-lg shadow-lg group-hover:scale-110 transition-all duration-300">
+            <SHLogo className="w-full h-full" />
           </div>
           <div className="text-xl font-black tracking-tighter text-[var(--color-deep-navy)] dark:text-white group-hover:opacity-80 transition-all">
-            Vaidik Tutoring
+            StudyHours
           </div>
         </Link>
 

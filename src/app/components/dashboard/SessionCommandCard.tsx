@@ -66,7 +66,7 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
                 </div>
 
                 <h2 className="text-2xl font-bold mb-1 truncate">
-                    {session.subject?.name || 'Vaidik Tutoring Session'}
+                    {session.subject?.name || 'StudyHours Session'}
                 </h2>
                 <div className="flex items-center gap-4 mb-6 text-white/80 text-sm">
                     <div className="flex items-center gap-1.5">

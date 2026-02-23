@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import SHLogo from './SHLogo';
 
 export default function Footer() {
     const pathname = usePathname();
@@ -15,11 +16,11 @@ export default function Footer() {
                     {/* Brand Column */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)] flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/30">
-                                K
+                            <div className="w-10 h-10 rounded-lg">
+                                <SHLogo className="w-full h-full" />
                             </div>
                             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300">
-                                Vaidik Tutoring
+                                StudyHours
                             </span>
                         </div>
                         <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
@@ -63,7 +64,7 @@ export default function Footer() {
 
                 <div className="pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-sm text-gray-500 dark:text-gray-500">
-                        &copy; {new Date().getFullYear()} Vaidik Tutoring. All rights reserved.
+                        &copy; {new Date().getFullYear()} StudyHours. All rights reserved.
                     </p>
                     <div className="flex gap-6">
                         {/* Placeholder Social Icons */}

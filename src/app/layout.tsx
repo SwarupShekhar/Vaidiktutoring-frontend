@@ -23,8 +23,8 @@ const luckiestGuy = Luckiest_Guy({
 });
 
 export const metadata = {
-  title: 'Vaidik Tutoring',
-  description: 'Vaidik Tutoring Platform',
+  title: 'StudyHours',
+  description: 'StudyHours Platform',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
