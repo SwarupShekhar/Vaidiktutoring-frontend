@@ -25,6 +25,9 @@ const luckiestGuy = Luckiest_Guy({
 export const metadata = {
   title: 'StudyHours',
   description: 'StudyHours Platform',
+  verification: {
+    google: 'QIHTWX5Vy3mZhNRYxfyyTc5YDUOA2DSyS6BCx-7xwy0',
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
