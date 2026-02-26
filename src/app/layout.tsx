@@ -50,7 +50,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </AuthProvider>
             </QueryProvider>
           </StyledComponentsRegistry>
-          <Script src="https://meet.jit.si/external_api.js" strategy="afterInteractive" />
           <Analytics />
         </body>
       </html >
