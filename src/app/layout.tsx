@@ -11,6 +11,7 @@ import { NotificationProvider } from './context/NotificationContext';
 import GlobalNotification from './components/GlobalNotification';
 import VerificationModal from './components/auth/VerificationModal';
 import VerificationBanner from './components/auth/VerificationBanner';
+import { Analytics } from '@vercel/analytics/next';
 
 import { ClerkProvider } from '@clerk/nextjs';
 
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </QueryProvider>
           </StyledComponentsRegistry>
           <Script src="https://meet.jit.si/external_api.js" strategy="afterInteractive" />
+          <Analytics />
         </body>
       </html >
     </ClerkProvider>
