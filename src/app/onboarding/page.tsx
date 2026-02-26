@@ -16,18 +16,25 @@ export default function OnboardingPage() {
 
   // Redirect if role is already known and valid (Admin protection)
   useEffect(() => {
+    // Debug: Check what role is being detected
+    console.log('Onboarding - User role:', user?.role);
+    
     if (user?.role === 'admin') {
-      // Admins shouldn't be here, send them to admin dashboard (or home for now if admin dash doesn't exist)
-      // Assuming /admin/dashboard exists, or fallback to /
+      // Admins go to admin dashboard
+      console.log('Detected admin, redirecting to /admin/dashboard');
       router.push('/admin/dashboard');
     } else if (user?.role === 'parent') {
-      // If already a parent in our DB, go to dashboard
+      // Parents go to parent dashboard
+      console.log('Detected parent, redirecting to /parent/dashboard');
       router.push('/parent/dashboard');
+    } else if (user?.role === 'tutor') {
+      // Tutors go to tutor dashboard
+      console.log('Detected tutor, redirecting to /tutor/dashboard');
+      router.push('/tutor/dashboard');
     } else if (user?.role === 'student' && user?.id) {
       // If student and NOT a fresh signup (id exists), go to dashboard.
-      // But fresh signups are default student, so we might still want to show choice?
-      // Let's rely on if they have metadata.
       if (clerkUser?.publicMetadata?.role) {
+        console.log('Detected student, redirecting to /students/dashboard');
         router.push('/students/dashboard');
       }
     }

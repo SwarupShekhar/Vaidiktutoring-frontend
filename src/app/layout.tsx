@@ -5,6 +5,7 @@ import QueryProvider from './providers';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/navbar';
 import Footer from './components/Footer';
+import AdminRedirect from './components/AdminRedirect';
 import Script from 'next/script';
 import StyledComponentsRegistry from './lib/registry';
 import { NotificationProvider } from './context/NotificationContext';
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <StyledComponentsRegistry>
             <QueryProvider>
               <AuthProvider>
+                <AdminRedirect />
                 <NotificationProvider>
                   <Navbar />
                   <VerificationBanner />
