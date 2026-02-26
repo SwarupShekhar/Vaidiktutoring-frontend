@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
+Allow: /blogs
+Allow: /blogs/*
 Disallow: /admin/
 Disallow: /api/
 Disallow: /private/
@@ -7,4 +9,5 @@ Disallow: /*.json$
 Disallow: /*?*sort=
 Disallow: /*?*filter=
 
+# Blog pages are publicly indexable for SEO
 Sitemap: https://studyhours.com/sitemap.xml

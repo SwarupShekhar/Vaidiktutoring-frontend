@@ -75,7 +75,7 @@ export default function BlogsPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {blogs.map((blog, idx) => (
-                            <Link href={`/blogs/${blog.id}`} key={blog.id}>
+                            <Link href={`/blogs/${blog.slug}`} key={blog.id}>
                                 <motion.article
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}

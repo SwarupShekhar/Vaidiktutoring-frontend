@@ -117,7 +117,7 @@ export default function BlogManagementSection() {
                             blogs.map((blog) => (
                                 <tr key={blog.id} className="hover:bg-[var(--color-surface)]/50 transition-colors">
                                     <td className="py-4 px-4 font-medium text-[var(--color-text-primary)]">
-                                        <Link href={`/blogs/${blog.id}`} target="_blank" className="hover:underline">
+                                        <Link href={`/blogs/${blog.slug}`} target="_blank" className="hover:underline">
                                             {blog.title}
                                         </Link>
                                     </td>
