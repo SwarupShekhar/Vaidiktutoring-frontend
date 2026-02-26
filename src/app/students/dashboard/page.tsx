@@ -29,6 +29,14 @@ export default function StudentDashboardPage() {
   const [isEditProfileOpen, setIsEditProfileOpen] = React.useState(false);
   const [studentProfile, setStudentProfile] = React.useState<any>(null);
 
+  // Redirect admin away from student dashboard
+  React.useEffect(() => {
+    if (user?.role === 'admin') {
+      console.log('[StudentDashboard] Admin detected, redirecting to /admin/dashboard');
+      window.location.href = '/admin/dashboard';
+    }
+  }, [user?.role]);
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
