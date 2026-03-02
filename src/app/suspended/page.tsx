@@ -29,7 +29,7 @@ export default function SuspendedPage() {
                     </button>
                     <a
                         href="mailto:support@k12.com"
-                        className="block text-sm text-[var(--color-primary)] hover:underline"
+                        className="block text-sm text-primary hover:underline"
                     >
                         Contact Support
                     </a>

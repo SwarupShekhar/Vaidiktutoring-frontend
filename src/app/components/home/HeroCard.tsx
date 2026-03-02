@@ -34,10 +34,10 @@ export default function HeroCard() {
                 {/* Animated Background Layer */}
                 <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none -z-10">
                     {/* Blob 1: Primary Blueish */}
-                    <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-[var(--color-primary)] opacity-20 rounded-full blur-[80px] animate-blob mix-blend-multiply dark:mix-blend-screen" />
+                    <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary opacity-20 rounded-full blur-[80px] animate-blob mix-blend-multiply dark:mix-blend-screen" />
 
                     {/* Blob 2: Accent Yellowish */}
-                    <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-[var(--color-secondary)] opacity-20 rounded-full blur-[80px] animate-blob animation-delay-2000 mix-blend-multiply dark:mix-blend-screen" />
+                    <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-secondary opacity-20 rounded-full blur-[80px] animate-blob animation-delay-2000 mix-blend-multiply dark:mix-blend-screen" />
 
                     {/* Blob 3: Center Light */}
                     <div className="absolute bottom-[-20%] left-[20%] w-[600px] h-[600px] bg-blue-300 dark:bg-blue-900 opacity-20 rounded-full blur-[80px] animate-blob animation-delay-4000 mix-blend-multiply dark:mix-blend-screen" />
@@ -52,12 +52,12 @@ export default function HeroCard() {
                     </div>
 
                     {/* Headline */}
-                    <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-[var(--color-text-primary)] mb-6 leading-[1.15]">
+                    <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-(--color-text-primary) mb-6 leading-[1.15]">
                         Personalized StudyHours That Builds Confidence and Real Results
                     </h1>
 
                     {/* Subtext */}
-                    <p className="text-lg md:text-xl text-[var(--color-text-secondary)] mb-8 max-w-3xl leading-relaxed">
+                    <p className="text-lg md:text-xl text-text-secondary mb-8 max-w-3xl leading-relaxed">
                         One-on-one online tutoring built around your child’s goals, curriculum, and learning style.
                     </p>
 
@@ -68,7 +68,7 @@ export default function HeroCard() {
                     </div>
 
                     {/* Trust Text */}
-                    <p className="text-sm font-medium text-[var(--color-text-secondary)] opacity-80">
+                    <p className="text-sm font-medium text-text-secondary opacity-80">
                         Trusted by parents across Grades K-12 for Math, Science, and critical thinking skills.
                     </p>
                 </div>

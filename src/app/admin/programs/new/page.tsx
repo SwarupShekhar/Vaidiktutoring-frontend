@@ -69,19 +69,19 @@ export default function NewProgramPage() {
         <ProtectedClient roles={['admin']}>
             <div className="min-h-screen p-6 md:p-8 max-w-4xl mx-auto space-y-6">
                 {/* BREADCRUMB */}
-                <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+                <div className="flex items-center gap-2 text-sm text-text-secondary">
                     <Link href="/admin/dashboard" className="hover:underline">Admin</Link>
                     <span>/</span>
                     <Link href="/admin/programs" className="hover:underline">Programs</Link>
                     <span>/</span>
-                    <span className="text-[var(--color-text-primary)] font-semibold">New</span>
+                    <span className="text-(--color-text-primary) font-semibold">New</span>
                 </div>
 
-                <div className="bg-glass rounded-[2rem] border border-white/20 shadow-lg overflow-hidden flex flex-col md:flex-row min-h-[600px]">
+                <div className="bg-glass rounded-4xl border border-white/20 shadow-lg overflow-hidden flex flex-col md:flex-row min-h-[600px]">
 
                     {/* SIDEBAR STEPS */}
                     <div className="w-full md:w-64 bg-black/5 p-6 border-r border-white/10">
-                        <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-6">Create Program</h2>
+                        <h2 className="text-xl font-bold text-(--color-text-primary) mb-6">Create Program</h2>
                         <div className="space-y-2">
                             {STEPS.map((step, index) => (
                                 <div
@@ -90,7 +90,7 @@ export default function NewProgramPage() {
                                             ? 'bg-blue-600 text-white shadow-lg'
                                             : index < currentStep
                                                 ? 'text-green-600 bg-green-50/50'
-                                                : 'text-[var(--color-text-secondary)] opacity-60'
+                                                : 'text-text-secondary opacity-60'
                                         }`}
                                 >
                                     <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${index === currentStep ? 'bg-white text-blue-600' : 'bg-black/10'
@@ -106,7 +106,7 @@ export default function NewProgramPage() {
                     {/* FORM CONTENT */}
                     <div className="flex-1 p-8 md:p-10 flex flex-col">
                         <div className="flex-1">
-                            <h3 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6 capitalize">{stepName.toLowerCase()} Configuration</h3>
+                            <h3 className="text-2xl font-bold text-(--color-text-primary) mb-6 capitalize">{stepName.toLowerCase()} Configuration</h3>
 
                             {/* --- STEP 1: ACADEMIC --- */}
                             {stepName === 'ACADEMIC' && (
@@ -305,7 +305,7 @@ export default function NewProgramPage() {
                                             { key: 'parentAccess', label: 'Allow Parent Observation Access' }
                                         ].map((toggle) => (
                                             <div key={toggle.key} className="flex items-center justify-between p-4 bg-white/40 rounded-xl border border-white/20">
-                                                <span className="font-medium text-[var(--color-text-primary)]">{toggle.label}</span>
+                                                <span className="font-medium text-(--color-text-primary)">{toggle.label}</span>
                                                 <button
                                                     onClick={() => updateSection('delivery', toggle.key, !(formData.delivery as any)[toggle.key])}
                                                     className={`w-12 h-6 rounded-full transition-colors relative ${(formData.delivery as any)[toggle.key] ? 'bg-blue-600' : 'bg-gray-300'
@@ -329,7 +329,7 @@ export default function NewProgramPage() {
                                             { key: 'weeklyReports', label: 'Generate Weekly Progress Reports' }
                                         ].map((toggle) => (
                                             <div key={toggle.key} className="flex items-center justify-between p-4 bg-white/40 rounded-xl border border-white/20">
-                                                <span className="font-medium text-[var(--color-text-primary)]">{toggle.label}</span>
+                                                <span className="font-medium text-(--color-text-primary)">{toggle.label}</span>
                                                 <button
                                                     onClick={() => updateSection('reporting', toggle.key, !(formData.reporting as any)[toggle.key])}
                                                     className={`w-12 h-6 rounded-full transition-colors relative ${(formData.reporting as any)[toggle.key] ? 'bg-green-600' : 'bg-gray-300'
@@ -363,7 +363,7 @@ export default function NewProgramPage() {
                             {currentStep > 0 && (
                                 <button
                                     onClick={prevStep}
-                                    className="px-6 py-2.5 rounded-xl border border-[var(--color-border)] hover:bg-white/10 transition-colors"
+                                    className="px-6 py-2.5 rounded-xl border border-border hover:bg-white/10 transition-colors"
                                 >
                                     Back
                                 </button>
@@ -372,7 +372,7 @@ export default function NewProgramPage() {
                             {currentStep < STEPS.length - 1 ? (
                                 <button
                                     onClick={nextStep}
-                                    className="px-6 py-2.5 rounded-xl bg-[var(--color-primary)] text-white font-bold shadow-lg hover:bg-blue-700 transition-colors"
+                                    className="px-6 py-2.5 rounded-xl bg-primary text-white font-bold shadow-lg hover:bg-blue-700 transition-colors"
                                 >
                                     Continue
                                 </button>

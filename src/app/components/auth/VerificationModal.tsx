@@ -32,7 +32,7 @@ export default function VerificationModal() {
     if (!verificationModalOpen) return null;
 
     return (
-        <div className="relative z-[100]" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div className="relative z-100" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             {/* Background backdrop */}
             <div
                 className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
@@ -76,7 +76,7 @@ export default function VerificationModal() {
                         <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                             <button
                                 type="button"
-                                className="inline-flex w-full justify-center rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)] sm:col-start-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="inline-flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:col-start-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 onClick={handleResend}
                                 disabled={busy}
                             >

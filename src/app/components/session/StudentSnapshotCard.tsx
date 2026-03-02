@@ -12,7 +12,7 @@ interface StudentSnapshotProps {
 
 export default function StudentSnapshotCard({ studentName, interests, recentProgress, struggleAreas, status = 'Active Learner' }: StudentSnapshotProps) {
     return (
-        <div className="bg-gradient-to-br from-indigo-700 via-indigo-800 to-purple-900 rounded-3xl p-6 text-white shadow-2xl relative overflow-hidden border border-white/10 group">
+        <div className="bg-linear-to-br from-indigo-700 via-indigo-800 to-purple-900 rounded-3xl p-6 text-white shadow-2xl relative overflow-hidden border border-white/10 group">
             {/* Background elements */}
             <div className="absolute -right-8 -top-8 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
             <div className="absolute -left-8 -bottom-8 w-24 h-24 bg-indigo-500/20 rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700" />

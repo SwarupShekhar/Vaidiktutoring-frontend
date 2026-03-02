@@ -64,21 +64,21 @@ export default function AdminDashboardPage() {
             <div className="min-h-screen p-4 md:p-8 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-top-4 duration-700">
 
                 {/* HEADER SECTION */}
-                <header className="bg-glass rounded-[2rem] p-8 md:p-10 border border-white/20 shadow-xl relative overflow-hidden">
+                <header className="bg-glass rounded-4xl p-8 md:p-10 border border-white/20 shadow-xl relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 opacity-5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
                     <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <div className="p-2 bg-blue-500/10 rounded-lg relative">
                                     <ShieldCheck className="text-blue-500" size={20} />
-                                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-[var(--color-bg)] animate-pulse" />
+                                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-bg animate-pulse" />
                                 </div>
                                 <span className="text-xs font-black uppercase tracking-widest text-blue-500">Operation Center</span>
                             </div>
-                            <h1 className="text-3xl md:text-5xl font-black text-[var(--color-text-primary)] tracking-tight">
+                            <h1 className="text-3xl md:text-5xl font-black text-(--color-text-primary) tracking-tight">
                                 {getGreeting()}, {user?.firstName || user?.first_name || 'Swarup'}
                             </h1>
-                            <p className="text-[var(--color-text-secondary)] text-lg mt-2 opacity-80 font-medium">
+                            <p className="text-text-secondary text-lg mt-2 opacity-80 font-medium">
                                 Everything is running smoothly. Here is your overview.
                             </p>
                         </div>
@@ -138,7 +138,7 @@ export default function AdminDashboardPage() {
                     {/* MANAGEMENT CONTROLS */}
                     <div className="lg:col-span-2 space-y-6">
                         <div className="bg-glass rounded-3xl p-8 border border-white/20 shadow-sm relative overflow-hidden">
-                            <h2 className="text-2xl font-black text-[var(--color-text-primary)] mb-6 flex items-center gap-3">
+                            <h2 className="text-2xl font-black text-(--color-text-primary) mb-6 flex items-center gap-3">
                                 <Zap className="text-yellow-500" size={24} />
                                 Tutor Management
                             </h2>
@@ -146,7 +146,7 @@ export default function AdminDashboardPage() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <button
                                     onClick={() => setShowAllocation(true)}
-                                    className="p-6 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-lg hover:scale-[1.02] active:scale-95 transition-all group flex flex-col justify-between"
+                                    className="p-6 rounded-2xl bg-linear-to-br from-purple-500 to-indigo-600 text-white shadow-lg hover:scale-[1.02] active:scale-95 transition-all group flex flex-col justify-between"
                                 >
                                     <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-4">
                                         <Zap size={20} />
@@ -162,8 +162,8 @@ export default function AdminDashboardPage() {
                                         <Plus size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="font-bold text-lg leading-tight text-[var(--color-text-primary)]">Add Tutor</p>
-                                        <p className="text-xs text-[var(--color-text-secondary)] mt-1">Onboard expert</p>
+                                        <p className="font-bold text-lg leading-tight text-(--color-text-primary)">Add Tutor</p>
+                                        <p className="text-xs text-text-secondary mt-1">Onboard expert</p>
                                     </div>
                                 </Link>
 
@@ -172,8 +172,8 @@ export default function AdminDashboardPage() {
                                         <PenTool size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="font-bold text-lg leading-tight text-[var(--color-text-primary)]">Publish Blog</p>
-                                        <p className="text-xs text-[var(--color-text-secondary)] mt-1">Write new post</p>
+                                        <p className="font-bold text-lg leading-tight text-(--color-text-primary)">Publish Blog</p>
+                                        <p className="text-xs text-text-secondary mt-1">Write new post</p>
                                     </div>
                                 </Link>
                             </div>
@@ -188,7 +188,7 @@ export default function AdminDashboardPage() {
                     {/* SIDEBAR: SYSTEM HEALTH & ACTIVITY */}
                     <div className="space-y-6">
                         <div className="bg-glass rounded-3xl p-8 border border-white/20 shadow-sm">
-                            <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-6 flex items-center gap-3">
+                            <h2 className="text-xl font-bold text-(--color-text-primary) mb-6 flex items-center gap-3">
                                 <Activity className="text-green-500" size={20} />
                                 System Health
                             </h2>
@@ -202,7 +202,7 @@ export default function AdminDashboardPage() {
                                 </div>
 
                                 <div className="space-y-3">
-                                    <div className="flex justify-between text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-widest opacity-60">
+                                    <div className="flex justify-between text-xs font-bold text-text-secondary uppercase tracking-widest opacity-60">
                                         <span>Status</span>
                                         <span>Live</span>
                                     </div>
@@ -219,7 +219,7 @@ export default function AdminDashboardPage() {
                         </div>
 
                         {/* REFRESH / ACTION CARD */}
-                        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-1 shadow-xl">
+                        <div className="bg-linear-to-br from-blue-600 to-indigo-700 rounded-3xl p-1 shadow-xl">
                             <div className="bg-glass p-8 rounded-[1.4rem] text-white">
                                 <h3 className="font-bold text-xl mb-2">Need Help?</h3>
                                 <p className="text-sm text-white/80 mb-6 leading-relaxed">Check the documentation or contact system support for assistance.</p>

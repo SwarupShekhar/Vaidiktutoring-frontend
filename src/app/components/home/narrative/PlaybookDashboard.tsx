@@ -130,7 +130,7 @@ export default function PlaybookDashboard() {
                         </h2>
                     </FadeUpSection>
 
-                    <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 flex-grow items-center min-h-0 overflow-hidden">
+                    <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 grow items-center min-h-0 overflow-hidden">
                         {/* Left Side: Focus Stack Architecture */}
                         <div className="lg:w-1/2 relative flex gap-8 items-start h-full min-h-[400px]">
                             {/* 1. The Timeline Sidebar (Navigation) */}
@@ -236,7 +236,7 @@ export default function PlaybookDashboard() {
                                     </div>
 
                                     {/* Content Grid */}
-                                    <div className="flex-grow flex gap-8 relative z-10 min-h-0">
+                                    <div className="grow flex gap-8 relative z-10 min-h-0">
                                         {/* Sidebar Navigation (Mock) */}
                                         <div className="w-12 flex flex-col gap-6 shrink-0">
                                             {[...Array(4)].map((_, i) => (
@@ -247,7 +247,7 @@ export default function PlaybookDashboard() {
                                         </div>
 
                                         {/* Main Workspace */}
-                                        <div className="flex-grow min-h-0 overflow-y-auto custom-scrollbar">
+                                        <div className="grow min-h-0 overflow-y-auto custom-scrollbar">
                                             <AnimatePresence mode="wait">
                                                 <motion.div
                                                     key={activeStep.id}
@@ -257,12 +257,12 @@ export default function PlaybookDashboard() {
                                                     transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
                                                     className="space-y-6 h-full flex flex-col"
                                                 >
-                                                    <div className="p-6 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-sm shrink-0">
+                                                    <div className="p-6 bg-white/5 border border-white/10 rounded-4xl backdrop-blur-sm shrink-0">
                                                         <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-2">{activeStep.mock.status}</p>
                                                         <h4 className="text-2xl font-black text-white tracking-tighter leading-tight">{activeStep.mock.title}</h4>
                                                     </div>
 
-                                                    <div className="grid grid-cols-1 gap-3 flex-grow content-start">
+                                                    <div className="grid grid-cols-1 gap-3 grow content-start">
                                                         {activeStep.mock.elements.map((el, i) => (
                                                             <motion.div
                                                                 key={i}

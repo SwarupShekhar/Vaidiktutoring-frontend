@@ -20,7 +20,7 @@ export default function NotFound() {
                 <div className="bg-white/60 dark:bg-black/60 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl shadow-2xl p-12 space-y-8">
 
                     <div className="space-y-4">
-                        <h1 className="text-9xl font-extrabold text-[var(--color-primary)] opacity-50">404</h1>
+                        <h1 className="text-9xl font-extrabold text-primary opacity-50">404</h1>
                         <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
                             Page not found
                         </h2>
@@ -32,7 +32,7 @@ export default function NotFound() {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                         <Link
                             href="/"
-                            className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-bold rounded-full text-white bg-[var(--color-primary)] hover:opacity-90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                            className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-bold rounded-full text-white bg-primary hover:opacity-90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                         >
                             Return Home
                         </Link>

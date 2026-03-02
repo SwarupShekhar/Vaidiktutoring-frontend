@@ -44,17 +44,17 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[var(--color-background)]">
-                <div className="w-12 h-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }
 
     if (error || !blog) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--color-background)] space-y-4">
-                <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Post not found</h1>
-                <Link href="/blogs" className="text-[var(--color-primary)] hover:underline">
+            <div className="min-h-screen flex flex-col items-center justify-center bg-background space-y-4">
+                <h1 className="text-2xl font-bold text-(--color-text-primary)">Post not found</h1>
+                <Link href="/blogs" className="text-primary hover:underline">
                     ← Back to Blogs
                 </Link>
             </div>
@@ -92,7 +92,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
 
                         {/* Author Metadata */}
                         <div className="flex items-center gap-4 pt-4 border-t border-gray-100 mt-6">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md ring-2 ring-white">
+                            <div className="w-12 h-12 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md ring-2 ring-white">
                                 {blog.author?.first_name?.charAt(0) || 'A'}
                             </div>
                             <div>
@@ -206,7 +206,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-700"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                        <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent"></div>
                                         <p className="absolute bottom-4 left-6 text-white font-medium italic opacity-90">"The art of learning is the art of discovery."</p>
                                     </div>
                                 )}
@@ -227,7 +227,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
                                             fill
                                             className="object-cover group-hover:scale-105 transition-transform duration-700"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                        <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent"></div>
                                         <p className="absolute bottom-4 left-6 text-white font-medium italic opacity-90">Connecting ideas, connecting people.</p>
                                     </div>
                                 )}
@@ -251,7 +251,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
                         fill
                         className="object-cover"
                     />
-                    <div className="absolute bottom-0 left-0 p-6 bg-gradient-to-t from-black/60 to-transparent w-full">
+                    <div className="absolute bottom-0 left-0 p-6 bg-linear-to-t from-black/60 to-transparent w-full">
                         <p className="text-white text-sm font-medium opacity-90">Engaging students in real-time collaboration.</p>
                     </div>
                 </div>

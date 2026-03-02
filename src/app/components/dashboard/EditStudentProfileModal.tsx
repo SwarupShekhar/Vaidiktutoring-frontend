@@ -136,7 +136,7 @@ export const EditStudentProfileModal: React.FC<EditStudentProfileModalProps> = (
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="flex-[2] px-4 py-3 rounded-xl font-bold bg-blue-600 text-white shadow-lg hover:bg-blue-700 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-2"
+                            className="flex-2 px-4 py-3 rounded-xl font-bold bg-blue-600 text-white shadow-lg hover:bg-blue-700 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-2"
                         >
                             {isSubmitting ? (
                                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

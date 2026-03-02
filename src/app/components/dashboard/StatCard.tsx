@@ -62,10 +62,10 @@ export const StatCard = ({
             />
             
             {/* Main Card */}
-            <div className="bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur-xl border border-slate-700/50 group-hover:border-slate-600/80 rounded-2xl p-6 transition-all duration-300 relative h-full">
+            <div className="bg-linear-to-br from-slate-900/80 to-slate-950/80 backdrop-blur-xl border border-slate-700/50 group-hover:border-slate-600/80 rounded-2xl p-6 transition-all duration-300 relative h-full">
                 
                 {/* Decorative Top Line */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r" style={{
+                <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r" style={{
                     backgroundImage: `linear-gradient(90deg, ${color}00, ${color}80, ${color}00)`
                 }} />
                 
@@ -73,7 +73,7 @@ export const StatCard = ({
                 <div className="flex items-start justify-between mb-6">
                     <div className="flex items-start gap-3 flex-1">
                         <motion.div
-                            className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 relative"
+                            className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0 relative"
                             style={{ 
                                 background: `linear-gradient(135deg, ${color}20, ${color}05)`,
                                 borderLeft: `3px solid ${color}`,
@@ -134,7 +134,7 @@ export const StatCard = ({
 
                 {/* Animated bottom accent line */}
                 <motion.div
-                    className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r rounded-full"
+                    className="absolute bottom-0 left-0 h-0.5 bg-linear-to-r rounded-full"
                     style={{ 
                         backgroundImage: `linear-gradient(90deg, ${color}80, transparent)`,
                     }}

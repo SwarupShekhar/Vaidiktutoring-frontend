@@ -23,13 +23,13 @@ export default function SubjectFAQ() {
     ];
 
     return (
-        <section className="py-24 px-6 bg-[var(--color-background)]">
+        <section className="py-24 px-6 bg-background">
             <div className="max-w-3xl mx-auto">
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl font-extrabold text-[var(--color-deep-navy)] mb-4">
+                    <h2 className="text-3xl font-extrabold text-deep-navy mb-4">
                         Common Questions
                     </h2>
-                    <p className="text-[var(--color-text-secondary)]">
+                    <p className="text-text-secondary">
                         Everything you need to know about our structured learning approach.
                     </p>
                 </div>
@@ -48,13 +48,13 @@ function AccordionItem({ question, answer }: { question: string, answer: string 
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <div className="border border-[var(--color-border)] rounded-2xl bg-[var(--color-surface)] overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+        <div className="border border-border rounded-2xl bg-surface overflow-hidden shadow-sm hover:shadow-md transition-shadow">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between p-6 text-left hover:bg-[var(--color-background)] transition-colors"
+                className="w-full flex items-center justify-between p-6 text-left hover:bg-background transition-colors"
             >
-                <span className="font-bold text-[var(--color-text-primary)] text-lg pr-8">{question}</span>
-                <span className={`flex-shrink-0 w-8 h-8 rounded-full border border-[var(--color-border)] flex items-center justify-center text-[var(--color-primary)] transition-all duration-300 ${isOpen ? 'bg-[var(--color-primary)] text-white rotate-45 border-[var(--color-primary)]' : 'bg-[var(--color-surface)]'}`}>
+                <span className="font-bold text-(--color-text-primary) text-lg pr-8">{question}</span>
+                <span className={`shrink-0 w-8 h-8 rounded-full border border-border flex items-center justify-center text-primary transition-all duration-300 ${isOpen ? 'bg-primary text-white rotate-45 border-primary' : 'bg-surface'}`}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -69,7 +69,7 @@ function AccordionItem({ question, answer }: { question: string, answer: string 
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
                     >
-                        <div className="px-6 pb-6 text-[var(--color-text-primary)] leading-relaxed border-t border-[var(--color-border)]/50 pt-4 bg-[var(--color-background)]/30">
+                        <div className="px-6 pb-6 text-(--color-text-primary) leading-relaxed border-t border-border/50 pt-4 bg-background/30">
                             {answer}
                         </div>
                     </motion.div>

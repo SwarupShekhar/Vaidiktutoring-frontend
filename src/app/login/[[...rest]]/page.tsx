@@ -44,10 +44,10 @@ export default function LoginPage() {
           {!showManual ? (
             <div className="animate-in fade-in slide-in-from-top-4 duration-500 flex flex-col items-center w-full">
               <div className="text-center mb-6">
-                <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-2">
+                <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-purple-600 to-pink-600 mb-2">
                   Welcome Back
                 </h1>
-                <p className="text-[var(--color-text-secondary)] font-medium">
+                <p className="text-text-secondary font-medium">
                   Sign in to your account
                 </p>
               </div>
@@ -63,7 +63,7 @@ export default function LoginPage() {
                       headerTitle: "hidden",
                       headerSubtitle: "hidden",
                       socialButtonsBlockButton: "rounded-xl border border-slate-200 dark:border-slate-800",
-                      formButtonPrimary: "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl",
+                      formButtonPrimary: "bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl",
                       footer: "hidden", // Hide Clerk's internal footer to use our own
                     }
                   }}
@@ -136,7 +136,7 @@ export default function LoginPage() {
                 <button
                   disabled={loading}
                   type="submit"
-                  className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-2xl transition-all shadow-lg hover:shadow-purple-500/25 flex items-center justify-center gap-2 group disabled:opacity-50"
+                  className="w-full py-4 bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-2xl transition-all shadow-lg hover:shadow-purple-500/25 flex items-center justify-center gap-2 group disabled:opacity-50"
                 >
                   {loading ? (
                     <Loader2 className="h-5 w-5 animate-spin" />

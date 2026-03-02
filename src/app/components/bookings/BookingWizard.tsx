@@ -262,7 +262,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
             {/* Header / Progress */}
             <div className="mb-10 flex flex-col items-center justify-between gap-6">
                 <div className="text-center">
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-400">
+                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-400 to-violet-400">
                         New Session
                     </h1>
                     <p className="text-gray-400 mt-1">Request a session in 3 simple steps.</p>
@@ -291,7 +291,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                                         {isActive && <p className="text-[10px] opacity-70 mt-0.5 font-normal">{s.subtitle}</p>}
                                     </div>
                                 </motion.div>
-                                {idx < 2 && <div className="w-8 h-[1px] bg-white/10 mx-1" />}
+                                {idx < 2 && <div className="w-8 h-px bg-white/10 mx-1" />}
                             </div>
                         )
                     })}
@@ -483,7 +483,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                         <button
                             onClick={() => setStep(s => Math.min(2, s + 1) as Step)}
                             disabled={!canProceed()}
-                            className="px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold shadow-lg shadow-blue-900/40 transform hover:scale-105 transition-all disabled:opacity-50 disabled:grayscale disabled:pointer-events-none"
+                            className="px-8 py-3 rounded-xl bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold shadow-lg shadow-blue-900/40 transform hover:scale-105 transition-all disabled:opacity-50 disabled:grayscale disabled:pointer-events-none"
                         >
                             Continue
                         </button>
@@ -505,7 +505,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                     <button
                         onClick={submitBooking}
                         disabled={submitting}
-                        className="px-8 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 text-white font-bold shadow-lg shadow-green-900/40 transform hover:scale-105 transition-all text-lg flex items-center gap-2 disabled:opacity-50"
+                        className="px-8 py-3 rounded-xl bg-linear-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 text-white font-bold shadow-lg shadow-green-900/40 transform hover:scale-105 transition-all text-lg flex items-center gap-2 disabled:opacity-50"
                     >
                         {submitting ? 'Creating Session...' : 'Confirm & Book'} <CheckCircle size={20} />
                     </button>

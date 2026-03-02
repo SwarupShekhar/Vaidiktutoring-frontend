@@ -51,7 +51,7 @@ function VerifyContent() {
         <div className="bg-white/60 dark:bg-black/60 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl shadow-2xl p-8 text-center space-y-6 w-full max-w-md">
             {status === 'verifying' && (
                 <div className="flex flex-col items-center">
-                    <div className="h-12 w-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Verifying your email...</h2>
                     <p className="text-gray-600 dark:text-gray-400">Please wait while we verify your account.</p>
                 </div>
@@ -66,7 +66,7 @@ function VerifyContent() {
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Email verified</h2>
                     <p className="text-gray-600 dark:text-gray-400 mb-6">You can continue.</p>
-                    <Link href="/login" className="text-[var(--color-primary)] font-bold hover:underline">
+                    <Link href="/login" className="text-primary font-bold hover:underline">
                         Go to Login now &rarr;
                     </Link>
                 </div>
@@ -81,7 +81,7 @@ function VerifyContent() {
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Verification Failed</h2>
                     <p className="text-red-600 dark:text-red-400 mb-6">{errorMsg === 'No verification token found.' ? 'No verification token found.' : 'Link expired or invalid'}</p>
-                    <Link href="/login" className="px-6 py-2 bg-[var(--color-primary)] text-white rounded-xl font-bold hover:opacity-90">
+                    <Link href="/login" className="px-6 py-2 bg-primary text-white rounded-xl font-bold hover:opacity-90">
                         Back to Login
                     </Link>
                 </div>

@@ -27,7 +27,7 @@ export default function ReviewCard({ review }: { review: any }) {
                 hidden: { opacity: 0, y: 20, scale: 0.99 },
                 visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: 'easeOut' } }
             }}
-            className="max-w-[320px] sm:w-[360px] lg:w-[380px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl p-6 border border-white/30 dark:border-slate-700/50 shadow-lg flex-shrink-0"
+            className="max-w-[320px] sm:w-[360px] lg:w-[380px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl p-6 border border-white/30 dark:border-slate-700/50 shadow-lg shrink-0"
             tabIndex={0}
             aria-label={`${review.name} - ${review.short}`}
         >
@@ -36,30 +36,30 @@ export default function ReviewCard({ review }: { review: any }) {
                     <img src={review.avatar} alt={`${review.name} avatar`} className="w-12 h-12 rounded-full object-cover" />
                 )}
                 <div>
-                    <div className="font-semibold text-[var(--color-text-primary)]">{review.name}</div>
-                    <div className="text-xs text-[var(--color-text-secondary)]">{review.role}</div>
+                    <div className="font-semibold text-(--color-text-primary)">{review.name}</div>
+                    <div className="text-xs text-text-secondary">{review.role}</div>
                 </div>
             </div>
 
             <div className="mb-3">
-                <div className="text-sm text-[var(--color-text-primary)] font-medium">{review.short}</div>
-                <p className="mt-2 text-xs text-[var(--color-text-secondary)] line-clamp-3">{review.long}</p>
+                <div className="text-sm text-(--color-text-primary) font-medium">{review.short}</div>
+                <p className="mt-2 text-xs text-text-secondary line-clamp-3">{review.long}</p>
             </div>
 
             <div className="mt-4 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <StarRating rating={review.rating} />
                 </div>
-                <div className="text-xs text-[var(--color-text-secondary)]">Tag: <span className="font-medium">{review.tag}</span></div>
+                <div className="text-xs text-text-secondary">Tag: <span className="font-medium">{review.tag}</span></div>
             </div>
 
             <div className="mt-4">
-                <div className="text-xs text-[var(--color-text-secondary)]">Impact</div>
+                <div className="text-xs text-text-secondary">Impact</div>
                 <div className="flex gap-3 mt-2">
                     {review.highlightMetrics && Object.entries(review.highlightMetrics).map(([k, v]) => (
                         <div key={k} className="text-center">
                             <AnimatedNumber value={Number(v)} />
-                            <div className="text-xs text-[var(--color-text-secondary)]">{k.replace(/([A-Z])/g, ' $1')}</div>
+                            <div className="text-xs text-text-secondary">{k.replace(/([A-Z])/g, ' $1')}</div>
                         </div>
                     ))}
                 </div>
@@ -98,5 +98,5 @@ function AnimatedNumber({ value }: { value: number }) {
         }, step);
         return () => clearInterval(id);
     }, [value]);
-    return <div className="text-lg font-bold text-[var(--color-primary)]" aria-live="polite">{display}</div>;
+    return <div className="text-lg font-bold text-primary" aria-live="polite">{display}</div>;
 }

@@ -35,7 +35,7 @@ export default function NarrativeHome() {
             {/* Shared Layout Background Elements for "Presence" */}
             <motion.div
                 layoutId="presence-glow"
-                className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 bg-gradient-to-tr from-purple-500/5 via-transparent to-indigo-500/5"
+                className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 bg-linear-to-tr from-purple-500/5 via-transparent to-indigo-500/5"
             />
         </main>
     );

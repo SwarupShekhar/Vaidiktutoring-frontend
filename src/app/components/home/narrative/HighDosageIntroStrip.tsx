@@ -15,7 +15,7 @@ const BADGES = [
 export default function HighDosageIntroStrip() {
     return (
         <section className="w-full py-4 bg-deep-navy border-y border-white/5 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-deep-navy via-sapphire/5 to-deep-navy pointer-events-none opacity-50" />
+            <div className="absolute inset-0 bg-linear-to-r from-deep-navy via-sapphire/5 to-deep-navy pointer-events-none opacity-50" />
 
             <div className="container mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
                 <motion.div

@@ -56,12 +56,12 @@ export default function BookingsTableSection() {
     return (
         <div className="w-full">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-[var(--color-text-primary)]">
+                <h2 className="text-xl font-bold text-(--color-text-primary)">
                     All Bookings & Allocations
                 </h2>
                 <button
                     onClick={() => window.location.reload()}
-                    className="p-2 rounded-xl hover:bg-white/10 text-[var(--color-text-secondary)] transition-colors"
+                    className="p-2 rounded-xl hover:bg-white/10 text-text-secondary transition-colors"
                     title="Refresh"
                 >
                     <RefreshCw size={18} />
@@ -71,7 +71,7 @@ export default function BookingsTableSection() {
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="border-b border-[var(--color-border)] text-[var(--color-text-secondary)] text-sm uppercase">
+                        <tr className="border-b border-border text-text-secondary text-sm uppercase">
                             <th className="py-3 px-4">Student</th>
                             <th className="py-3 px-4">Subject</th>
                             <th className="py-3 px-4">Tutor</th>
@@ -79,7 +79,7 @@ export default function BookingsTableSection() {
                             <th className="py-3 px-4">Status</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-[var(--color-border)]">
+                    <tbody className="divide-y divide-border">
                         {loading ? (
                             Array.from({ length: 5 }).map((_, i) => (
                                 <tr key={i} className="animate-pulse">
@@ -92,14 +92,14 @@ export default function BookingsTableSection() {
                             ))
                         ) : bookings.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="py-8 text-center text-[var(--color-text-secondary)]">
+                                <td colSpan={5} className="py-8 text-center text-text-secondary">
                                     No bookings found.
                                 </td>
                             </tr>
                         ) : (
                             bookings.map((b) => (
-                                <tr key={b.id} className="hover:bg-[var(--color-surface)]/50 transition-colors">
-                                    <td className="py-4 px-4 font-medium text-[var(--color-text-primary)]">
+                                <tr key={b.id} className="hover:bg-surface/50 transition-colors">
+                                    <td className="py-4 px-4 font-medium text-(--color-text-primary)">
                                         {(() => {
                                             const fName = b.student?.user?.first_name || b.student?.first_name;
                                             const lName = b.student?.user?.last_name || b.student?.last_name;
@@ -117,7 +117,7 @@ export default function BookingsTableSection() {
                                             return 'Student User';
                                         })()}
                                     </td>
-                                    <td className="py-4 px-4 text-[var(--color-text-primary)]">
+                                    <td className="py-4 px-4 text-(--color-text-primary)">
                                         {b.subject?.name}
                                     </td>
                                     <td className="py-4 px-4">
@@ -131,7 +131,7 @@ export default function BookingsTableSection() {
                                             </span>
                                         )}
                                     </td>
-                                    <td className="py-4 px-4 text-sm text-[var(--color-text-secondary)]">
+                                    <td className="py-4 px-4 text-sm text-text-secondary">
                                         {safeFormatDate(b.start_time)}
                                     </td>
                                     <td className="py-4 px-4">
@@ -154,14 +154,14 @@ export default function BookingsTableSection() {
                 <button
                     disabled={page === 1}
                     onClick={() => setPage(p => p - 1)}
-                    className="px-3 py-1 rounded-lg border border-[var(--color-border)] disabled:opacity-50 text-sm"
+                    className="px-3 py-1 rounded-lg border border-border disabled:opacity-50 text-sm"
                 >
                     Previous
                 </button>
-                <div className="px-3 py-1 bg-[var(--color-surface)] rounded-lg text-sm">{page}</div>
+                <div className="px-3 py-1 bg-surface rounded-lg text-sm">{page}</div>
                 <button
                     onClick={() => setPage(p => p + 1)}
-                    className="px-3 py-1 rounded-lg border border-[var(--color-border)] disabled:opacity-50 text-sm"
+                    className="px-3 py-1 rounded-lg border border-border disabled:opacity-50 text-sm"
                 >
                     Next
                 </button>

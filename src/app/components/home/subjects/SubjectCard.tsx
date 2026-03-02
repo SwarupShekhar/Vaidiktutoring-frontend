@@ -30,26 +30,26 @@ export default function SubjectCard({ subject }: SubjectCardProps) {
                         <div className="flex flex-col h-full w-full relative z-10">
                             <div className="flex items-center gap-4 mb-4">
                                 <span className="text-3xl filter drop-shadow-md">{subject.icon}</span>
-                                <h3 className="text-xl font-bold leading-tight text-[var(--color-text-primary)]">
+                                <h3 className="text-xl font-bold leading-tight text-(--color-text-primary)">
                                     {subject.title}
                                     {/* {subject.title} */}
                                 </h3>
                             </div>
 
-                            <p className="text-sm text-[var(--color-text-secondary)] mb-6 line-clamp-3 leading-relaxed">
+                            <p className="text-sm text-text-secondary mb-6 line-clamp-3 leading-relaxed">
                                 {subject.description}
                             </p>
 
                             <div className="mt-auto">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-secondary)] mb-3 flex items-center gap-2">
-                                    <span className="w-1 h-1 rounded-full bg-[var(--color-primary)]"></span>
+                                <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary mb-3 flex items-center gap-2">
+                                    <span className="w-1 h-1 rounded-full bg-primary"></span>
                                     Popular Topics
                                 </p>
                                 <div className="flex flex-wrap gap-2">
                                     {subject.subTopics.map((topic: string, i: number) => (
                                         <span
                                             key={i}
-                                            className="text-[11px] font-medium px-2.5 py-1 rounded-md bg-[var(--color-background)] text-[var(--color-text-primary)] border border-[var(--color-border)] opacity-80"
+                                            className="text-[11px] font-medium px-2.5 py-1 rounded-md bg-background text-(--color-text-primary) border border-border opacity-80"
                                         >
                                             {topic}
                                         </span>

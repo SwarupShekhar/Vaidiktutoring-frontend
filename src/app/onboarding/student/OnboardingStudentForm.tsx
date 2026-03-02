@@ -83,17 +83,17 @@ export default function OnboardingStudentForm() {
 
     return (
         <ProtectedClient roles={['parent']}>
-            <div className="bg-[var(--color-surface)] rounded-2xl shadow-lg px-8 py-7 space-y-6 border border-[var(--color-border)]">
+            <div className="bg-surface rounded-2xl shadow-lg px-8 py-7 space-y-6 border border-border">
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
+                            <label className="block text-sm font-medium text-(--color-text-primary) mb-1">
                                 First name
                             </label>
                             <input
                                 type="text"
                                 {...register('first_name')}
-                                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] text-[var(--color-text-primary)] px-3 py-2 text-sm focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+                                className="w-full rounded-lg border border-border bg-background text-(--color-text-primary) px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                             />
                             {errors.first_name && (
                                 <p className="text-xs text-red-500 mt-1">
@@ -103,28 +103,28 @@ export default function OnboardingStudentForm() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
+                            <label className="block text-sm font-medium text-(--color-text-primary) mb-1">
                                 Last name
                             </label>
                             <input
                                 type="text"
                                 {...register('last_name')}
-                                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] text-[var(--color-text-primary)] px-3 py-2 text-sm focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+                                className="w-full rounded-lg border border-border bg-background text-(--color-text-primary) px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
+                        <label className="block text-sm font-medium text-(--color-text-primary) mb-1">
                             Student Email (Optional)
                         </label>
                         <input
                             type="email"
                             {...register('email')}
                             placeholder="student@example.com"
-                            className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] text-[var(--color-text-primary)] px-3 py-2 text-sm focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+                            className="w-full rounded-lg border border-border bg-background text-(--color-text-primary) px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                         />
-                        <p className="text-[10px] text-[var(--color-text-secondary)] mt-1 opacity-70">
+                        <p className="text-[10px] text-text-secondary mt-1 opacity-70">
                             Provide this if your child has their own account to sync progress automatically!
                         </p>
                         {errors.email && (
@@ -136,12 +136,12 @@ export default function OnboardingStudentForm() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
+                            <label className="block text-sm font-medium text-(--color-text-primary) mb-1">
                                 Grade
                             </label>
                             <select
                                 {...register('grade')}
-                                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] text-[var(--color-text-primary)] px-3 py-2 text-sm focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+                                className="w-full rounded-lg border border-border bg-background text-(--color-text-primary) px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                             >
                                 <option value="">Select grade</option>
                                 {Array.from({ length: 12 }).map((_, idx) => {
@@ -161,13 +161,13 @@ export default function OnboardingStudentForm() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
+                            <label className="block text-sm font-medium text-(--color-text-primary) mb-1">
                                 School
                             </label>
                             <input
                                 type="text"
                                 {...register('school')}
-                                className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] text-[var(--color-text-primary)] px-3 py-2 text-sm focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+                                className="w-full rounded-lg border border-border bg-background text-(--color-text-primary) px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                             />
                             {errors.school && (
                                 <p className="text-xs text-red-500 mt-1">
@@ -178,12 +178,12 @@ export default function OnboardingStudentForm() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
+                        <label className="block text-sm font-medium text-(--color-text-primary) mb-1">
                             Curriculum preference
                         </label>
                         <select
                             {...register('curriculum_preference')}
-                            className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-background)] text-[var(--color-text-primary)] px-3 py-2 text-sm focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+                            className="w-full rounded-lg border border-border bg-background text-(--color-text-primary) px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                         >
                             <option value="">No preference yet</option>
                             {curricula?.map((c: any) => (
@@ -192,7 +192,7 @@ export default function OnboardingStudentForm() {
                                 </option>
                             ))}
                         </select>
-                        <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                        <p className="text-xs text-text-secondary mt-1">
                             We’ll use this to match the right content and tutors.
                         </p>
                     </div>
@@ -201,7 +201,7 @@ export default function OnboardingStudentForm() {
                         <button
                             type="button"
                             onClick={() => router.push('/bookings/new')}
-                            className="px-4 py-2 rounded-lg border border-[var(--color-border)] text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface)] hover:text-[var(--color-text-primary)] transition-colors"
+                            className="px-4 py-2 rounded-lg border border-border text-sm text-text-secondary hover:bg-surface hover:text-(--color-text-primary) transition-colors"
                         >
                             Back to booking
                         </button>
@@ -209,7 +209,7 @@ export default function OnboardingStudentForm() {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="px-5 py-2 rounded-lg bg-[var(--color-primary)] text-white text-sm font-medium disabled:opacity-60 hover:opacity-90 transition-opacity"
+                            className="px-5 py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-60 hover:opacity-90 transition-opacity"
                         >
                             {isSubmitting ? 'Saving…' : 'Save student'}
                         </button>

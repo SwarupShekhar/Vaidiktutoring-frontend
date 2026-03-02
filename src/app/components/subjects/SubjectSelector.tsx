@@ -44,7 +44,7 @@ export default function SubjectSelector({ activeSubject, onSelect }: SelectorPro
                             {activeSubject === subject.id && (
                                 <motion.div
                                     layoutId="active-subject-bar"
-                                    className="absolute bottom-0 left-0 right-0 h-1.5 bg-[var(--color-sapphire)]"
+                                    className="absolute bottom-0 left-0 right-0 h-1.5 bg-sapphire"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
@@ -53,7 +53,7 @@ export default function SubjectSelector({ activeSubject, onSelect }: SelectorPro
                         </AnimatePresence>
 
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className={`text-xl font-bold transition-colors duration-300 ${activeSubject === subject.id ? 'text-[var(--color-sapphire)]' : 'text-[var(--color-text-primary)]'
+                            <h3 className={`text-xl font-bold transition-colors duration-300 ${activeSubject === subject.id ? 'text-sapphire' : 'text-(--color-text-primary)'
                                 }`}>
                                 {subject.name}
                             </h3>
@@ -61,11 +61,11 @@ export default function SubjectSelector({ activeSubject, onSelect }: SelectorPro
                                 <motion.div
                                     initial={{ scale: 0 }}
                                     animate={{ scale: 1 }}
-                                    className="w-2.5 h-2.5 rounded-full bg-[var(--color-sapphire)]"
+                                    className="w-2.5 h-2.5 rounded-full bg-sapphire"
                                 />
                             )}
                         </div>
-                        <p className={`text-sm transition-colors duration-300 ${activeSubject === subject.id ? 'text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)]'
+                        <p className={`text-sm transition-colors duration-300 ${activeSubject === subject.id ? 'text-(--color-text-primary)' : 'text-text-secondary'
                             }`}>
                             {subject.tagline}
                         </p>

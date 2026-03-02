@@ -21,11 +21,11 @@ export default function Navbar() {
     <nav className="w-full sticky top-0 z-50 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-white/20 dark:border-white/5 transition-all duration-300">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 py-4 flex items-center justify-between gap-8">
         {/* Left: Logo */}
-        <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
+        <Link href="/" className="flex items-center gap-2 group shrink-0">
           <div className="w-11 h-11 rounded-lg shadow-lg group-hover:scale-110 transition-all duration-300">
             <SHLogo className="w-full h-full" />
           </div>
-          <div className="text-xl font-black tracking-tighter text-[var(--color-deep-navy)] dark:text-white group-hover:opacity-80 transition-all">
+          <div className="text-xl font-black tracking-tighter text-deep-navy dark:text-white group-hover:opacity-80 transition-all">
             StudyHours
           </div>
         </Link>
@@ -43,8 +43,8 @@ export default function Navbar() {
               key={link.name}
               href={link.href}
               className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all ${isActive(link.href)
-                  ? 'bg-white dark:bg-white/10 text-[var(--color-primary)] shadow-sm'
-                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
+                  ? 'bg-white dark:bg-white/10 text-primary shadow-sm'
+                  : 'text-text-secondary hover:text-primary'
                 }`}
             >
               {link.name}
@@ -53,7 +53,7 @@ export default function Navbar() {
         </div>
 
         {/* Right: Auth & Toggle Group */}
-        <div className="flex items-center gap-3 lg:gap-6 flex-shrink-0">
+        <div className="flex items-center gap-3 lg:gap-6 shrink-0">
           {/* Dashboard Link - Moved here to keep center clean */}
           {user && (
             <Link
@@ -63,7 +63,7 @@ export default function Navbar() {
                     user.role === 'student' ? '/students/dashboard' :
                       '/parent/dashboard'
               }
-              className={`hidden md:block text-xs font-bold tracking-wide transition-all ${isActive('/dashboard') ? 'text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]'
+              className={`hidden md:block text-xs font-bold tracking-wide transition-all ${isActive('/dashboard') ? 'text-primary' : 'text-text-secondary hover:text-primary'
                 }`}
             >
               Dashboard
@@ -74,7 +74,7 @@ export default function Navbar() {
           {(!user || user.role !== 'tutor') && (
             <Link
               href={user ? 'https://calendly.com/swarupshekhar-vaidikedu/30min' : '/signup?type=assessment'}
-              className="hidden sm:inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-[var(--color-primary)] text-white font-black text-xs tracking-wide hover:bg-[var(--color-sapphire)] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-blue-500/20"
+              className="hidden sm:inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-primary text-white font-black text-xs tracking-wide hover:bg-sapphire hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-blue-500/20"
               {...(user ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
             >
               Book Free Demo
@@ -86,14 +86,14 @@ export default function Navbar() {
           {user ? (
             <button
               onClick={logout}
-              className="px-4 py-2 text-xs font-bold text-[var(--color-text-secondary)] hover:text-red-500 transition-colors"
+              className="px-4 py-2 text-xs font-bold text-text-secondary hover:text-red-500 transition-colors"
             >
               Logout
             </button>
           ) : (
             <Link
               href="/login"
-              className="px-4 py-2 text-xs font-bold text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
+              className="px-4 py-2 text-xs font-bold text-text-secondary hover:text-primary transition-colors"
             >
               Login
             </Link>

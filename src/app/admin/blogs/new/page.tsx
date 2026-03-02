@@ -67,16 +67,16 @@ export default function NewBlogPage() {
 
     return (
         <ProtectedClient roles={['admin', 'tutor']}>
-            <div className="min-h-screen bg-[var(--color-background)] py-12 px-6">
+            <div className="min-h-screen bg-background py-12 px-6">
                 <div className="max-w-5xl mx-auto">
 
                     <div className="flex items-center justify-between mb-8">
-                        <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">
+                        <h1 className="text-3xl font-bold text-(--color-text-primary)">
                             {isAdmin ? 'Write New Blog Post' : 'Submit Article for Review'}
                         </h1>
                         <button
                             onClick={() => router.back()}
-                            className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]"
+                            className="text-text-secondary hover:text-primary"
                         >
                             Cancel
                         </button>
@@ -89,14 +89,14 @@ export default function NewBlogPage() {
 
                             {/* Title */}
                             <div>
-                                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Title</label>
+                                <label className="block text-sm font-medium text-text-secondary mb-1">Title</label>
                                 <input
                                     type="text"
                                     name="title"
                                     required
                                     value={form.title}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+                                    className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-(--color-text-primary) focus:ring-2 focus:ring-primary outline-none"
                                     placeholder="e.g. 5 Tips for Acing Algebra"
                                 />
                             </div>
@@ -104,12 +104,12 @@ export default function NewBlogPage() {
                             {/* Category & Image */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Category</label>
+                                    <label className="block text-sm font-medium text-text-secondary mb-1">Category</label>
                                     <select
                                         name="category"
                                         value={form.category}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none appearance-none"
+                                        className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-(--color-text-primary) focus:ring-2 focus:ring-primary outline-none appearance-none"
                                     >
                                         <option>Study Tips</option>
                                         <option>Math</option>
@@ -120,14 +120,14 @@ export default function NewBlogPage() {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Image URL</label>
+                                    <label className="block text-sm font-medium text-text-secondary mb-1">Image URL</label>
                                     <input
                                         type="url"
                                         name="imageUrl"
                                         required
                                         value={form.imageUrl}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none"
+                                        className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-(--color-text-primary) focus:ring-2 focus:ring-primary outline-none"
                                         placeholder="https://..."
                                     />
                                 </div>
@@ -135,14 +135,14 @@ export default function NewBlogPage() {
 
                             {/* Excerpt */}
                             <div>
-                                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Short Excerpt</label>
+                                <label className="block text-sm font-medium text-text-secondary mb-1">Short Excerpt</label>
                                 <textarea
                                     name="excerpt"
                                     required
                                     rows={3}
                                     value={form.excerpt}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none resize-none"
+                                    className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-(--color-text-primary) focus:ring-2 focus:ring-primary outline-none resize-none"
                                     placeholder="Brief summary displayed on the card..."
                                 />
                             </div>
@@ -150,24 +150,24 @@ export default function NewBlogPage() {
                             {/* Content Editor */}
                             <div>
                                 <div className="flex justify-between items-center mb-1">
-                                    <label className="block text-sm font-medium text-[var(--color-text-secondary)]">
+                                    <label className="block text-sm font-medium text-text-secondary">
                                         Content (Markdown supported)
-                                        <span className="ml-2 text-xs text-[var(--color-primary)] font-normal bg-blue-50 px-2 py-0.5 rounded-full">
+                                        <span className="ml-2 text-xs text-primary font-normal bg-blue-50 px-2 py-0.5 rounded-full">
                                             Tip: Type <code>![Alt](url)</code> to add images
                                         </span>
                                     </label>
-                                    <div className="flex bg-[var(--color-surface)] rounded-lg p-1 border border-[var(--color-border)]">
+                                    <div className="flex bg-surface rounded-lg p-1 border border-border">
                                         <button
                                             type="button"
                                             onClick={() => setActiveTab('write')}
-                                            className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${activeTab === 'write' ? 'bg-[var(--color-primary)] text-white shadow' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
+                                            className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${activeTab === 'write' ? 'bg-primary text-white shadow' : 'text-text-secondary hover:text-(--color-text-primary)'}`}
                                         >
                                             Write
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setActiveTab('preview')}
-                                            className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${activeTab === 'preview' ? 'bg-[var(--color-primary)] text-white shadow' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
+                                            className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${activeTab === 'preview' ? 'bg-primary text-white shadow' : 'text-text-secondary hover:text-(--color-text-primary)'}`}
                                         >
                                             Preview
                                         </button>
@@ -181,26 +181,26 @@ export default function NewBlogPage() {
                                         rows={15}
                                         value={form.content}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:ring-2 focus:ring-[var(--color-primary)] outline-none font-mono text-sm"
+                                        className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-(--color-text-primary) focus:ring-2 focus:ring-primary outline-none font-mono text-sm"
                                         placeholder={`# Main Title\n\n## Section Header\n\n![My Image](https://example.com/photo.jpg)\n\nWrite your content here...`}
                                     />
                                 ) : (
-                                    <div className="w-full h-[380px] overflow-y-auto px-4 py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)]">
+                                    <div className="w-full h-[380px] overflow-y-auto px-4 py-3 rounded-xl bg-surface border border-border">
                                         <div className="prose prose-sm dark:prose-invert max-w-none">
                                             <ReactMarkdown
                                                 remarkPlugins={[remarkGfm, remarkBreaks]}
                                                 components={{
-                                                    h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mt-6 mb-3 text-[var(--color-text-primary)]" {...props} />,
-                                                    h2: ({ node, ...props }) => <h2 className="text-xl font-bold mt-5 mb-2 text-[var(--color-text-primary)]" {...props} />,
-                                                    h3: ({ node, ...props }) => <h3 className="text-lg font-bold mt-4 mb-2 text-[var(--color-text-primary)]" {...props} />,
-                                                    p: ({ node, ...props }) => <p className="mb-4 leading-relaxed text-[var(--color-text-secondary)]" {...props} />,
+                                                    h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mt-6 mb-3 text-(--color-text-primary)" {...props} />,
+                                                    h2: ({ node, ...props }) => <h2 className="text-xl font-bold mt-5 mb-2 text-(--color-text-primary)" {...props} />,
+                                                    h3: ({ node, ...props }) => <h3 className="text-lg font-bold mt-4 mb-2 text-(--color-text-primary)" {...props} />,
+                                                    p: ({ node, ...props }) => <p className="mb-4 leading-relaxed text-text-secondary" {...props} />,
                                                     ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4 space-y-1" {...props} />,
                                                     ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4 space-y-1" {...props} />,
-                                                    blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-[var(--color-primary)] pl-4 italic my-4 bg-[var(--color-background)] py-2 rounded-r" {...props} />,
-                                                    a: ({ node, ...props }) => <a className="text-[var(--color-primary)] hover:underline font-medium" {...props} />,
-                                                    table: ({ node, ...props }) => <div className="overflow-x-auto mb-4"><table className="min-w-full divide-y divide-[var(--color-border)]" {...props} /></div>,
-                                                    th: ({ node, ...props }) => <th className="px-3 py-2 bg-[var(--color-background)] text-left text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider" {...props} />,
-                                                    td: ({ node, ...props }) => <td className="px-3 py-2 whitespace-nowrap text-sm text-[var(--color-text-secondary)] border-b border-[var(--color-border)]" {...props} />,
+                                                    blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-primary pl-4 italic my-4 bg-background py-2 rounded-r" {...props} />,
+                                                    a: ({ node, ...props }) => <a className="text-primary hover:underline font-medium" {...props} />,
+                                                    table: ({ node, ...props }) => <div className="overflow-x-auto mb-4"><table className="min-w-full divide-y divide-border" {...props} /></div>,
+                                                    th: ({ node, ...props }) => <th className="px-3 py-2 bg-background text-left text-xs font-semibold text-text-secondary uppercase tracking-wider" {...props} />,
+                                                    td: ({ node, ...props }) => <td className="px-3 py-2 whitespace-nowrap text-sm text-text-secondary border-b border-border" {...props} />,
                                                 }}
                                             >
                                                 {form.content || '*Nothing to preview*'}
@@ -215,8 +215,8 @@ export default function NewBlogPage() {
                                     type="submit"
                                     disabled={loading}
                                     className={`w-full py-4 rounded-xl text-white font-bold text-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${isAdmin
-                                        ? 'bg-gradient-to-r from-purple-600 to-indigo-600 shadow-purple-500/25'
-                                        : 'bg-gradient-to-r from-orange-500 to-amber-500 shadow-orange-500/25'
+                                        ? 'bg-linear-to-r from-purple-600 to-indigo-600 shadow-purple-500/25'
+                                        : 'bg-linear-to-r from-orange-500 to-amber-500 shadow-orange-500/25'
                                         } ${loading ? 'opacity-70 cursor-wait' : ''}`}
                                 >
                                     {loading ? (
@@ -228,7 +228,7 @@ export default function NewBlogPage() {
                                     )}
                                 </button>
                                 {isTutor && (
-                                    <p className="text-center text-xs text-[var(--color-text-secondary)] mt-3">
+                                    <p className="text-center text-xs text-text-secondary mt-3">
                                         Your post will be reviewed by an admin before going live.
                                     </p>
                                 )}
@@ -238,9 +238,9 @@ export default function NewBlogPage() {
 
                         {/* PREVIEW CARD */}
                         <div className="hidden lg:block space-y-4">
-                            <p className="text-sm font-bold text-[var(--color-text-secondary)] uppercase tracking-wider">Live Preview</p>
+                            <p className="text-sm font-bold text-text-secondary uppercase tracking-wider">Live Preview</p>
 
-                            <div className="bg-glass rounded-[2rem] border border-white/20 shadow-xl overflow-hidden pointer-events-none opacity-90 scale-90 origin-top">
+                            <div className="bg-glass rounded-4xl border border-white/20 shadow-xl overflow-hidden pointer-events-none opacity-90 scale-90 origin-top">
                                 <div className="h-48 bg-gray-200 relative w-full group">
                                     {form.imageUrl ? (
                                         <img
@@ -266,10 +266,10 @@ export default function NewBlogPage() {
                                         <span>•</span>
                                         <span>{user?.first_name} {user?.last_name}</span>
                                     </div>
-                                    <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">
+                                    <h2 className="text-xl font-bold text-(--color-text-primary) mb-2">
                                         {form.title || 'Your Title Here'}
                                     </h2>
-                                    <p className="text-[var(--color-text-secondary)] text-sm line-clamp-3">
+                                    <p className="text-text-secondary text-sm line-clamp-3">
                                         {form.excerpt || 'Your short summary will appear here...'}
                                     </p>
                                 </div>

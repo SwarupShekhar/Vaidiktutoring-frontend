@@ -93,7 +93,7 @@ export default function OnboardingPage() {
 
         <div className="bg-white/60 dark:bg-black/40 backdrop-blur-2xl border border-white/50 dark:border-white/10 rounded-[2.5rem] shadow-2xl p-10 md:p-14 mb-8">
 
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[var(--color-primary)] text-white text-4xl mb-8 shadow-lg shadow-blue-500/30">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary text-white text-4xl mb-8 shadow-lg shadow-blue-500/30">
             👋
           </div>
 
@@ -109,7 +109,7 @@ export default function OnboardingPage() {
             <button
               onClick={() => handleRoleSelect('parent')}
               disabled={isUpdating}
-              className="flex flex-col items-center justify-center p-6 rounded-3xl bg-white/50 dark:bg-white/5 border-2 border-transparent hover:border-[var(--color-primary)] hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all group"
+              className="flex flex-col items-center justify-center p-6 rounded-3xl bg-white/50 dark:bg-white/5 border-2 border-transparent hover:border-primary hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all group"
             >
               <span className="text-4xl mb-4 group-hover:scale-110 transition-transform">👨‍👩‍👧‍👦</span>
               <span className="text-lg font-bold text-gray-900 dark:text-white">I am a Parent</span>
@@ -119,7 +119,7 @@ export default function OnboardingPage() {
             <button
               onClick={() => handleRoleSelect('student')}
               disabled={isUpdating}
-              className="flex flex-col items-center justify-center p-6 rounded-3xl bg-white/50 dark:bg-white/5 border-2 border-transparent hover:border-[var(--color-primary)] hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all group"
+              className="flex flex-col items-center justify-center p-6 rounded-3xl bg-white/50 dark:bg-white/5 border-2 border-transparent hover:border-primary hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all group"
             >
               <span className="text-4xl mb-4 group-hover:scale-110 transition-transform">🎓</span>
               <span className="text-lg font-bold text-gray-900 dark:text-white">I am a Student</span>

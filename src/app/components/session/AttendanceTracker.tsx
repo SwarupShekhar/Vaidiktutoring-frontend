@@ -29,7 +29,7 @@ export default function AttendanceTracker({ sessionId, students, onSave, isOpen,
 
     return (
         <div className="absolute top-20 right-4 w-80 bg-white rounded-2xl shadow-xl border border-gray-200 z-50 overflow-hidden text-black animate-slide-in-right">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white flex justify-between items-center">
+            <div className="bg-linear-to-r from-blue-600 to-indigo-600 p-4 text-white flex justify-between items-center">
                 <h3 className="font-bold">📝 Attendance</h3>
                 <button onClick={onClose} className="text-white/80 hover:text-white text-xl">×</button>
             </div>

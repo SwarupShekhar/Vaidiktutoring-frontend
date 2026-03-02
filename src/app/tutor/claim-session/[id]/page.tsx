@@ -55,22 +55,22 @@ export default function ClaimSessionPage() {
             <div className="min-h-screen flex items-center justify-center p-4">
                 <div className="bg-glass border border-white/20 rounded-2xl shadow-xl max-w-md w-full p-8 text-center">
                     <div className="mb-6 text-4xl">⚡️</div>
-                    <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mb-2">
+                    <h1 className="text-2xl font-bold text-(--color-text-primary) mb-2">
                         New Session Opportunity
                     </h1>
 
                     {bookingDetails ? (
                         <div className="my-6 p-4 bg-white/50 rounded-xl border border-white/20 text-left space-y-2">
-                            <p className="text-sm text-[var(--color-text-secondary)] uppercase font-bold">Subject</p>
-                            <p className="text-lg font-bold text-[var(--color-text-primary)]">{bookingDetails.subject_name || 'TBD'}</p>
+                            <p className="text-sm text-text-secondary uppercase font-bold">Subject</p>
+                            <p className="text-lg font-bold text-(--color-text-primary)">{bookingDetails.subject_name || 'TBD'}</p>
 
-                            <p className="text-sm text-[var(--color-text-secondary)] uppercase font-bold mt-2">Time</p>
-                            <p className="text-[var(--color-text-primary)]">
+                            <p className="text-sm text-text-secondary uppercase font-bold mt-2">Time</p>
+                            <p className="text-(--color-text-primary)">
                                 {bookingDetails.start_time ? new Date(bookingDetails.start_time).toLocaleString() : 'TBD'}
                             </p>
                         </div>
                     ) : (
-                        <p className="text-[var(--color-text-secondary)] mb-8">
+                        <p className="text-text-secondary mb-8">
                             A student is looking for a tutor. Click below to accept this job.
                         </p>
                     )}
@@ -84,7 +84,7 @@ export default function ClaimSessionPage() {
                     <button
                         onClick={handleClaim}
                         disabled={loading || !!error || user?.email_verified === false} // Disable if already failed or unverified
-                        className="w-full py-3 px-4 bg-[var(--color-primary)] hover:brightness-110 text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-3 px-4 bg-primary hover:brightness-110 text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         title={user?.email_verified === false ? "Please verify your email first" : ""}
                     >
                         {loading ? 'Claiming...' : (user?.email_verified === false ? 'Verify Email to Accept' : 'Accept Session')}
@@ -92,7 +92,7 @@ export default function ClaimSessionPage() {
 
                     <button
                         onClick={() => router.push('/tutor/dashboard')}
-                        className="mt-4 text-sm text-[var(--color-text-secondary)] hover:underline"
+                        className="mt-4 text-sm text-text-secondary hover:underline"
                     >
                         Cancel
                     </button>

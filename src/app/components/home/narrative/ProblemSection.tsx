@@ -88,7 +88,7 @@ export default function ProblemSection() {
                                 "Progress compounds week over week"
                             ].map((bullet, idx) => (
                                 <div key={idx} className="flex items-start gap-3">
-                                    <div className="mt-1 w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 text-primary">
+                                    <div className="mt-1 w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0 text-primary">
                                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 14.14L8.707 14.707a1 1 0 010-1.414L16.707 5.293z" clipRule="evenodd" /></svg>
                                     </div>
                                     <p className="text-sm font-bold opacity-80 leading-snug">{bullet}</p>

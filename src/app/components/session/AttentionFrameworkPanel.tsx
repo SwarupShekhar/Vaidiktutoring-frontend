@@ -107,7 +107,7 @@ export default function AttentionFrameworkPanel({ sessionId, studentId, tutorId,
             </div>
 
             {summary?.loopsComplete && (
-                <div className="mt-6 p-4 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl shadow-lg shadow-green-500/20 flex items-center gap-4 animate-in slide-in-from-bottom-2">
+                <div className="mt-6 p-4 bg-linear-to-br from-emerald-500 to-green-600 rounded-2xl shadow-lg shadow-green-500/20 flex items-center gap-4 animate-in slide-in-from-bottom-2">
                     <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">
                         🏆
                     </div>
@@ -128,7 +128,7 @@ export default function AttentionFrameworkPanel({ sessionId, studentId, tutorId,
                 </div>
                 <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden shadow-inner p-0.5">
                     <div
-                        className="bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500 h-full rounded-full transition-all duration-1000 shadow-lg shadow-purple-500/20"
+                        className="bg-linear-to-r from-purple-500 via-indigo-500 to-blue-500 h-full rounded-full transition-all duration-1000 shadow-lg shadow-purple-500/20"
                         style={{ width: `${summary?.personalizationScore || 0}%` }}
                     />
                 </div>

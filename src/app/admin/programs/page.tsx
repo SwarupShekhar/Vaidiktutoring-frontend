@@ -26,10 +26,10 @@ export default function ProgramsPage() {
         <ProtectedClient roles={['admin']}>
             <div className="min-h-screen p-6 md:p-8 max-w-7xl mx-auto space-y-8">
                 {/* HEADER */}
-                <div className="flex justify-between items-center bg-glass rounded-[2rem] p-8 border border-white/20 shadow-lg">
+                <div className="flex justify-between items-center bg-glass rounded-4xl p-8 border border-white/20 shadow-lg">
                     <div>
-                        <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">Programs</h1>
-                        <p className="text-[var(--color-text-secondary)]">Managed Tutoring Operating System</p>
+                        <h1 className="text-3xl font-bold text-(--color-text-primary)">Programs</h1>
+                        <p className="text-text-secondary">Managed Tutoring Operating System</p>
                     </div>
                     <Link
                         href="/admin/programs/new"
@@ -42,7 +42,7 @@ export default function ProgramsPage() {
                 {/* FILTERS TOOLBAR (Placeholder) */}
                 <div className="flex gap-4 p-4 bg-glass rounded-xl border border-white/20">
                     <input type="text" placeholder="Search programs..." className="bg-white/50 border border-transparent focus:border-blue-500 rounded-lg px-4 py-2 text-sm w-64" />
-                    <select className="bg-white/50 border border-transparent focus:border-blue-500 rounded-lg px-4 py-2 text-sm text-[var(--color-text-secondary)]">
+                    <select className="bg-white/50 border border-transparent focus:border-blue-500 rounded-lg px-4 py-2 text-sm text-text-secondary">
                         <option>All Statuses</option>
                         <option>Active</option>
                         <option>Draft</option>
@@ -52,10 +52,10 @@ export default function ProgramsPage() {
 
                 {/* PROGRAMS GRID */}
                 {loading ? (
-                    <div className="text-center py-20 text-[var(--color-text-secondary)]">Loading Programs...</div>
+                    <div className="text-center py-20 text-text-secondary">Loading Programs...</div>
                 ) : programs.length === 0 ? (
                     <div className="text-center py-20 bg-glass rounded-2xl border border-white/20">
-                        <p className="text-[var(--color-text-secondary)] mb-4">No programs found.</p>
+                        <p className="text-text-secondary mb-4">No programs found.</p>
                         <Link href="/admin/programs/new" className="text-blue-600 font-bold hover:underline">Create your first program</Link>
                     </div>
                 ) : (
@@ -75,16 +75,16 @@ export default function ProgramsPage() {
                                             {program.status}
                                         </div>
                                         <div className="text-right">
-                                            <div className="text-xs font-bold text-[var(--color-text-secondary)]">
+                                            <div className="text-xs font-bold text-text-secondary">
                                                 {program.operational?.startDate ? format(new Date(program.operational.startDate), 'MMM d, yyyy') : 'N/A'}
                                             </div>
-                                            <div className="text-[10px] text-[var(--color-text-secondary)]">Start Date</div>
+                                            <div className="text-[10px] text-text-secondary">Start Date</div>
                                         </div>
                                     </div>
-                                    <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-2 group-hover:text-blue-600 transition-colors">
+                                    <h3 className="text-xl font-bold text-(--color-text-primary) mb-2 group-hover:text-blue-600 transition-colors">
                                         {program.name}
                                     </h3>
-                                    <div className="flex items-center gap-4 text-sm text-[var(--color-text-secondary)] mb-4">
+                                    <div className="flex items-center gap-4 text-sm text-text-secondary mb-4">
                                         <div className="flex items-center gap-1">
                                             <span>👥</span>
                                             <span>{program.studentCount || 0} Students</span>
@@ -97,7 +97,7 @@ export default function ProgramsPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <div className="flex justify-between text-xs text-[var(--color-text-secondary)] font-semibold">
+                                    <div className="flex justify-between text-xs text-text-secondary font-semibold">
                                         <span>Progress</span>
                                         <span>{(program.sessionsDelivered && program.upcomingSessions) ? Math.round((program.sessionsDelivered / (program.sessionsDelivered + program.upcomingSessions)) * 100) : 0}%</span>
                                     </div>
@@ -117,7 +117,7 @@ export default function ProgramsPage() {
                             className="bg-white/20 border-2 border-dashed border-white/30 rounded-2xl p-6 flex flex-col items-center justify-center gap-4 hover:bg-white/30 transition-all group cursor-pointer min-h-[250px]"
                         >
                             <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl font-bold group-hover:scale-110 transition-transform">+</div>
-                            <span className="font-bold text-[var(--color-text-secondary)] group-hover:text-blue-600">Create Program</span>
+                            <span className="font-bold text-text-secondary group-hover:text-blue-600">Create Program</span>
                         </Link>
                     </div>
                 )}

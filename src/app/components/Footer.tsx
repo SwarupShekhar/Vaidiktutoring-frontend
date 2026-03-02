@@ -19,7 +19,7 @@ export default function Footer() {
                             <div className="w-10 h-10 rounded-lg">
                                 <SHLogo className="w-full h-full" />
                             </div>
-                            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300">
+                            <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300">
                                 StudyHours
                             </span>
                         </div>
@@ -32,10 +32,10 @@ export default function Footer() {
                     <div>
                         <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Product</h3>
                         <ul className="space-y-3">
-                            <li><Link href="/subjects" className="text-gray-600 dark:text-gray-400 hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)] transition-colors text-sm">Subjects</Link></li>
-                            <li><Link href="/experts" className="text-gray-600 dark:text-gray-400 hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)] transition-colors text-sm">Find Experts</Link></li>
-                            <li><Link href="/pricing" className="text-gray-600 dark:text-gray-400 hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)] transition-colors text-sm">Pricing</Link></li>
-                            <li><Link href="/onboarding" className="text-gray-600 dark:text-gray-400 hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)] transition-colors text-sm">Join as Student</Link></li>
+                            <li><Link href="/subjects" className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">Subjects</Link></li>
+                            <li><Link href="/experts" className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">Find Experts</Link></li>
+                            <li><Link href="/pricing" className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">Pricing</Link></li>
+                            <li><Link href="/onboarding" className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">Join as Student</Link></li>
                         </ul>
                     </div>
 
@@ -43,10 +43,10 @@ export default function Footer() {
                     <div>
                         <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Company</h3>
                         <ul className="space-y-3">
-                            <li><Link href="/about" className="text-gray-600 dark:text-gray-400 hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)] transition-colors text-sm">About Us</Link></li>
-                            <li><Link href="/careers" className="text-gray-600 dark:text-gray-400 hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)] transition-colors text-sm">Careers</Link></li>
-                            <li><Link href="/blog" className="text-gray-600 dark:text-gray-400 hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)] transition-colors text-sm">Blog</Link></li>
-                            <li><Link href="/contact" className="text-gray-600 dark:text-gray-400 hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)] transition-colors text-sm">Contact</Link></li>
+                            <li><Link href="/about" className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">About Us</Link></li>
+                            <li><Link href="/careers" className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">Careers</Link></li>
+                            <li><Link href="/blog" className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">Blog</Link></li>
+                            <li><Link href="/contact" className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">Contact</Link></li>
                         </ul>
                     </div>
 
@@ -54,9 +54,9 @@ export default function Footer() {
                     <div>
                         <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Legal</h3>
                         <ul className="space-y-3">
-                            <li><Link href="/privacy" className="text-gray-600 dark:text-gray-400 hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)] transition-colors text-sm">Privacy Policy</Link></li>
-                            <li><Link href="/terms" className="text-gray-600 dark:text-gray-400 hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)] transition-colors text-sm">Terms of Service</Link></li>
-                            <li><Link href="/cookies" className="text-gray-600 dark:text-gray-400 hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary)] transition-colors text-sm">Cookie Settings</Link></li>
+                            <li><Link href="/privacy" className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">Privacy Policy</Link></li>
+                            <li><Link href="/terms" className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">Terms of Service</Link></li>
+                            <li><Link href="/cookies" className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">Cookie Settings</Link></li>
                         </ul>
                     </div>
 

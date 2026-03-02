@@ -123,7 +123,7 @@ export default function JobBoardPage() {
                                             <button
                                                 disabled={!!claimingId}
                                                 onClick={() => handleClaim(job.id)}
-                                                className="w-full md:w-auto px-10 py-5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-purple-500/20 disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3 group/btn"
+                                                className="w-full md:w-auto px-10 py-5 bg-linear-to-r from-purple-600 to-indigo-600 text-white font-black rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-purple-500/20 disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3 group/btn"
                                             >
                                                 {claimingId === job.id ? (
                                                     <>

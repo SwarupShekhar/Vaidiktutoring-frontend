@@ -39,7 +39,7 @@ export default function SubjectsPage() {
     }, [activeSubject]);
 
     return (
-        <main className="min-h-screen bg-[var(--color-background)] pb-24 transition-colors duration-500 relative">
+        <main className="min-h-screen bg-background pb-24 transition-colors duration-500 relative">
             {/* Sticky Action Bar */}
             <StickyCTA />
 
@@ -83,16 +83,16 @@ export default function SubjectsPage() {
 
             {/* Final Strong CTA Section */}
             <div className="px-6 max-w-7xl mx-auto text-center mt-20 mb-32 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-                <h2 className="text-3xl font-bold text-[var(--color-deep-navy)] mb-8">Ready to unlock your child's potential?</h2>
+                <h2 className="text-3xl font-bold text-deep-navy mb-8">Ready to unlock your child's potential?</h2>
 
                 <Link
                     href={user ? '/students/dashboard' : '/signup'}
-                    className="inline-flex items-center justify-center px-16 py-6 rounded-full bg-[var(--color-primary)] text-white font-bold text-xl hover:bg-[var(--color-sapphire)] hover:scale-105 transition-all shadow-xl shadow-blue-500/30"
+                    className="inline-flex items-center justify-center px-16 py-6 rounded-full bg-primary text-white font-bold text-xl hover:bg-sapphire hover:scale-105 transition-all shadow-xl shadow-blue-500/30"
                 >
                     Book a Free Learning Assessment
                 </Link>
 
-                <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-[var(--color-text-secondary)] text-sm font-medium">
+                <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-text-secondary text-sm font-medium">
                     <span className="flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
                         15-Min Diagnostic

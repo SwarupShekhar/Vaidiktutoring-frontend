@@ -27,13 +27,13 @@ export default function TutorVetting() {
     ];
 
     return (
-        <section className="w-full py-20 px-6 bg-[var(--color-surface)]" id="vetting">
+        <section className="w-full py-20 px-6 bg-surface" id="vetting">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-bold text-[var(--color-text-primary)] mb-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-(--color-text-primary) mb-4">
                         Only the best enter our classroom
                     </h2>
-                    <p className="text-lg text-[var(--color-text-secondary)] max-w-2xl mx-auto">
+                    <p className="text-lg text-text-secondary max-w-2xl mx-auto">
                         Every tutor passes a rigorous selection and training process before teaching a single student.
                     </p>
                 </div>
@@ -42,15 +42,15 @@ export default function TutorVetting() {
                     {steps.map((step, idx) => (
                         <div key={idx} className="flex flex-col items-center text-center group">
                             {/* Number / Icon */}
-                            <div className="w-12 h-12 rounded-full bg-blue-50 text-[var(--color-primary)] font-bold text-xl flex items-center justify-center mb-6 border border-blue-100 group-hover:scale-110 transition-transform shadow-sm">
+                            <div className="w-12 h-12 rounded-full bg-blue-50 text-primary font-bold text-xl flex items-center justify-center mb-6 border border-blue-100 group-hover:scale-110 transition-transform shadow-sm">
                                 {idx + 1}
                             </div>
 
                             {/* Content */}
-                            <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-3">
+                            <h3 className="text-lg font-bold text-(--color-text-primary) mb-3">
                                 {step.title}
                             </h3>
-                            <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
+                            <p className="text-sm text-text-secondary leading-relaxed">
                                 {step.desc}
                             </p>
                         </div>

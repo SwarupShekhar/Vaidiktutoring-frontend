@@ -31,7 +31,7 @@ export default function TutorDashboardPage() {
 
           {/* TOP ANNOUNCEMENT: AVAILABLE JOBS */}
           {availableJobs.length > 0 && (
-            <div className="relative group overflow-hidden rounded-[2.5rem] p-8 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="relative group overflow-hidden rounded-[2.5rem] p-8 bg-linear-to-br from-indigo-600 via-purple-600 to-pink-600 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-700">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
                 <Zap size={160} />
               </div>
@@ -84,7 +84,7 @@ export default function TutorDashboardPage() {
                   <span>Certified Level 5</span>
                 </div>
               </div>
-              <div className="h-16 w-16 rounded-[1.5rem] bg-gradient-to-br from-purple-500 to-pink-500 p-1 shadow-2xl">
+              <div className="h-16 w-16 rounded-3xl bg-linear-to-br from-purple-500 to-pink-500 p-1 shadow-2xl">
                 <div className="h-full w-full rounded-[1.15rem] bg-white dark:bg-slate-900 flex items-center justify-center font-black text-2xl text-purple-600">
                   {user?.firstName?.[0] || 'T'}
                 </div>
@@ -211,7 +211,7 @@ export default function TutorDashboardPage() {
                             )}
                             <Link
                               href={`/session/${session.id}`}
-                              className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black hover:scale-105 active:scale-95 transition-all shadow-xl shadow-emerald-500/25 group/btn"
+                              className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-linear-to-r from-emerald-500 to-teal-500 text-white font-black hover:scale-105 active:scale-95 transition-all shadow-xl shadow-emerald-500/25 group/btn"
                             >
                               <Video size={20} className="group-hover/btn:scale-110 transition-transform" />
                               Join Live Class
@@ -345,10 +345,10 @@ export default function TutorDashboardPage() {
               </section>
 
               {/* QUICK ACTIONS */}
-              <section className="bg-gradient-to-br from-slate-900 to-black dark:from-slate-800 dark:to-slate-900 border border-white/10 rounded-[3rem] p-10 shadow-2xl">
+              <section className="bg-linear-to-br from-slate-900 to-black dark:from-slate-800 dark:to-slate-900 border border-white/10 rounded-[3rem] p-10 shadow-2xl">
                 <h3 className="text-xl font-black text-white mb-8">Service Modules</h3>
                 <div className="grid grid-cols-1 gap-5">
-                  <button className="flex items-center gap-6 p-6 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative">
+                  <button className="flex items-center gap-6 p-6 rounded-4xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-150 transition-transform">
                       <BookOpen size={80} />
                     </div>
@@ -360,7 +360,7 @@ export default function TutorDashboardPage() {
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Asset Repository</p>
                     </div>
                   </button>
-                  <Link href="/tutor/schedule" className="flex items-center gap-6 p-6 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative">
+                  <Link href="/tutor/schedule" className="flex items-center gap-6 p-6 rounded-4xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-150 transition-transform">
                       <Calendar size={80} />
                     </div>

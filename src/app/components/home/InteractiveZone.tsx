@@ -17,10 +17,10 @@ export default function InteractiveZone() {
         <section className="w-full py-16 px-6Async">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl font-bold text-[var(--color-text-primary)] mb-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-(--color-text-primary) mb-4">
                         Learning Should Not Be Boring. Start the Fun.
                     </h2>
-                    <p className="text-lg text-[var(--color-text-secondary)] max-w-2xl mx-auto">
+                    <p className="text-lg text-text-secondary max-w-2xl mx-auto">
                         Explore learning in a way that feels interactive, personal, and exciting from the very first click.
                     </p>
                 </div>
@@ -93,10 +93,10 @@ function QuickQuizCard() {
                         <div className="inline-flex w-16 h-16 bg-blue-100 rounded-full items-center justify-center text-3xl mb-4">
                             {isGoodScore ? '🎉' : '💪'}
                         </div>
-                        <h3 className="text-2xl font-bold text-[var(--color-text-primary)] mb-1">
+                        <h3 className="text-2xl font-bold text-(--color-text-primary) mb-1">
                             You got {score} out of {questions.length} correct
                         </h3>
-                        <p className="text-[var(--color-text-secondary)]">
+                        <p className="text-text-secondary">
                             {isGoodScore ? 'Great job! You show real promise.' : 'Good effort! Learning takes practice.'}
                         </p>
                     </div>
@@ -107,16 +107,16 @@ function QuickQuizCard() {
                             const userAns = q.options[answers[idx]];
                             return (
                                 <div key={q.id} className={`p-4 rounded-xl border ${isCorrect ? 'border-green-200 bg-green-50/50' : 'border-red-200 bg-red-50/50'}`}>
-                                    <p className="font-medium text-[var(--color-text-primary)] text-sm mb-2">
+                                    <p className="font-medium text-(--color-text-primary) text-sm mb-2">
                                         {idx + 1}. {q.question}
                                     </p>
                                     <div className="flex justify-between items-center mb-2">
                                         <span className={`text-xs font-bold px-2 py-1 rounded ${isCorrect ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                                             {isCorrect ? 'Correct' : 'Incorrect'}
                                         </span>
-                                        {!isCorrect && <span className="text-xs text-[var(--color-text-secondary)]">You chose: {userAns}</span>}
+                                        {!isCorrect && <span className="text-xs text-text-secondary">You chose: {userAns}</span>}
                                     </div>
-                                    <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+                                    <p className="text-xs text-text-secondary leading-relaxed">
                                         {q.explanation}
                                     </p>
                                 </div>
@@ -126,14 +126,14 @@ function QuickQuizCard() {
 
                     <button
                         onClick={() => router.push(`/signup?intent=quiz&score=${score}`)}
-                        className="w-full py-4 rounded-xl bg-[var(--color-primary)] text-white font-bold hover:opacity-90 transition-all shadow-lg"
+                        className="w-full py-4 rounded-xl bg-primary text-white font-bold hover:opacity-90 transition-all shadow-lg"
                     >
                         {score <= 1 ? 'I want to get better. Show me how tutoring can help' : 'Great job. Meet your ideal tutor'}
                     </button>
 
                     <button
                         onClick={() => { setStarted(false); setCompleted(false); }}
-                        className="mt-4 w-full text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]"
+                        className="mt-4 w-full text-sm text-text-secondary hover:text-primary"
                     >
                         Try again with a different subject
                     </button>
@@ -150,16 +150,16 @@ function QuickQuizCard() {
             <InteractiveCard variant="orange">
                 <div className="h-full flex flex-col">
                     <div className="mb-6 flex justify-between items-center">
-                        <span className="text-xs font-bold uppercase text-[var(--color-primary)] tracking-wider">
+                        <span className="text-xs font-bold uppercase text-primary tracking-wider">
                             Question {currentQIndex + 1} of {questions.length}
                         </span>
-                        <span className="text-xs text-[var(--color-text-secondary)] font-medium">
+                        <span className="text-xs text-text-secondary font-medium">
                             {grade} • {subject}
                         </span>
                     </div>
 
                     <div className="flex-1">
-                        <h4 className="text-xl md:text-2xl font-bold text-[var(--color-text-primary)] mb-8 leading-snug">
+                        <h4 className="text-xl md:text-2xl font-bold text-(--color-text-primary) mb-8 leading-snug">
                             {currentQ.question}
                         </h4>
 
@@ -169,8 +169,8 @@ function QuickQuizCard() {
                                     key={idx}
                                     onClick={() => handleAnswer(idx)}
                                     className={`w-full text-left p-4 rounded-xl border transition-all flex justify-between group ${answers[currentQIndex] === idx
-                                        ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-md'
-                                        : 'bg-[var(--color-surface)] border-[var(--color-border)] hover:border-[var(--color-primary)] hover:bg-blue-50/30'
+                                        ? 'bg-primary text-white border-primary shadow-md'
+                                        : 'bg-surface border-border hover:border-primary hover:bg-blue-50/30'
                                         }`}
                                 >
                                     <span className="font-medium">{opt}</span>
@@ -184,7 +184,7 @@ function QuickQuizCard() {
                         {currentQIndex > 0 && (
                             <button
                                 onClick={handlePrev}
-                                className="px-6 py-3 rounded-xl border border-[var(--color-border)] text-[var(--color-text-secondary)] font-bold hover:bg-[var(--color-surface)] transition-all"
+                                className="px-6 py-3 rounded-xl border border-border text-text-secondary font-bold hover:bg-surface transition-all"
                             >
                                 Back
                             </button>
@@ -192,7 +192,7 @@ function QuickQuizCard() {
                         <button
                             onClick={handleNext}
                             disabled={!isAnswered}
-                            className="flex-1 py-3 rounded-xl bg-[var(--color-primary)] text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-all shadow-lg shadow-blue-500/10"
+                            className="flex-1 py-3 rounded-xl bg-primary text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-all shadow-lg shadow-blue-500/10"
                         >
                             {isLast ? 'See my result' : 'Next'}
                         </button>
@@ -208,22 +208,22 @@ function QuickQuizCard() {
                 <div className="mb-4 w-12 h-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-xl">
                     ⚡️
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] mb-2">Try a 60-second challenge</h3>
-                <p className="text-[var(--color-text-secondary)] mb-8 flex-1">
+                <h3 className="text-2xl font-bold text-(--color-text-primary) mb-2">Try a 60-second challenge</h3>
+                <p className="text-text-secondary mb-8 flex-1">
                     Pick your grade and subject to attempt a short quiz designed to test thinking, not memorization.
                 </p>
 
                 <div className="space-y-6 mb-8">
                     <div>
-                        <label className="block text-xs font-bold text-[var(--color-text-secondary)] uppercase mb-3">Grade Level</label>
+                        <label className="block text-xs font-bold text-text-secondary uppercase mb-3">Grade Level</label>
                         <div className="grid grid-cols-3 gap-2">
                             {(['K-5', '6-8', '9-12'] as GradeBand[]).map(g => (
                                 <button
                                     key={g}
                                     onClick={() => setGrade(g)}
                                     className={`py-2 text-sm rounded-lg border transition-all ${grade === g
-                                        ? 'bg-[var(--color-secondary)] text-slate-900 border-[var(--color-secondary)] font-bold shadow-sm'
-                                        : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:border-gray-300'
+                                        ? 'bg-secondary text-slate-900 border-secondary font-bold shadow-sm'
+                                        : 'bg-surface text-text-secondary border-border hover:border-gray-300'
                                         }`}
                                 >
                                     {g}
@@ -233,15 +233,15 @@ function QuickQuizCard() {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold text-[var(--color-text-secondary)] uppercase mb-3">Subject</label>
+                        <label className="block text-xs font-bold text-text-secondary uppercase mb-3">Subject</label>
                         <div className="grid grid-cols-2 gap-2">
                             {(['Math', 'Science'] as SubjectKey[]).map(s => (
                                 <button
                                     key={s}
                                     onClick={() => setSubject(s)}
                                     className={`py-2 text-sm rounded-lg border transition-all ${subject === s
-                                        ? 'bg-[var(--color-secondary)] text-slate-900 border-[var(--color-secondary)] font-bold shadow-sm'
-                                        : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:border-gray-300'
+                                        ? 'bg-secondary text-slate-900 border-secondary font-bold shadow-sm'
+                                        : 'bg-surface text-text-secondary border-border hover:border-gray-300'
                                         }`}
                                 >
                                     {s}
@@ -253,7 +253,7 @@ function QuickQuizCard() {
 
                 <button
                     onClick={handleStart}
-                    className="w-full py-3 rounded-xl bg-[var(--color-primary)] text-white font-bold hover:opacity-90 transition-all shadow-lg shadow-blue-500/20"
+                    className="w-full py-3 rounded-xl bg-primary text-white font-bold hover:opacity-90 transition-all shadow-lg shadow-blue-500/20"
                 >
                     Start quiz
                 </button>
@@ -298,25 +298,25 @@ function LearningSuperpowerCard() {
                     <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center text-3xl mb-4">
                         🧠
                     </div>
-                    <h3 className="text-lg font-bold text-[var(--color-text-secondary)] mb-1 uppercase tracking-wide">
+                    <h3 className="text-lg font-bold text-text-secondary mb-1 uppercase tracking-wide">
                         {result.title.replace('Your learning superpower: ', '')}
                     </h3>
-                    <h2 className="text-2xl md:text-3xl font-extrabold text-[var(--color-primary)] mb-4">
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-primary mb-4">
                         {result.subtitle}
                     </h2>
 
-                    <p className="text-[var(--color-text-primary)] mb-6 leading-relaxed">
+                    <p className="text-(--color-text-primary) mb-6 leading-relaxed">
                         {result.description}
                     </p>
 
-                    <div className="w-full bg-[var(--color-surface)]/50 rounded-xl p-6 text-left mb-8 border border-[var(--color-border)]">
-                        <h4 className="font-bold text-[var(--color-text-primary)] mb-3 flex items-center gap-2">
+                    <div className="w-full bg-surface/50 rounded-xl p-6 text-left mb-8 border border-border">
+                        <h4 className="font-bold text-(--color-text-primary) mb-3 flex items-center gap-2">
                             Your study hacks:
                         </h4>
                         <ul className="space-y-2">
                             {result.suggestions.map((s, i) => (
-                                <li key={i} className="flex gap-3 text-sm text-[var(--color-text-secondary)]">
-                                    <span className="text-[var(--color-primary)]">•</span>
+                                <li key={i} className="flex gap-3 text-sm text-text-secondary">
+                                    <span className="text-primary">•</span>
                                     {s}
                                 </li>
                             ))}
@@ -325,12 +325,12 @@ function LearningSuperpowerCard() {
 
                     <button
                         onClick={() => router.push('/signup?intent=learning-style')}
-                        className="w-full py-4 rounded-xl bg-[var(--color-primary)] text-white font-bold hover:opacity-90 transition-all shadow-lg"
+                        className="w-full py-4 rounded-xl bg-primary text-white font-bold hover:opacity-90 transition-all shadow-lg"
                     >
                         Meet your ideal tutor
                     </button>
 
-                    <p className="mt-6 text-xs text-[var(--color-text-secondary)] opacity-80 max-w-sm mx-auto">
+                    <p className="mt-6 text-xs text-text-secondary opacity-80 max-w-sm mx-auto">
                         We use your child's learning profile along with their grade and goals to match them with a tutor from our in-house team.
                     </p>
                 </div>
@@ -347,7 +347,7 @@ function LearningSuperpowerCard() {
                         <span className="text-xs font-bold uppercase text-purple-600 tracking-wider">
                             Question {step + 1} of {LEARNING_QUESTIONS.length}
                         </span>
-                        <h3 className="text-lg md:text-xl font-bold text-[var(--color-text-primary)]">
+                        <h3 className="text-lg md:text-xl font-bold text-(--color-text-primary)">
                             {currentQ.question}
                         </h3>
                     </div>
@@ -357,9 +357,9 @@ function LearningSuperpowerCard() {
                             <button
                                 key={idx}
                                 onClick={() => handleAnswer(opt.code)}
-                                className="w-full text-left p-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] hover:border-purple-400 hover:bg-purple-50/50 transition-all flex justify-between group"
+                                className="w-full text-left p-4 rounded-xl border border-border bg-surface hover:border-purple-400 hover:bg-purple-50/50 transition-all flex justify-between group"
                             >
-                                <span className="text-sm font-medium text-[var(--color-text-primary)]">{opt.label}</span>
+                                <span className="text-sm font-medium text-(--color-text-primary)">{opt.label}</span>
                                 <span className="opacity-0 group-hover:opacity-100 text-purple-600 transition-opacity">→</span>
                             </button>
                         ))}
@@ -381,8 +381,8 @@ function LearningSuperpowerCard() {
                 <div className="mb-4 w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl">
                     🔍
                 </div>
-                <h3 className="text-2xl font-bold text-[var(--color-text-primary)] mb-2">Discover your learning superpower</h3>
-                <p className="text-[var(--color-text-secondary)] mb-8">
+                <h3 className="text-2xl font-bold text-(--color-text-primary) mb-2">Discover your learning superpower</h3>
+                <p className="text-text-secondary mb-8">
                     Answer a few quick questions and discover how you learn best.
                 </p>
 
@@ -390,21 +390,21 @@ function LearningSuperpowerCard() {
                 <div className="flex-1 space-y-4 mb-8">
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center text-sm">👁️</div>
-                        <span className="text-sm text-[var(--color-text-secondary)]">Visual Explorer</span>
+                        <span className="text-sm text-text-secondary">Visual Explorer</span>
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm">👂</div>
-                        <span className="text-sm text-[var(--color-text-secondary)]">Sound Focused</span>
+                        <span className="text-sm text-text-secondary">Sound Focused</span>
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center text-sm">🧱</div>
-                        <span className="text-sm text-[var(--color-text-secondary)]">Hands-On Builder</span>
+                        <span className="text-sm text-text-secondary">Hands-On Builder</span>
                     </div>
                 </div>
 
                 <button
                     onClick={() => setStarted(true)}
-                    className="w-full py-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)] font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition-all"
+                    className="w-full py-3 rounded-xl bg-surface border border-border text-(--color-text-primary) font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition-all"
                 >
                     Start discovery
                 </button>

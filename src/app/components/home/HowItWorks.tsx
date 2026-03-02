@@ -28,16 +28,16 @@ export default function HowItWorks() {
     ];
 
     return (
-        <section className="py-20 lg:py-28 bg-[var(--color-surface)] relative overflow-hidden">
+        <section className="py-20 lg:py-28 bg-surface relative overflow-hidden">
             {/* Decorational line */}
-            <div className="absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-100 dark:via-blue-900 to-transparent -translate-y-1/2 hidden lg:block" />
+            <div className="absolute top-1/2 left-0 w-full h-1 bg-linear-to-r from-transparent via-blue-100 dark:via-blue-900 to-transparent -translate-y-1/2 hidden lg:block" />
 
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="text-center max-w-2xl mx-auto mb-16">
-                    <h2 className="text-3xl lg:text-4xl font-bold text-[var(--color-text-primary)] mb-4">
+                    <h2 className="text-3xl lg:text-4xl font-bold text-(--color-text-primary) mb-4">
                         How it works
                     </h2>
-                    <p className="text-[var(--color-text-secondary)]">
+                    <p className="text-text-secondary">
                         A simple path to better grades and higher confidence.
                     </p>
                 </div>

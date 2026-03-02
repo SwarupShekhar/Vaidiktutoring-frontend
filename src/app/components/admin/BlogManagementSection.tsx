@@ -61,21 +61,21 @@ export default function BlogManagementSection() {
     return (
         <div className="w-full">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+                <h2 className="text-xl font-bold text-(--color-text-primary) flex items-center gap-2">
                     <PenTool size={20} className="text-pink-500" />
                     Content Management
                 </h2>
                 <div className="flex gap-2">
                     <button
                         onClick={fetchBlogs}
-                        className="p-2 rounded-xl hover:bg-white/10 text-[var(--color-text-secondary)] transition-colors"
+                        className="p-2 rounded-xl hover:bg-white/10 text-text-secondary transition-colors"
                         title="Refresh"
                     >
                         <RefreshCw size={18} />
                     </button>
                     <Link
                         href="/admin/blogs/new"
-                        className="px-4 py-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-sm font-bold rounded-xl shadow-lg hover:shadow-pink-500/25 transition-all flex items-center gap-2"
+                        className="px-4 py-2 bg-linear-to-r from-pink-500 to-rose-500 text-white text-sm font-bold rounded-xl shadow-lg hover:shadow-pink-500/25 transition-all flex items-center gap-2"
                     >
                         <Plus size={16} />
                         Write Post
@@ -86,7 +86,7 @@ export default function BlogManagementSection() {
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="border-b border-[var(--color-border)] text-[var(--color-text-secondary)] text-sm uppercase">
+                        <tr className="border-b border-border text-text-secondary text-sm uppercase">
                             <th className="py-3 px-4">Title</th>
                             <th className="py-3 px-4">Author</th>
                             <th className="py-3 px-4">Category</th>
@@ -95,7 +95,7 @@ export default function BlogManagementSection() {
                             <th className="py-3 px-4 text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-[var(--color-border)]">
+                    <tbody className="divide-y divide-border">
                         {loading ? (
                             Array.from({ length: 3 }).map((_, i) => (
                                 <tr key={i} className="animate-pulse">
@@ -109,27 +109,27 @@ export default function BlogManagementSection() {
                             ))
                         ) : blogs.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="py-8 text-center text-[var(--color-text-secondary)]">
+                                <td colSpan={6} className="py-8 text-center text-text-secondary">
                                     No blogs found.
                                 </td>
                             </tr>
                         ) : (
                             blogs.map((blog) => (
-                                <tr key={blog.id} className="hover:bg-[var(--color-surface)]/50 transition-colors">
-                                    <td className="py-4 px-4 font-medium text-[var(--color-text-primary)]">
+                                <tr key={blog.id} className="hover:bg-surface/50 transition-colors">
+                                    <td className="py-4 px-4 font-medium text-(--color-text-primary)">
                                         <Link href={`/blogs/${blog.slug}`} target="_blank" className="hover:underline">
                                             {blog.title}
                                         </Link>
                                     </td>
-                                    <td className="py-4 px-4 text-sm text-[var(--color-text-secondary)]">
+                                    <td className="py-4 px-4 text-sm text-text-secondary">
                                         {blog.author?.first_name} {blog.author?.last_name}
                                     </td>
                                     <td className="py-4 px-4 text-sm">
-                                        <span className="px-2 py-1 rounded-md bg-[var(--color-surface)] border border-[var(--color-border)]">
+                                        <span className="px-2 py-1 rounded-md bg-surface border border-border">
                                             {blog.category}
                                         </span>
                                     </td>
-                                    <td className="py-4 px-4 text-sm text-[var(--color-text-secondary)]">
+                                    <td className="py-4 px-4 text-sm text-text-secondary">
                                         {safeFormatDate(blog.createdAt)}
                                     </td>
                                     <td className="py-4 px-4">
@@ -181,15 +181,15 @@ export default function BlogManagementSection() {
                 <button
                     disabled={page === 1}
                     onClick={() => setPage(p => p - 1)}
-                    className="px-3 py-1 rounded-lg border border-[var(--color-border)] disabled:opacity-50 text-sm"
+                    className="px-3 py-1 rounded-lg border border-border disabled:opacity-50 text-sm"
                 >
                     Previous
                 </button>
-                <div className="px-3 py-1 bg-[var(--color-surface)] rounded-lg text-sm">{page}</div>
+                <div className="px-3 py-1 bg-surface rounded-lg text-sm">{page}</div>
                 <button
                     disabled={blogs.length < 10} // Simple check, ideally check total
                     onClick={() => setPage(p => p + 1)}
-                    className="px-3 py-1 rounded-lg border border-[var(--color-border)] disabled:opacity-50 text-sm"
+                    className="px-3 py-1 rounded-lg border border-border disabled:opacity-50 text-sm"
                 >
                     Next
                 </button>

@@ -3,7 +3,7 @@ import React from 'react';
 // Placeholder Search Page
 export default function SearchPage({ searchParams }: { searchParams: { subject?: string } }) {
     return (
-        <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text-primary)] pt-32 px-4 flex flex-col items-center">
+        <div className="min-h-screen bg-background text-(--color-text-primary) pt-32 px-4 flex flex-col items-center">
             <div className="max-w-4xl w-full text-center">
                 <h1 className="text-4xl font-bold mb-4">Search Results</h1>
                 <p className="opacity-70 mb-8">

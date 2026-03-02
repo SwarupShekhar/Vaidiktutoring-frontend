@@ -145,11 +145,11 @@ export default function StudentDashboardPage() {
                 Student Portal
               </p>
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-[var(--color-text-primary)] tracking-tight">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-(--color-text-primary) tracking-tight">
               {getGreeting()}, {user?.firstName && user.firstName !== 'New' ? user.firstName : (user?.first_name !== 'New' ? user?.first_name : 'Scholar')}
             </h1>
             <div className="flex items-center gap-3">
-              <p className="text-[var(--color-text-secondary)] opacity-80">
+              <p className="text-text-secondary opacity-80">
                 Your learning dashboard is up to date.
               </p>
               <button
@@ -164,7 +164,7 @@ export default function StudentDashboardPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.push('/bookings/new')}
-              className="hidden sm:flex items-center gap-2 px-6 py-3 bg-[var(--color-primary)] text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 hover:scale-[1.03] active:scale-95 transition-all text-sm"
+              className="hidden sm:flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 hover:scale-[1.03] active:scale-95 transition-all text-sm"
             >
               <Plus size={18} />
               Book New Session
@@ -201,7 +201,7 @@ export default function StudentDashboardPage() {
         <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+              <h3 className="text-lg font-bold text-(--color-text-primary) flex items-center gap-2">
                 <GraduationCap className="text-blue-500" size={20} />
                 Priority Task
               </h3>
@@ -228,7 +228,7 @@ export default function StudentDashboardPage() {
             {/* UPCOMING MINI LIST */}
             <motion.div variants={itemVariants} className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-[var(--color-text-primary)] flex items-center gap-2">
+                <h2 className="text-xl font-bold text-(--color-text-primary) flex items-center gap-2">
                   <Calendar size={20} className="text-blue-500" />
                   Upcoming Schedule
                 </h2>
@@ -248,10 +248,10 @@ export default function StudentDashboardPage() {
                           📚
                         </div>
                         <div>
-                          <h3 className="font-bold text-[var(--color-text-primary)] group-hover:text-blue-600 transition-colors">
+                          <h3 className="font-bold text-(--color-text-primary) group-hover:text-blue-600 transition-colors">
                             {session.subject?.name || 'Class Session'}
                           </h3>
-                          <p className="text-xs text-[var(--color-text-secondary)]">
+                          <p className="text-xs text-text-secondary">
                             {formatDate(session.start_time)}
                           </p>
                         </div>
@@ -261,7 +261,7 @@ export default function StudentDashboardPage() {
                   ))
                 ) : (
                   <div className="py-8 text-center bg-white/20 rounded-2xl border border-dashed border-white/40">
-                    <p className="text-sm text-[var(--color-text-secondary)] italic">
+                    <p className="text-sm text-text-secondary italic">
                       No other classes scheduled.
                     </p>
                   </div>
@@ -273,7 +273,7 @@ export default function StudentDashboardPage() {
           {/* SIDEBAR: CLASS HISTORY */}
           <aside className="space-y-6">
             <div className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm overflow-hidden relative">
-              <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-6 flex items-center gap-2 relative z-10">
+              <h2 className="text-lg font-bold text-(--color-text-primary) mb-6 flex items-center gap-2 relative z-10">
                 <CheckCircle2 size={18} className="text-green-500" />
                 Recently Finished
               </h2>
@@ -284,10 +284,10 @@ export default function StudentDashboardPage() {
                     <div key={session.id} className="relative pl-6 border-l-2 border-green-100 pb-4 last:pb-0">
                       <div className="absolute left-[-5px] top-1 w-2 h-2 rounded-full bg-green-400" />
                       <div>
-                        <h4 className="text-sm font-bold text-[var(--color-text-primary)]">
+                        <h4 className="text-sm font-bold text-(--color-text-primary)">
                           {session.subject?.name || 'Session'}
                         </h4>
-                        <p className="text-[10px] text-[var(--color-text-secondary)] uppercase font-bold opacity-60">
+                        <p className="text-[10px] text-text-secondary uppercase font-bold opacity-60">
                           {formatDate(session.start_time).split(',')[0]}
                         </p>
                       </div>
@@ -306,7 +306,7 @@ export default function StudentDashboardPage() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
+            <div className="bg-linear-to-br from-indigo-500 to-purple-600 rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
               <h3 className="font-exrabold text-lg mb-2 relative z-10">Practice makes perfect!</h3>
               <p className="text-xs text-white/80 mb-4 relative z-10">Review your past classes to improve your skills faster.</p>
               <button className="w-full py-2 bg-white/20 hover:bg-white/30 rounded-xl text-xs font-bold transition-all relative z-10">
@@ -321,7 +321,7 @@ export default function StudentDashboardPage() {
         <motion.div variants={itemVariants} className="flex sm:hidden">
           <button
             onClick={() => router.push('/bookings/new')}
-            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[var(--color-primary)] text-white font-bold rounded-2xl shadow-xl hover:bg-blue-600 transition-all"
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white font-bold rounded-2xl shadow-xl hover:bg-blue-600 transition-all"
           >
             <Plus size={20} />
             Book Session

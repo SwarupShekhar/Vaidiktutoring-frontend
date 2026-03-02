@@ -64,8 +64,8 @@ export default function ReviewCarousel() {
 
                 <div className="relative w-full overflow-hidden mask-linear-fade">
                     {/* Gradient Masks */}
-                    <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-20 pointer-events-none" />
-                    <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-20 pointer-events-none" />
+                    <div className="absolute left-0 top-0 bottom-0 w-32 bg-linear-to-r from-background to-transparent z-20 pointer-events-none" />
+                    <div className="absolute right-0 top-0 bottom-0 w-32 bg-linear-to-l from-background to-transparent z-20 pointer-events-none" />
 
                     <div className="flex w-fit hover:pause-animation">
                         <motion.div
@@ -80,7 +80,7 @@ export default function ReviewCarousel() {
                             {duplicatedReviews.map((review, i) => (
                                 <div
                                     key={i}
-                                    className="flex-shrink-0 w-[320px] md:w-[400px]"
+                                    className="shrink-0 w-[320px] md:w-[400px]"
                                 >
                                     <div className="h-full bg-surface p-8 rounded-[2.5rem] border border-border/50 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between group">
                                         <div className="space-y-6">
@@ -113,7 +113,7 @@ export default function ReviewCarousel() {
             </div>
 
             {/* Background elements */}
-            <div className="absolute left-0 bottom-0 w-full h-1/2 bg-gradient-to-t from-primary/5 to-transparent pointer-events-none -z-10" />
+            <div className="absolute left-0 bottom-0 w-full h-1/2 bg-linear-to-t from-primary/5 to-transparent pointer-events-none -z-10" />
         </section>
     );
 }

@@ -52,14 +52,14 @@ export default function PhaseGuidancePanel({ phase }: PhaseGuidancePanelProps) {
 
     return (
         <div className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 overflow-hidden relative group">
-            <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${config.color}`} />
+            <div className={`absolute top-0 left-0 right-0 h-1.5 bg-linear-to-r ${config.color}`} />
 
             <div className="flex items-start justify-between mb-6">
                 <div>
                     <h3 className="text-xl font-black text-gray-900 tracking-tight">{config.title}</h3>
                     <p className="text-sm text-gray-500 font-medium mt-1">{config.prompt}</p>
                 </div>
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${config.color} flex items-center justify-center text-white shadow-lg`}>
+                <div className={`w-10 h-10 rounded-xl bg-linear-to-br ${config.color} flex items-center justify-center text-white shadow-lg`}>
                     ✨
                 </div>
             </div>
@@ -69,7 +69,7 @@ export default function PhaseGuidancePanel({ phase }: PhaseGuidancePanelProps) {
                 <ul className="space-y-3">
                     {config.tips.map((tip, i) => (
                         <li key={i} className="flex items-start gap-3 group/item">
-                            <div className={`mt-1.5 w-1.5 h-1.5 rounded-full bg-gradient-to-r ${config.color} group-hover/item:scale-150 transition-transform`} />
+                            <div className={`mt-1.5 w-1.5 h-1.5 rounded-full bg-linear-to-r ${config.color} group-hover/item:scale-150 transition-transform`} />
                             <span className="text-xs font-bold text-gray-700 leading-relaxed">{tip}</span>
                         </li>
                     ))}

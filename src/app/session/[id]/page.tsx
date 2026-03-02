@@ -289,10 +289,10 @@ export default function SessionPage({ params }: SessionProps) {
 
     if (authLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[var(--color-background)]">
+            <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-[var(--color-text-secondary)]">Loading session...</p>
+                    <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-text-secondary">Loading session...</p>
                 </div>
             </div>
         );
@@ -301,10 +301,10 @@ export default function SessionPage({ params }: SessionProps) {
     if (!user) return null;
 
     return (
-        <div className="relative w-screen h-screen overflow-hidden bg-[var(--color-background)]">
+        <div className="relative w-screen h-screen overflow-hidden bg-background">
             {/* JOIN OVERLAY */}
             {!hasJoined && (
-                <div className="absolute inset-0 z-50 bg-gradient-to-br from-purple-900/95 via-indigo-900/95 to-blue-900/95 backdrop-blur-md flex items-center justify-center">
+                <div className="absolute inset-0 z-50 bg-linear-to-br from-purple-900/95 via-indigo-900/95 to-blue-900/95 backdrop-blur-md flex items-center justify-center">
                     <div className="text-center max-w-md px-6">
                         <div className="mb-8">
                             <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm border border-white/20">
@@ -318,7 +318,7 @@ export default function SessionPage({ params }: SessionProps) {
 
                         <button
                             onClick={() => setHasJoined(true)}
-                            className="w-full py-4 px-8 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-2xl shadow-2xl shadow-green-500/25 transition-all transform hover:scale-105 active:scale-95"
+                            className="w-full py-4 px-8 bg-linear-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-2xl shadow-2xl shadow-green-500/25 transition-all transform hover:scale-105 active:scale-95"
                         >
                             🚀 Join Session
                         </button>
@@ -345,8 +345,8 @@ export default function SessionPage({ params }: SessionProps) {
                         }}
                     />
                 ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-[var(--color-text-secondary)] bg-gray-50">
-                        <div className="w-10 h-10 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin mb-4" />
+                    <div className="flex flex-col items-center justify-center h-full text-text-secondary bg-gray-50">
+                        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
                         <p className="font-medium">Loading Canvas...</p>
                     </div>
                 )}
@@ -366,7 +366,7 @@ export default function SessionPage({ params }: SessionProps) {
                 >
                     <div
                         onMouseDown={handleMouseDown}
-                        className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-r from-purple-600 to-indigo-600 cursor-move flex items-center justify-between px-4 z-10"
+                        className="absolute top-0 left-0 right-0 h-10 bg-linear-to-r from-purple-600 to-indigo-600 cursor-move flex items-center justify-between px-4 z-10"
                     >
                         <span className="text-white text-sm font-bold">📹 Live Session</span>
                         <div className="flex gap-2">
@@ -404,10 +404,10 @@ export default function SessionPage({ params }: SessionProps) {
                         <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-75" />
                     </div>
                     <div>
-                        <h1 className="text-sm font-bold text-[var(--color-text-primary)]">
+                        <h1 className="text-sm font-bold text-(--color-text-primary)">
                             {booking?.subject?.name || 'Session'}
                         </h1>
-                        <p className="text-xs text-[var(--color-text-secondary)]">ID: {sessionId.slice(0, 8)}...</p>
+                        <p className="text-xs text-text-secondary">ID: {sessionId.slice(0, 8)}...</p>
                     </div>
                 </div>
 

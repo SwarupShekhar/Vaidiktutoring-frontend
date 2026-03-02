@@ -80,7 +80,7 @@ export default function TutorAllocationModal({ isOpen, onClose }: TutorAllocatio
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xl animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xl animate-in fade-in duration-300">
             <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] w-full max-w-lg shadow-2xl border border-white/20 dark:border-white/5 p-10 flex flex-col gap-8 relative overflow-hidden">
 
                 {/* Visual Accent */}
@@ -170,7 +170,7 @@ export default function TutorAllocationModal({ isOpen, onClose }: TutorAllocatio
                     <button
                         onClick={handleAllocate}
                         disabled={loading || !selectedStudent || !selectedTutor || loadingData}
-                        className="px-10 py-5 rounded-[1.5rem] bg-blue-600 text-white font-black hover:scale-105 active:scale-95 transition-all shadow-xl shadow-blue-500/20 disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3 group"
+                        className="px-10 py-5 rounded-3xl bg-blue-600 text-white font-black hover:scale-105 active:scale-95 transition-all shadow-xl shadow-blue-500/20 disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3 group"
                     >
                         {loading ? (
                             <>

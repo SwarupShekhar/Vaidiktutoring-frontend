@@ -50,7 +50,7 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
     const isLive = isWithinInterval(now, { start: startTime, end: endTime });
 
     return (
-        <div className="relative group overflow-hidden bg-gradient-to-br from-[var(--color-primary)] to-blue-700 rounded-2xl p-6 text-white shadow-2xl border border-white/20">
+        <div className="relative group overflow-hidden bg-linear-to-br from-primary to-blue-700 rounded-2xl p-6 text-white shadow-2xl border border-white/20">
             {/* Animated background element */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:scale-150 transition-transform duration-700 font-bold" />
 

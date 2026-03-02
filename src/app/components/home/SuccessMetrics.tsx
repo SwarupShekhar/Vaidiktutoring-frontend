@@ -12,41 +12,41 @@ export default function SuccessMetrics() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     {/* Left: Text & Key Stats */}
                     <div>
-                        <h2 className="text-3xl md:text-4xl font-bold text-[var(--color-text-primary)] mb-6">
+                        <h2 className="text-3xl md:text-4xl font-bold text-(--color-text-primary) mb-6">
                             The proof is in the progress
                         </h2>
-                        <p className="text-lg text-[var(--color-text-secondary)] mb-12">
+                        <p className="text-lg text-text-secondary mb-12">
                             Our tutoring programs are built around measurable improvement, not just attendance.
                         </p>
 
                         <div className="space-y-10">
                             <div className="flex gap-6 items-start">
-                                <div className="text-4xl md:text-5xl font-extrabold text-[var(--color-primary)]">
+                                <div className="text-4xl md:text-5xl font-extrabold text-primary">
                                     95%
                                 </div>
                                 <div>
-                                    <p className="text-lg font-medium text-[var(--color-text-primary)]">Confidence Boost</p>
-                                    <p className="text-[var(--color-text-secondary)]">of students report higher academic confidence</p>
+                                    <p className="text-lg font-medium text-(--color-text-primary)">Confidence Boost</p>
+                                    <p className="text-text-secondary">of students report higher academic confidence</p>
                                 </div>
                             </div>
 
                             <div className="flex gap-6 items-start">
-                                <div className="text-4xl md:text-5xl font-extrabold text-[var(--color-secondary)]">
+                                <div className="text-4xl md:text-5xl font-extrabold text-secondary">
                                     72%
                                 </div>
                                 <div>
-                                    <p className="text-lg font-medium text-[var(--color-text-primary)]">Grade Improvement</p>
-                                    <p className="text-[var(--color-text-secondary)]">average grade improvement within three months</p>
+                                    <p className="text-lg font-medium text-(--color-text-primary)">Grade Improvement</p>
+                                    <p className="text-text-secondary">average grade improvement within three months</p>
                                 </div>
                             </div>
 
                             <div className="flex gap-6 items-start">
-                                <div className="text-4xl md:text-5xl font-extrabold text-[var(--color-text-primary)] opacity-80">
+                                <div className="text-4xl md:text-5xl font-extrabold text-(--color-text-primary) opacity-80">
                                     150k+
                                 </div>
                                 <div>
-                                    <p className="text-lg font-medium text-[var(--color-text-primary)]">Minutes Taught</p>
-                                    <p className="text-[var(--color-text-secondary)]">minutes of one-on-one tutoring delivered</p>
+                                    <p className="text-lg font-medium text-(--color-text-primary)">Minutes Taught</p>
+                                    <p className="text-text-secondary">minutes of one-on-one tutoring delivered</p>
                                 </div>
                             </div>
                         </div>
@@ -55,8 +55,8 @@ export default function SuccessMetrics() {
                     {/* Right: Progress Visualization */}
                     <div className="bg-glass rounded-3xl p-8 shadow-xl border border-white/40 h-full flex flex-col justify-between">
                         <div className="mb-6">
-                            <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">Track what matters</h3>
-                            <p className="text-sm text-[var(--color-text-secondary)]">
+                            <h3 className="text-xl font-bold text-(--color-text-primary) mb-2">Track what matters</h3>
+                            <p className="text-sm text-text-secondary">
                                 Parents get access to session notes, performance indicators, and clear learning progress over time.
                             </p>
                         </div>
@@ -78,8 +78,8 @@ export default function SuccessMetrics() {
                                     <div className="relative w-full max-w-[40px] flex items-end h-[180px]">
                                         <div
                                             style={{ height: `${height}%` }}
-                                            className={`w-full rounded-t-lg transition-all duration-1000 ease-out relative group-hover/bar:brightness-110 shadow-sm ${i === 5 ? 'bg-gradient-to-t from-[var(--color-primary)] to-blue-400' :
-                                                    i >= 4 ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-primary)]/40'
+                                            className={`w-full rounded-t-lg transition-all duration-1000 ease-out relative group-hover/bar:brightness-110 shadow-sm ${i === 5 ? 'bg-linear-to-t from-primary to-blue-400' :
+                                                    i >= 4 ? 'bg-primary' : 'bg-primary/40'
                                                 }`}
                                         >
                                             {/* Tooltip */}
@@ -88,7 +88,7 @@ export default function SuccessMetrics() {
                                             </div>
                                         </div>
                                     </div>
-                                    <span className="text-xs text-[var(--color-text-secondary)] font-medium">M{i + 1}</span>
+                                    <span className="text-xs text-text-secondary font-medium">M{i + 1}</span>
                                 </div>
                             ))}
                         </div>

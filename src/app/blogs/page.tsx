@@ -32,15 +32,15 @@ export default function BlogsPage() {
     const categories = ['All', 'Math', 'Science', 'Study Tips', 'College Prep'];
 
     return (
-        <div className="min-h-screen bg-[var(--color-background)] pt-24 px-6 pb-20">
+        <div className="min-h-screen bg-background pt-24 px-6 pb-20">
             <div className="max-w-7xl mx-auto space-y-12">
 
                 {/* Header */}
                 <div className="text-center space-y-4">
-                    <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+                    <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-400 to-purple-600">
                         Latest Insights
                     </h1>
-                    <p className="text-[var(--color-text-secondary)] text-lg max-w-2xl mx-auto">
+                    <p className="text-text-secondary text-lg max-w-2xl mx-auto">
                         Tips, tricks, and educational resources from our expert tutors.
                     </p>
                 </div>
@@ -52,8 +52,8 @@ export default function BlogsPage() {
                             key={cat}
                             onClick={() => setCategory(cat)}
                             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${category === cat
-                                    ? 'bg-[var(--color-primary)] text-white shadow-lg'
-                                    : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]'
+                                    ? 'bg-primary text-white shadow-lg'
+                                    : 'bg-surface text-text-secondary hover:bg-surface-hover'
                                 }`}
                         >
                             {cat}
@@ -64,12 +64,12 @@ export default function BlogsPage() {
                 {/* Grid */}
                 {loading ? (
                     <div className="flex justify-center py-20">
-                        <div className="w-12 h-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+                        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
                     </div>
                 ) : error ? (
                     <div className="text-center text-red-500 py-10">{error}</div>
                 ) : blogs.length === 0 ? (
-                    <div className="text-center text-[var(--color-text-secondary)] py-10">
+                    <div className="text-center text-text-secondary py-10">
                         No blogs found for this category.
                     </div>
                 ) : (
@@ -80,7 +80,7 @@ export default function BlogsPage() {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.1 }}
-                                    className="group h-full bg-glass rounded-[2rem] border border-white/10 overflow-hidden hover:border-[var(--color-primary)]/50 transition-all hover:shadow-2xl hover:-translate-y-1 flex flex-col"
+                                    className="group h-full bg-glass rounded-4xl border border-white/10 overflow-hidden hover:border-primary/50 transition-all hover:shadow-2xl hover:-translate-y-1 flex flex-col"
                                 >
                                     {/* Image */}
                                     <div className="h-48 overflow-hidden relative">
@@ -98,21 +98,21 @@ export default function BlogsPage() {
 
                                     {/* Content */}
                                     <div className="p-6 flex-1 flex flex-col">
-                                        <div className="flex items-center gap-2 mb-3 text-xs text-[var(--color-text-secondary)]">
+                                        <div className="flex items-center gap-2 mb-3 text-xs text-text-secondary">
                                             <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
                                             <span>•</span>
                                             <span>{blog.author?.first_name} {blog.author?.last_name}</span>
                                         </div>
 
-                                        <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-3 line-clamp-2 group-hover:text-[var(--color-primary)] transition-colors">
+                                        <h2 className="text-xl font-bold text-(--color-text-primary) mb-3 line-clamp-2 group-hover:text-primary transition-colors">
                                             {blog.title}
                                         </h2>
 
-                                        <p className="text-[var(--color-text-secondary)] text-sm line-clamp-3 mb-4 flex-1">
+                                        <p className="text-text-secondary text-sm line-clamp-3 mb-4 flex-1">
                                             {blog.excerpt}
                                         </p>
 
-                                        <div className="flex items-center gap-2 text-[var(--color-primary)] font-bold text-sm">
+                                        <div className="flex items-center gap-2 text-primary font-bold text-sm">
                                             Read Article <span className="group-hover:translate-x-1 transition-transform">→</span>
                                         </div>
                                     </div>

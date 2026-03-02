@@ -27,13 +27,13 @@ export default function FAQ() {
     ];
 
     return (
-        <section className="py-20 px-6 bg-[var(--color-background)]">
+        <section className="py-20 px-6 bg-background">
             <div className="max-w-3xl mx-auto">
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl lg:text-4xl font-bold text-[var(--color-text-primary)] mb-4">
+                    <h2 className="text-3xl lg:text-4xl font-bold text-(--color-text-primary) mb-4">
                         Got questions?
                     </h2>
-                    <p className="text-[var(--color-text-secondary)]">
+                    <p className="text-text-secondary">
                         Common questions from parents like you.
                     </p>
                 </div>
@@ -57,8 +57,8 @@ function AccordionItem({ question, answer }: { question: string, answer: string 
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
             >
-                <span className="font-semibold text-[var(--color-text-primary)] text-lg pr-4">{question}</span>
-                <span className={`text-[var(--color-primary)] text-2xl transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>
+                <span className="font-semibold text-(--color-text-primary) text-lg pr-4">{question}</span>
+                <span className={`text-primary text-2xl transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>
                     +
                 </span>
             </button>
@@ -70,7 +70,7 @@ function AccordionItem({ question, answer }: { question: string, answer: string 
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
                     >
-                        <div className="px-6 pb-6 text-[var(--color-text-secondary)] leading-relaxed border-t border-slate-100 dark:border-slate-700/50 pt-4">
+                        <div className="px-6 pb-6 text-text-secondary leading-relaxed border-t border-slate-100 dark:border-slate-700/50 pt-4">
                             {answer}
                         </div>
                     </motion.div>

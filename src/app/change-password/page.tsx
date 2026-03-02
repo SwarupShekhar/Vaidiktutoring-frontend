@@ -105,7 +105,7 @@ export default function ChangePasswordPage() {
                                             required
                                             value={currentPassword}
                                             onChange={(e) => setCurrentPassword(e.target.value)}
-                                            className="appearance-none relative block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent sm:text-sm bg-white/50 dark:bg-white/5"
+                                            className="appearance-none relative block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm bg-white/50 dark:bg-white/5"
                                             placeholder="Enter current password"
                                         />
                                     </div>
@@ -120,7 +120,7 @@ export default function ChangePasswordPage() {
                                             required
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
-                                            className="appearance-none relative block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent sm:text-sm bg-white/50 dark:bg-white/5"
+                                            className="appearance-none relative block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm bg-white/50 dark:bg-white/5"
                                             placeholder="Min 8 chars, mixed case & symbols"
                                         />
                                     </div>
@@ -135,7 +135,7 @@ export default function ChangePasswordPage() {
                                             required
                                             value={confirmPassword}
                                             onChange={(e) => setConfirmPassword(e.target.value)}
-                                            className="appearance-none relative block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent sm:text-sm bg-white/50 dark:bg-white/5"
+                                            className="appearance-none relative block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm bg-white/50 dark:bg-white/5"
                                             placeholder="Re-enter new password"
                                         />
                                     </div>
@@ -154,7 +154,7 @@ export default function ChangePasswordPage() {
                                     <button
                                         type="submit"
                                         disabled={busy}
-                                        className={`group relative flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-[var(--color-primary)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-primary)] disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 ${user?.force_password_change ? 'w-full' : 'w-2/3'}`}
+                                        className={`group relative flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-primary hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 ${user?.force_password_change ? 'w-full' : 'w-2/3'}`}
                                     >
                                         {busy ? (
                                             <span className="flex items-center gap-2">

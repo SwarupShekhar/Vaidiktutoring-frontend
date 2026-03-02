@@ -56,42 +56,42 @@ export default function NewTutorPage() {
         <ProtectedClient roles={['admin']}>
             <div className="min-h-screen p-6 flex items-center justify-center">
                 <div className="max-w-md w-full bg-glass p-8 rounded-2xl border border-white/20 shadow-xl">
-                    <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6">Create New Tutor</h1>
+                    <h1 className="text-2xl font-bold text-(--color-text-primary) mb-6">Create New Tutor</h1>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">First Name</label>
-                                <input required name="first_name" onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)]" />
+                                <label className="block text-sm font-medium text-text-secondary mb-1">First Name</label>
+                                <input required name="first_name" onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-surface border border-border text-(--color-text-primary)" />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Last Name</label>
-                                <input required name="last_name" onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)]" />
+                                <label className="block text-sm font-medium text-text-secondary mb-1">Last Name</label>
+                                <input required name="last_name" onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-surface border border-border text-(--color-text-primary)" />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Email</label>
-                            <input required type="email" name="email" onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)]" />
+                            <label className="block text-sm font-medium text-text-secondary mb-1">Email</label>
+                            <input required type="email" name="email" onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-surface border border-border text-(--color-text-primary)" />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Password</label>
-                            <input required type="password" name="password" onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text-primary)]" />
+                            <label className="block text-sm font-medium text-text-secondary mb-1">Password</label>
+                            <input required type="password" name="password" onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-surface border border-border text-(--color-text-primary)" />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">Subjects</label>
+                            <label className="block text-sm font-medium text-text-secondary mb-2">Subjects</label>
                             <div className="grid grid-cols-2 gap-2">
                                 {subjects?.map((subject: any) => (
-                                    <label key={subject.id} className="flex items-center space-x-2 p-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                                    <label key={subject.id} className="flex items-center space-x-2 p-2 rounded-lg border border-border bg-surface cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                                         <input
                                             type="checkbox"
                                             checked={formData.subjects.includes(subject.id)}
                                             onChange={() => handleSubjectToggle(subject.id)}
                                             className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                                         />
-                                        <span className="text-sm text-[var(--color-text-primary)]">{subject.name}</span>
+                                        <span className="text-sm text-(--color-text-primary)">{subject.name}</span>
                                     </label>
                                 ))}
                             </div>
