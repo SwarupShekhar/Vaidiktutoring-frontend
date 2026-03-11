@@ -171,7 +171,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
 
                         const parts = splitContent(blog.content);
                         const components = {
-                            h1: ({ node, ...props }: any) => <h1 className="text-3xl font-black mt-10 mb-6 text-gray-900 leading-tight tracking-tight" {...props} />,
+                            h1: ({ node, ...props }: any) => <h2 className="text-3xl font-black mt-10 mb-6 text-gray-900 leading-tight tracking-tight" {...props} />,
                             h2: ({ node, ...props }: any) => <h2 className="text-2xl font-bold mt-8 mb-4 text-gray-900 leading-snug tracking-tight" {...props} />,
                             h3: ({ node, ...props }: any) => <h3 className="text-xl font-bold mt-6 mb-3 text-gray-900" {...props} />,
                             p: ({ node, ...props }: any) => <p className="mb-6 leading-loose text-lg text-gray-800" {...props} />,
