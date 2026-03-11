@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
       // Razorpay domains
       { protocol: 'https', hostname: 'checkout.razorpay.com' },
       { protocol: 'https', hostname: 'api.razorpay.com' },
+      // Clerk domains
+      { protocol: 'https', hostname: 'clerk.studyhours.com' },
+      { protocol: 'https', hostname: 'js.clerk.com' },
+      { protocol: 'https', hostname: 'api.clerk.com' },
+      // Mixkit media domains
+      { protocol: 'https', hostname: 'assets.mixkit.co' },
     ],
   },
   // Security headers
@@ -25,11 +31,14 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' https://checkout.razorpay.com",
-              "style-src 'self' 'unsafe-inline'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://clerk.studyhours.com https://js.clerk.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: https:",
-              "connect-src 'self' https://api.razorpay.com",
-              "frame-src 'self' https://checkout.razorpay.com",
+              "font-src 'self' https://fonts.gstatic.com data:",
+              "connect-src 'self' https://api.razorpay.com https://clerk.studyhours.com https://api.clerk.com",
+              "frame-src 'self' https://checkout.razorpay.com https://clerk.studyhours.com",
+              "media-src 'self' https://assets.mixkit.co blob:",
+              "worker-src 'self' blob:",
             ].join('; '),
           },
           {
