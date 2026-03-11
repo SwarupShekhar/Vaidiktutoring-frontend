@@ -1,15 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SignIn } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import { useTheme } from 'next-themes';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { Mail, Lock, Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
 
 export default function LoginPage() {
   const { login } = useAuthContext();
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect_url') || '/';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,6 +26,8 @@ export default function LoginPage() {
     setError(null);
     try {
       await login(email, password);
+      // Redirect to the intended URL after successful login
+      router.push(redirectUrl);
     } catch (err: any) {
       setError(err.message || 'Invalid credentials');
     } finally {
@@ -56,6 +62,7 @@ export default function LoginPage() {
               <div className="w-full flex justify-center">
                 <SignIn
                   routing="hash"
+                  forceRedirectUrl={redirectUrl}
                   appearance={{
                     baseTheme: resolvedTheme === 'dark' ? dark : undefined,
                     elements: {

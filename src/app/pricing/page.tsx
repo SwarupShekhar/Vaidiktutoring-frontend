@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, ArrowRight, ShieldCheck, Zap, Star, Layout, HelpCircle, ChevronDown } from 'lucide-react';
 import Link_Next from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
 import StickyCTA from '../components/subjects/StickyCTA';
 
@@ -55,7 +56,19 @@ const HeroPricing = () => {
 // --- Section 2: PricingPlans ---
 const PricingPlans = () => {
     const { user } = useAuthContext();
+    const router = useRouter();
     const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly');
+
+    const handlePlanClick = (planId: string, billingType: string) => {
+        if (!user) {
+            // Redirect to login with the intended checkout URL
+            const checkoutUrl = `/checkout?plan=${planId.toUpperCase()}&billing=${billingType}`;
+            router.push(`/login?redirect_url=${encodeURIComponent(checkoutUrl)}`);
+        } else {
+            // User is logged in, go to checkout
+            router.push(`/checkout?plan=${planId.toUpperCase()}&billing=${billingType}`);
+        }
+    };
 
     const plans = [
         {
@@ -176,13 +189,13 @@ const PricingPlans = () => {
                             </ul>
 
                             <div className="space-y-3 pt-6 border-t border-border dark:border-white/5">
-                                <Link_Next
-                                    href={`/checkout?plan=${plan.id.toUpperCase()}&billing=${billing}`}
-                                    className={`w-full py-4 rounded-xl font-bold text-center transition-all flex items-center justify-center gap-2 ${plan.recommended ? 'bg-primary text-white shadow-lg shadow-blue-500/30' : 'bg-ice-blue dark:bg-white/5 text-primary hover:bg-powder-blue'}`}
+                                <button
+                                    onClick={() => handlePlanClick(plan.id, billing)}
+                                    className={`w-full py-4 rounded-xl font-bold text-center transition-all flex items-center justify-center gap-2 ${plan.recommended ? 'bg-primary text-white shadow-lg shadow-blue-500/30 hover:bg-sapphire' : 'bg-ice-blue dark:bg-white/5 text-primary hover:bg-powder-blue'}`}
                                 >
                                     Choose Plan
                                     <ArrowRight size={18} />
-                                </Link_Next>
+                                </button>
                                 <Link_Next
                                     href={user ? '/students/dashboard' : '/signup?type=assessment'}
                                     className="w-full py-3 text-sm font-bold text-text-secondary hover:text-primary text-center transition-colors"

@@ -1,16 +1,39 @@
 'use client';
 
-import React, { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { Suspense, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CreditCard, ShieldCheck, Zap, Info } from 'lucide-react';
 import Link_Next from 'next/link';
+import { useAuthContext } from '@/app/context/AuthContext';
 
 // Component wrapper to use useSearchParams
 const CheckoutContent = () => {
     const searchParams = useSearchParams();
+    const router = useRouter();
+    const { user, loading } = useAuthContext();
     const plan = searchParams.get('plan') || 'CORE';
     const billing = searchParams.get('billing') || 'monthly';
+
+    // Redirect to login if not authenticated
+    useEffect(() => {
+        if (!loading && !user) {
+            const currentPath = `/checkout?plan=${plan}&billing=${billing}`;
+            router.push(`/login?redirect_url=${encodeURIComponent(currentPath)}`);
+        }
+    }, [user, loading, router, plan, billing]);
+
+    // Show loading while checking auth
+    if (loading || !user) {
+        return (
+            <div className="min-h-screen pt-32 pb-24 px-6 bg-linear-to-b from-ice-blue to-background flex items-center justify-center">
+                <div className="animate-pulse flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/20" />
+                    <p className="text-text-secondary font-medium">Verifying authentication...</p>
+                </div>
+            </div>
+        );
+    }
 
     // Pricing mapping
     const pricing: Record<string, { monthly: number, yearly: number }> = {

@@ -1,8 +1,12 @@
 'use client';
 
 import { SignUp } from '@clerk/nextjs';
+import { useSearchParams } from 'next/navigation';
 
 export default function SignupPage() {
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect_url') || '/onboarding';
+
   return (
     <main className="min-h-screen relative flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       {/* Animated Blobs Background */}
@@ -14,7 +18,7 @@ export default function SignupPage() {
 
       <div className="relative z-10 w-full max-w-md flex justify-center">
         <SignUp
-          forceRedirectUrl="/onboarding"
+          forceRedirectUrl={redirectUrl}
           signInUrl="/login"
         />
       </div>
