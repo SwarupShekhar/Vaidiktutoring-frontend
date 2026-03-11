@@ -11,18 +11,21 @@ interface BlogPost {
 async function getBlogs(): Promise<BlogPost[]> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://k-12-backend.onrender.com';
-    const res = await fetch(`${baseUrl}/blogs?page=1&limit=1000`, {
-      next: { revalidate: 3600 }, // Revalidate every hour
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 sec timeout
+    
+    const res = await fetch(`${baseUrl}/blogs?page=1&limit=100`, {
+      next: { revalidate: 3600 },
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
     
     if (!res.ok) throw new Error('Failed to fetch blogs');
-    
     const data = await res.json();
-    const blogs = Array.isArray(data) ? data : (data.data || []);
-    return blogs;
+    return Array.isArray(data) ? data : (data.data || []);
   } catch (error) {
     console.error('Sitemap: Failed to fetch blogs', error);
-    return [];
+    return []; // Return empty array - sitemap will just have static pages
   }
 }
 
