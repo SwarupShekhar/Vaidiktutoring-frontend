@@ -36,8 +36,32 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  
+  // If Clerk key is missing, show a fallback layout without Clerk
+  if (!clerkPublishableKey) {
+    console.warn('Clerk publishable key not found. Authentication features will be disabled.');
+    return (
+      <html lang="en" suppressHydrationWarning>
+        <body suppressHydrationWarning className={`${luckiestGuy.variable}`}>
+          <StyledComponentsRegistry>
+            <QueryProvider>
+              <AuthProvider>
+                <NotificationProvider>
+                  <Navbar />
+                  {children}
+                  <Footer />
+                </NotificationProvider>
+              </AuthProvider>
+            </QueryProvider>
+          </StyledComponentsRegistry>
+        </body>
+      </html>
+    );
+  }
+
   return (
-    <ClerkProvider>
+    <ClerkProvider publishableKey={clerkPublishableKey}>
       <html lang="en" suppressHydrationWarning>
         <body suppressHydrationWarning className={`${luckiestGuy.variable}`}>
           <StyledComponentsRegistry>
