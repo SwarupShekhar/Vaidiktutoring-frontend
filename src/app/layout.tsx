@@ -1,34 +1,37 @@
 // src/app/layout.tsx
-import './globals.css';
-import { ReactNode } from 'react';
-import QueryProvider from './providers';
-import { AuthProvider } from './context/AuthContext';
-import Navbar from './components/navbar';
-import Footer from './components/Footer';
-import AdminRedirect from './components/AdminRedirect';
-import Script from 'next/script';
-import StyledComponentsRegistry from './lib/registry';
-import { NotificationProvider } from './context/NotificationContext';
-import GlobalNotification from './components/GlobalNotification';
-import VerificationModal from './components/auth/VerificationModal';
-import VerificationBanner from './components/auth/VerificationBanner';
-import { Analytics } from '@vercel/analytics/next';
+import "./globals.css";
+import { ReactNode } from "react";
+import QueryProvider from "./providers";
+import { AuthProvider } from "./context/AuthContext";
+import Navbar from "./components/navbar";
+import Footer from "./components/Footer";
+import AdminRedirect from "./components/AdminRedirect";
+import Script from "next/script";
+import StyledComponentsRegistry from "./lib/registry";
+import { NotificationProvider } from "./context/NotificationContext";
+import GlobalNotification from "./components/GlobalNotification";
+import VerificationModal from "./components/auth/VerificationModal";
+import VerificationBanner from "./components/auth/VerificationBanner";
+import { Analytics } from "@vercel/analytics/next";
 
-import { ClerkProvider } from '@clerk/nextjs';
+import { ClerkProvider } from "@clerk/nextjs";
 
-import { Luckiest_Guy } from 'next/font/google';
+import { Luckiest_Guy } from "next/font/google";
 
 const luckiestGuy = Luckiest_Guy({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-luckiest-guy',
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-luckiest-guy",
 });
 
 export const metadata = {
-  title: 'StudyHours',
-  description: 'StudyHours Platform',
+  title: "StudyHours",
+  description: "StudyHours Platform",
+  alternates: {
+    canonical: "https://studyhours.com",
+  },
   verification: {
-    google: 'QIHTWX5Vy3mZhNRYxfyyTc5YDUOA2DSyS6BCx-7xwy0',
+    google: "QIHTWX5Vy3mZhNRYxfyyTc5YDUOA2DSyS6BCx-7xwy0",
   },
 };
 
@@ -52,9 +55,35 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </AuthProvider>
             </QueryProvider>
           </StyledComponentsRegistry>
+          <Script
+            id="organization-schema"
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                name: "StudyHours",
+                url: "https://studyhours.com",
+                logo: "https://studyhours.com/Studuhourslogo.svg",
+                description:
+                  "StudyHours is a structured, outcome-driven K-12 tutoring platform that blends expert educators with intelligent learning systems.",
+                sameAs: [
+                  "https://twitter.com/studyhours",
+                  "https://facebook.com/studyhours",
+                  "https://linkedin.com/company/studyhours",
+                ],
+                contactPoint: {
+                  "@type": "ContactPoint",
+                  telephone: "+1-555-0123",
+                  contactType: "customer service",
+                  email: "support@studyhours.com",
+                },
+              }),
+            }}
+          />
           <Analytics />
         </body>
-      </html >
+      </html>
     </ClerkProvider>
   );
 }

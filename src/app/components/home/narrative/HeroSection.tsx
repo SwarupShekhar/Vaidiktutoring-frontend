@@ -62,7 +62,7 @@ export default function HeroSection() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-background">
       {/* Subtle gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-50/60 via-background to-indigo-50/40 dark:from-purple-950/20 dark:via-background dark:to-indigo-950/15" />
+      <div className="absolute inset-0 bg-linear-to-br from-purple-50/60 via-background to-indigo-50/40 dark:from-purple-950/20 dark:via-background dark:to-indigo-950/15" />
 
       {/* Floating orbs for depth */}
       <motion.div
@@ -82,7 +82,7 @@ export default function HeroSection() {
           {/* Left Side — Headline + CTA */}
           <div className="flex flex-col justify-center">
             {/* Animated headline */}
-            <div className="mb-6 flex flex-wrap gap-x-3 gap-y-1">
+            <h1 className="mb-6 flex flex-wrap gap-x-3 gap-y-1">
               {words.map((word, i) => (
                 <motion.span
                   key={i}
@@ -99,7 +99,7 @@ export default function HeroSection() {
                   {word}
                 </motion.span>
               ))}
-            </div>
+            </h1>
 
             {/* Subtitle */}
             <motion.div
@@ -148,10 +148,10 @@ export default function HeroSection() {
             className="relative flex items-center justify-center"
           >
             {/* Glow behind image */}
-            <div className="absolute inset-0 scale-90 bg-gradient-to-br from-purple-400/20 via-indigo-400/15 to-pink-400/10 dark:from-purple-600/15 dark:via-indigo-600/10 dark:to-pink-600/8 rounded-3xl blur-2xl" />
+            <div className="absolute inset-0 scale-90 bg-linear-to-br from-purple-400/20 via-indigo-400/15 to-pink-400/10 dark:from-purple-600/15 dark:via-indigo-600/10 dark:to-pink-600/8 rounded-3xl blur-2xl" />
 
             {/* Image container */}
-            <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/10 dark:shadow-purple-900/20 ring-1 ring-white/20 dark:ring-white/5">
+            <div className="relative w-full aspect-4/3 rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/10 dark:shadow-purple-900/20 ring-1 ring-white/20 dark:ring-white/5">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentImageIndex}
@@ -173,7 +173,7 @@ export default function HeroSection() {
               </AnimatePresence>
 
               {/* Subtle overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/10 via-transparent to-transparent pointer-events-none" />
             </div>
 
             {/* Image navigation dots */}
@@ -206,7 +206,7 @@ export default function HeroSection() {
         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">
           Scroll to explore our approach
         </span>
-        <div className="w-px h-12 bg-gradient-to-b from-gray-300 to-transparent dark:from-gray-600" />
+        <div className="w-px h-12 bg-linear-to-b from-gray-300 to-transparent dark:from-gray-600" />
       </motion.div>
     </section>
   );
