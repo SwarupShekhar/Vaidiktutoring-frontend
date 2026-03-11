@@ -8,11 +8,20 @@ import { useUser } from '@clerk/nextjs';
 import Loader from '@/app/components/Loader';
 
 export default function OnboardingPage() {
-  const { user } = useAuthContext();
-  const { user: clerkUser } = useUser();
+  const { user, loading: authLoading } = useAuthContext();
+  const { user: clerkUser, isLoaded: isClerkLoaded } = useUser();
   const router = useRouter();
   const [role, setRole] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  // Show loader while auth is loading
+  if (authLoading || !isClerkLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <Loader />
+      </div>
+    );
+  }
 
   // Redirect if role is already known and valid (Admin protection)
   useEffect(() => {
@@ -70,13 +79,6 @@ export default function OnboardingPage() {
       setIsUpdating(false);
     }
   };
-
-  // If we are loading, show loader
-  if (!user && !clerkUser) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-      <Loader />
-    </div>
-  );
 
   return (
     <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-950 p-6">
