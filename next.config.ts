@@ -10,7 +10,35 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'via.placeholder.com' },
       { protocol: 'https', hostname: 'placehold.co' },
+      // Razorpay domains
+      { protocol: 'https', hostname: 'checkout.razorpay.com' },
+      { protocol: 'https', hostname: 'api.razorpay.com' },
     ],
+  },
+  // Security headers
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' https://checkout.razorpay.com",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: https:",
+              "connect-src 'self' https://api.razorpay.com",
+              "frame-src 'self' https://checkout.razorpay.com",
+            ].join('; '),
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains',
+          },
+        ],
+      },
+    ];
   },
 };
 

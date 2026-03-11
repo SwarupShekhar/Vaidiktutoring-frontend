@@ -57,92 +57,159 @@ const HeroPricing = () => {
 const PricingPlans = () => {
     const { user } = useAuthContext();
     const router = useRouter();
-    const [billing, setBilling] = useState<'monthly' | 'yearly'>('monthly');
+    const [region, setRegion] = useState<'US' | 'UK'>('US');
 
-    const handlePlanClick = (planId: string, billingType: string) => {
+    const handlePlanClick = (planId: string, regionCode: string) => {
         if (!user) {
             // Redirect to login with the intended checkout URL
-            const checkoutUrl = `/checkout?plan=${planId.toUpperCase()}&billing=${billingType}`;
+            const checkoutUrl = `/checkout?plan=${planId.toUpperCase()}&region=${regionCode}`;
             router.push(`/login?redirect_url=${encodeURIComponent(checkoutUrl)}`);
         } else {
             // User is logged in, go to checkout
-            router.push(`/checkout?plan=${planId.toUpperCase()}&billing=${billingType}`);
+            router.push(`/checkout?plan=${planId.toUpperCase()}&region=${regionCode}`);
         }
     };
 
-    const plans = [
-        {
-            id: 'foundations',
-            name: 'Foundations',
-            bestFor: 'Building confidence & core skills',
-            monthly: { hr: 25, total: 180, note: '~4 sessions' },
-            yearly: { hr: 18.75, total: 135, note: 'billed annually' },
-            features: [
-                '1–2 sessions/week',
-                'Structured lesson plan',
-                'Basic progress dashboard',
-                'Practice materials'
-            ],
-            color: 'blue'
+    // Regional pricing configuration
+    const pricingConfig = {
+        US: {
+            currency: '$',
+            name: 'United States (USD) – Core Excellence',
+            target: 'Common Core, NGSS, AP',
+            plans: [
+                {
+                    id: 'foundation',
+                    name: 'Foundation',
+                    frequency: '2 sessions / week',
+                    monthlyPrice: 199,
+                    credits: 8,
+                    features: [
+                        'Tutor OS Access',
+                        'AI Transcript + Summary',
+                        'Confidence Tracking',
+                        'Monthly Recurring Subscription',
+                        'No Lock-in'
+                    ]
+                },
+                {
+                    id: 'mastery',
+                    name: 'Mastery',
+                    frequency: '4 sessions / week',
+                    monthlyPrice: 349,
+                    credits: 16,
+                    features: [
+                        'Tutor OS Access',
+                        'AI Transcript + Summary',
+                        'Confidence Tracking',
+                        'Monthly Recurring Subscription',
+                        'No Lock-in',
+                        'Priority Support'
+                    ]
+                },
+                {
+                    id: 'elite',
+                    name: 'Elite',
+                    frequency: '6 sessions / week',
+                    monthlyPrice: 499,
+                    credits: 24,
+                    features: [
+                        'Tutor OS Access',
+                        'AI Transcript + Summary',
+                        'Confidence Tracking',
+                        'Monthly Recurring Subscription',
+                        'No Lock-in',
+                        'Priority Support',
+                        'Advanced Analytics'
+                    ]
+                }
+            ]
         },
-        {
-            id: 'core',
-            name: 'Core Mastery',
-            bestFor: 'Deep learning & consistency',
-            monthly: { hr: 30, total: 320, note: '~8 sessions' },
-            yearly: { hr: 22.50, total: 240, note: 'billed annually' },
-            features: [
-                '2–3 sessions/week',
-                'Personalized learning path',
-                'Data-driven feedback',
-                'Parent updates & reports',
-                'Priority scheduling'
-            ],
-            recommended: true,
-            color: 'sapphire'
-        },
-        {
-            id: 'advanced',
-            name: 'Advanced Growth',
-            bestFor: 'Rapid mastery & competition',
-            monthly: { hr: 45, total: 540, note: '~12 sessions' },
-            yearly: { hr: 33.75, total: 405, note: 'billed annually' },
-            features: [
-                '3–5 sessions/week',
-                'Custom mastery roadmap',
-                'Advanced depth analytics',
-                'Flexible scheduling',
-                'Direct tutor support'
-            ],
-            color: 'indigo'
+        UK: {
+            currency: '£',
+            name: 'United Kingdom (GBP) – GCSE/A-Level Mastery',
+            target: 'KS3, GCSE, A-Level',
+            plans: [
+                {
+                    id: 'foundation',
+                    name: 'Foundation',
+                    frequency: '2 sessions / week',
+                    monthlyPrice: 149,
+                    credits: 8,
+                    features: [
+                        'Tutor OS Access',
+                        'AI Transcript + Summary',
+                        'Confidence Tracking',
+                        'Monthly Recurring Subscription',
+                        'No Lock-in'
+                    ]
+                },
+                {
+                    id: 'mastery',
+                    name: 'Mastery',
+                    frequency: '4 sessions / week',
+                    monthlyPrice: 249,
+                    credits: 16,
+                    features: [
+                        'Tutor OS Access',
+                        'AI Transcript + Summary',
+                        'Confidence Tracking',
+                        'Monthly Recurring Subscription',
+                        'No Lock-in',
+                        'Priority Support'
+                    ]
+                },
+                {
+                    id: 'elite',
+                    name: 'Elite',
+                    frequency: '6 sessions / week',
+                    monthlyPrice: 375,
+                    credits: 24,
+                    features: [
+                        'Tutor OS Access',
+                        'AI Transcript + Summary',
+                        'Confidence Tracking',
+                        'Monthly Recurring Subscription',
+                        'No Lock-in',
+                        'Priority Support',
+                        'Advanced Analytics'
+                    ]
+                }
+            ]
         }
-    ];
+    };
+
+    const currentConfig = pricingConfig[region];
 
     return (
         <section className="py-24 px-6 relative">
             <div className="max-w-7xl mx-auto">
-                {/* Toggle */}
+                {/* Region Toggle */}
                 <div className="flex justify-center mb-16">
                     <div className="p-1 rounded-2xl bg-white/50 dark:bg-white/5 border border-border dark:border-white/10 backdrop-blur-md flex">
                         <button
-                            onClick={() => setBilling('monthly')}
-                            className={`px-8 py-3 rounded-xl font-bold transition-all ${billing === 'monthly' ? 'bg-primary text-white shadow-lg' : 'text-text-secondary hover:text-primary'}`}
+                            onClick={() => setRegion('US')}
+                            className={`px-8 py-3 rounded-xl font-bold transition-all ${region === 'US' ? 'bg-primary text-white shadow-lg' : 'text-text-secondary hover:text-primary'}`}
                         >
-                            Monthly
+                            United States
                         </button>
                         <button
-                            onClick={() => setBilling('yearly')}
-                            className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${billing === 'yearly' ? 'bg-primary text-white shadow-lg' : 'text-text-secondary hover:text-primary'}`}
+                            onClick={() => setRegion('UK')}
+                            className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${region === 'UK' ? 'bg-primary text-white shadow-lg' : 'text-text-secondary hover:text-primary'}`}
                         >
-                            Yearly
-                            <span className="text-[10px] bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 px-2 py-0.5 rounded-full uppercase tracking-tighter">Save 25%</span>
+                            United Kingdom
                         </button>
                     </div>
                 </div>
 
-                {/* Cards */}
+                {/* Region Header */}
+                <div className="text-center mb-12">
+                    <h2 className="text-2xl font-bold text-deep-navy dark:text-white mb-2">{currentConfig.name}</h2>
+                    <p className="text-text-secondary font-medium">Target: {currentConfig.target}</p>
+                </div>
+
+                {/* Pricing Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-                    {plans.map((plan, idx) => (
+                    {currentConfig.plans.map((plan, idx) => (
                         <motion.div
                             key={plan.id}
                             initial={{ opacity: 0, y: 20 }}
@@ -150,9 +217,9 @@ const PricingPlans = () => {
                             viewport={{ once: true }}
                             transition={{ delay: idx * 0.1 }}
                             whileHover={{ y: -6 }}
-                            className={`relative p-8 rounded-4xl bg-white/60 dark:bg-white/5 border backdrop-blur-3xl shadow-sm hover:shadow-2xl transition-all flex flex-col ${plan.recommended ? 'border-primary border-2 ring-4 ring-blue-500/10' : 'border-border dark:border-white/10'}`}
+                            className={`relative p-8 rounded-4xl bg-white/60 dark:bg-white/5 border backdrop-blur-3xl shadow-sm hover:shadow-2xl transition-all flex flex-col ${plan.id === 'mastery' ? 'border-primary border-2 ring-4 ring-blue-500/10' : 'border-border dark:border-white/10'}`}
                         >
-                            {plan.recommended && (
+                            {plan.id === 'mastery' && (
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-black px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1">
                                     <Star size={12} fill="white" /> RECOMMENDED
                                 </div>
@@ -160,18 +227,19 @@ const PricingPlans = () => {
 
                             <div className="mb-8">
                                 <h3 className="text-2xl font-bold text-deep-navy dark:text-white mb-2">{plan.name}</h3>
-                                <p className="text-sm font-medium text-text-secondary mb-6">{plan.bestFor}</p>
+                                <p className="text-sm font-medium text-text-secondary mb-6">{plan.frequency}</p>
 
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-extrabold text-deep-navy dark:text-white">${billing === 'monthly' ? plan.monthly.hr : plan.yearly.hr}</span>
-                                    <span className="text-text-secondary font-medium">/ hour</span>
+                                <div className="flex items-baseline gap-1 mb-4">
+                                    <span className="text-4xl font-extrabold text-deep-navy dark:text-white">{currentConfig.currency}{plan.monthlyPrice}</span>
+                                    <span className="text-text-secondary font-medium">/ month</span>
                                 </div>
-                                <div className="mt-2 p-3 rounded-xl bg-ice-blue dark:bg-blue-900/10 border border-powder-blue dark:border-blue-800/20">
+
+                                <div className="p-3 rounded-xl bg-ice-blue dark:bg-blue-900/10 border border-powder-blue dark:border-blue-800/20">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm font-bold text-sapphire">Est. Bundle</span>
+                                        <span className="text-sm font-bold text-sapphire">Monthly Credits</span>
                                         <div className="text-right">
-                                            <div className="text-lg font-black text-deep-navy dark:text-white">${billing === 'monthly' ? plan.monthly.total : plan.yearly.total}<span className="text-xs">/mo</span></div>
-                                            <div className="text-[10px] text-text-secondary uppercase tracking-widest font-bold">{billing === 'monthly' ? plan.monthly.note : plan.yearly.note}</div>
+                                            <div className="text-lg font-black text-deep-navy dark:text-white">{plan.credits}<span className="text-xs"> sessions</span></div>
+                                            <div className="text-[10px] text-text-secondary uppercase tracking-widest font-bold">30-min sprints</div>
                                         </div>
                                     </div>
                                 </div>
@@ -190,8 +258,8 @@ const PricingPlans = () => {
 
                             <div className="space-y-3 pt-6 border-t border-border dark:border-white/5">
                                 <button
-                                    onClick={() => handlePlanClick(plan.id, billing)}
-                                    className={`w-full py-4 rounded-xl font-bold text-center transition-all flex items-center justify-center gap-2 ${plan.recommended ? 'bg-primary text-white shadow-lg shadow-blue-500/30 hover:bg-sapphire' : 'bg-ice-blue dark:bg-white/5 text-primary hover:bg-powder-blue'}`}
+                                    onClick={() => handlePlanClick(plan.id, region)}
+                                    className={`w-full py-4 rounded-xl font-bold text-center transition-all flex items-center justify-center gap-2 ${plan.id === 'mastery' ? 'bg-primary text-white shadow-lg shadow-blue-500/30 hover:bg-sapphire' : 'bg-ice-blue dark:bg-white/5 text-primary hover:bg-powder-blue'}`}
                                 >
                                     Choose Plan
                                     <ArrowRight size={18} />
