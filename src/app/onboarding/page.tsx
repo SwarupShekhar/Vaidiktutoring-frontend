@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
@@ -13,18 +13,30 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [role, setRole] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [forceShowContent, setForceShowContent] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Show loader while auth is loading
-  if (authLoading || !isClerkLoaded) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <Loader />
-      </div>
-    );
-  }
+  // Set a timeout to force show content after 5 seconds (fallback)
+  useEffect(() => {
+    timerRef.current = setTimeout(() => {
+      setForceShowContent(true);
+    }, 5000);
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   // Redirect if role is already known and valid (Admin protection)
+  // Only run redirect logic after auth is done loading
   useEffect(() => {
+    // Skip if still loading and haven't force shown content
+    if (authLoading || !isClerkLoaded) {
+      if (!forceShowContent) return;
+    }
+    
     // Debug: Check what role is being detected
     console.log('Onboarding - User role:', user?.role);
     
@@ -47,10 +59,7 @@ export default function OnboardingPage() {
         router.push('/students/dashboard');
       }
     }
-  }, [user, clerkUser, router]);
-
-  // Simple Logic: If they are here, we let them confirm their role if they want to be a parent?
-  // Or we just present the choice.
+  }, [user, clerkUser, router, authLoading, isClerkLoaded, forceShowContent]);
 
   const handleRoleSelect = async (selectedRole: 'parent' | 'student') => {
     setIsUpdating(true);
@@ -79,6 +88,16 @@ export default function OnboardingPage() {
       setIsUpdating(false);
     }
   };
+
+  // Show loader while auth is loading - but not forever (max 5 seconds)
+  // This handles the case where auth might get stuck
+  if ((authLoading || !isClerkLoaded) && !forceShowContent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-950 p-6">
