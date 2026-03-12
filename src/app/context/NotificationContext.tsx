@@ -64,17 +64,16 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         if (!user) return;
 
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://k-12-backend.onrender.com';
-        // Connecting to root namespace (or /notifications if backend supports it)
-        // For now, let's assume root or a general namespace. 
-        // Based on session chat, backend uses namespaces strictly.
-        // I will try connecting to '/notifications' first, if connection fails, maybe root.
-        // BUT, usually app.gateway is on root.
-
-        // Let's stick to root first as it's safer for global events unless specified.
+        
+        console.log('[Notification] Attempting to connect to:', API_URL);
+        
+        // Connecting to root namespace with better error handling
         const socketInstance = io(API_URL, {
             query: { userId: user.sub || user.id, role: user.role },
-            transports: ['websocket'], // Force websocket to avoid "xhr poll error"
-            withCredentials: true
+            transports: ['websocket', 'polling'], // Allow fallback to polling
+            withCredentials: true,
+            timeout: 5000, // 5 second connection timeout
+            forceNew: true, // Force new connection
         });
 
         setSocket(socketInstance);
@@ -87,6 +86,27 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
         socketInstance.on('connect_error', (err) => {
             console.error('[Notification] Socket Connection Error:', err);
+            console.error('[Notification] Failed to connect to:', API_URL);
+            
+            // Try polling fallback if websocket fails
+            if (err.message?.includes('websocket')) {
+                console.log('[Notification] WebSocket failed, trying polling fallback...');
+                socketInstance.io.opts.transports = ['polling'];
+                socketInstance.connect();
+            }
+        });
+
+        socketInstance.on('disconnect', (reason) => {
+            console.log('[Notification] Socket disconnected:', reason);
+        });
+
+        // Add polling fallback check
+        socketInstance.on('ping', () => {
+            console.log('[Notification] Socket ping received');
+        });
+
+        socketInstance.on('pong', () => {
+            console.log('[Notification] Socket pong received');
         });
 
         // Debug: Log any event received (wildcard not standard in client, but we can log specific ones)

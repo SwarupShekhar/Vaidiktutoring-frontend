@@ -28,16 +28,38 @@ const normalizeBlog = (data: any): BlogPost => {
 export const blogsApi = {
     // Get all published blogs (Public)
     getAll: async (page = 1, limit = 9, category?: string) => {
-        const params: any = { page, limit };
-        if (category && category !== 'All') params.category = category;
+        try {
+            const params: any = { page, limit };
+            if (category && category !== 'All') params.category = category;
 
-        const res = await api.get('/blogs', { params });
-        const rawData = Array.isArray(res.data) ? res.data : (res.data.data || []);
+            console.log('[Blogs API] Fetching blogs with params:', params);
+            
+            const res = await api.get('/blogs', { params });
+            const rawData = Array.isArray(res.data) ? res.data : (res.data.data || []);
 
-        return {
-            data: rawData.map(normalizeBlog),
-            total: res.data.total || 0,
-        };
+            console.log('[Blogs API] Successfully fetched blogs:', rawData.length);
+
+            return {
+                data: rawData.map(normalizeBlog),
+                total: res.data.total || 0,
+            };
+        } catch (error: any) {
+            console.error('[Blogs API] Failed to fetch blogs:', error);
+            
+            if (error.code === 'ECONNABORTED') {
+                throw new Error('Network timeout. Please check your connection.');
+            }
+            
+            if (error.response?.status === 404) {
+                // Return empty result if no blogs found
+                return {
+                    data: [],
+                    total: 0,
+                };
+            }
+            
+            throw new Error(error.response?.data?.message || 'Failed to load blogs');
+        }
     },
 
     // Get single blog by ID or Slug (Public)

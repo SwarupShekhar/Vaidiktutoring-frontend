@@ -8,10 +8,12 @@ const API_URL =
 
 console.log('[API] Connected to:', API_URL);
 
+// Add better error handling for network issues
 export const api = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: false,
+  timeout: 10000, // 10 second timeout
 });
 
 /**
