@@ -108,9 +108,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Debug logging for role issues
   if (clerkUser && !backendUser) {
-    console.log('[AuthContext] Clerk user role:', clerkUser.publicMetadata?.role);
+    console.log('[AuthContext] Clerk user email:', clerkUser.primaryEmailAddress?.emailAddress);
+    console.log('[AuthContext] Clerk user role from metadata:', clerkUser.publicMetadata?.role);
     console.log('[AuthContext] Final assigned role:', user?.role);
-    console.log('[AuthContext] Clerk metadata:', clerkUser.publicMetadata);
+    console.log('[AuthContext] Full Clerk metadata:', clerkUser.publicMetadata);
+    
+    // Special handling for known admin email
+    if (clerkUser.primaryEmailAddress?.emailAddress === 'swarupshekhar.vaidikedu@gmail.com') {
+      console.log('[AuthContext] Detected known admin email, forcing admin role');
+      (user as any).role = 'admin';
+    }
   }
 
   async function login(email: string, password: string, shouldRedirect = true) {
