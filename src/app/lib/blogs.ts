@@ -68,6 +68,12 @@ export const blogsApi = {
         return normalizeBlog(res.data);
     },
 
+    // Get single blog (Protected: Admin/Tutor)
+    getAdminOne: async (id: string) => {
+        const res = await api.get(`/admin/blogs/${id}`);
+        return normalizeBlog(res.data);
+    },
+
     // Create new blog (Protected: Admin/Tutor)
     create: async (data: Partial<BlogPost>) => {
         // Map camelCase to snake_case for backend
@@ -93,6 +99,17 @@ export const blogsApi = {
     // Admin: Approve/Reject
     updateStatus: async (id: string, status: 'PUBLISHED' | 'REJECTED') => {
         const res = await api.patch(`/admin/blogs/${id}/status`, { status });
+        return normalizeBlog(res.data);
+    },
+
+    // Update blog (Protected: Admin/Tutor)
+    update: async (id: string, data: Partial<BlogPost>) => {
+        const payload = {
+            ...data,
+            image_url: data.imageUrl,
+            created_at: data.createdAt
+        };
+        const res = await api.patch(`/admin/blogs/${id}`, payload);
         return normalizeBlog(res.data);
     }
 };

@@ -113,7 +113,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
                     </div>
 
                     {/* Right: Feature Image */}
-                    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl order-1 md:order-2 group bg-gray-100">
+                    <div className="relative aspect-4/3 rounded-2xl overflow-hidden shadow-2xl order-1 md:order-2 group bg-gray-100">
                         {imgSrc ? (
                             <Image
                                 src={imgSrc}
@@ -122,7 +122,7 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
                                 className="object-cover group-hover:scale-105 transition-transform duration-700"
                                 priority
                                 sizes="(max-width: 768px) 100vw, 50vw"
-                                onError={() => setImgSrc('https://placehold.co/800x600?text=Image+Load+Failed')}
+                                onError={() => setImgSrc('/images/blog-placeholder.png')}
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 font-bold">
@@ -155,22 +155,9 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
                     prose-li:text-[1.125rem] prose-li:text-gray-700
                     first-letter:text-5xl first-letter:font-bold first-letter:text-gray-900 first-letter:float-left first-letter:mr-3 first-letter:mt-[-4px]">
 
-                    {(() => {
-                        // Helper to split content into 3 parts
-                        const splitContent = (text: string) => {
-                            if (!text) return [];
-                            const paragraphs = text.split('\n\n');
-                            if (paragraphs.length < 6) return [text]; // Don't split short posts
-
-                            const third = Math.ceil(paragraphs.length / 3);
-                            const part1 = paragraphs.slice(0, third).join('\n\n');
-                            const part2 = paragraphs.slice(third, third * 2).join('\n\n');
-                            const part3 = paragraphs.slice(third * 2).join('\n\n');
-                            return [part1, part2, part3];
-                        };
-
-                        const parts = splitContent(blog.content);
-                        const components = {
+                    <ReactMarkdown 
+                        remarkPlugins={[remarkGfm, remarkBreaks]} 
+                        components={{
                             h1: ({ node, ...props }: any) => <h2 className="text-3xl font-black mt-10 mb-6 text-gray-900 leading-tight tracking-tight" {...props} />,
                             h2: ({ node, ...props }: any) => <h2 className="text-2xl font-bold mt-8 mb-4 text-gray-900 leading-snug tracking-tight" {...props} />,
                             h3: ({ node, ...props }: any) => <h3 className="text-xl font-bold mt-6 mb-3 text-gray-900" {...props} />,
@@ -188,72 +175,9 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
                                     <img className="rounded-xl shadow-lg w-full object-cover max-h-[500px]" {...props} alt={props.alt || ''} />
                                 </span>
                             )
-                        };
-
-                        return (
-                            <>
-                                {/* PART 1 */}
-                                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} components={components}>
-                                    {parts[0]}
-                                </ReactMarkdown>
-
-                                {/* VISUAL BREAK 1 */}
-                                {parts.length > 1 && (
-                                    <div className="my-12 -mx-6 md:-mx-12 relative aspect-[2/1] rounded-xl overflow-hidden shadow-lg group">
-                                        <Image
-                                            src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1600"
-                                            alt="Study Session"
-                                            fill
-                                            className="object-cover group-hover:scale-105 transition-transform duration-700"
-                                        />
-                                        <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent"></div>
-                                        <p className="absolute bottom-4 left-6 text-white font-medium italic opacity-90">"The art of learning is the art of discovery."</p>
-                                    </div>
-                                )}
-
-                                {/* PART 2 */}
-                                {parts.length > 1 && (
-                                    <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} components={components}>
-                                        {parts[1]}
-                                    </ReactMarkdown>
-                                )}
-
-                                {/* VISUAL BREAK 2 */}
-                                {parts.length > 2 && (
-                                    <div className="my-12 -mx-6 md:-mx-12 relative aspect-[2/1] rounded-xl overflow-hidden shadow-lg group">
-                                        <Image
-                                            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1600"
-                                            alt="Collaboration"
-                                            fill
-                                            className="object-cover group-hover:scale-105 transition-transform duration-700"
-                                        />
-                                        <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent"></div>
-                                        <p className="absolute bottom-4 left-6 text-white font-medium italic opacity-90">Connecting ideas, connecting people.</p>
-                                    </div>
-                                )}
-
-                                {/* PART 3 */}
-                                {parts.length > 2 && (
-                                    <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} components={components}>
-                                        {parts[2]}
-                                    </ReactMarkdown>
-                                )}
-                            </>
-                        );
-                    })()}
-                </div>
-
-                {/* VISUAL BREAK - WIDE IMAGE (Simulated injection at bottom for now, as splitting markdown is complex without data) */}
-                <div className="my-16 -mx-6 md:-mx-20 relative aspect-[21/9] rounded-2xl overflow-hidden shadow-xl">
-                    <Image
-                        src="https://images.unsplash.com/photo-1577896851231-70ef18881754?q=80&w=2600"
-                        alt="Classroom"
-                        fill
-                        className="object-cover"
-                    />
-                    <div className="absolute bottom-0 left-0 p-6 bg-linear-to-t from-black/60 to-transparent w-full">
-                        <p className="text-white text-sm font-medium opacity-90">Engaging students in real-time collaboration.</p>
-                    </div>
+                        }}>
+                        {blog.content}
+                    </ReactMarkdown>
                 </div>
 
                 {/* CTA BLOCK */}

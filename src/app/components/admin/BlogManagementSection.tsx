@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { blogsApi, BlogPost } from '@/app/lib/blogs';
 import { format } from 'date-fns';
 import Link from 'next/link';
-import { RefreshCw, PenTool, CheckCircle, XCircle, Eye, Plus } from 'lucide-react';
+import { RefreshCw, PenTool, CheckCircle, XCircle, Eye, Plus, Edit } from 'lucide-react';
 
 export default function BlogManagementSection() {
     const [blogs, setBlogs] = useState<BlogPost[]>([]);
@@ -141,33 +141,43 @@ export default function BlogManagementSection() {
                                         </span>
                                     </td>
                                     <td className="py-4 px-4 text-right">
-                                        {blog.status === 'PENDING' && (
-                                            <div className="flex justify-end gap-2">
-                                                <button
-                                                    onClick={() => handleStatusUpdate(blog.id, 'PUBLISHED')}
-                                                    disabled={!!processingId}
-                                                    className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
-                                                >
-                                                    Approve
-                                                </button>
+                                        <div className="flex justify-end gap-3 items-center">
+                                            <Link 
+                                                href={`/admin/blogs/${blog.id}/edit`}
+                                                className="text-blue-500 hover:text-blue-600 transition-colors p-1"
+                                                title="Edit Post"
+                                            >
+                                                <Edit size={16} />
+                                            </Link>
+                                            
+                                            {blog.status === 'PENDING' && (
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => handleStatusUpdate(blog.id, 'PUBLISHED')}
+                                                        disabled={!!processingId}
+                                                        className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
+                                                    >
+                                                        Approve
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleStatusUpdate(blog.id, 'REJECTED')}
+                                                        disabled={!!processingId}
+                                                        className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
+                                                    >
+                                                        Reject
+                                                    </button>
+                                                </div>
+                                            )}
+                                            {blog.status === 'PUBLISHED' && (
                                                 <button
                                                     onClick={() => handleStatusUpdate(blog.id, 'REJECTED')}
                                                     disabled={!!processingId}
-                                                    className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
+                                                    className="text-red-500 hover:text-red-600 text-xs font-bold underline"
                                                 >
-                                                    Reject
+                                                    Unpublish
                                                 </button>
-                                            </div>
-                                        )}
-                                        {blog.status === 'PUBLISHED' && (
-                                            <button
-                                                onClick={() => handleStatusUpdate(blog.id, 'REJECTED')}
-                                                disabled={!!processingId}
-                                                className="text-red-500 hover:text-red-600 text-xs font-bold underline"
-                                            >
-                                                Unpublish
-                                            </button>
-                                        )}
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             ))

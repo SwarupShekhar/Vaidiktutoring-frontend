@@ -89,7 +89,7 @@ export default function BlogsPage() {
                                             src={blog.imageUrl}
                                             alt={blog.title}
                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 relative z-10"
-                                            onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/800x400?text=Blog')}
+                                            onError={(e) => (e.currentTarget.src = '/images/blog-placeholder.png')}
                                         />
                                         <div className="absolute top-4 left-4 z-20 px-3 py-1 rounded-full bg-black/50 backdrop-blur-md text-white text-xs font-bold border border-white/20">
                                             {blog.category}
