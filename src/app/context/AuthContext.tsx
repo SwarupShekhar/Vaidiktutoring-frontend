@@ -106,6 +106,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     ...clerkUser.publicMetadata,
   } : null);
 
+  // Debug logging for role issues
+  if (clerkUser && !backendUser) {
+    console.log('[AuthContext] Clerk user role:', clerkUser.publicMetadata?.role);
+    console.log('[AuthContext] Final assigned role:', user?.role);
+    console.log('[AuthContext] Clerk metadata:', clerkUser.publicMetadata);
+  }
+
   async function login(email: string, password: string, shouldRedirect = true) {
     setLoading(true);
     try {
