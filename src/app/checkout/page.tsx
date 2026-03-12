@@ -65,7 +65,7 @@ const CheckoutContent = () => {
             }
 
             // Step 2: Create order on backend
-            const response = await api.post('/api/payments/create-order', {
+            const response = await api.post('/payments/create-order', {
                 packageId: getPackageId(plan, region),
             });
 
@@ -95,7 +95,7 @@ const CheckoutContent = () => {
                 handler: async (paymentResponse: any) => {
                     try {
                         // Step 4: Verify payment on backend
-                        const verifyResponse = await api.post('/api/payments/verify', {
+                        const verifyResponse = await api.post('/payments/verify', {
                             razorpayOrderId: paymentResponse.razorpay_order_id,
                             razorpayPaymentId: paymentResponse.razorpay_payment_id,
                             razorpaySignature: paymentResponse.razorpay_signature,
