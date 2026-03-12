@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: https:",
               "font-src 'self' https://fonts.gstatic.com data:",
               "connect-src 'self' https://api.razorpay.com https://clerk.studyhours.com https://api.clerk.com https://challenges.cloudflare.com https://turnstile.cloudflare.com",
-              "frame-src 'self' https://checkout.razorpay.com https://clerk.studyhours.com https://challenges.cloudflare.com https://turnstile.cloudflare.com",
+              "frame-src 'self' https://checkout.razorpay.com https://api.razorpay.com https://clerk.studyhours.com https://challenges.cloudflare.com https://turnstile.cloudflare.com",
               "media-src 'self' https://assets.mixkit.co blob:",
               "worker-src 'self' blob:",
             ].join('; '),
