@@ -8,6 +8,7 @@ import { blogsApi, BlogPost } from '@/app/lib/blogs';
 import { format } from 'date-fns';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
+import rehypeRaw from 'rehype-raw';
 
 export default function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -156,7 +157,8 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
                     first-letter:text-5xl first-letter:font-bold first-letter:text-gray-900 first-letter:float-left first-letter:mr-3 first-letter:mt-[-4px]">
 
                     <ReactMarkdown 
-                        remarkPlugins={[remarkGfm, remarkBreaks]} 
+                        remarkPlugins={[remarkGfm, remarkBreaks]}
+                        rehypePlugins={[rehypeRaw]}
                         components={{
                             h1: ({ node, ...props }: any) => <h2 className="text-3xl font-black mt-10 mb-6 text-gray-900 leading-tight tracking-tight" {...props} />,
                             h2: ({ node, ...props }: any) => <h2 className="text-2xl font-bold mt-8 mb-4 text-gray-900 leading-snug tracking-tight" {...props} />,

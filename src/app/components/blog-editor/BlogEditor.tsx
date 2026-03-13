@@ -58,6 +58,7 @@ export default function BlogEditor({
   const [inlineImageUrl, setInlineImageUrl] = useState('');
   const [showImageInput, setShowImageInput] = useState(false);
   const isInternalChange = useRef(false);
+  const hasShownPasteToast = useRef(false);
 
   const editor = useEditor({
     extensions: [
@@ -100,6 +101,30 @@ export default function BlogEditor({
     editorProps: {
       attributes: {
         class: 'prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-6',
+      },
+      handlePaste: (view, event) => {
+        // Detect markdown paste in visual mode
+        if (!isRawMode && !hasShownPasteToast.current) {
+          const text = event.clipboardData?.getData('text/plain') || '';
+          const markdownPatterns = /(^#{1,6}\s|\*\*.+\*\*|\[.+\]\(.+\)|!\[.+\]\(.+\)|^[\-\*]\s|^\d+\.\s|^>\s|^---)/m;
+          if (markdownPatterns.test(text)) {
+            hasShownPasteToast.current = true;
+            // Reset after 10 seconds so it can trigger again later
+            setTimeout(() => { hasShownPasteToast.current = false; }, 10000);
+            toast('📝 Markdown Detected', {
+              description: 'It looks like you pasted Markdown content. Switch to Markdown mode for perfect formatting?',
+              action: {
+                label: 'Switch to Markdown',
+                onClick: () => {
+                  setIsRawMode(true);
+                  setMode('edit');
+                },
+              },
+              duration: 6000,
+            });
+          }
+        }
+        return false; // Let TipTap handle the paste normally
       },
     },
   });
@@ -157,27 +182,49 @@ export default function BlogEditor({
   const toggleH6 = () => editor?.chain().focus().toggleHeading({ level: 6 }).run();
   const toggleBulletList = () => editor?.chain().focus().toggleBulletList().run();
 
-  const handlePaste = (e: React.ClipboardEvent) => {
-    // Only detect if in visual mode
-    if (mode === 'edit' && !isRawMode) {
-      const pastedText = e.clipboardData.getData('text');
-      // Detect markdown patterns: # Header, **bold**, [link](...), ![] image, - list
-      const markdownRegex = /(^#\s|\*\*|\[.*\]\(.*\)|\!\[.*\]\(.*\)|\n[\-\*]\s)/m;
-      
-      if (markdownRegex.test(pastedText)) {
-        toast('Markdown Detected', {
-          description: 'It looks like you are pasting Markdown. Switch to Markdown mode for better results?',
-          action: {
-            label: 'Switch to Markdown',
-            onClick: () => {
-              setIsRawMode(true);
-              setMode('edit');
-            }
-          },
-          duration: 5000,
-        });
-      }
-    }
+  // Helper: clean content for preview
+  // Blog content may be stored as HTML (legacy) or Markdown (new).
+  // ReactMarkdown needs pure markdown, so we strip HTML if detected.
+  const cleanContentForPreview = (raw: string): string => {
+    if (!raw) return '';
+    // Detect if content is primarily HTML (contains common HTML tags)
+    const isHtml = /<(h[1-6]|p|br|strong|em|a |img |ul|ol|li|div|span|blockquote)[\s>]/i.test(raw);
+    if (!isHtml) return raw; // Already markdown, return as-is
+
+    // Convert HTML to readable text/markdown
+    let cleaned = raw
+      // Convert heading tags to markdown
+      .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
+      .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n')
+      .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n\n')
+      .replace(/<h4[^>]*>(.*?)<\/h4>/gi, '#### $1\n\n')
+      .replace(/<h5[^>]*>(.*?)<\/h5>/gi, '##### $1\n\n')
+      .replace(/<h6[^>]*>(.*?)<\/h6>/gi, '###### $1\n\n')
+      // Convert image tags to markdown
+      .replace(/<img[^>]*src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*\/?>/gi, '![$2]($1)\n\n')
+      .replace(/<img[^>]*alt=["']([^"']*)["'][^>]*src=["']([^"']+)["'][^>]*\/?>/gi, '![$1]($2)\n\n')
+      .replace(/<img[^>]*src=["']([^"']+)["'][^>]*\/?>/gi, '![]($1)\n\n')
+      // Convert links to markdown
+      .replace(/<a[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/gi, '[$2]($1)')
+      // Convert bold/italic
+      .replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**')
+      .replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*')
+      // Convert list items
+      .replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n')
+      // Convert blockquotes
+      .replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gi, '> $1\n\n')
+      // Convert paragraphs and breaks
+      .replace(/<p[^>]*>(.*?)<\/p>/gi, '$1\n\n')
+      .replace(/<br\s*\/?>/gi, '\n')
+      // Convert horizontal rules
+      .replace(/<hr[^>]*\/?>/gi, '---\n\n')
+      // Strip all remaining tags
+      .replace(/<\/?[^>]+(>|$)/g, '')
+      // Clean up excessive whitespace
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+
+    return cleaned;
   };
 
   if (!editor) return null;
@@ -468,7 +515,7 @@ export default function BlogEditor({
         <div className="absolute inset-0 bg-white/10 dark:bg-black/40 backdrop-blur-md" />
         
         {/* Editor Content */}
-        <div className="relative z-10 min-h-[500px]" onPaste={handlePaste}>
+        <div className="relative z-10 min-h-[500px]">
           <AnimatePresence mode="wait">
             {mode === 'edit' ? (
               <motion.div
@@ -589,7 +636,7 @@ export default function BlogEditor({
                       blockquote: (props) => <blockquote className="border-l-4 border-primary bg-primary/5 px-6 py-4 italic rounded-r-xl my-10" {...props} />,
                     }}
                   >
-                    {content || '*Start writing to see the preview...*'}
+                    {cleanContentForPreview(content) || '*Start writing to see the preview...*'}
                   </ReactMarkdown>
                 </div>
               </div>
