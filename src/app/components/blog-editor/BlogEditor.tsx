@@ -157,6 +157,29 @@ export default function BlogEditor({
   const toggleH6 = () => editor?.chain().focus().toggleHeading({ level: 6 }).run();
   const toggleBulletList = () => editor?.chain().focus().toggleBulletList().run();
 
+  const handlePaste = (e: React.ClipboardEvent) => {
+    // Only detect if in visual mode
+    if (mode === 'edit' && !isRawMode) {
+      const pastedText = e.clipboardData.getData('text');
+      // Detect markdown patterns: # Header, **bold**, [link](...), ![] image, - list
+      const markdownRegex = /(^#\s|\*\*|\[.*\]\(.*\)|\!\[.*\]\(.*\)|\n[\-\*]\s)/m;
+      
+      if (markdownRegex.test(pastedText)) {
+        toast('Markdown Detected', {
+          description: 'It looks like you are pasting Markdown. Switch to Markdown mode for better results?',
+          action: {
+            label: 'Switch to Markdown',
+            onClick: () => {
+              setIsRawMode(true);
+              setMode('edit');
+            }
+          },
+          duration: 5000,
+        });
+      }
+    }
+  };
+
   if (!editor) return null;
 
   const isActive = (type: string, opts?: any) => editor.isActive(type, opts);
@@ -217,42 +240,60 @@ export default function BlogEditor({
           <div className="flex bg-white/10 dark:bg-white/5 rounded-lg p-1 border border-white/20 dark:border-white/10">
             <button
               type="button"
+              aria-label="Switch to Visual Editor"
+              aria-pressed={mode === 'edit' && !isRawMode}
               onClick={() => {
                 setMode('edit');
                 setIsRawMode(false);
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all relative ${
                 mode === 'edit' && !isRawMode
-                  ? 'bg-primary text-white shadow' 
+                  ? 'text-white' 
                   : 'text-text-secondary hover:text-(--color-text-primary)'
               }`}
             >
-              <Edit3 size={14} /> Visual
+              {mode === 'edit' && !isRawMode && (
+                <motion.div layoutId="mode-bg" className="absolute inset-0 bg-primary rounded-md z-0" />
+              )}
+              <Edit3 size={14} className="relative z-10" /> 
+              <span className="relative z-10">Visual</span>
             </button>
             <button
               type="button"
+              aria-label="Switch to Raw Markdown Editor"
+              aria-pressed={mode === 'edit' && isRawMode}
               onClick={() => {
                 setMode('edit');
                 setIsRawMode(true);
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all relative ${
                 mode === 'edit' && isRawMode
-                  ? 'bg-indigo-600 text-white shadow' 
+                  ? 'text-white' 
                   : 'text-text-secondary hover:text-(--color-text-primary)'
               }`}
             >
-              <span className="text-[10px]">#</span> Markdown
+              {mode === 'edit' && isRawMode && (
+                <motion.div layoutId="mode-bg" className="absolute inset-0 bg-indigo-600 rounded-md z-0" />
+              )}
+              <span className="text-[10px] relative z-10">#</span> 
+              <span className="relative z-10">Markdown</span>
             </button>
             <button
               type="button"
+              aria-label="Switch to Preview Mode"
+              aria-pressed={mode === 'preview'}
               onClick={() => setMode('preview')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all relative ${
                 mode === 'preview' 
-                  ? 'bg-primary text-white shadow' 
+                  ? 'text-white' 
                   : 'text-text-secondary hover:text-(--color-text-primary)'
               }`}
             >
-              <Eye size={14} /> Preview
+              {mode === 'preview' && (
+                <motion.div layoutId="mode-bg" className="absolute inset-0 bg-primary rounded-md z-0" />
+              )}
+              <Eye size={14} className="relative z-10" /> 
+              <span className="relative z-10">Preview</span>
             </button>
           </div>
         </div>
@@ -427,32 +468,48 @@ export default function BlogEditor({
         <div className="absolute inset-0 bg-white/10 dark:bg-black/40 backdrop-blur-md" />
         
         {/* Editor Content */}
-        <div className="relative z-10 min-h-[500px]">
-          {mode === 'edit' ? (
-            <>
-              {!editable && (
-                <div className="absolute top-4 right-4 z-20 px-3 py-1.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-bold rounded-full flex items-center gap-1.5">
-                  <Eye size={12} /> Read-Only
-                </div>
-              )}
-              {isRawMode ? (
-                <textarea
-                  value={content}
-                  onChange={(e) => {
-                    onChange(e.target.value);
-                  }}
-                  className="w-full min-h-[500px] p-8 bg-transparent text-text-primary font-mono text-sm focus:outline-none resize-none"
-                  placeholder="Paste your raw markdown here..."
-                />
-              ) : (
-                <EditorContent 
-                  editor={editor} 
-                  className={`min-h-[500px] ${!editable ? 'pointer-events-none opacity-70' : ''}`}
-                />
-              )}
-            </>
-          ) : (
-            <div className="bg-[#FDFDFC] dark:bg-black/20 min-h-[800px] overflow-hidden">
+        <div className="relative z-10 min-h-[500px]" onPaste={handlePaste}>
+          <AnimatePresence mode="wait">
+            {mode === 'edit' ? (
+              <motion.div
+                key="edit-view"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.2 }}
+                className="w-full"
+              >
+                {!editable && (
+                  <div className="absolute top-4 right-4 z-20 px-3 py-1.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-bold rounded-full flex items-center gap-1.5 border border-yellow-200 dark:border-yellow-800">
+                    <Eye size={12} /> Read-Only Mode
+                  </div>
+                )}
+                {isRawMode ? (
+                  <textarea
+                    aria-label="Raw Markdown Editor"
+                    value={content}
+                    onChange={(e) => {
+                      onChange(e.target.value);
+                    }}
+                    className="w-full min-h-[600px] p-10 bg-black/5 dark:bg-black/40 text-(--color-text-primary) font-mono text-sm leading-relaxed focus:bg-white/5 outline-none transition-all resize-none border-b border-white/5"
+                    placeholder="Paste or write your raw markdown here... Use ## for headers, ** for bold, etc."
+                  />
+                ) : (
+                  <EditorContent 
+                    editor={editor} 
+                    className={`min-h-[500px] ${!editable ? 'pointer-events-none opacity-70' : ''}`}
+                  />
+                )}
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="preview-view"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.3 }}
+                className="w-full bg-[#FDFDFC] dark:bg-black/20 min-h-[800px] overflow-hidden"
+              >
               {/* High-Fidelity Preview Header */}
               <div className="max-w-[1000px] mx-auto px-8 pt-16 pb-12">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
@@ -536,8 +593,9 @@ export default function BlogEditor({
                   </ReactMarkdown>
                 </div>
               </div>
-            </div>
-          )}
+            </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </motion.div>
 
