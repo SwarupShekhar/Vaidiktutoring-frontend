@@ -87,7 +87,6 @@ const CheckoutContent = () => {
                 prefill: {
                     name: user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : '',
                     email: user?.email || '',
-                    contact: user?.phone || '',
                 },
                 theme: {
                     color: '#1A56A0',
