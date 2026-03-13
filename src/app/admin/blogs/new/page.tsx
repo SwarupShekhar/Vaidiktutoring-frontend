@@ -36,6 +36,36 @@ export default function NewBlogPage() {
         status: 'PENDING' as 'PENDING' | 'PUBLISHED' | 'REJECTED',
     });
 
+    const [isRestored, setIsRestored] = useState(false);
+
+    // Initial load from localStorage
+    useEffect(() => {
+        const savedDraft = localStorage.getItem('blog_draft_new');
+        if (savedDraft) {
+            try {
+                const parsed = JSON.parse(savedDraft);
+                if (parsed && typeof parsed === 'object') {
+                    setForm(prev => ({ ...prev, ...parsed }));
+                    setIsRestored(true);
+                    setTimeout(() => setIsRestored(false), 5000);
+                }
+            } catch (e) {
+                console.error('Failed to parse draft', e);
+            }
+        }
+    }, []);
+
+    // Auto-save to localStorage on form changes with a small delay
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            if (form.title || form.content) {
+                localStorage.setItem('blog_draft_new', JSON.stringify(form));
+                setLastSaved(new Date().toISOString());
+            }
+        }, 3000);
+        return () => clearTimeout(timeout);
+    }, [form]);
+
     const handleChange = (field: string, value: string) => {
         setForm(prev => ({ ...prev, [field]: value }));
     };
@@ -43,6 +73,7 @@ export default function NewBlogPage() {
     const handleContentChange = (html: string) => {
         setForm(prev => ({ ...prev, content: html }));
     };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -63,6 +94,9 @@ export default function NewBlogPage() {
                 content: form.content,
                 publishedAt: form.publishedAt,
             });
+            
+            // Clear saved draft
+            localStorage.removeItem('blog_draft_new');
             
             setLastSaved(new Date().toISOString());
             
@@ -100,11 +134,18 @@ export default function NewBlogPage() {
                             <h1 className="text-3xl font-black text-(--color-text-primary) tracking-tight">
                                 {isAdmin ? 'Create New Masterpiece' : 'Draft New Article'}
                             </h1>
-                            <p className="text-text-secondary text-sm mt-1">
-                                {isAdmin 
-                                    ? 'Your post will be published immediately' 
-                                    : 'Your post will be sent to admin for final approval'}
-                            </p>
+                            <div className="flex items-center gap-3 mt-1">
+                                <p className="text-text-secondary text-sm">
+                                    {isAdmin 
+                                        ? 'Your post will be published immediately' 
+                                        : 'Your post will be sent to admin for final approval'}
+                                </p>
+                                {isRestored && (
+                                    <span className="bg-emerald-500/10 text-emerald-600 px-2.5 py-0.5 rounded text-xs font-bold animate-pulse border border-emerald-500/20">
+                                        ⏱️ Draft Recovered!
+                                    </span>
+                                )}
+                            </div>
                         </div>
                         <button
                             onClick={() => router.back()}
