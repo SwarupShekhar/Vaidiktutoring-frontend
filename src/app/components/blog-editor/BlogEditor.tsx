@@ -140,6 +140,7 @@ export default function BlogEditor({
           {/* Publish Toggle - Admin Only */}
           {canPublish && (
             <button
+              type="button"
               onClick={() => onPublishToggle(status === 'PUBLISHED' ? 'PENDING' : 'PUBLISHED')}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                 status === 'PUBLISHED'
@@ -162,6 +163,7 @@ export default function BlogEditor({
           {/* Edit/Preview Toggle */}
           <div className="flex bg-white/10 dark:bg-white/5 rounded-lg p-1 border border-white/20 dark:border-white/10">
             <button
+              type="button"
               onClick={() => setMode('edit')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
                 mode === 'edit' 
@@ -172,6 +174,7 @@ export default function BlogEditor({
               <Edit3 size={14} /> Edit
             </button>
             <button
+              type="button"
               onClick={() => setMode('preview')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
                 mode === 'preview' 
@@ -195,6 +198,7 @@ export default function BlogEditor({
             className="flex items-center gap-1 px-3 py-2 mb-3 rounded-xl bg-black/60 dark:bg-white/20 backdrop-blur-md border border-white/20 dark:border-white/10"
           >
             <button
+              type="button"
               onClick={toggleBold}
               className={`p-2 rounded-lg transition-colors ${isActive('bold') ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
               title="Bold"
@@ -202,6 +206,7 @@ export default function BlogEditor({
               <Bold size={16} />
             </button>
             <button
+              type="button"
               onClick={toggleItalic}
               className={`p-2 rounded-lg transition-colors ${isActive('italic') ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
               title="Italic"
@@ -210,6 +215,7 @@ export default function BlogEditor({
             </button>
             <div className="w-px h-5 bg-white/30 mx-1" />
             <button
+              type="button"
               onClick={toggleH1}
               className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 1 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
               title="Heading 1"
@@ -217,6 +223,7 @@ export default function BlogEditor({
               <Heading1 size={14} />
             </button>
             <button
+              type="button"
               onClick={toggleH2}
               className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 2 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
               title="Heading 2"
@@ -224,6 +231,7 @@ export default function BlogEditor({
               <Heading2 size={14} />
             </button>
             <button
+              type="button"
               onClick={toggleH3}
               className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 3 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
               title="Heading 3"
@@ -231,6 +239,7 @@ export default function BlogEditor({
               <Heading3 size={14} />
             </button>
             <button
+              type="button"
               onClick={toggleH4}
               className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 4 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
               title="Heading 4"
@@ -238,6 +247,7 @@ export default function BlogEditor({
               <Heading4 size={14} />
             </button>
             <button
+              type="button"
               onClick={toggleH5}
               className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 5 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
               title="Heading 5"
@@ -245,6 +255,7 @@ export default function BlogEditor({
               <Heading5 size={14} />
             </button>
             <button
+              type="button"
               onClick={toggleH6}
               className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 6 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
               title="Heading 6"
@@ -253,6 +264,7 @@ export default function BlogEditor({
             </button>
             <div className="w-px h-5 bg-white/30 mx-1" />
             <button
+              type="button"
               onClick={toggleBulletList}
               className={`p-2 rounded-lg transition-colors ${isActive('bulletList') ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
               title="Bullet List"
@@ -271,12 +283,17 @@ export default function BlogEditor({
                   className="w-36 px-2 py-1 text-sm bg-white/10 border border-white/20 rounded text-white placeholder:text-white/50 outline-none"
                   autoFocus
                 />
-                <button onClick={setLink} className="p-1.5 text-white/80 hover:text-white">
+                <button 
+                  type="button"
+                  onClick={setLink} 
+                  className="p-1.5 text-white/80 hover:text-white"
+                >
                   <CheckCircle size={16} />
                 </button>
               </div>
             ) : (
               <button
+                type="button"
                 onClick={() => setShowLinkInput(true)}
                 className={`p-2 rounded-lg transition-colors ${isActive('link') ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
                 title="Add Link"
@@ -298,12 +315,17 @@ export default function BlogEditor({
                   className="w-36 px-2 py-1 text-sm bg-white/10 border border-white/20 rounded text-white placeholder:text-white/50 outline-none"
                   autoFocus
                 />
-                <button onClick={addImage} className="p-1.5 text-white/80 hover:text-white">
+                <button 
+                  type="button"
+                  onClick={addImage} 
+                  className="p-1.5 text-white/80 hover:text-white"
+                >
                   <CheckCircle size={16} />
                 </button>
               </div>
             ) : (
               <button
+                type="button"
                 onClick={() => setShowImageInput(true)}
                 className={`p-2 rounded-lg transition-colors text-white/80 hover:text-white hover:bg-white/20`}
                 title="Add Image"

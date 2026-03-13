@@ -212,6 +212,7 @@ export default function BlogSidebar({
               <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">URL Slug</label>
             </div>
             <button 
+              type="button"
               onClick={() => {
                 const generated = title
                   .toLowerCase()
@@ -247,6 +248,7 @@ export default function BlogSidebar({
           transition={{ duration: 0.2 }}
         >
           <button 
+            type="button"
             onClick={() => setShowSeoPreview(!showSeoPreview)}
             className="flex items-center justify-between w-full mb-2"
           >

@@ -72,6 +72,7 @@ export default function ImageUpload({
             {editable && (
               <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                 <button 
+                  type="button"
                   onClick={() => setShowEditor(!showEditor)}
                   className="p-2 rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/40 transition-colors"
                   title="Edit Image"
@@ -79,6 +80,7 @@ export default function ImageUpload({
                   <Sliders size={18} />
                 </button>
                 <button 
+                  type="button"
                   onClick={resetImage}
                   className="p-2 rounded-full bg-red-500/80 backdrop-blur-md text-white hover:bg-red-600 transition-colors"
                   title="Remove Image"
@@ -128,6 +130,7 @@ export default function ImageUpload({
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Image Tuning</span>
               <button 
+                type="button"
                 onClick={() => setRotation(r => (r + 90) % 360)}
                 className="flex items-center gap-2 text-xs text-primary hover:underline"
               >
@@ -169,6 +172,7 @@ export default function ImageUpload({
           />
           {suggestedAlt && !alt && (
             <button
+              type="button"
               onClick={() => onAltChange(suggestedAlt)}
               className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 rounded-lg bg-primary/20 text-primary text-[10px] font-bold hover:bg-primary/30 transition-all flex items-center gap-1"
             >
