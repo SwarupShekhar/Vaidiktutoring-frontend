@@ -70,12 +70,13 @@ export default function BlogSEOToolkit({
     const doc = parser.parseFromString(content, 'text/html');
     
     // Parse both HTML and Markdown Headings
-    const mdH1s = (content.match(/^#\s+.+/gm) || []).length;
-    const mdH2s = (content.match(/^##\s+.+/gm) || []).length;
-    const mdH3s = (content.match(/^###\s+.+/gm) || []).length;
-    const mdH4s = (content.match(/^####\s+.+/gm) || []).length;
-    const mdH5s = (content.match(/^#####\s+.+/gm) || []).length;
-    const mdH6s = (content.match(/^######\s+.+/gm) || []).length;
+    // Use a more robust regex that catches headings regardless of line break styles
+    const mdH1s = (content.match(/(?:^|\n)#\s+.+/g) || []).length;
+    const mdH2s = (content.match(/(?:^|\n)##\s+.+/g) || []).length;
+    const mdH3s = (content.match(/(?:^|\n)###\s+.+/g) || []).length;
+    const mdH4s = (content.match(/(?:^|\n)####\s+.+/g) || []).length;
+    const mdH5s = (content.match(/(?:^|\n)#####\s+.+/g) || []).length;
+    const mdH6s = (content.match(/(?:^|\n)######\s+.+/g) || []).length;
 
     const h1s = mdH1s + doc.querySelectorAll('h1').length;
     const h2s = mdH2s + doc.querySelectorAll('h2').length;
