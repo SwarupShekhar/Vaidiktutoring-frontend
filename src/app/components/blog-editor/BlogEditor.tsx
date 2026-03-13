@@ -11,6 +11,7 @@ import {
   Bold, Italic, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, List, Link as LinkIcon,
   Image as ImageIcon, Eye, Edit3, CheckCircle, XCircle
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface BlogEditorProps {
   content: string;
@@ -99,7 +100,18 @@ export default function BlogEditor({
 
   const toggleBold = () => editor?.chain().focus().toggleBold().run();
   const toggleItalic = () => editor?.chain().focus().toggleItalic().run();
-  const toggleH1 = () => editor?.chain().focus().toggleHeading({ level: 1 }).run();
+  const toggleH1 = () => {
+    // Check if an H1 already exists in the document
+    const h1Count = (editor?.getHTML().match(/<h1/g) || []).length;
+    const isCurrentH1 = editor?.isActive('heading', { level: 1 });
+
+    if (h1Count >= 1 && !isCurrentH1) {
+      toast.error('SEO Tip: Only one H1 is allowed per blog for best search ranking.');
+      return;
+    }
+    editor?.chain().focus().toggleHeading({ level: 1 }).run();
+  };
+
   const toggleH2 = () => editor?.chain().focus().toggleHeading({ level: 2 }).run();
   const toggleH3 = () => editor?.chain().focus().toggleHeading({ level: 3 }).run();
   const toggleH4 = () => editor?.chain().focus().toggleHeading({ level: 4 }).run();
@@ -110,6 +122,9 @@ export default function BlogEditor({
   if (!editor) return null;
 
   const isActive = (type: string, opts?: any) => editor.isActive(type, opts);
+  
+  // Logic to disable H1 button if one already exists elsewhere
+  const isH1Disabled = !isActive('heading', { level: 1 }) && (editor.getHTML().match(/<h1/g) || []).length >= 1;
 
   return (
     <div className="relative">
@@ -217,8 +232,15 @@ export default function BlogEditor({
             <button
               type="button"
               onClick={toggleH1}
-              className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 1 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
-              title="Heading 1"
+              disabled={isH1Disabled}
+              className={`p-1.5 rounded-lg transition-colors ${
+                isActive('heading', { level: 1 }) 
+                  ? 'bg-primary text-white' 
+                  : isH1Disabled 
+                    ? 'text-white/20 cursor-not-allowed' 
+                    : 'text-white/80 hover:text-white hover:bg-white/20'
+              }`}
+              title={isH1Disabled ? "H1 already exists" : "Heading 1"}
             >
               <Heading1 size={14} />
             </button>
