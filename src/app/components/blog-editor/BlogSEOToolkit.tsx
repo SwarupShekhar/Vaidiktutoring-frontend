@@ -68,21 +68,48 @@ export default function BlogSEOToolkit({
     // Heading Analysis
     const parser = new DOMParser();
     const doc = parser.parseFromString(content, 'text/html');
-    const h1s = doc.querySelectorAll('h1').length;
-    const h2s = doc.querySelectorAll('h2').length;
-    const h3s = doc.querySelectorAll('h3').length;
-    const h4s = doc.querySelectorAll('h4').length;
-    const h5s = doc.querySelectorAll('h5').length;
-    const h6s = doc.querySelectorAll('h6').length;
+    
+    // Parse both HTML and Markdown Headings
+    const mdH1s = (content.match(/^#\s+.+/gm) || []).length;
+    const mdH2s = (content.match(/^##\s+.+/gm) || []).length;
+    const mdH3s = (content.match(/^###\s+.+/gm) || []).length;
+    const mdH4s = (content.match(/^####\s+.+/gm) || []).length;
+    const mdH5s = (content.match(/^#####\s+.+/gm) || []).length;
+    const mdH6s = (content.match(/^######\s+.+/gm) || []).length;
+
+    const h1s = mdH1s + doc.querySelectorAll('h1').length;
+    const h2s = mdH2s + doc.querySelectorAll('h2').length;
+    const h3s = mdH3s + doc.querySelectorAll('h3').length;
+    const h4s = mdH4s + doc.querySelectorAll('h4').length;
+    const h5s = mdH5s + doc.querySelectorAll('h5').length;
+    const h6s = mdH6s + doc.querySelectorAll('h6').length;
     const subheadingsCount = h2s + h3s + h4s + h5s + h6s;
 
-    // Link Analysis
-    const links = doc.querySelectorAll('a');
-    const totalImages = doc.querySelectorAll('img').length;
-    const imagesWithoutAlt = Array.from(doc.querySelectorAll('img')).filter(img => !img.alt || img.alt.trim().length < 5).length;
+    // Link & Image Analysis
+    const htmlLinks = Array.from(doc.querySelectorAll('a'));
+    const htmlImages = Array.from(doc.querySelectorAll('img'));
     
-    const externalLinks = Array.from(links).filter(a => a.href.startsWith('http') && !a.href.includes(window.location.hostname)).length;
-    const internalLinks = links.length - externalLinks;
+    // Parse Markdown Images: ![alt text](url)
+    const mdImagesMatches = Array.from(content.matchAll(/!\[(.*?)\]\((.*?)\)/g));
+    const totalImages = htmlImages.length + mdImagesMatches.length;
+    
+    const htmlImagesWithoutAlt = htmlImages.filter(img => !img.alt || img.alt.trim().length < 5).length;
+    const mdImagesWithoutAlt = mdImagesMatches.filter(match => !match[1] || match[1].trim().length < 5).length;
+    const imagesWithoutAlt = htmlImagesWithoutAlt + mdImagesWithoutAlt;
+    
+    // Parse Markdown Links: [text](url) - (but ignore images ![])
+    const mdLinksMatches = Array.from(content.matchAll(/(?<!!)\[(.*?)\]\((.*?)\)/g));
+    
+    const isExternal = (url: string) => url.startsWith('http') && typeof window !== 'undefined' && !url.includes(window.location.hostname);
+    
+    const htmlExternalLinks = htmlLinks.filter(a => isExternal(a.href)).length;
+    const htmlInternalLinks = htmlLinks.filter(a => !!a.href && !isExternal(a.href)).length;
+    
+    const mdExternalLinks = mdLinksMatches.filter(match => isExternal(match[2])).length;
+    const mdInternalLinks = mdLinksMatches.filter(match => !!match[2] && !isExternal(match[2])).length;
+
+    const externalLinks = htmlExternalLinks + mdExternalLinks;
+    const internalLinks = htmlInternalLinks + mdInternalLinks;
 
     // Length Validations
     const titleStatus = seoTitle.length >= 50 && seoTitle.length <= 60 ? 'good' : 'warning';
