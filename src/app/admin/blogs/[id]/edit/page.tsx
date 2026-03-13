@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { blogsApi, BlogPost } from '@/app/lib/blogs';
-import { BlogEditor, BlogSidebar } from '@/app/components/blog-editor';
+import { BlogEditor, BlogSidebar, BlogVersionHistory } from '@/app/components/blog-editor';
+import { History, ChevronLeft, Save } from 'lucide-react';
 
 export default function EditBlogPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter();
@@ -14,6 +16,8 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<string | null>(null);
+    const [showHistory, setShowHistory] = useState(false);
+    const [summary, setSummary] = useState('');
 
     // Permission state
     const [canEdit, setCanEdit] = useState(false);
@@ -25,10 +29,12 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
         slug: '',
         category: 'Study Tips',
         imageUrl: '',
+        imageAlt: '',
         excerpt: '',
         content: '',
         seoTitle: '',
         seoDescription: '',
+        publishedAt: '',
         status: 'PENDING' as 'PENDING' | 'PUBLISHED' | 'REJECTED',
         author_id: '',
     });
@@ -74,10 +80,12 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                     slug: blog.slug,
                     category: blog.category,
                     imageUrl: blog.imageUrl,
+                    imageAlt: blog.imageAlt || '',
                     excerpt: blog.excerpt,
                     content: blog.content,
                     seoTitle: blog.title,
                     seoDescription: blog.excerpt,
+                    publishedAt: blog.publishedAt || '',
                     status: blog.status,
                     author_id: blog.author_id || '',
                 });
@@ -110,10 +118,14 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                 title: form.title,
                 category: form.category,
                 imageUrl: form.imageUrl,
+                imageAlt: form.imageAlt,
                 excerpt: form.excerpt,
                 content: form.content,
+                publishedAt: form.publishedAt,
+                summary: summary || 'Content update'
             });
             setLastSaved(new Date().toISOString());
+            setSummary('');
             alert('Blog updated successfully!');
             router.push('/admin/dashboard');
         } catch (error: any) {
@@ -189,12 +201,22 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                                     : 'Viewing in read-only mode'}
                             </p>
                         </div>
-                        <button
-                            onClick={() => router.back()}
-                            className="px-4 py-2 text-sm font-bold text-text-secondary hover:text-primary transition-colors"
-                        >
-                            ← Back
-                        </button>
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => setShowHistory(true)}
+                                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-bold text-text-secondary hover:text-primary transition-all"
+                            >
+                                <History size={16} />
+                                History
+                            </button>
+                            <button
+                                onClick={() => router.back()}
+                                className="px-4 py-2 text-sm font-bold text-text-secondary hover:text-primary transition-colors flex items-center gap-1"
+                            >
+                                <ChevronLeft size={16} />
+                                Back
+                            </button>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -213,18 +235,29 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                                     lastSaved={lastSaved}
                                 />
 
-                                {/* Save Button */}
+                                {/* Save Button Area */}
                                 {canEdit && (
-                                    <div className="mt-6 flex justify-end">
+                                    <div className="mt-8 p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md flex flex-col md:flex-row items-center gap-4">
+                                        <div className="flex-1 w-full">
+                                            <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] mb-2 block">Change Summary (Optional)</label>
+                                            <input 
+                                                type="text"
+                                                value={summary}
+                                                onChange={(e) => setSummary(e.target.value)}
+                                                placeholder="What did you change? (e.g. Added SEO keywords)"
+                                                className="w-full px-4 py-3 rounded-xl bg-black/20 border border-white/10 text-sm italic focus:ring-2 focus:ring-primary outline-none transition-all"
+                                            />
+                                        </div>
                                         <button
                                             type="submit"
                                             disabled={saving}
-                                            className={`px-8 py-4 rounded-xl text-white font-bold text-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 shadow-blue-500/25 ${saving ? 'opacity-70 cursor-wait' : ''}`}
+                                            className={`w-full md:w-auto px-10 py-4 rounded-xl text-white font-black text-lg shadow-2xl hover:scale-[1.05] active:scale-[0.95] transition-all flex items-center justify-center gap-3 bg-linear-to-r from-primary to-sapphire shadow-primary/25 ${saving ? 'opacity-70 cursor-wait' : ''}`}
                                         >
                                             {saving ? (
-                                                <span>Saving...</span>
+                                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                             ) : (
                                                 <>
+                                                    <Save size={20} />
                                                     <span>Save Changes</span>
                                                 </>
                                             )}
@@ -243,20 +276,52 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                                 onCategoryChange={(v) => handleChange('category', v)}
                                 imageUrl={form.imageUrl}
                                 onImageUrlChange={(v) => handleChange('imageUrl', v)}
+                                imageAlt={form.imageAlt}
+                                onImageAltChange={(v) => handleChange('imageAlt', v)}
                                 excerpt={form.excerpt}
                                 onExcerptChange={(v) => handleChange('excerpt', v)}
                                 seoTitle={form.seoTitle}
                                 onSeoTitleChange={(v) => handleChange('seoTitle', v)}
                                 seoDescription={form.seoDescription}
                                 onSeoDescriptionChange={(v) => handleChange('seoDescription', v)}
+                                publishedAt={form.publishedAt}
+                                onPublishedAtChange={(v) => handleChange('publishedAt', v)}
                                 slug={form.slug}
                                 status={form.status}
                                 lastSaved={lastSaved}
                                 editable={canEdit}
+                                content={form.content}
                             />
                         </div>
 
                     </div>
+
+                    {/* Version History Modal */}
+                    <AnimatePresence>
+                        {showHistory && (
+                            <BlogVersionHistory
+                                blogId={id}
+                                currentContent={form.content}
+                                onRestore={(blog) => {
+                                    setForm({
+                                        title: blog.title,
+                                        slug: blog.slug,
+                                        category: blog.category,
+                                        imageUrl: blog.imageUrl,
+                                        imageAlt: blog.imageAlt || '',
+                                        excerpt: blog.excerpt,
+                                        content: blog.content,
+                                        seoTitle: blog.title,
+                                        seoDescription: blog.excerpt,
+                                        publishedAt: blog.publishedAt || '',
+                                        status: blog.status,
+                                        author_id: blog.author_id || '',
+                                    });
+                                }}
+                                onClose={() => setShowHistory(false)}
+                            />
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
         </ProtectedClient>

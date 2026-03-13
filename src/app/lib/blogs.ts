@@ -7,8 +7,10 @@ export interface BlogPost {
     excerpt: string;
     content: string;
     imageUrl: string;
+    imageAlt?: string;
     category: string;
     status: 'PENDING' | 'PUBLISHED' | 'REJECTED';
+    publishedAt?: string;
     author_id?: string;
     author: {
         first_name: string;
@@ -17,10 +19,30 @@ export interface BlogPost {
     createdAt: string;
 }
 
+export interface BlogVersion {
+    id: string;
+    blog_id: string;
+    title: string;
+    excerpt: string;
+    content: string;
+    image_url: string;
+    image_alt?: string;
+    category: string;
+    summary: string;
+    author_id: string;
+    author: {
+        first_name: string;
+        last_name: string;
+    };
+    created_at: string;
+}
+
 const normalizeBlog = (data: any): BlogPost => {
     return {
         ...data,
         imageUrl: data.imageUrl || data.image_url || '',
+        imageAlt: data.imageAlt || data.image_alt || '',
+        publishedAt: data.publishedAt || data.published_at || data.created_at || new Date().toISOString(),
         createdAt: data.createdAt || data.created_at || new Date().toISOString(),
         author: data.author || { first_name: 'Unknown', last_name: 'Author' }
     };
@@ -81,6 +103,8 @@ export const blogsApi = {
         const payload = {
             ...data,
             image_url: data.imageUrl,
+            image_alt: data.imageAlt,
+            published_at: data.publishedAt,
             created_at: data.createdAt
         };
         const res = await api.post('/admin/blogs', payload);
@@ -104,13 +128,38 @@ export const blogsApi = {
     },
 
     // Update blog (Protected: Admin/Tutor)
-    update: async (id: string, data: Partial<BlogPost>) => {
+    update: async (id: string, data: Partial<BlogPost> & { summary?: string }) => {
         const payload = {
             ...data,
             image_url: data.imageUrl,
-            created_at: data.createdAt
+            image_alt: data.imageAlt,
+            published_at: data.publishedAt,
+            created_at: data.createdAt,
+            summary: data.summary
         };
         const res = await api.patch(`/admin/blogs/${id}`, payload);
+        return normalizeBlog(res.data);
+    },
+
+    // Upload media (Protected: Admin/Tutor)
+    uploadMedia: async (file: File) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await api.post('/admin/media/upload', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return res.data; // { url: string }
+    },
+
+    // Get version history
+    getVersions: async (id: string): Promise<BlogVersion[]> => {
+        const res = await api.get(`/admin/blogs/${id}/versions`);
+        return res.data;
+    },
+
+    // Restore a version
+    restoreVersion: async (blogId: string, versionId: string): Promise<BlogPost> => {
+        const res = await api.post(`/admin/blogs/${blogId}/versions/${versionId}/restore`);
         return normalizeBlog(res.data);
     }
 };

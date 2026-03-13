@@ -27,10 +27,12 @@ export default function NewBlogPage() {
         slug: '',
         category: 'Study Tips',
         imageUrl: '',
+        imageAlt: '',
         excerpt: '',
         content: '',
         seoTitle: '',
         seoDescription: '',
+        publishedAt: '',
         status: 'PENDING' as 'PENDING' | 'PUBLISHED' | 'REJECTED',
     });
 
@@ -56,8 +58,10 @@ export default function NewBlogPage() {
                 title: form.title,
                 category: form.category,
                 imageUrl: form.imageUrl,
+                imageAlt: form.imageAlt,
                 excerpt: form.excerpt,
                 content: form.content,
+                publishedAt: form.publishedAt,
             });
             
             setLastSaved(new Date().toISOString());
@@ -134,7 +138,7 @@ export default function NewBlogPage() {
                                         className={`px-10 py-4 rounded-2xl text-white font-black text-lg shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-3 bg-linear-to-r from-purple-600 to-indigo-600 shadow-purple-500/25 ${saving ? 'opacity-70 cursor-wait' : ''}`}
                                     >
                                         {saving ? (
-                                            <span>Saving...</span>
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                         ) : (
                                             <>
                                                 <span>{isAdmin ? 'Publish Post 🚀' : 'Submit for Review 📤'}</span>
@@ -154,16 +158,21 @@ export default function NewBlogPage() {
                                 onCategoryChange={(v) => handleChange('category', v)}
                                 imageUrl={form.imageUrl}
                                 onImageUrlChange={(v) => handleChange('imageUrl', v)}
+                                imageAlt={form.imageAlt}
+                                onImageAltChange={(v) => handleChange('imageAlt', v)}
                                 excerpt={form.excerpt}
                                 onExcerptChange={(v) => handleChange('excerpt', v)}
                                 seoTitle={form.seoTitle}
                                 onSeoTitleChange={(v) => handleChange('seoTitle', v)}
                                 seoDescription={form.seoDescription}
                                 onSeoDescriptionChange={(v) => handleChange('seoDescription', v)}
+                                publishedAt={form.publishedAt}
+                                onPublishedAtChange={(v) => handleChange('publishedAt', v)}
                                 slug={form.slug}
                                 status={form.status}
                                 lastSaved={lastSaved}
                                 editable={canEdit}
+                                content={form.content}
                             />
                         </div>
 
