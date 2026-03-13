@@ -7,7 +7,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Bold, Italic, Heading1, Heading2, List, Link as LinkIcon,
+  Bold, Italic, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, List, Link as LinkIcon,
   Eye, Edit3, CheckCircle, XCircle
 } from 'lucide-react';
 
@@ -38,7 +38,7 @@ export default function BlogEditor({
     extensions: [
       StarterKit.configure({
         heading: {
-          levels: [1, 2],
+          levels: [1, 2, 3, 4, 5, 6],
         },
       }),
       Link.configure({
@@ -85,6 +85,10 @@ export default function BlogEditor({
   const toggleItalic = () => editor?.chain().focus().toggleItalic().run();
   const toggleH1 = () => editor?.chain().focus().toggleHeading({ level: 1 }).run();
   const toggleH2 = () => editor?.chain().focus().toggleHeading({ level: 2 }).run();
+  const toggleH3 = () => editor?.chain().focus().toggleHeading({ level: 3 }).run();
+  const toggleH4 = () => editor?.chain().focus().toggleHeading({ level: 4 }).run();
+  const toggleH5 = () => editor?.chain().focus().toggleHeading({ level: 5 }).run();
+  const toggleH6 = () => editor?.chain().focus().toggleHeading({ level: 6 }).run();
   const toggleBulletList = () => editor?.chain().focus().toggleBulletList().run();
 
   if (!editor) return null;
@@ -191,17 +195,45 @@ export default function BlogEditor({
             <div className="w-px h-5 bg-white/30 mx-1" />
             <button
               onClick={toggleH1}
-              className={`p-2 rounded-lg transition-colors ${isActive('heading', { level: 1 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
+              className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 1 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
               title="Heading 1"
             >
-              <Heading1 size={16} />
+              <Heading1 size={14} />
             </button>
             <button
               onClick={toggleH2}
-              className={`p-2 rounded-lg transition-colors ${isActive('heading', { level: 2 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
+              className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 2 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
               title="Heading 2"
             >
-              <Heading2 size={16} />
+              <Heading2 size={14} />
+            </button>
+            <button
+              onClick={toggleH3}
+              className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 3 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
+              title="Heading 3"
+            >
+              <Heading3 size={14} />
+            </button>
+            <button
+              onClick={toggleH4}
+              className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 4 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
+              title="Heading 4"
+            >
+              <Heading4 size={14} />
+            </button>
+            <button
+              onClick={toggleH5}
+              className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 5 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
+              title="Heading 5"
+            >
+              <Heading5 size={14} />
+            </button>
+            <button
+              onClick={toggleH6}
+              className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 6 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
+              title="Heading 6"
+            >
+              <Heading6 size={14} />
             </button>
             <div className="w-px h-5 bg-white/30 mx-1" />
             <button

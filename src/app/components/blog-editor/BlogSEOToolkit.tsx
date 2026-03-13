@@ -71,6 +71,10 @@ export default function BlogSEOToolkit({
     const h1s = doc.querySelectorAll('h1').length;
     const h2s = doc.querySelectorAll('h2').length;
     const h3s = doc.querySelectorAll('h3').length;
+    const h4s = doc.querySelectorAll('h4').length;
+    const h5s = doc.querySelectorAll('h5').length;
+    const h6s = doc.querySelectorAll('h6').length;
+    const subheadingsCount = h2s + h3s + h4s + h5s + h6s;
 
     // Link Analysis
     const links = doc.querySelectorAll('a');
@@ -145,7 +149,17 @@ export default function BlogSEOToolkit({
       tip: altStatus === 'good' ? 'Great alt text!' : 'Provide a descriptive alt text (at least 10 chars).'
     });
 
-    return { score: Math.min(score, 100), checks, readingEase, wordCount, keywordDensity, h1s, h2s, h3s, internalLinks, externalLinks };
+    return { 
+      score: Math.min(score, 100), 
+      checks, 
+      readingEase, 
+      wordCount, 
+      keywordDensity, 
+      h1s, 
+      subheadingsCount,
+      internalLinks, 
+      externalLinks 
+    };
   }, [content, title, excerpt, seoTitle, seoDescription, imageAlt, targetKeyword]);
 
   const scoreColor = useMemo(() => {
@@ -231,7 +245,7 @@ export default function BlogSEOToolkit({
               <MetricBox label="Word Count" value={analysis.wordCount} icon={<FileText size={12}/>} />
               <MetricBox label="Readability" value={Math.round(analysis.readingEase)} icon={<BookOpen size={12}/>} />
               <MetricBox label="H1 Count" value={analysis.h1s} icon={<span className="font-black text-[10px]">H1</span>} />
-              <MetricBox label="Subheadings" value={analysis.h2s + analysis.h3s} icon={<span className="font-black text-[10px]">H2+</span>} />
+              <MetricBox label="Subheadings" value={analysis.subheadingsCount} icon={<span className="font-black text-[10px]">H2-H6</span>} />
               <MetricBox label="Internal Links" value={analysis.internalLinks} icon={<LinkIcon size={12}/>} />
               <MetricBox label="External Links" value={analysis.externalLinks} icon={<LinkIcon size={12}/>} />
             </div>
