@@ -16,6 +16,7 @@ import { Markdown } from 'tiptap-markdown';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
+import rehypeRaw from 'rehype-raw';
 
 interface BlogEditorProps {
   content: string;
@@ -74,12 +75,12 @@ export default function BlogEditor({
         },
       }),
       Markdown.configure({
-        html: true,
+        html: false, // Force pure markdown without HTML tags
         tightLists: true,
         tightListClass: 'tight-list',
         bulletListMarker: '-',
-        linkify: true,
-        breaks: true,
+        linkify: false, // Avoid conflicting with Link extension
+        breaks: false, // Use standard markdown breaks
       }),
       Placeholder.configure({
         placeholder: 'Start writing your amazing blog post...',
@@ -471,6 +472,7 @@ export default function BlogEditor({
                   first-letter:text-5xl first-letter:font-black first-letter:text-(--color-text-primary) first-letter:float-left first-letter:mr-3 first-letter:mt-1">
                   <ReactMarkdown 
                     remarkPlugins={[remarkGfm, remarkBreaks]}
+                    rehypePlugins={[rehypeRaw]}
                     components={{
                       h1: (props) => <h1 className="text-3xl font-black mt-12 mb-6 text-(--color-text-primary)" {...props} />,
                       h2: (props) => <h2 className="text-2xl font-bold mt-10 mb-5 text-(--color-text-primary)" {...props} />,
