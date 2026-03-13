@@ -1,23 +1,39 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import { blogsApi, BlogPost } from '@/app/lib/blogs';
 import { format } from 'date-fns';
 import Link from 'next/link';
-import { RefreshCw, PenTool, CheckCircle, XCircle, Eye, Plus, Edit } from 'lucide-react';
+import { RefreshCw, PenTool, CheckCircle, XCircle, Eye, Plus, Edit, User } from 'lucide-react';
+import { useAuthContext } from '@/app/context/AuthContext';
 
-export default function BlogManagementSection() {
+interface BlogManagementSectionProps {
+    filterOnlyMyBlogs?: boolean;
+}
+
+export default function BlogManagementSection({ filterOnlyMyBlogs = false }: BlogManagementSectionProps) {
+    const { user } = useAuthContext();
     const [blogs, setBlogs] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
 
+    const isAdmin = user?.role?.toLowerCase() === 'admin';
+
     const fetchBlogs = async () => {
         try {
             setLoading(true);
             const res = await blogsApi.getAdminAll(page, 10);
-            setBlogs(res.data);
-            setTotal(res.total);
+            
+            let filteredData = res.data;
+            if (filterOnlyMyBlogs && user) {
+                const currentUserId = user.userId || user.id;
+                filteredData = res.data.filter((b: BlogPost) => b.author_id === currentUserId);
+            }
+            
+            setBlogs(filteredData);
+            setTotal(filterOnlyMyBlogs ? filteredData.length : res.total);
         } catch (error) {
             console.error('Failed to fetch blogs', error);
         } finally {
@@ -39,9 +55,10 @@ export default function BlogManagementSection() {
 
     useEffect(() => {
         fetchBlogs();
-    }, [page]);
+    }, [page, user, filterOnlyMyBlogs]);
 
     const handleStatusUpdate = async (id: string, status: 'PUBLISHED' | 'REJECTED') => {
+        if (!isAdmin) return;
         if (!confirm(`Are you sure you want to mark this post as ${status}?`)) return;
 
         try {
@@ -63,7 +80,7 @@ export default function BlogManagementSection() {
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold text-(--color-text-primary) flex items-center gap-2">
                     <PenTool size={20} className="text-pink-500" />
-                    Content Management
+                    {filterOnlyMyBlogs ? 'My Blog Posts' : 'Content Management'}
                 </h2>
                 <div className="flex gap-2">
                     <button
@@ -88,7 +105,7 @@ export default function BlogManagementSection() {
                     <thead>
                         <tr className="border-b border-border text-text-secondary text-sm uppercase">
                             <th className="py-3 px-4">Title</th>
-                            <th className="py-3 px-4">Author</th>
+                            {!filterOnlyMyBlogs && <th className="py-3 px-4">Author</th>}
                             <th className="py-3 px-4">Category</th>
                             <th className="py-3 px-4">Date</th>
                             <th className="py-3 px-4">Status</th>
@@ -100,7 +117,7 @@ export default function BlogManagementSection() {
                             Array.from({ length: 3 }).map((_, i) => (
                                 <tr key={i} className="animate-pulse">
                                     <td className="py-4 px-4"><div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-48" /></td>
-                                    <td className="py-4 px-4"><div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32" /></td>
+                                    {!filterOnlyMyBlogs && <td className="py-4 px-4"><div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32" /></td>}
                                     <td className="py-4 px-4"><div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24" /></td>
                                     <td className="py-4 px-4"><div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24" /></td>
                                     <td className="py-4 px-4"><div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20" /></td>
@@ -109,7 +126,7 @@ export default function BlogManagementSection() {
                             ))
                         ) : blogs.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="py-8 text-center text-text-secondary">
+                                <td colSpan={filterOnlyMyBlogs ? 5 : 6} className="py-8 text-center text-text-secondary">
                                     No blogs found.
                                 </td>
                             </tr>
@@ -121,9 +138,16 @@ export default function BlogManagementSection() {
                                             {blog.title}
                                         </Link>
                                     </td>
-                                    <td className="py-4 px-4 text-sm text-text-secondary">
-                                        {blog.author?.first_name} {blog.author?.last_name}
-                                    </td>
+                                    {!filterOnlyMyBlogs && (
+                                        <td className="py-4 px-4 text-sm text-text-secondary">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-600">
+                                                    {blog.author?.first_name?.[0]}
+                                                </div>
+                                                {blog.author?.first_name} {blog.author?.last_name}
+                                            </div>
+                                        </td>
+                                    )}
                                     <td className="py-4 px-4 text-sm">
                                         <span className="px-2 py-1 rounded-md bg-surface border border-border">
                                             {blog.category}
@@ -150,7 +174,7 @@ export default function BlogManagementSection() {
                                                 <Edit size={16} />
                                             </Link>
                                             
-                                            {blog.status === 'PENDING' && (
+                                            {isAdmin && blog.status === 'PENDING' && (
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={() => handleStatusUpdate(blog.id, 'PUBLISHED')}
@@ -168,7 +192,7 @@ export default function BlogManagementSection() {
                                                     </button>
                                                 </div>
                                             )}
-                                            {blog.status === 'PUBLISHED' && (
+                                            {isAdmin && blog.status === 'PUBLISHED' && (
                                                 <button
                                                     onClick={() => handleStatusUpdate(blog.id, 'REJECTED')}
                                                     disabled={!!processingId}
@@ -187,23 +211,25 @@ export default function BlogManagementSection() {
             </div>
 
             {/* Pagination Controls */}
-            <div className="mt-4 flex justify-end gap-2">
-                <button
-                    disabled={page === 1}
-                    onClick={() => setPage(p => p - 1)}
-                    className="px-3 py-1 rounded-lg border border-border disabled:opacity-50 text-sm"
-                >
-                    Previous
-                </button>
-                <div className="px-3 py-1 bg-surface rounded-lg text-sm">{page}</div>
-                <button
-                    disabled={blogs.length < 10} // Simple check, ideally check total
-                    onClick={() => setPage(p => p + 1)}
-                    className="px-3 py-1 rounded-lg border border-border disabled:opacity-50 text-sm"
-                >
-                    Next
-                </button>
-            </div>
+            {!filterOnlyMyBlogs && total > 10 && (
+                <div className="mt-4 flex justify-end gap-2">
+                    <button
+                        disabled={page === 1}
+                        onClick={() => setPage(p => p - 1)}
+                        className="px-3 py-1 rounded-lg border border-border disabled:opacity-50 text-sm"
+                    >
+                        Previous
+                    </button>
+                    <div className="px-3 py-1 bg-surface rounded-lg text-sm">{page}</div>
+                    <button
+                        disabled={blogs.length < 10} 
+                        onClick={() => setPage(p => p + 1)}
+                        className="px-3 py-1 rounded-lg border border-border disabled:opacity-50 text-sm"
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

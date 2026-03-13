@@ -1,279 +1,170 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ProtectedClient from '@/app/components/ProtectedClient';
-import ReactMarkdown from 'react-markdown';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { blogsApi } from '@/app/lib/blogs';
-import remarkGfm from 'remark-gfm';
-import remarkBreaks from 'remark-breaks';
+import { BlogEditor, BlogSidebar } from '@/app/components/blog-editor';
 
 export default function NewBlogPage() {
     const router = useRouter();
     const { user } = useAuthContext();
-    const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [lastSaved, setLastSaved] = useState<string | null>(null);
 
-    // Determine Role
-    const isAdmin = user?.role === 'admin';
-    const isTutor = user?.role === 'tutor';
+    // Permission state
+    const isAdmin = user?.role?.toLowerCase() === 'admin';
+    const isTutor = user?.role?.toLowerCase() === 'tutor';
+    
+    // For a new blog, anyone who can access this page can edit it
+    const canEdit = true;
+    // But only admins can publish directly
+    const canPublish = isAdmin;
 
     const [form, setForm] = useState({
         title: '',
-        category: 'Study Tips', // Default
+        slug: '',
+        category: 'Study Tips',
         imageUrl: '',
         excerpt: '',
         content: '',
+        seoTitle: '',
+        seoDescription: '',
+        status: 'PENDING' as 'PENDING' | 'PUBLISHED' | 'REJECTED',
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (field: string, value: string) => {
+        setForm(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleContentChange = (html: string) => {
+        setForm(prev => ({ ...prev, content: html }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
+        
+        if (!form.title) {
+            alert('Please enter a title');
+            return;
+        }
 
+        setSaving(true);
         try {
-            await blogsApi.create({
+            const newBlog = await blogsApi.create({
                 title: form.title,
                 category: form.category,
                 imageUrl: form.imageUrl,
                 excerpt: form.excerpt,
                 content: form.content,
-                // Backend handles Status (Admin -> PUBLISHED, Tutor -> PENDING) 
-                // and Author (from JWT)
             });
-
-            // Success handling
+            
+            setLastSaved(new Date().toISOString());
+            
             if (isAdmin) {
-                alert('Blog published successfully!');
-                router.push('/blogs');
+                alert('Blog created and published successfully!');
+                router.push('/admin/dashboard');
             } else {
-                alert('Submitted to Admin for approval!');
+                alert('Blog submitted for admin review!');
                 router.push('/tutor/dashboard');
             }
-
         } catch (error: any) {
             console.error('Failed to create blog:', error);
-            alert(error.response?.data?.message || 'Failed to submit blog post');
+            alert(error.response?.data?.message || 'Failed to create blog post');
         } finally {
-            setLoading(false);
+            setSaving(false);
         }
     };
 
-    // Preview Tab State
-    const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
+    const handlePublishToggle = (newStatus: 'PUBLISHED' | 'PENDING') => {
+        // For a NEW blog, "publishing" just means we will set the status 
+        // when we finally click "Create Post". 
+        // However, the backend currently sets status based on user role.
+        // So for an admin, it's always published initially.
+        setForm(prev => ({ ...prev, status: newStatus }));
+    };
 
     return (
         <ProtectedClient roles={['admin', 'tutor']}>
-            <div className="min-h-screen bg-background py-12 px-6">
-                <div className="max-w-5xl mx-auto">
+            <div className="min-h-screen bg-background py-8 px-4 lg:px-8">
+                <div className="max-w-7xl mx-auto">
 
+                    {/* Header */}
                     <div className="flex items-center justify-between mb-8">
-                        <h1 className="text-3xl font-bold text-(--color-text-primary)">
-                            {isAdmin ? 'Write New Blog Post' : 'Submit Article for Review'}
-                        </h1>
+                        <div>
+                            <h1 className="text-3xl font-black text-(--color-text-primary) tracking-tight">
+                                {isAdmin ? 'Create New Masterpiece' : 'Draft New Article'}
+                            </h1>
+                            <p className="text-text-secondary text-sm mt-1">
+                                {isAdmin 
+                                    ? 'Your post will be published immediately' 
+                                    : 'Your post will be sent to admin for final approval'}
+                            </p>
+                        </div>
                         <button
                             onClick={() => router.back()}
-                            className="text-text-secondary hover:text-primary"
+                            className="px-4 py-2 text-sm font-bold text-text-secondary hover:text-primary transition-colors flex items-center gap-2"
                         >
-                            Cancel
+                            <span>✕</span> Cancel
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                        {/* FORM */}
-                        <form onSubmit={handleSubmit} className="space-y-6">
-
-                            {/* Title */}
-                            <div>
-                                <label className="block text-sm font-medium text-text-secondary mb-1">Title</label>
-                                <input
-                                    type="text"
-                                    name="title"
-                                    required
-                                    value={form.title}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-(--color-text-primary) focus:ring-2 focus:ring-primary outline-none"
-                                    placeholder="e.g. 5 Tips for Acing Algebra"
+                        {/* Main Editor Area */}
+                        <div className="lg:col-span-2">
+                            <form onSubmit={handleSubmit}>
+                                {/* TipTap Editor */}
+                                <BlogEditor
+                                    content={form.content}
+                                    onChange={handleContentChange}
+                                    editable={canEdit}
+                                    canPublish={canPublish}
+                                    status={form.status}
+                                    onPublishToggle={handlePublishToggle}
+                                    lastSaved={lastSaved}
                                 />
-                            </div>
 
-                            {/* Category & Image */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-text-secondary mb-1">Category</label>
-                                    <select
-                                        name="category"
-                                        value={form.category}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-(--color-text-primary) focus:ring-2 focus:ring-primary outline-none appearance-none"
+                                {/* Save/Create Button */}
+                                <div className="mt-6 flex justify-end">
+                                    <button
+                                        type="submit"
+                                        disabled={saving}
+                                        className={`px-10 py-4 rounded-2xl text-white font-black text-lg shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-3 bg-linear-to-r from-purple-600 to-indigo-600 shadow-purple-500/25 ${saving ? 'opacity-70 cursor-wait' : ''}`}
                                     >
-                                        <option>Study Tips</option>
-                                        <option>Math</option>
-                                        <option>Science</option>
-                                        <option>English</option>
-                                        <option>College Prep</option>
-                                        <option>News</option>
-                                    </select>
+                                        {saving ? (
+                                            <span>Saving...</span>
+                                        ) : (
+                                            <>
+                                                <span>{isAdmin ? 'Publish Post 🚀' : 'Submit for Review 📤'}</span>
+                                            </>
+                                        )}
+                                    </button>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-text-secondary mb-1">Image URL</label>
-                                    <input
-                                        type="url"
-                                        name="imageUrl"
-                                        required
-                                        value={form.imageUrl}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-(--color-text-primary) focus:ring-2 focus:ring-primary outline-none"
-                                        placeholder="https://..."
-                                    />
-                                </div>
-                            </div>
+                            </form>
+                        </div>
 
-                            {/* Excerpt */}
-                            <div>
-                                <label className="block text-sm font-medium text-text-secondary mb-1">Short Excerpt</label>
-                                <textarea
-                                    name="excerpt"
-                                    required
-                                    rows={3}
-                                    value={form.excerpt}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-(--color-text-primary) focus:ring-2 focus:ring-primary outline-none resize-none"
-                                    placeholder="Brief summary displayed on the card..."
-                                />
-                            </div>
-
-                            {/* Content Editor */}
-                            <div>
-                                <div className="flex justify-between items-center mb-1">
-                                    <label className="block text-sm font-medium text-text-secondary">
-                                        Content (Markdown supported)
-                                        <span className="ml-2 text-xs text-primary font-normal bg-blue-50 px-2 py-0.5 rounded-full">
-                                            Tip: Type <code>![Alt](url)</code> to add images
-                                        </span>
-                                    </label>
-                                    <div className="flex bg-surface rounded-lg p-1 border border-border">
-                                        <button
-                                            type="button"
-                                            onClick={() => setActiveTab('write')}
-                                            className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${activeTab === 'write' ? 'bg-primary text-white shadow' : 'text-text-secondary hover:text-(--color-text-primary)'}`}
-                                        >
-                                            Write
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setActiveTab('preview')}
-                                            className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${activeTab === 'preview' ? 'bg-primary text-white shadow' : 'text-text-secondary hover:text-(--color-text-primary)'}`}
-                                        >
-                                            Preview
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {activeTab === 'write' ? (
-                                    <textarea
-                                        name="content"
-                                        required
-                                        rows={15}
-                                        value={form.content}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-(--color-text-primary) focus:ring-2 focus:ring-primary outline-none font-mono text-sm"
-                                        placeholder={`# Main Title\n\n## Section Header\n\n![My Image](https://example.com/photo.jpg)\n\nWrite your content here...`}
-                                    />
-                                ) : (
-                                    <div className="w-full h-[380px] overflow-y-auto px-4 py-3 rounded-xl bg-surface border border-border">
-                                        <div className="prose prose-sm dark:prose-invert max-w-none">
-                                            <ReactMarkdown
-                                                remarkPlugins={[remarkGfm, remarkBreaks]}
-                                                components={{
-                                                    h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mt-6 mb-3 text-(--color-text-primary)" {...props} />,
-                                                    h2: ({ node, ...props }) => <h2 className="text-xl font-bold mt-5 mb-2 text-(--color-text-primary)" {...props} />,
-                                                    h3: ({ node, ...props }) => <h3 className="text-lg font-bold mt-4 mb-2 text-(--color-text-primary)" {...props} />,
-                                                    p: ({ node, ...props }) => <p className="mb-4 leading-relaxed text-text-secondary" {...props} />,
-                                                    ul: ({ node, ...props }) => <ul className="list-disc list-inside mb-4 space-y-1" {...props} />,
-                                                    ol: ({ node, ...props }) => <ol className="list-decimal list-inside mb-4 space-y-1" {...props} />,
-                                                    blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-primary pl-4 italic my-4 bg-background py-2 rounded-r" {...props} />,
-                                                    a: ({ node, ...props }) => <a className="text-primary hover:underline font-medium" {...props} />,
-                                                    table: ({ node, ...props }) => <div className="overflow-x-auto mb-4"><table className="min-w-full divide-y divide-border" {...props} /></div>,
-                                                    th: ({ node, ...props }) => <th className="px-3 py-2 bg-background text-left text-xs font-semibold text-text-secondary uppercase tracking-wider" {...props} />,
-                                                    td: ({ node, ...props }) => <td className="px-3 py-2 whitespace-nowrap text-sm text-text-secondary border-b border-border" {...props} />,
-                                                }}
-                                            >
-                                                {form.content || '*Nothing to preview*'}
-                                            </ReactMarkdown>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="pt-4">
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className={`w-full py-4 rounded-xl text-white font-bold text-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${isAdmin
-                                        ? 'bg-linear-to-r from-purple-600 to-indigo-600 shadow-purple-500/25'
-                                        : 'bg-linear-to-r from-orange-500 to-amber-500 shadow-orange-500/25'
-                                        } ${loading ? 'opacity-70 cursor-wait' : ''}`}
-                                >
-                                    {loading ? (
-                                        <span>Saving...</span>
-                                    ) : (
-                                        <>
-                                            <span>{isAdmin ? 'Publish Post 🚀' : 'Submit for Approval 📤'}</span>
-                                        </>
-                                    )}
-                                </button>
-                                {isTutor && (
-                                    <p className="text-center text-xs text-text-secondary mt-3">
-                                        Your post will be reviewed by an admin before going live.
-                                    </p>
-                                )}
-                            </div>
-
-                        </form>
-
-                        {/* PREVIEW CARD */}
-                        <div className="hidden lg:block space-y-4">
-                            <p className="text-sm font-bold text-text-secondary uppercase tracking-wider">Live Preview</p>
-
-                            <div className="bg-glass rounded-4xl border border-white/20 shadow-xl overflow-hidden pointer-events-none opacity-90 scale-90 origin-top">
-                                <div className="h-48 bg-gray-200 relative w-full group">
-                                    {form.imageUrl ? (
-                                        <img
-                                            src={form.imageUrl}
-                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                            alt="Preview"
-                                            onError={(e) => {
-                                                e.currentTarget.src = 'https://placehold.co/800x400?text=Invalid+Image+URL';
-                                            }}
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100 font-medium">
-                                            No Image Selected
-                                        </div>
-                                    )}
-                                    <div className="absolute top-4 left-4 px-3 py-1 bg-black/50 backdrop-blur-md rounded-full text-white text-xs font-bold">
-                                        {form.category}
-                                    </div>
-                                </div>
-                                <div className="p-6">
-                                    <div className="flex gap-2 text-xs text-gray-400 mb-2">
-                                        <span>{new Date().toLocaleDateString()}</span>
-                                        <span>•</span>
-                                        <span>{user?.first_name} {user?.last_name}</span>
-                                    </div>
-                                    <h2 className="text-xl font-bold text-(--color-text-primary) mb-2">
-                                        {form.title || 'Your Title Here'}
-                                    </h2>
-                                    <p className="text-text-secondary text-sm line-clamp-3">
-                                        {form.excerpt || 'Your short summary will appear here...'}
-                                    </p>
-                                </div>
-                            </div>
+                        {/* Sidebar */}
+                        <div className="lg:col-span-1">
+                            <BlogSidebar
+                                title={form.title}
+                                onTitleChange={(v) => handleChange('title', v)}
+                                category={form.category}
+                                onCategoryChange={(v) => handleChange('category', v)}
+                                imageUrl={form.imageUrl}
+                                onImageUrlChange={(v) => handleChange('imageUrl', v)}
+                                excerpt={form.excerpt}
+                                onExcerptChange={(v) => handleChange('excerpt', v)}
+                                seoTitle={form.seoTitle}
+                                onSeoTitleChange={(v) => handleChange('seoTitle', v)}
+                                seoDescription={form.seoDescription}
+                                onSeoDescriptionChange={(v) => handleChange('seoDescription', v)}
+                                slug={form.slug}
+                                status={form.status}
+                                lastSaved={lastSaved}
+                                editable={canEdit}
+                            />
                         </div>
 
                     </div>

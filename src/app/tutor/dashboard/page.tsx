@@ -6,6 +6,7 @@ import ProtectedClient from '@/app/components/ProtectedClient';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { useTutorDashboard } from '@/app/Hooks/useTutorDashboard';
 import { StatCard } from '@/app/components/dashboard/StatCard';
+import BlogManagementSection from '@/app/components/admin/BlogManagementSection';
 import {
   Calendar,
   Clock,
@@ -17,7 +18,8 @@ import {
   Zap,
   Star,
   Award,
-  Video
+  Video,
+  PenTool
 } from 'lucide-react';
 
 export default function TutorDashboardPage() {
@@ -372,10 +374,28 @@ export default function TutorDashboardPage() {
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Shift Intelligence</p>
                     </div>
                   </Link>
+                  <Link href="/admin/blogs/new" className="flex items-center gap-6 p-6 rounded-4xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-150 transition-transform">
+                      <PenTool size={80} />
+                    </div>
+                    <div className="p-4 bg-pink-500/20 text-pink-400 rounded-2xl group-hover:scale-110 transition-transform relative z-10">
+                      <PenTool size={24} />
+                    </div>
+                    <div className="text-left relative z-10">
+                      <p className="text-lg font-black text-white">Write Article</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Community Blog</p>
+                    </div>
+                  </Link>
                 </div>
               </section>
             </div>
           </div>
+
+          {/* BLOG MANAGEMENT SECTION */}
+          <div className="bg-white/70 dark:bg-slate-900/40 backdrop-blur-2xl border border-white dark:border-white/10 rounded-[3rem] shadow-2xl p-8 md:p-10">
+            <BlogManagementSection filterOnlyMyBlogs={true} />
+          </div>
+
         </div>
       </div>
     </ProtectedClient>
