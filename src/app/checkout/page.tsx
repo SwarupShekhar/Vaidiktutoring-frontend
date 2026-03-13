@@ -81,9 +81,9 @@ const CheckoutContent = () => {
                 amount: amount,
                 currency: currency,
                 order_id: orderId,
-                name: 'Vaidik Tutoring',
+                name: 'StudyHours',
                 description: `${plan} Plan - ${region} Region`,
-                image: '/logo.png',
+                image: 'https://studyhours.com/Studuhourslogo.svg',
                 prefill: {
                     name: user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : '',
                     email: user?.email || '',
