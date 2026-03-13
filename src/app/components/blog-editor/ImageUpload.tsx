@@ -1,7 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, X, Image as ImageIcon, RotateCw, Sliders, Check, AlertCircle } from 'lucide-react';
-import { blogsApi } from '@/app/lib/blogs';
+import { X, Image as ImageIcon, RotateCw, Sliders, Check, AlertCircle, Link } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ImageUploadProps {
@@ -21,8 +20,7 @@ export default function ImageUpload({
   editable,
   suggestedAlt 
 }: ImageUploadProps) {
-  const [isDragging, setIsDragging] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [urlInput, setUrlInput] = useState(value || '');
   const [showEditor, setShowEditor] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [filters, setFilters] = useState({
@@ -31,53 +29,23 @@ export default function ImageUpload({
     saturate: 100,
   });
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFile = async (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      toast.error('Please upload an image file');
-      return;
-    }
-
-    setUploading(true);
-    try {
-      const { url } = await blogsApi.uploadMedia(file);
-      onChange(url);
-      if (!alt && suggestedAlt) {
-        onAltChange(suggestedAlt);
-      }
-      toast.success('Image uploaded and optimized!');
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to upload image');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const onDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (editable) setIsDragging(true);
-  };
-
-  const onDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const onDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    if (!editable) return;
-    
-    const file = e.dataTransfer.files[0];
-    if (file) handleFile(file);
-  };
-
   const resetImage = () => {
     onChange('');
     onAltChange('');
+    setUrlInput('');
     setRotation(0);
     setFilters({ brightness: 100, contrast: 100, saturate: 100 });
+  };
+
+  const handleUrlSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (urlInput.trim()) {
+      onChange(urlInput.trim());
+      if (!alt && suggestedAlt) {
+        onAltChange(suggestedAlt);
+      }
+      toast.success('Image link applied!');
+    }
   };
 
   const filterStyle = {
@@ -89,12 +57,8 @@ export default function ImageUpload({
   return (
     <div className="space-y-4">
       <div
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDrop={onDrop}
         className={`relative aspect-video rounded-xl border-2 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center gap-3
-          ${isDragging ? 'border-primary bg-primary/5 scale-[1.02]' : 'border-white/10 bg-white/5'}
-          ${!value ? 'p-8' : ''}
+          ${value ? 'border-transparent' : 'border-white/10 bg-white/5 p-8'}
         `}
       >
         {value ? (
@@ -125,24 +89,30 @@ export default function ImageUpload({
             )}
           </>
         ) : (
-          <>
-            <div className={`p-4 rounded-full ${uploading ? 'bg-primary/20 animate-pulse' : 'bg-white/10'}`}>
-              <Upload size={24} className={uploading ? 'text-primary' : 'text-text-secondary'} />
+          <form onSubmit={handleUrlSubmit} className="w-full space-y-4">
+            <div className="flex flex-col items-center gap-2 mb-2">
+              <div className="p-3 rounded-full bg-primary/10 text-primary">
+                <Link size={20} />
+              </div>
+              <p className="text-xs font-black text-text-secondary uppercase tracking-widest">Cloudinary / Image Link</p>
             </div>
-            <div className="text-center">
-              <p className="text-sm font-bold text-(--color-text-primary)">
-                {uploading ? 'Optimizing Image...' : 'Drop header image here'}
-              </p>
-              <p className="text-xs text-text-secondary mt-1">or click to browse</p>
+            <div className="relative group">
+              <input 
+                type="url"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                placeholder="https://res.cloudinary.com/..."
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm focus:ring-2 focus:ring-primary outline-none transition-all pr-12 group-hover:border-white/20"
+              />
+              <button 
+                type="submit"
+                disabled={!urlInput.trim()}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-primary text-white hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
+              >
+                <Check size={16} />
+              </button>
             </div>
-            <input 
-              type="file" 
-              ref={fileInputRef}
-              className="absolute inset-0 opacity-0 cursor-pointer" 
-              onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
-              disabled={!editable || uploading}
-            />
-          </>
+          </form>
         )}
       </div>
 

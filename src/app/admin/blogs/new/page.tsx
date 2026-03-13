@@ -169,6 +169,7 @@ export default function NewBlogPage() {
                                 publishedAt={form.publishedAt}
                                 onPublishedAtChange={(v) => handleChange('publishedAt', v)}
                                 slug={form.slug}
+                                onSlugChange={(v) => handleChange('slug', v)}
                                 status={form.status}
                                 lastSaved={lastSaved}
                                 editable={canEdit}

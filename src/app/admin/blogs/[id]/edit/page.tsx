@@ -287,6 +287,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                                 publishedAt={form.publishedAt}
                                 onPublishedAtChange={(v) => handleChange('publishedAt', v)}
                                 slug={form.slug}
+                                onSlugChange={(v) => handleChange('slug', v)}
                                 status={form.status}
                                 lastSaved={lastSaved}
                                 editable={canEdit}

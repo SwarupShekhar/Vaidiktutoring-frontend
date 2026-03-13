@@ -26,6 +26,7 @@ interface BlogSidebarProps {
   publishedAt: string;
   onPublishedAtChange: (value: string) => void;
   slug: string;
+  onSlugChange: (value: string) => void;
   status: 'PENDING' | 'PUBLISHED' | 'REJECTED';
   lastSaved?: string | null;
   editable: boolean;
@@ -61,6 +62,7 @@ export default function BlogSidebar({
   publishedAt,
   onPublishedAtChange,
   slug,
+  onSlugChange,
   status,
   lastSaved,
   editable,
@@ -181,18 +183,43 @@ export default function BlogSidebar({
           </div>
         </motion.div>
 
-        {/* Slug - Read Only */}
+        {/* Slug - Editable with Generator */}
         <motion.div 
-          className="p-4 rounded-xl bg-primary/10 border border-primary/20 backdrop-blur-md"
+          className="p-4 rounded-xl bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/10 backdrop-blur-md"
           whileHover={{ scale: 1.01 }}
           transition={{ duration: 0.2 }}
         >
-          <div className="flex items-center gap-2 mb-2">
-            <Tag size={14} className="text-primary" />
-            <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">URL Slug</label>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Tag size={14} className="text-primary" />
+              <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">URL Slug</label>
+            </div>
+            <button 
+              onClick={() => {
+                const generated = title
+                  .toLowerCase()
+                  .trim()
+                  .replace(/[^\w\s-]/g, '')
+                  .replace(/[\s_-]+/g, '-')
+                  .replace(/^-+|-+$/g, '');
+                onSlugChange(generated);
+              }}
+              disabled={!editable || !title}
+              className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline disabled:opacity-50"
+            >
+              Generate
+            </button>
           </div>
-          <div className="px-3 py-2 rounded-lg bg-white/50 dark:bg-black/30 text-(--color-text-primary) text-sm font-mono">
-            /blogs/{slug || '...'}
+          <div className="relative group">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary text-sm font-mono select-none">/</span>
+            <input 
+              type="text"
+              value={slug}
+              onChange={(e) => onSlugChange(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
+              disabled={!editable}
+              placeholder="url-friendly-slug"
+              className="w-full pl-6 pr-3 py-2 rounded-lg bg-white/50 dark:bg-black/30 border border-white/20 dark:border-white/10 text-(--color-text-primary) text-sm font-mono focus:ring-2 focus:ring-primary outline-none disabled:opacity-50"
+            />
           </div>
         </motion.div>
 
