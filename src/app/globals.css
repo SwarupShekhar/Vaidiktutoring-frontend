@@ -38,6 +38,8 @@
   /* Keep light-ish for text visibility */
   --color-sapphire: #5C9DFF;
   /* Brighter sapphire for dark mode */
+  --color-deep-navy: #E8EEF4;
+  /* Light navy for dark mode visibility */
 
   --background: var(--color-background);
   --foreground: var(--color-text-primary);
