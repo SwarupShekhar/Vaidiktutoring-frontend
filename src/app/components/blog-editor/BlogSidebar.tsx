@@ -70,6 +70,15 @@ export default function BlogSidebar({
 }: BlogSidebarProps) {
   const [showSeoPreview, setShowSeoPreview] = useState(false);
 
+  // Helper to format Date to local YYYY-MM-DDTHH:mm
+  const formatForInput = (dateStr: string) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '';
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -152,8 +161,16 @@ export default function BlogSidebar({
             </div>
             <input
               type="datetime-local"
-              value={publishedAt ? new Date(publishedAt).toISOString().slice(0, 16) : ''}
-              onChange={(e) => onPublishedAtChange(e.target.value)}
+              value={formatForInput(publishedAt)}
+              onChange={(e) => {
+                const localValue = e.target.value;
+                if (!localValue) {
+                  onPublishedAtChange('');
+                  return;
+                }
+                // Convert chosen local time to UTC ISO string for storage
+                onPublishedAtChange(new Date(localValue).toISOString());
+              }}
               disabled={!editable}
               className="w-full px-2 py-2 rounded-lg bg-white/50 dark:bg-black/30 border border-white/20 dark:border-white/10 text-(--color-text-primary) text-xs focus:ring-2 focus:ring-primary outline-none disabled:opacity-50"
             />
