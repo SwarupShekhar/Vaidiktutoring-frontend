@@ -161,12 +161,14 @@ export default function BlogEditor({
         },
       }),
       Markdown.configure({
-        html: false, // Force pure markdown without HTML tags
+        html: false,
         tightLists: true,
         tightListClass: 'tight-list',
         bulletListMarker: '-',
-        linkify: false, // Avoid conflicting with Link extension
-        breaks: false, // Use standard markdown breaks
+        linkify: false,
+        breaks: false,
+        transformPastedText: true,  // KEY: Parse pasted markdown into proper TipTap nodes
+        transformCopiedText: true,  // Copy content as markdown format
       }),
       Placeholder.configure({
         placeholder: 'Start writing your amazing blog post...',
