@@ -17,6 +17,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
+import { useRef } from 'react';
 
 interface BlogEditorProps {
   content: string;
@@ -51,10 +52,12 @@ export default function BlogEditor({
   authorName = 'Vaidik Author'
 }: BlogEditorProps) {
   const [mode, setMode] = useState<'edit' | 'preview'>('edit');
+  const [isRawMode, setIsRawMode] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [inlineImageUrl, setInlineImageUrl] = useState('');
   const [showImageInput, setShowImageInput] = useState(false);
+  const isInternalChange = useRef(false);
 
   const editor = useEditor({
     extensions: [
@@ -89,21 +92,28 @@ export default function BlogEditor({
     content: content || '',
     editable,
     onUpdate: ({ editor }) => {
-      // Send markdown to the parent instead of HTML
-      onChange((editor.storage as any).markdown.getMarkdown());
+      // Mark this change as internal so we don't trigger the sync useEffect
+      isInternalChange.current = true;
+      const markdown = (editor.storage as any).markdown.getMarkdown();
+      onChange(markdown);
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-4',
+        class: 'prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-6',
       },
     },
   });
 
   useEffect(() => {
-    // Sync with external content if it changes (and is different from current editor markdown)
-    if (editor && content !== (editor.storage as any).markdown.getMarkdown()) {
-      editor.commands.setContent(content || '');
+    // Only update the editor if the content prop changes from an EXTERNAL source
+    // (e.g., initial load, restore version, or external edit)
+    if (editor && !isInternalChange.current) {
+      const currentMarkdown = (editor.storage as any).markdown.getMarkdown();
+      if (content !== currentMarkdown) {
+        editor.commands.setContent(content || '');
+      }
     }
+    isInternalChange.current = false;
   }, [content, editor]);
 
   const setLink = () => {
@@ -207,14 +217,31 @@ export default function BlogEditor({
           <div className="flex bg-white/10 dark:bg-white/5 rounded-lg p-1 border border-white/20 dark:border-white/10">
             <button
               type="button"
-              onClick={() => setMode('edit')}
+              onClick={() => {
+                setMode('edit');
+                setIsRawMode(false);
+              }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
-                mode === 'edit' 
+                mode === 'edit' && !isRawMode
                   ? 'bg-primary text-white shadow' 
                   : 'text-text-secondary hover:text-(--color-text-primary)'
               }`}
             >
-              <Edit3 size={14} /> Edit
+              <Edit3 size={14} /> Visual
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode('edit');
+                setIsRawMode(true);
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+                mode === 'edit' && isRawMode
+                  ? 'bg-indigo-600 text-white shadow' 
+                  : 'text-text-secondary hover:text-(--color-text-primary)'
+              }`}
+            >
+              <span className="text-[10px]">#</span> Markdown
             </button>
             <button
               type="button"
@@ -408,10 +435,21 @@ export default function BlogEditor({
                   <Eye size={12} /> Read-Only
                 </div>
               )}
-              <EditorContent 
-                editor={editor} 
-                className={`min-h-[500px] ${!editable ? 'pointer-events-none opacity-70' : ''}`}
-              />
+              {isRawMode ? (
+                <textarea
+                  value={content}
+                  onChange={(e) => {
+                    onChange(e.target.value);
+                  }}
+                  className="w-full min-h-[500px] p-8 bg-transparent text-text-primary font-mono text-sm focus:outline-none resize-none"
+                  placeholder="Paste your raw markdown here..."
+                />
+              ) : (
+                <EditorContent 
+                  editor={editor} 
+                  className={`min-h-[500px] ${!editable ? 'pointer-events-none opacity-70' : ''}`}
+                />
+              )}
             </>
           ) : (
             <div className="bg-[#FDFDFC] dark:bg-black/20 min-h-[800px] overflow-hidden">
