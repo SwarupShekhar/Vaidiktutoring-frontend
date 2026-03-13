@@ -78,6 +78,9 @@ export default function BlogSEOToolkit({
 
     // Link Analysis
     const links = doc.querySelectorAll('a');
+    const totalImages = doc.querySelectorAll('img').length;
+    const imagesWithoutAlt = Array.from(doc.querySelectorAll('img')).filter(img => !img.alt || img.alt.trim().length < 5).length;
+    
     const externalLinks = Array.from(links).filter(a => a.href.startsWith('http') && !a.href.includes(window.location.hostname)).length;
     const internalLinks = links.length - externalLinks;
 
@@ -140,13 +143,20 @@ export default function BlogSEOToolkit({
       checks.push({ label: 'Main Heading', status: 'good', tip: 'Single H1 found.' });
     }
 
-    // Accessibility Check
-    const altStatus = imageAlt && imageAlt.length > 10 ? 'good' : 'warning';
-    if (altStatus === 'good') score += 10;
+    // Accessibility Check (Header + Content Images)
+    const headerAltStatus = imageAlt && imageAlt.length > 10 ? 'good' : 'warning';
+    const contentAltStatus = totalImages > 0 && imagesWithoutAlt > 0 ? 'error' : 'good';
+    
+    if (headerAltStatus === 'good') score += 5;
+    if (totalImages > 0 && contentAltStatus === 'good') score += 5;
+    else if (totalImages === 0) score += 5; // No images is neutral
+
     checks.push({
       label: 'Image Accessibility',
-      status: altStatus,
-      tip: altStatus === 'good' ? 'Great alt text!' : 'Provide a descriptive alt text (at least 10 chars).'
+      status: headerAltStatus === 'good' && contentAltStatus === 'good' ? 'good' : 'warning',
+      tip: contentAltStatus === 'error' 
+        ? `${imagesWithoutAlt} inline images missing alt text.` 
+        : (headerAltStatus === 'warning' ? 'Header image needs better alt text.' : 'All images have alt text!')
     });
 
     return { 
@@ -157,6 +167,7 @@ export default function BlogSEOToolkit({
       keywordDensity, 
       h1s, 
       subheadingsCount,
+      totalImages,
       internalLinks, 
       externalLinks 
     };
@@ -245,6 +256,7 @@ export default function BlogSEOToolkit({
               <MetricBox label="Word Count" value={analysis.wordCount} icon={<FileText size={12}/>} />
               <MetricBox label="Readability" value={Math.round(analysis.readingEase)} icon={<BookOpen size={12}/>} />
               <MetricBox label="H1 Count" value={analysis.h1s} icon={<span className="font-black text-[10px]">H1</span>} />
+              <MetricBox label="Images" value={analysis.totalImages} icon={<ImageIcon size={12}/>} />
               <MetricBox label="Subheadings" value={analysis.subheadingsCount} icon={<span className="font-black text-[10px]">H2-H6</span>} />
               <MetricBox label="Internal Links" value={analysis.internalLinks} icon={<LinkIcon size={12}/>} />
               <MetricBox label="External Links" value={analysis.externalLinks} icon={<LinkIcon size={12}/>} />
@@ -278,6 +290,25 @@ function MetricBox({ label, value, icon }: { label: string; value: string | numb
       <div className="text-lg font-black text-white">{value}</div>
       <div className="text-[9px] font-black text-text-secondary uppercase tracking-tight">{label}</div>
     </div>
+  );
+}
+
+function ImageIcon({ size }: { size: number }) {
+  return (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+      <circle cx="9" cy="9" r="2" />
+      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+    </svg>
   );
 }
 

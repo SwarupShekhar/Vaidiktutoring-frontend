@@ -3,12 +3,13 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
+import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Bold, Italic, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, List, Link as LinkIcon,
-  Eye, Edit3, CheckCircle, XCircle
+  Image as ImageIcon, Eye, Edit3, CheckCircle, XCircle
 } from 'lucide-react';
 
 interface BlogEditorProps {
@@ -33,12 +34,19 @@ export default function BlogEditor({
   const [mode, setMode] = useState<'edit' | 'preview'>('edit');
   const [linkUrl, setLinkUrl] = useState('');
   const [showLinkInput, setShowLinkInput] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  const [showImageInput, setShowImageInput] = useState(false);
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
         heading: {
           levels: [1, 2, 3, 4, 5, 6],
+        },
+      }),
+      Image.configure({
+        HTMLAttributes: {
+          class: 'rounded-xl border border-white/10 shadow-lg mx-auto block max-w-full my-8',
         },
       }),
       Link.configure({
@@ -79,6 +87,14 @@ export default function BlogEditor({
     editor?.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run();
     setShowLinkInput(false);
     setLinkUrl('');
+  };
+
+  const addImage = () => {
+    if (imageUrl) {
+      editor?.chain().focus().setImage({ src: imageUrl }).run();
+    }
+    setShowImageInput(false);
+    setImageUrl('');
   };
 
   const toggleBold = () => editor?.chain().focus().toggleBold().run();
@@ -266,6 +282,33 @@ export default function BlogEditor({
                 title="Add Link"
               >
                 <LinkIcon size={16} />
+              </button>
+            )}
+
+            <div className="w-px h-5 bg-white/30 mx-1" />
+            
+            {showImageInput ? (
+              <div className="flex items-center gap-1 ml-1">
+                <input
+                  type="url"
+                  placeholder="Image URL..."
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && addImage()}
+                  className="w-36 px-2 py-1 text-sm bg-white/10 border border-white/20 rounded text-white placeholder:text-white/50 outline-none"
+                  autoFocus
+                />
+                <button onClick={addImage} className="p-1.5 text-white/80 hover:text-white">
+                  <CheckCircle size={16} />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowImageInput(true)}
+                className={`p-2 rounded-lg transition-colors text-white/80 hover:text-white hover:bg-white/20`}
+                title="Add Image"
+              >
+                <ImageIcon size={16} />
               </button>
             )}
           </motion.div>
