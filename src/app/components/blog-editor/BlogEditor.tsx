@@ -9,9 +9,13 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Bold, Italic, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, List, Link as LinkIcon,
-  Image as ImageIcon, Eye, Edit3, CheckCircle, XCircle
+  Image as ImageIcon, Eye, Edit3, CheckCircle, XCircle, Trash2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Markdown } from 'tiptap-markdown';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 
 interface BlogEditorProps {
   content: string;
@@ -56,6 +60,14 @@ export default function BlogEditor({
           class: 'text-primary underline',
         },
       }),
+      Markdown.configure({
+        html: true,
+        tightLists: true,
+        tightListClass: 'tight-list',
+        bulletListMarker: '-',
+        linkify: true,
+        breaks: true,
+      }),
       Placeholder.configure({
         placeholder: 'Start writing your amazing blog post...',
       }),
@@ -63,7 +75,8 @@ export default function BlogEditor({
     content: content || '',
     editable,
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      // Send markdown to the parent instead of HTML
+      onChange((editor.storage as any).markdown.getMarkdown());
     },
     editorProps: {
       attributes: {
@@ -73,7 +86,8 @@ export default function BlogEditor({
   });
 
   useEffect(() => {
-    if (editor && content !== editor.getHTML()) {
+    // Sync with external content if it changes (and is different from current editor markdown)
+    if (editor && content !== (editor.storage as any).markdown.getMarkdown()) {
       editor.commands.setContent(content || '');
     }
   }, [content, editor]);
@@ -386,10 +400,29 @@ export default function BlogEditor({
               />
             </>
           ) : (
-            <div 
-              className="prose prose-lg dark:prose-invert max-w-none p-6 min-h-[500px]"
-              dangerouslySetInnerHTML={{ __html: content || '<p class="text-text-secondary italic">Nothing to preview yet...</p>' }}
-            />
+            <div className="prose prose-lg dark:prose-invert max-w-none p-8 min-h-[500px]">
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm, remarkBreaks]}
+                components={{
+                  h1: (props) => <h1 className="text-3xl font-black mb-6 text-(--color-text-primary)" {...props} />,
+                  h2: (props) => <h2 className="text-2xl font-bold mt-8 mb-4 text-(--color-text-primary)" {...props} />,
+                  h3: (props) => <h3 className="text-xl font-bold mt-6 mb-3 text-(--color-text-primary)" {...props} />,
+                  p: (props) => <p className="mb-4 text-text-secondary leading-relaxed" {...props} />,
+                  ul: (props) => <ul className="list-disc ml-6 mb-4 space-y-2 text-text-secondary" {...props} />,
+                  ol: (props) => <ol className="list-decimal ml-6 mb-4 space-y-2 text-text-secondary" {...props} />,
+                  li: (props) => <li className="pl-1" {...props} />,
+                  img: (props) => (
+                    <span className="block my-8 text-center">
+                      <img className="rounded-xl border border-white/10 shadow-lg mx-auto max-w-full h-auto" {...props} alt={props.alt || 'Blog image'} />
+                    </span>
+                  ),
+                  blockquote: (props) => <blockquote className="border-l-4 border-primary pl-4 py-2 italic my-6 bg-primary/5 text-text-secondary" {...props} />,
+                  a: (props) => <a className="text-primary hover:underline font-medium" {...props} />,
+                }}
+              >
+                {content || '*Nothing to preview yet...*'}
+              </ReactMarkdown>
+            </div>
           )}
         </div>
       </motion.div>
