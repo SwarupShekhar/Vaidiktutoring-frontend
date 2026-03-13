@@ -36,6 +36,55 @@ interface BlogEditorProps {
   authorName?: string;
 }
 
+// ===== CORE: Sanitize markdown output from TipTap =====
+// TipTap's getMarkdown() produces corrupted output where the Link extension
+// wraps URLs with <a> tags inside markdown image/link syntax.
+// e.g. ![alt](<a href="url">url</a>) instead of ![alt](url)
+// This function cleans ALL such corruption.
+function sanitizeMarkdown(raw: string): string {
+  if (!raw) return '';
+  let cleaned = raw
+    // Fix corrupted image tags: ![alt](<a ...>url</a>) → ![alt](url)
+    .replace(/!\[([^\]]*)\]\(\s*<a[^>]*href=["']([^"']+)["'][^>]*>[^<]*<\/a>\s*\)/gi, '![$1]($2)')
+    // Fix corrupted links: [text](<a ...>url</a>) → [text](url)
+    .replace(/\[([^\]]*)\]\(\s*<a[^>]*href=["']([^"']+)["'][^>]*>[^<]*<\/a>\s*\)/gi, '[$1]($2)')
+    // Fix backslash-escaped brackets that TipTap sometimes adds
+    .replace(/\\\[/g, '[')
+    .replace(/\\\]/g, ']')
+    // Strip any remaining inline <a> tags (convert to markdown links)
+    .replace(/<a[^>]*href=["']([^"']+)["'][^>]*>([^<]*)<\/a>/gi, '[$2]($1)')
+    // Strip remaining HTML tags like <strong>, <em>, <br>, <p>
+    .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
+    .replace(/<em>(.*?)<\/em>/gi, '*$1*')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<p>(.*?)<\/p>/gi, '$1\n\n')
+    .replace(/<hr\s*\/?>/gi, '---\n\n')
+    // Convert heading HTML to markdown (for legacy content)
+    .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
+    .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n')
+    .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n\n')
+    .replace(/<h4[^>]*>(.*?)<\/h4>/gi, '#### $1\n\n')
+    .replace(/<h5[^>]*>(.*?)<\/h5>/gi, '##### $1\n\n')
+    .replace(/<h6[^>]*>(.*?)<\/h6>/gi, '###### $1\n\n')
+    // Convert img HTML to markdown (for legacy content)
+    .replace(/<img[^>]*src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*\/?>/gi, '![$2]($1)\n\n')
+    .replace(/<img[^>]*alt=["']([^"']*)["'][^>]*src=["']([^"']+)["'][^>]*\/?>/gi, '![$1]($2)\n\n')
+    .replace(/<img[^>]*src=["']([^"']+)["'][^>]*\/?>/gi, '![]($1)\n\n')
+    // Convert list items
+    .replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n')
+    // Convert blockquotes
+    .replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gi, '> $1\n\n')
+    // Strip any remaining HTML tags
+    .replace(/<\/?(?:ul|ol|div|span|section|article|figure|figcaption)[^>]*>/gi, '')
+    // Clean up excessive newlines
+    .replace(/\n{3,}/g, '\n\n')
+    // Remove trailing backslashes on heading lines (TipTap artifact)
+    .replace(/^(#{1,6}\s.*)\\$/gm, '$1')
+    .trim();
+
+  return cleaned;
+}
+
 export default function BlogEditor({
   content,
   onChange,
@@ -95,8 +144,9 @@ export default function BlogEditor({
     onUpdate: ({ editor }) => {
       // Mark this change as internal so we don't trigger the sync useEffect
       isInternalChange.current = true;
-      const markdown = (editor.storage as any).markdown.getMarkdown();
-      onChange(markdown);
+      const rawMarkdown = (editor.storage as any).markdown.getMarkdown();
+      // Clean the markdown output before sending to parent
+      onChange(sanitizeMarkdown(rawMarkdown));
     },
     editorProps: {
       attributes: {
@@ -181,51 +231,6 @@ export default function BlogEditor({
   const toggleH5 = () => editor?.chain().focus().toggleHeading({ level: 5 }).run();
   const toggleH6 = () => editor?.chain().focus().toggleHeading({ level: 6 }).run();
   const toggleBulletList = () => editor?.chain().focus().toggleBulletList().run();
-
-  // Helper: clean content for preview
-  // Blog content may be stored as HTML (legacy) or Markdown (new).
-  // ReactMarkdown needs pure markdown, so we strip HTML if detected.
-  const cleanContentForPreview = (raw: string): string => {
-    if (!raw) return '';
-    // Detect if content is primarily HTML (contains common HTML tags)
-    const isHtml = /<(h[1-6]|p|br|strong|em|a |img |ul|ol|li|div|span|blockquote)[\s>]/i.test(raw);
-    if (!isHtml) return raw; // Already markdown, return as-is
-
-    // Convert HTML to readable text/markdown
-    let cleaned = raw
-      // Convert heading tags to markdown
-      .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
-      .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n')
-      .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n\n')
-      .replace(/<h4[^>]*>(.*?)<\/h4>/gi, '#### $1\n\n')
-      .replace(/<h5[^>]*>(.*?)<\/h5>/gi, '##### $1\n\n')
-      .replace(/<h6[^>]*>(.*?)<\/h6>/gi, '###### $1\n\n')
-      // Convert image tags to markdown
-      .replace(/<img[^>]*src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*\/?>/gi, '![$2]($1)\n\n')
-      .replace(/<img[^>]*alt=["']([^"']*)["'][^>]*src=["']([^"']+)["'][^>]*\/?>/gi, '![$1]($2)\n\n')
-      .replace(/<img[^>]*src=["']([^"']+)["'][^>]*\/?>/gi, '![]($1)\n\n')
-      // Convert links to markdown
-      .replace(/<a[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/gi, '[$2]($1)')
-      // Convert bold/italic
-      .replace(/<strong[^>]*>(.*?)<\/strong>/gi, '**$1**')
-      .replace(/<em[^>]*>(.*?)<\/em>/gi, '*$1*')
-      // Convert list items
-      .replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n')
-      // Convert blockquotes
-      .replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gi, '> $1\n\n')
-      // Convert paragraphs and breaks
-      .replace(/<p[^>]*>(.*?)<\/p>/gi, '$1\n\n')
-      .replace(/<br\s*\/?>/gi, '\n')
-      // Convert horizontal rules
-      .replace(/<hr[^>]*\/?>/gi, '---\n\n')
-      // Strip all remaining tags
-      .replace(/<\/?[^>]+(>|$)/g, '')
-      // Clean up excessive whitespace
-      .replace(/\n{3,}/g, '\n\n')
-      .trim();
-
-    return cleaned;
-  };
 
   if (!editor) return null;
 
@@ -636,7 +641,7 @@ export default function BlogEditor({
                       blockquote: (props) => <blockquote className="border-l-4 border-primary bg-primary/5 px-6 py-4 italic rounded-r-xl my-10" {...props} />,
                     }}
                   >
-                    {cleanContentForPreview(content) || '*Start writing to see the preview...*'}
+                    {sanitizeMarkdown(content) || '*Start writing to see the preview...*'}
                   </ReactMarkdown>
                 </div>
               </div>
