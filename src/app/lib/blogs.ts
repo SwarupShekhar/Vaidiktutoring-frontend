@@ -161,5 +161,11 @@ export const blogsApi = {
     restoreVersion: async (blogId: string, versionId: string): Promise<BlogPost> => {
         const res = await api.post(`/admin/blogs/${blogId}/versions/${versionId}/restore`);
         return normalizeBlog(res.data);
+    },
+
+    // Delete a blog (Protected: Admin Only)
+    delete: async (id: string) => {
+        const res = await api.delete(`/admin/blogs/${id}`);
+        return res.data;
     }
 };

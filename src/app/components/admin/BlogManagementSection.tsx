@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { blogsApi, BlogPost } from '@/app/lib/blogs';
 import { format } from 'date-fns';
 import Link from 'next/link';
-import { RefreshCw, PenTool, CheckCircle, XCircle, Eye, Plus, Edit, User } from 'lucide-react';
+import { RefreshCw, PenTool, CheckCircle, XCircle, Eye, Plus, Edit, User, Trash2 } from 'lucide-react';
 import { useAuthContext } from '@/app/context/AuthContext';
 
 interface BlogManagementSectionProps {
@@ -70,6 +70,23 @@ export default function BlogManagementSection({ filterOnlyMyBlogs = false }: Blo
         } catch (error) {
             console.error('Failed to update status', error);
             alert('Failed to update status');
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!isAdmin) return;
+        if (!confirm('Are you sure you want to permanently delete this blog post? This will remove all history and images. This action is irreversible.')) return;
+
+        try {
+            setProcessingId(id);
+            await blogsApi.delete(id);
+            setBlogs(prev => prev.filter(b => b.id !== id));
+            alert('Blog deleted successfully!');
+        } catch (error) {
+            console.error('Failed to delete blog', error);
+            alert('Failed to delete blog');
         } finally {
             setProcessingId(null);
         }
@@ -192,7 +209,7 @@ export default function BlogManagementSection({ filterOnlyMyBlogs = false }: Blo
                                                     </button>
                                                 </div>
                                             )}
-                                            {isAdmin && blog.status === 'PUBLISHED' && (
+                                             {isAdmin && blog.status === 'PUBLISHED' && (
                                                 <button
                                                     onClick={() => handleStatusUpdate(blog.id, 'REJECTED')}
                                                     disabled={!!processingId}
@@ -200,7 +217,18 @@ export default function BlogManagementSection({ filterOnlyMyBlogs = false }: Blo
                                                 >
                                                     Unpublish
                                                 </button>
-                                            )}
+                                             )}
+
+                                             {isAdmin && (
+                                                <button
+                                                    onClick={() => handleDelete(blog.id)}
+                                                    disabled={!!processingId}
+                                                    className="text-rose-500 hover:bg-rose-500/10 p-1 rounded-lg transition-colors"
+                                                    title="Delete Permanently"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                             )}
                                         </div>
                                     </td>
                                 </tr>

@@ -7,7 +7,7 @@ import ProtectedClient from '@/app/components/ProtectedClient';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { blogsApi, BlogPost } from '@/app/lib/blogs';
 import { BlogEditor, BlogSidebar, BlogVersionHistory } from '@/app/components/blog-editor';
-import { History, ChevronLeft, Save } from 'lucide-react';
+import { History, ChevronLeft, Save, Trash2 } from 'lucide-react';
 
 export default function EditBlogPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter();
@@ -152,6 +152,27 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
         }
     };
 
+    const handleDelete = async () => {
+        const isAdmin = user?.role?.toLowerCase() === 'admin';
+        if (!isAdmin) return;
+
+        if (!confirm('Are you sure you want to permanently delete this blog post? This action cannot be undone and will remove all version history and the featured image.')) {
+            return;
+        }
+
+        try {
+            setSaving(true);
+            await blogsApi.delete(id);
+            alert('Blog post deleted successfully');
+            router.push('/admin/dashboard');
+        } catch (error) {
+            console.error('Failed to delete blog:', error);
+            alert('Failed to delete blog post. Please try again.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-background">
@@ -209,6 +230,18 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                                 <History size={16} />
                                 History
                             </button>
+                            
+                            {user?.role?.toLowerCase() === 'admin' && (
+                                <button
+                                    onClick={handleDelete}
+                                    type="button"
+                                    disabled={saving}
+                                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-sm font-bold text-rose-500 hover:bg-rose-500 hover:text-white transition-all disabled:opacity-50"
+                                >
+                                    <Trash2 size={16} />
+                                    Delete Post
+                                </button>
+                            )}
                             <button
                                 onClick={() => router.back()}
                                 className="px-4 py-2 text-sm font-bold text-text-secondary hover:text-primary transition-colors flex items-center gap-1"
