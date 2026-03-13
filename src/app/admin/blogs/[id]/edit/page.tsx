@@ -233,6 +233,12 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                                     status={form.status}
                                     onPublishToggle={handlePublishToggle}
                                     lastSaved={lastSaved}
+                                    title={form.title}
+                                    category={form.category}
+                                    imageUrl={form.imageUrl}
+                                    imageAlt={form.imageAlt}
+                                    excerpt={form.excerpt}
+                                    authorName={user?.first_name ? `${user.first_name} ${user.last_name || ''}` : undefined}
                                 />
 
                                 {/* Save Button Area */}

@@ -19,12 +19,19 @@ import remarkBreaks from 'remark-breaks';
 
 interface BlogEditorProps {
   content: string;
-  onChange: (html: string) => void;
+  onChange: (markdown: string) => void;
   editable: boolean;
   canPublish: boolean;
   status: 'PENDING' | 'PUBLISHED' | 'REJECTED';
   onPublishToggle: (status: 'PUBLISHED' | 'PENDING') => void;
   lastSaved?: string | null;
+  // Metadata for Full Preview
+  title?: string;
+  category?: string;
+  imageUrl?: string;
+  imageAlt?: string;
+  excerpt?: string;
+  authorName?: string;
 }
 
 export default function BlogEditor({
@@ -34,12 +41,18 @@ export default function BlogEditor({
   canPublish,
   status,
   onPublishToggle,
-  lastSaved
+  lastSaved,
+  title,
+  category,
+  imageUrl,
+  imageAlt,
+  excerpt,
+  authorName = 'Vaidik Author'
 }: BlogEditorProps) {
   const [mode, setMode] = useState<'edit' | 'preview'>('edit');
   const [linkUrl, setLinkUrl] = useState('');
   const [showLinkInput, setShowLinkInput] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
+  const [inlineImageUrl, setInlineImageUrl] = useState('');
   const [showImageInput, setShowImageInput] = useState(false);
 
   const editor = useEditor({
@@ -105,11 +118,11 @@ export default function BlogEditor({
   };
 
   const addImage = () => {
-    if (imageUrl) {
-      editor?.chain().focus().setImage({ src: imageUrl }).run();
+    if (inlineImageUrl) {
+      editor?.chain().focus().setImage({ src: inlineImageUrl }).run();
     }
     setShowImageInput(false);
-    setImageUrl('');
+    setInlineImageUrl('');
   };
 
   const toggleBold = () => editor?.chain().focus().toggleBold().run();
@@ -345,8 +358,8 @@ export default function BlogEditor({
                 <input
                   type="url"
                   placeholder="Image URL..."
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
+                  value={inlineImageUrl}
+                  onChange={(e) => setInlineImageUrl(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && addImage()}
                   className="w-36 px-2 py-1 text-sm bg-white/10 border border-white/20 rounded text-white placeholder:text-white/50 outline-none"
                   autoFocus
@@ -400,28 +413,89 @@ export default function BlogEditor({
               />
             </>
           ) : (
-            <div className="prose prose-lg dark:prose-invert max-w-none p-8 min-h-[500px]">
-              <ReactMarkdown 
-                remarkPlugins={[remarkGfm, remarkBreaks]}
-                components={{
-                  h1: (props) => <h1 className="text-3xl font-black mb-6 text-(--color-text-primary)" {...props} />,
-                  h2: (props) => <h2 className="text-2xl font-bold mt-8 mb-4 text-(--color-text-primary)" {...props} />,
-                  h3: (props) => <h3 className="text-xl font-bold mt-6 mb-3 text-(--color-text-primary)" {...props} />,
-                  p: (props) => <p className="mb-4 text-text-secondary leading-relaxed" {...props} />,
-                  ul: (props) => <ul className="list-disc ml-6 mb-4 space-y-2 text-text-secondary" {...props} />,
-                  ol: (props) => <ol className="list-decimal ml-6 mb-4 space-y-2 text-text-secondary" {...props} />,
-                  li: (props) => <li className="pl-1" {...props} />,
-                  img: (props) => (
-                    <span className="block my-8 text-center">
-                      <img className="rounded-xl border border-white/10 shadow-lg mx-auto max-w-full h-auto" {...props} alt={props.alt || 'Blog image'} />
-                    </span>
-                  ),
-                  blockquote: (props) => <blockquote className="border-l-4 border-primary pl-4 py-2 italic my-6 bg-primary/5 text-text-secondary" {...props} />,
-                  a: (props) => <a className="text-primary hover:underline font-medium" {...props} />,
-                }}
-              >
-                {content || '*Nothing to preview yet...*'}
-              </ReactMarkdown>
+            <div className="bg-[#FDFDFC] dark:bg-black/20 min-h-[800px] overflow-hidden">
+              {/* High-Fidelity Preview Header */}
+              <div className="max-w-[1000px] mx-auto px-8 pt-16 pb-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-3">
+                      <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest">
+                        {category || 'Uncategorized'}
+                      </span>
+                      <span className="text-text-secondary text-xs font-bold">Preview Mode</span>
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-black text-(--color-text-primary) leading-[1.1] tracking-tight">
+                      {title || 'Untited Blog Post'}
+                    </h1>
+                    <p className="text-lg text-text-secondary leading-relaxed font-serif italic border-l-2 border-primary/20 pl-4">
+                      {excerpt || 'Add an excerpt to show a subheadline in the preview...'}
+                    </p>
+                    <div className="flex items-center gap-4 pt-6 border-t border-white/10 mt-6">
+                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-sapphire flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                        {authorName.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-bold text-(--color-text-primary) text-sm">{authorName}</p>
+                        <p className="text-xs text-text-secondary">Education Specialist • {new Date().toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="relative aspect-4/3 rounded-2xl overflow-hidden shadow-2xl border border-white/10 group bg-white/5">
+                    {imageUrl ? (
+                      <img src={imageUrl} alt={imageAlt || title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-text-secondary text-xs font-bold uppercase tracking-tighter italic">
+                        No Cover Image Selected
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* High-Fidelity Quote Box */}
+              <div className="max-w-3xl mx-auto px-8 mb-12">
+                <div className="bg-primary/5 border-l-4 border-primary p-6 rounded-r-xl">
+                  <p className="text-base text-primary font-medium italic">
+                    "This is a high-fidelity preview of how your article will look to the world. Ensure your headings and images are perfectly placed."
+                  </p>
+                </div>
+              </div>
+
+              {/* Main Content Area */}
+              <div className="max-w-[750px] mx-auto px-8 pb-24">
+                <div className="prose prose-lg dark:prose-invert max-w-none 
+                  prose-headings:font-black prose-headings:tracking-tight 
+                  prose-p:text-text-secondary prose-p:leading-relaxed
+                  prose-img:rounded-2xl prose-img:shadow-xl prose-img:border prose-img:border-white/10
+                  prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5
+                  first-letter:text-5xl first-letter:font-black first-letter:text-(--color-text-primary) first-letter:float-left first-letter:mr-3 first-letter:mt-1">
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm, remarkBreaks]}
+                    components={{
+                      h1: (props) => <h1 className="text-3xl font-black mt-12 mb-6 text-(--color-text-primary)" {...props} />,
+                      h2: (props) => <h2 className="text-2xl font-bold mt-10 mb-5 text-(--color-text-primary)" {...props} />,
+                      h3: (props) => <h3 className="text-xl font-bold mt-8 mb-4 text-(--color-text-primary)" {...props} />,
+                      p: (props) => <p className="mb-6" {...props} />,
+                      img: (props) => (
+                        <span className="block my-10 group">
+                          <img 
+                            className="rounded-2xl border border-white/10 shadow-2xl mx-auto block max-w-full transition-transform hover:scale-[1.01]" 
+                            {...props} 
+                            alt={props.alt || 'Content image'} 
+                          />
+                          {props.alt && <span className="block text-center text-[10px] text-text-secondary mt-3 uppercase tracking-widest italic">{props.alt}</span>}
+                        </span>
+                      ),
+                      a: (props) => <a className="text-primary hover:underline font-bold transition-all" {...props} />,
+                      ul: (props) => <ul className="list-disc ml-6 space-y-3 mb-8" {...props} />,
+                      ol: (props) => <ol className="list-decimal ml-6 space-y-3 mb-8" {...props} />,
+                      blockquote: (props) => <blockquote className="border-l-4 border-primary bg-primary/5 px-6 py-4 italic rounded-r-xl my-10" {...props} />,
+                    }}
+                  >
+                    {content || '*Start writing to see the preview...*'}
+                  </ReactMarkdown>
+                </div>
+              </div>
             </div>
           )}
         </div>
