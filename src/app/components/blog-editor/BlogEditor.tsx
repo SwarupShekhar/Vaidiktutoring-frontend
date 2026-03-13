@@ -108,6 +108,7 @@ export default function BlogEditor({
   const [showImageInput, setShowImageInput] = useState(false);
   const isInternalChange = useRef(false);
   const hasShownPasteToast = useRef(false);
+  const previewHtml = useRef('');
 
   const editor = useEditor({
     extensions: [
@@ -142,10 +143,10 @@ export default function BlogEditor({
     content: content || '',
     editable,
     onUpdate: ({ editor }) => {
-      // Mark this change as internal so we don't trigger the sync useEffect
       isInternalChange.current = true;
       const rawMarkdown = (editor.storage as any).markdown.getMarkdown();
-      // Clean the markdown output before sending to parent
+      // Store the HTML for preview (TipTap's HTML is always correct)
+      previewHtml.current = editor.getHTML();
       onChange(sanitizeMarkdown(rawMarkdown));
     },
     editorProps: {
@@ -180,12 +181,12 @@ export default function BlogEditor({
   });
 
   useEffect(() => {
-    // Only update the editor if the content prop changes from an EXTERNAL source
-    // (e.g., initial load, restore version, or external edit)
     if (editor && !isInternalChange.current) {
       const currentMarkdown = (editor.storage as any).markdown.getMarkdown();
       if (content !== currentMarkdown) {
         editor.commands.setContent(content || '');
+        // Update preview HTML when content loaded externally
+        previewHtml.current = editor.getHTML();
       }
     }
     isInternalChange.current = false;
@@ -617,32 +618,42 @@ export default function BlogEditor({
                   prose-img:rounded-2xl prose-img:shadow-xl prose-img:border prose-img:border-white/10
                   prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5
                   first-letter:text-5xl first-letter:font-black first-letter:text-(--color-text-primary) first-letter:float-left first-letter:mr-3 first-letter:mt-1">
-                  <ReactMarkdown 
-                    remarkPlugins={[remarkGfm, remarkBreaks]}
-                    rehypePlugins={[rehypeRaw]}
-                    components={{
-                      h1: (props) => <h1 className="text-3xl font-black mt-12 mb-6 text-(--color-text-primary)" {...props} />,
-                      h2: (props) => <h2 className="text-2xl font-bold mt-10 mb-5 text-(--color-text-primary)" {...props} />,
-                      h3: (props) => <h3 className="text-xl font-bold mt-8 mb-4 text-(--color-text-primary)" {...props} />,
-                      p: (props) => <p className="mb-6" {...props} />,
-                      img: (props) => (
-                        <span className="block my-10 group">
-                          <img 
-                            className="rounded-2xl border border-white/10 shadow-2xl mx-auto block max-w-full transition-transform hover:scale-[1.01]" 
-                            {...props} 
-                            alt={props.alt || 'Content image'} 
-                          />
-                          {props.alt && <span className="block text-center text-[10px] text-text-secondary mt-3 uppercase tracking-widest italic">{props.alt}</span>}
-                        </span>
-                      ),
-                      a: (props) => <a className="text-primary hover:underline font-bold transition-all" {...props} />,
-                      ul: (props) => <ul className="list-disc ml-6 space-y-3 mb-8" {...props} />,
-                      ol: (props) => <ol className="list-decimal ml-6 space-y-3 mb-8" {...props} />,
-                      blockquote: (props) => <blockquote className="border-l-4 border-primary bg-primary/5 px-6 py-4 italic rounded-r-xl my-10" {...props} />,
-                    }}
-                  >
-                    {sanitizeMarkdown(content) || '*Start writing to see the preview...*'}
-                  </ReactMarkdown>
+                  {isRawMode ? (
+                    /* Raw Markdown mode: render markdown with ReactMarkdown */
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm, remarkBreaks]}
+                      rehypePlugins={[rehypeRaw]}
+                      components={{
+                        h1: (props) => <h1 className="text-3xl font-black mt-12 mb-6 text-(--color-text-primary)" {...props} />,
+                        h2: (props) => <h2 className="text-2xl font-bold mt-10 mb-5 text-(--color-text-primary)" {...props} />,
+                        h3: (props) => <h3 className="text-xl font-bold mt-8 mb-4 text-(--color-text-primary)" {...props} />,
+                        p: (props) => <p className="mb-6" {...props} />,
+                        img: (props) => (
+                          <span className="block my-10 group">
+                            <img 
+                              className="rounded-2xl border border-white/10 shadow-2xl mx-auto block max-w-full transition-transform hover:scale-[1.01]" 
+                              {...props} 
+                              alt={props.alt || 'Content image'} 
+                            />
+                            {props.alt && <span className="block text-center text-[10px] text-text-secondary mt-3 uppercase tracking-widest italic">{props.alt}</span>}
+                          </span>
+                        ),
+                        a: (props) => <a className="text-primary hover:underline font-bold transition-all" {...props} />,
+                        ul: (props) => <ul className="list-disc ml-6 space-y-3 mb-8" {...props} />,
+                        ol: (props) => <ol className="list-decimal ml-6 space-y-3 mb-8" {...props} />,
+                        blockquote: (props) => <blockquote className="border-l-4 border-primary bg-primary/5 px-6 py-4 italic rounded-r-xl my-10" {...props} />,
+                      }}
+                    >
+                      {content || '*Start writing to see the preview...*'}
+                    </ReactMarkdown>
+                  ) : (
+                    /* Visual mode: use TipTap's own HTML output for guaranteed accuracy */
+                    <div 
+                      dangerouslySetInnerHTML={{ 
+                        __html: previewHtml.current || editor?.getHTML() || '<p style="opacity:0.5;font-style:italic">Start writing to see the preview...</p>' 
+                      }} 
+                    />
+                  )}
                 </div>
               </div>
             </motion.div>
