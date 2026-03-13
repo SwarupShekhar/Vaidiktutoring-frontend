@@ -9,6 +9,7 @@ export interface BlogPost {
     imageUrl: string;
     category: string;
     status: 'PENDING' | 'PUBLISHED' | 'REJECTED';
+    author_id?: string;
     author: {
         first_name: string;
         last_name: string;
@@ -97,7 +98,7 @@ export const blogsApi = {
     },
 
     // Admin: Approve/Reject
-    updateStatus: async (id: string, status: 'PUBLISHED' | 'REJECTED') => {
+    updateStatus: async (id: string, status: 'PUBLISHED' | 'PENDING' | 'REJECTED') => {
         const res = await api.patch(`/admin/blogs/${id}/status`, { status });
         return normalizeBlog(res.data);
     },
