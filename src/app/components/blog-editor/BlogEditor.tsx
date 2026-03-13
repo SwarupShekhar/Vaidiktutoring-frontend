@@ -85,6 +85,38 @@ function sanitizeMarkdown(raw: string): string {
   return cleaned;
 }
 
+// Post-process TipTap HTML for preview rendering
+// When users paste markdown into Visual mode, TipTap wraps markdown syntax
+// in <p> tags: <p># Heading</p> instead of <h1>Heading</h1>
+// This function fixes those patterns in the HTML output.
+function processPreviewHtml(html: string): string {
+  if (!html) return '';
+  let processed = html
+    // Convert <p># text</p> → <h1>text</h1> (handle h1-h6)
+    .replace(/<p>######\s+(.*?)<\/p>/gi, '<h6>$1</h6>')
+    .replace(/<p>#####\s+(.*?)<\/p>/gi, '<h5>$1</h5>')
+    .replace(/<p>####\s+(.*?)<\/p>/gi, '<h4>$1</h4>')
+    .replace(/<p>###\s+(.*?)<\/p>/gi, '<h3>$1</h3>')
+    .replace(/<p>##\s+(.*?)<\/p>/gi, '<h2>$1</h2>')
+    .replace(/<p>#\s+(.*?)<\/p>/gi, '<h1>$1</h1>')
+    // Convert <p>---</p> → <hr>
+    .replace(/<p>---<\/p>/gi, '<hr class="my-10 border-white/10">')
+    // Convert markdown bold in paragraphs: **text** → <strong>text</strong>
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // Convert markdown italic: *text* → <em>text</em> (but not ** which is bold)
+    .replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, '<em>$1</em>')
+    // Convert markdown image syntax that survived: ![alt](url) → <img>
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="rounded-2xl border border-white/10 shadow-2xl mx-auto block max-w-full my-10">')
+    // Style headings
+    .replace(/<h1>/g, '<h1 class="text-3xl font-black mt-12 mb-6">')
+    .replace(/<h2>/g, '<h2 class="text-2xl font-bold mt-10 mb-5">')
+    .replace(/<h3>/g, '<h3 class="text-xl font-bold mt-8 mb-4">')
+    .replace(/<h4>/g, '<h4 class="text-lg font-bold mt-6 mb-3">')
+    .replace(/<h5>/g, '<h5 class="text-base font-bold mt-4 mb-2">')
+    .replace(/<h6>/g, '<h6 class="text-sm font-bold mt-3 mb-2">');
+  return processed;
+}
+
 export default function BlogEditor({
   content,
   onChange,
@@ -647,10 +679,12 @@ export default function BlogEditor({
                       {content || '*Start writing to see the preview...*'}
                     </ReactMarkdown>
                   ) : (
-                    /* Visual mode: use TipTap's own HTML output for guaranteed accuracy */
+                    /* Visual mode: use TipTap's HTML, post-processed for any markdown remnants */
                     <div 
                       dangerouslySetInnerHTML={{ 
-                        __html: previewHtml.current || editor?.getHTML() || '<p style="opacity:0.5;font-style:italic">Start writing to see the preview...</p>' 
+                        __html: processPreviewHtml(
+                          previewHtml.current || editor?.getHTML() || '<p style="opacity:0.5;font-style:italic">Start writing to see the preview...</p>'
+                        )
                       }} 
                     />
                   )}
