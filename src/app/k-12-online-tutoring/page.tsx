@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -20,6 +20,7 @@ import {
   TrendingUp,
   Star,
   Play,
+  ChevronDown,
 } from "lucide-react";
 import { useAuthContext } from "@/app/context/AuthContext";
 import ParentTestimonials from "../components/subjects/ParentTestimonials";
@@ -763,26 +764,65 @@ export default function K12OnlineTutoringPage() {
                 a: "It provides additional support outside of regular school hours. Tutors help students clear doubts and boost results through customized sessions that match their own learning rhythm."
               }
             ].map((faq, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm"
-              >
-                <h3 className="text-lg font-bold text-deep-navy mb-2 flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-sapphire/10 text-sapphire flex items-center justify-center text-sm shrink-0">Q</span>
-                  {faq.q}
-                </h3>
-                <p className="text-text-secondary pl-11">
-                  {faq.a}
-                </p>
-              </motion.div>
+              <FAQItem key={index} faq={faq} index={index} />
             ))}
           </div>
         </div>
       </section>
     </main>
+  );
+}
+
+function FAQItem({ faq, index }: { faq: { q: string; a: string }; index: number }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1 }}
+      className="rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden"
+    >
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full p-6 text-left flex items-start justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group"
+      >
+        <div className="flex items-start gap-4">
+          <span className="w-8 h-8 rounded-full bg-sapphire/10 text-sapphire flex items-center justify-center text-sm font-bold shrink-0 mt-0.5">
+            Q
+          </span>
+          <span className="text-lg font-bold text-deep-navy group-hover:text-sapphire transition-colors pt-1">
+            {faq.q}
+          </span>
+        </div>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="mt-1 text-slate-400 group-hover:text-sapphire"
+        >
+          <ChevronDown size={24} />
+        </motion.div>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="px-6 pb-6 pl-18 pr-12">
+              <div className="w-full h-px bg-slate-100 dark:bg-slate-700 mb-4" />
+              <p className="text-text-secondary leading-relaxed">
+                {faq.a}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
