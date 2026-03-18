@@ -452,61 +452,8 @@ export default function K12OnlineTutoringPage() {
             </motion.div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {[
-              {
-                icon: BookOpen,
-                title: "English / Language Arts",
-                color: "bg-blue-100 text-blue-600",
-              },
-              {
-                icon: Calculator,
-                title: "Math",
-                color: "bg-green-100 text-green-600",
-              },
-              {
-                icon: FlaskConical,
-                title: "Science",
-                color: "bg-purple-100 text-purple-600",
-              },
-              {
-                icon: History,
-                title: "History",
-                color: "bg-amber-100 text-amber-600",
-              },
-              {
-                icon: Globe,
-                title: "World Languages",
-                color: "bg-rose-100 text-rose-600",
-              },
-              {
-                icon: GraduationCap,
-                title: "College Admission Test Prep",
-                color: "bg-indigo-100 text-indigo-600",
-              },
-            ].map((subject, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-2xl bg-white dark:bg-slate-800 shadow-lg border border-slate-100 dark:border-slate-700 text-center hover:shadow-xl transition-shadow cursor-pointer group"
-              >
-                <div
-                  className={`w-14 h-14 rounded-2xl ${subject.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}
-                >
-                  <subject.icon size={28} />
-                </div>
-                <h3 className="text-sm font-bold text-deep-navy">
-                  {subject.title}
-                </h3>
-              </motion.div>
-            ))}
-          </div>
-
           {/* Detailed Subject List */}
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
                 title: "Mathematics",
