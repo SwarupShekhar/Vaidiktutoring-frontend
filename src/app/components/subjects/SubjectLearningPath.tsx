@@ -1,7 +1,6 @@
 import React from 'react';
 import { Layers, ShieldCheck, TrendingUp, Zap } from 'lucide-react';
 
-// Define types locally for now, mirroring the backend entities
 type CurriculumFramework = {
     region: 'US' | 'UK' | 'International';
     frameworks: string[];
@@ -31,6 +30,13 @@ type LearningPathProps = {
 
 const pillarIcons = [Layers, ShieldCheck, Zap, TrendingUp];
 
+const gradients = [
+    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)',
+    'linear-gradient(135deg, #f59e0b 0%, #ec4899 100%)',
+    'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
+];
+
 export default function SubjectLearningPath({ subject, isLoading }: LearningPathProps) {
     if (isLoading) {
         return (
@@ -49,17 +55,16 @@ export default function SubjectLearningPath({ subject, isLoading }: LearningPath
         <div className="space-y-20 mt-12 animate-in fade-in slide-in-from-right-4 duration-500">
             {/* Skill Pillars */}
             <section>
-                {/* No header needed here per user request, just the row of cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {subject.skillPillars.map((pillar, idx) => {
                         const Icon = pillarIcons[idx % pillarIcons.length];
                         return (
-                            <div key={idx} className="p-6 rounded-2xl bg-surface border border-border shadow-sm hover:shadow-md transition-shadow">
-                                <div className="w-10 h-10 mb-4 rounded-full bg-ice-blue flex items-center justify-center text-sapphire">
+                            <GradientCard key={idx} $gradient={gradients[idx]}>
+                                <div className="w-10 h-10 mb-4 rounded-full bg-white/20 flex items-center justify-center text-white">
                                     <Icon size={20} />
                                 </div>
-                                <h3 className="font-bold text-deep-navy text-lg leading-tight">{pillar}</h3>
-                            </div>
+                                <h3 className="font-bold text-white text-lg leading-tight">{pillar}</h3>
+                            </GradientCard>
                         )
                     })}
                 </div>
@@ -76,7 +81,6 @@ export default function SubjectLearningPath({ subject, isLoading }: LearningPath
                     <div className="hidden md:block absolute top-[15%] left-[25%] right-[25%] h-0.5 border-t-2 border-dashed border-border pointer-events-none z-0" />
 
                     {subject.stages.map((stage, idx) => {
-                        // Color coding based on stage
                         const isFoundation = stage.key === 'foundation';
                         const isCore = stage.key === 'core';
                         const isAdvanced = stage.key === 'advanced';
@@ -131,7 +135,6 @@ export default function SubjectLearningPath({ subject, isLoading }: LearningPath
                                                         <span className="text-text-secondary font-medium mr-1 uppercase text-[10px] tracking-wide">
                                                             {cf.region === 'US' ? 'US Core' : cf.region === 'UK' ? 'UK Nat.' : 'Intl.'}
                                                         </span>
-                                                        {/* We can simplify this display as chips are too busy here */}
                                                         <span className="block text-xs text-text-secondary font-normal opacity-85 truncate max-w-[200px]">
                                                             {cf.frameworks.join(', ')}
                                                         </span>
@@ -158,3 +161,39 @@ export default function SubjectLearningPath({ subject, isLoading }: LearningPath
         </div>
     );
 }
+
+import styled from 'styled-components';
+
+const GradientCard = styled.div<{ $gradient: string }>`
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: ${props => props.$gradient};
+  background-size: 400% 400%;
+  background-position: 0% 50%;
+  box-shadow:
+    rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset,
+    rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset,
+    rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset,
+    rgba(0, 0, 0, 0.06) 0px 2px 1px,
+    rgba(0, 0, 0, 0.09) 0px 4px 2px,
+    rgba(0, 0, 0, 0.09) 0px 8px 4px,
+    rgba(0, 0, 0, 0.09) 0px 16px 8px,
+    rgba(0, 0, 0, 0.09) 0px 32px 16px;
+  animation: gradientShift 5s ease infinite;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    background: linear-gradient(135deg, #1e3a8a 0%, #4c1d95 50%, #7c3aed 100%);
+  }
+`;

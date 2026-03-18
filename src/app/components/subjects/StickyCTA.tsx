@@ -32,8 +32,9 @@ export default function StickyCTA() {
                 </div>
 
                 <Link
-                    href={user ? '/students/dashboard' : '/signup'}
+                    href={user ? '/bookings/new' : '/signup?type=assessment'}
                     className="w-full md:w-auto px-8 py-3 bg-primary hover:bg-sapphire text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-blue-500/50 flex items-center justify-center gap-2 whitespace-nowrap"
+                    aria-label={user ? "Book a free assessment" : "Sign up for a free assessment"}
                 >
                     Book a Free Learning Assessment
                     <ArrowRight size={18} />

@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import styled from 'styled-components';
+import { Calculator, FlaskConical, BookOpen } from 'lucide-react';
 
 type SelectorProps = {
     activeSubject: string;
@@ -8,71 +9,93 @@ type SelectorProps = {
 };
 
 const subjects = [
-    { id: 'math', name: 'Math', tagline: 'Logical thinking & problem solving' },
-    { id: 'science', name: 'Science', tagline: 'Concept clarity & scientific reasoning' },
-    { id: 'english', name: 'English', tagline: 'Fluency & confidence' },
+    { id: 'math', name: 'Math', tagline: 'Logical thinking & problem solving', Icon: Calculator, color: '#2563eb' },
+    { id: 'science', name: 'Science', tagline: 'Concept clarity & scientific reasoning', Icon: FlaskConical, color: '#059669' },
+    { id: 'english', name: 'English', tagline: 'Fluency & confidence', Icon: BookOpen, color: '#dc2626' },
 ];
 
 export default function SubjectSelector({ activeSubject, onSelect }: SelectorProps) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {subjects.map((subject) => (
-                <button
-                    key={subject.id}
-                    onClick={() => onSelect(subject.id)}
-                    className="relative group focus:outline-none"
-                >
-                    <motion.div
-                        initial={false}
-                        animate={{
-                            scale: activeSubject === subject.id ? 1.05 : 1,
-                            backgroundColor: activeSubject === subject.id
-                                ? 'var(--color-surface)'
-                                : 'var(--color-surface)',
-                            borderColor: activeSubject === subject.id
-                                ? 'var(--color-sapphire)'
-                                : 'var(--color-border)',
-                            boxShadow: activeSubject === subject.id
-                                ? '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)'
-                                : '0 1px 2px 0 rgb(0 0 0 / 0.05)'
-                        }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                        className={`p-6 rounded-2xl border-2 text-left h-full transition-colors duration-300 relative overflow-hidden`}
-                    >
-                        {/* Active Accent Bar */}
-                        <AnimatePresence>
-                            {activeSubject === subject.id && (
-                                <motion.div
-                                    layoutId="active-subject-bar"
-                                    className="absolute bottom-0 left-0 right-0 h-1.5 bg-sapphire"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                />
-                            )}
-                        </AnimatePresence>
-
-                        <div className="flex items-center justify-between mb-2">
-                            <h3 className={`text-xl font-bold transition-colors duration-300 ${activeSubject === subject.id ? 'text-sapphire' : 'text-(--color-text-primary)'
-                                }`}>
-                                {subject.name}
-                            </h3>
-                            {activeSubject === subject.id && (
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    className="w-2.5 h-2.5 rounded-full bg-sapphire"
-                                />
-                            )}
-                        </div>
-                        <p className={`text-sm transition-colors duration-300 ${activeSubject === subject.id ? 'text-(--color-text-primary)' : 'text-text-secondary'
-                            }`}>
-                            {subject.tagline}
-                        </p>
-                    </motion.div>
-                </button>
-            ))}
-        </div>
+        <StyledWrapper>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                {subjects.map((subject) => {
+                    const Icon = subject.Icon;
+                    const isActive = activeSubject === subject.id;
+                    return (
+                        <button
+                            key={subject.id}
+                            onClick={() => onSelect(subject.id)}
+                            className="relative group focus:outline-none"
+                        >
+                            <Card $isActive={isActive} $color={subject.color}>
+                                <div className="icon-wrapper" style={{ backgroundColor: `${subject.color}15`, color: subject.color }}>
+                                    <Icon size={24} />
+                                </div>
+                                <h3 className="heading">{subject.name}</h3>
+                                <p className="tagline">{subject.tagline}</p>
+                            </Card>
+                        </button>
+                    );
+                })}
+            </div>
+        </StyledWrapper>
     );
 }
 
+const StyledWrapper = styled.div`
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+`;
+
+const Card = styled.div<{ $isActive: boolean; $color: string }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  padding: 32px 24px;
+  background: var(--color-surface);
+  border-radius: 16px;
+  border: 2px solid ${props => props.$isActive ? props.$color : 'var(--color-border)'};
+  box-shadow: ${props => props.$isActive ? `0 8px 30px ${props.$color}25` : '0 4px 6px rgba(0,0,0,0.05)'};
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    border-color: ${props => props.$color};
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px ${props => props.$color}15;
+  }
+
+  .icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .heading {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+  }
+
+  .tagline {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+`;

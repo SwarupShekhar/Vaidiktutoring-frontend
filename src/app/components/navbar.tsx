@@ -1,14 +1,14 @@
 // src/app/components/navbar.tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import ThemeToggle from './ThemeToggle';
-import NotificationsBtn from './NotificationsBtn';
-import SHLogo from './SHLogo';
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import ThemeToggle from "./ThemeToggle";
+import NotificationsBtn from "./NotificationsBtn";
+import SHLogo from "./SHLogo";
 
-import { useAuthContext } from '@/app/context/AuthContext';
+import { useAuthContext } from "@/app/context/AuthContext";
 
 export default function Navbar() {
   const { user, logout } = useAuthContext();
@@ -17,14 +17,15 @@ export default function Navbar() {
 
   const isActive = (path: string) => pathname?.startsWith(path);
 
-  if (pathname?.startsWith('/session')) return null;
+  if (pathname?.startsWith("/session")) return null;
 
   const navLinks = [
-    { name: 'Subjects', href: '/subjects' },
-    { name: 'Methodology', href: '/methodology' },
-    { name: 'About', href: '/about' },
-    { name: 'Pricing', href: '/pricing' },
-    { name: 'Blogs', href: '/blogs' },
+    { name: "Subjects", href: "/subjects" },
+    { name: "Methodology", href: "/methodology" },
+    { name: "K-12 Tutoring", href: "/k-12-online-tutoring" },
+    { name: "About", href: "/about" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "Blogs", href: "/blogs" },
   ];
 
   return (
@@ -46,10 +47,11 @@ export default function Navbar() {
             <Link
               key={link.name}
               href={link.href}
-              className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all ${isActive(link.href)
-                  ? 'bg-white dark:bg-white/10 text-primary shadow-sm'
-                  : 'text-text-secondary hover:text-primary'
-                }`}
+              className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all ${
+                isActive(link.href)
+                  ? "bg-white dark:bg-white/10 text-primary shadow-sm"
+                  : "text-text-secondary hover:text-primary"
+              }`}
             >
               {link.name}
             </Link>
@@ -62,10 +64,13 @@ export default function Navbar() {
           {user && (
             <Link
               href={
-                user.role === 'admin' ? '/admin/dashboard' :
-                  user.role === 'tutor' ? '/tutor/dashboard' :
-                    user.role === 'student' ? '/students/dashboard' :
-                      '/parent/dashboard'
+                user.role === "admin"
+                  ? "/admin/dashboard"
+                  : user.role === "tutor"
+                    ? "/tutor/dashboard"
+                    : user.role === "student"
+                      ? "/students/dashboard"
+                      : "/parent/dashboard"
               }
               className="hidden md:block text-xs font-bold tracking-wide transition-all text-text-secondary hover:text-primary"
             >
@@ -74,11 +79,17 @@ export default function Navbar() {
           )}
 
           {/* Primary CTA */}
-          {(!user || user.role !== 'tutor') && (
+          {(!user || user.role !== "tutor") && (
             <Link
-              href={user ? 'https://calendly.com/swarupshekhar-vaidikedu/30min' : '/signup?type=assessment'}
+              href={
+                user
+                  ? "https://calendly.com/swarupshekhar-vaidikedu/30min"
+                  : "/signup?type=assessment"
+              }
               className="hidden sm:inline-flex items-center justify-center px-4 lg:px-6 py-2 rounded-full bg-primary text-white font-black text-xs tracking-wide hover:bg-sapphire hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-blue-500/20"
-              {...(user ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              {...(user
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
             >
               Book Demo
             </Link>
@@ -122,9 +133,19 @@ export default function Navbar() {
               viewBox="0 0 24 24"
             >
               {mobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
               )}
             </svg>
           </button>
@@ -140,10 +161,11 @@ export default function Navbar() {
                 key={link.name}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`px-3 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-all ${isActive(link.href)
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10'
-                  }`}
+                className={`px-3 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-all ${
+                  isActive(link.href)
+                    ? "bg-primary/10 text-primary"
+                    : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10"
+                }`}
               >
                 {link.name}
               </Link>
@@ -151,10 +173,13 @@ export default function Navbar() {
             {user && (
               <Link
                 href={
-                  user.role === 'admin' ? '/admin/dashboard' :
-                    user.role === 'tutor' ? '/tutor/dashboard' :
-                      user.role === 'student' ? '/students/dashboard' :
-                        '/parent/dashboard'
+                  user.role === "admin"
+                    ? "/admin/dashboard"
+                    : user.role === "tutor"
+                      ? "/tutor/dashboard"
+                      : user.role === "student"
+                        ? "/students/dashboard"
+                        : "/parent/dashboard"
                 }
                 onClick={() => setMobileMenuOpen(false)}
                 className="px-3 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-all text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10"
@@ -165,7 +190,10 @@ export default function Navbar() {
             <div className="flex gap-2 mt-2">
               {user ? (
                 <button
-                  onClick={() => { logout(); setMobileMenuOpen(false); }}
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                  }}
                   className="flex-1 px-3 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-all text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10"
                 >
                   Logout
@@ -179,12 +207,18 @@ export default function Navbar() {
                   Login
                 </Link>
               )}
-              {(!user || user.role !== 'tutor') && (
+              {(!user || user.role !== "tutor") && (
                 <Link
-                  href={user ? 'https://calendly.com/swarupshekhar-vaidikedu/30min' : '/signup?type=assessment'}
+                  href={
+                    user
+                      ? "https://calendly.com/swarupshekhar-vaidikedu/30min"
+                      : "/signup?type=assessment"
+                  }
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex-1 px-3 py-2.5 rounded-lg bg-primary text-white font-bold text-sm tracking-wide text-center hover:bg-sapphire transition-all"
-                  {...(user ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  {...(user
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
                 >
                   Book Demo
                 </Link>
