@@ -447,7 +447,7 @@ export default function K12OnlineTutoringPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-deep-navy mb-4">
-                All Your Tutoring Needs for Grades K-12
+                Subjects Offered in our K-12 Programs.
               </h2>
               <div className="w-20 h-1.5 bg-sapphire mx-auto rounded-full mt-6"></div>
             </motion.div>
