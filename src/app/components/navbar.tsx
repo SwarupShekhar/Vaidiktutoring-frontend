@@ -14,6 +14,7 @@ export default function Navbar() {
   const { user, logout } = useAuthContext();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
 
   const isActive = (path: string) => pathname?.startsWith(path);
 
@@ -22,10 +23,13 @@ export default function Navbar() {
   const navLinks = [
     { name: "Subjects", href: "/subjects" },
     { name: "Methodology", href: "/methodology" },
-    { name: "K-12 Tutoring", href: "/k-12-online-tutoring" },
     { name: "About", href: "/about" },
     { name: "Pricing", href: "/pricing" },
     { name: "Blogs", href: "/blogs" },
+  ];
+
+  const resourceLinks = [
+    { name: "K-12 Online Tutoring", href: "/k-12-online-tutoring" },
   ];
 
   return (
@@ -56,6 +60,51 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
+
+          {/* Resources Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}
+              onMouseEnter={() => setResourcesDropdownOpen(true)}
+              className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1 ${
+                pathname?.startsWith("/k-12-online-tutoring")
+                  ? "bg-white dark:bg-white/10 text-primary shadow-sm"
+                  : "text-text-secondary hover:text-primary"
+              }`}
+            >
+              Resources
+              <svg
+                className={`w-3 h-3 transition-transform ${resourcesDropdownOpen ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {/* Dropdown Menu */}
+            {resourcesDropdownOpen && (
+              <div
+                className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-black rounded-xl shadow-xl border border-white/20 dark:border-white/10 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
+                onMouseLeave={() => setResourcesDropdownOpen(false)}
+              >
+                {resourceLinks.map((link) => (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    className={`block px-4 py-3 text-sm font-medium transition-all ${
+                      isActive(link.href)
+                        ? "bg-primary/10 text-primary"
+                        : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10 hover:text-primary"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right: Auth & Toggle Group */}
@@ -170,6 +219,26 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
+
+            {/* Mobile Resources Submenu */}
+            <div className="py-2">
+              <p className="px-3 py-1 text-xs font-bold text-text-secondary uppercase tracking-wide">Resources</p>
+              {resourceLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-6 py-2.5 rounded-lg text-sm font-medium tracking-wide transition-all ml-2 ${
+                    isActive(link.href)
+                      ? "bg-primary/10 text-primary"
+                      : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+
             {user && (
               <Link
                 href={
