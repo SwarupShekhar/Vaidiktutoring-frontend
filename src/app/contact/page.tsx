@@ -1,71 +1,63 @@
 "use client";
 import React from "react";
-import { Mail, Phone, MapPin, MessageCircle } from "lucide-react";
+import { Mail, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen pt-32 pb-24 px-6 bg-linear-to-b from-ice-blue to-background">
-      <div className="max-w-4xl mx-auto text-center mb-16">
-        <h1 className="text-4xl md:text-6xl font-black text-deep-navy mb-6">
-          Contact Us
+    <main className="min-h-screen pt-40 pb-32 px-6 bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background">
+      {/* Header Section */}
+      <div className="max-w-4xl mx-auto text-center mb-16 px-4">
+        <h1 className="text-4xl md:text-7xl font-black text-deep-navy dark:text-white mb-8 tracking-tighter leading-none">
+          Get in <span className="text-sapphire">Touch</span>
         </h1>
-        <p className="text-xl text-text-secondary font-medium italic">
-          “Our advisors are here to help you find the right path for your
-          child.”
+        <p className="text-xl md:text-2xl text-text-secondary dark:text-slate-400 font-medium italic opacity-80 leading-relaxed max-w-2xl mx-auto">
+          &ldquo;Our advisors are here to help you find the right path for your child.&rdquo;
         </p>
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div className="p-8 rounded-4xl bg-white shadow-xl border border-border flex flex-col items-center group hover:scale-105 transition-all">
-          <div className="w-16 h-16 rounded-2xl bg-blue-50 text-primary flex items-center justify-center mb-6">
-            <Mail size={32} />
+      {/* Primary Contact Card */}
+      <div className="max-w-xl mx-auto mb-24 px-4">
+        <div className="group relative p-10 md:p-16 rounded-[3rem] bg-white dark:bg-slate-900 shadow-2xl shadow-sapphire/5 border border-border flex flex-col items-center hover:scale-[1.02] transition-all duration-500 overflow-hidden">
+          {/* Subtle Glow Background */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-sapphire/5 blur-3xl rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-sapphire/10 transition-colors" />
+          
+          <div className="w-20 h-20 rounded-3xl bg-sapphire/10 text-sapphire flex items-center justify-center mb-8 group-hover:bg-sapphire group-hover:text-white transition-all duration-500 shadow-sm">
+            <Mail size={40} />
           </div>
-          <h3 className="text-xl font-bold mb-2">Email</h3>
-          <p className="text-text-secondary font-semibold">
+          
+          <h2 className="text-sm font-black text-sapphire uppercase tracking-[0.4em] mb-4">Official Support</h2>
+          <a 
+            href="mailto:support@studyhours.com" 
+            className="text-2xl md:text-4xl font-black text-deep-navy dark:text-white hover:text-sapphire transition-colors tracking-tight text-center break-all"
+          >
             support@studyhours.com
-          </p>
-        </div>
-
-        <div className="p-8 rounded-4xl bg-white shadow-xl border border-border flex flex-col items-center group hover:scale-105 transition-all">
-          <div className="w-16 h-16 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center mb-6">
-            <MessageCircle size={32} />
-          </div>
-          <h3 className="text-xl font-bold mb-2">WhatsApp</h3>
-          <p className="text-text-secondary font-semibold">+1 (555) 012-3456</p>
-        </div>
-
-        <div className="p-8 rounded-4xl bg-white shadow-xl border border-border flex flex-col items-center group hover:scale-105 transition-all">
-          <div className="w-16 h-16 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mb-6">
-            <Phone size={32} />
-          </div>
-          <h3 className="text-xl font-bold mb-2">Phone</h3>
-          <p className="text-text-secondary font-semibold">+1 (555) 012-7890</p>
-        </div>
-
-        <div className="p-8 rounded-4xl bg-white shadow-xl border border-border flex flex-col items-center group hover:scale-105 transition-all">
-          <div className="w-16 h-16 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center mb-6">
-            <MapPin size={32} />
-          </div>
-          <h3 className="text-xl font-bold mb-2">Office</h3>
-          <p className="text-text-secondary font-semibold text-center mt-1">
-            123 Learning Lane, <br />
-            Education City, EC 101
+          </a>
+          <p className="mt-6 text-text-secondary dark:text-slate-400 font-medium opacity-60 text-center">
+            We typically respond within 12–24 hours.
           </p>
         </div>
       </div>
 
-      <div className="mt-20 max-w-2xl mx-auto p-12 rounded-[3rem] bg-deep-navy text-white text-center shadow-2xl">
-        <h2 className="text-2xl font-black mb-4">Want a free consultation?</h2>
-        <p className="text-blue-100 opacity-80 mb-8">
-          Speak with our academic advisors to understand how we can help your
-          child master their curriculum.
-        </p>
-        <a
-          href="/signup?type=assessment"
-          className="inline-block px-10 py-4 bg-primary text-white font-bold rounded-full hover:bg-sapphire transition-all shadow-xl shadow-blue-500/20"
-        >
-          Book Diagnostic Call
-        </a>
+      {/* Secondary CTA */}
+      <div className="max-w-3xl mx-auto p-12 md:p-20 rounded-[3.5rem] bg-deep-navy text-white text-center shadow-3xl relative overflow-hidden group">
+        {/* Background Decorations */}
+        <div className="absolute inset-0 bg-linear-to-br from-sapphire/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-sapphire/10 rounded-full blur-[80px]" />
+        
+        <div className="relative z-10">
+          <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight">Want a free consultation?</h2>
+          <p className="text-lg md:text-xl text-blue-100/70 mb-12 font-medium max-w-xl mx-auto leading-relaxed">
+            Speak with our academic advisors to understand how we can help your child master their curriculum.
+          </p>
+          <Link
+            href="/signup?type=assessment"
+            className="inline-flex items-center gap-3 px-12 py-5 bg-white text-deep-navy font-black rounded-2xl hover:bg-sapphire hover:text-white transition-all shadow-xl shadow-sapphire/20 text-lg uppercase tracking-wider group/btn"
+          >
+            Book Diagnostic Call
+            <ArrowRight size={20} className="group-hover/btn:translate-x-1 transition-transform" />
+          </Link>
+        </div>
       </div>
     </main>
   );

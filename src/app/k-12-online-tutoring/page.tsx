@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   ShieldCheck,
@@ -29,8 +30,80 @@ import StickyCTA from "../components/subjects/StickyCTA";
 export default function K12OnlineTutoringPage() {
   const { user } = useAuthContext();
 
+  const k12Faqs = [
+    {
+      q: "What is the purpose of the K-12 program?",
+      a: "To provide a strong academic foundation, helping students improve through their school years. It focuses on conceptual clarity and preparing students for higher education and careers."
+    },
+    {
+      q: "Is K12 a good homeschool program?",
+      a: "Yes, it offers a well-organized curriculum and guided study journey. It works well for families who prefer a directed learning path with structured lesson plans."
+    },
+    {
+      q: "What is the difference between K-12 and higher education?",
+      a: "K-12 builds a foundational footing across different subjects from early schooling to high school. Higher education focuses on specialized learning in a specific field for career growth."
+    },
+    {
+      q: "What are common challenges in K-12?",
+      a: "Maintaining engagement, grasping difficult topics, and adjusting to individual progress rates. Students also face exam pressure and the need to form disciplined study patterns."
+    },
+    {
+      q: "How does K-12 tutoring work?",
+      a: "It provides additional support outside of regular school hours. Tutors help students clear doubts and boost results through customized sessions that match their own learning rhythm."
+    }
+  ];
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studyhours.com" },
+      { "@type": "ListItem", "position": 2, "name": "Programs", "item": "https://studyhours.com/k-12-online-tutoring" }
+    ]
+  };
+
+  const ratingSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "K-12 Online Tutoring",
+    "serviceType": "Tutoring",
+    "provider": { "@type": "Organization", "name": "StudyHours" },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "1500",
+      "bestRating": "5",
+      "worstRating": "1"
+    }
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": k12Faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.q,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.a
+      }
+    }))
+  };
+
   return (
     <main className="min-h-screen bg-background transition-colors duration-500 relative">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ratingSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       {/* Sticky Action Bar */}
       <StickyCTA />
 
@@ -83,100 +156,78 @@ export default function K12OnlineTutoringPage() {
             </motion.div>
           </div>
 
-          {/* Hero Visual */}
-          <div className="lg:col-span-5 relative hidden lg:block">
+          {/* Hero Visual — Human-Centric Student Visual */}
+          <div className="lg:col-span-5 relative">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, x: 20 }}
-              animate={{ opacity: 1, scale: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              className="relative aspect-square sm:aspect-4/3 lg:aspect-auto lg:h-[650px] w-full"
             >
-              <div className="relative z-10 p-8 rounded-[3rem] bg-white/40 dark:bg-white/5 backdrop-blur-3xl border border-white/20 shadow-2xl">
-                <div className="space-y-6">
-                  {/* Student Learning Animation */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5, duration: 0.5 }}
-                    className="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-sm border border-slate-100 dark:bg-slate-800 dark:border-slate-700"
-                  >
-                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                      <GraduationCap size={24} />
-                    </div>
-                    <div className="flex-1">
-                      <div className="h-2 w-24 bg-slate-100 rounded dark:bg-slate-700 mb-2" />
-                      <motion.div
-                        initial={{ width: "20%" }}
-                        animate={{ width: "100%" }}
-                        transition={{
-                          duration: 1.5,
-                          delay: 1,
-                          ease: "easeOut",
-                        }}
-                        className="h-1.5 bg-green-50 rounded dark:bg-green-900/30"
-                      />
-                    </div>
-                  </motion.div>
+              {/* Main Student Image */}
+              <div className="relative w-full h-full flex items-end justify-center overflow-visible">
+                <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-ice-blue/20 dark:to-slate-900/20 rounded-[4rem] z-0" />
+                <Image
+                  src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774006824/a_young_student_202603201710-Photoroom_ebs8yl.png"
+                  alt="Young student smiling and learning"
+                  fill
+                  className="object-contain object-bottom z-10 drop-shadow-2xl"
+                  priority
+                />
 
-                  {/* Progress Bars */}
-                  <div className="p-4 rounded-2xl bg-white shadow-sm border border-slate-100 dark:bg-slate-800 dark:border-slate-700">
-                    <div className="flex justify-between items-end gap-2 h-20">
+                {/* Floating Progress Overlay */}
+                <motion.div
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.8, duration: 0.8 }}
+                  className="absolute top-1/4 -right-4 p-5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl z-20 hidden md:block"
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                        <CheckCircle2 size={20} />
+                      </div>
+                      <div>
+                        <div className="h-2 w-16 bg-slate-100 rounded dark:bg-slate-800 mb-1" />
+                        <div className="h-1.5 w-full bg-green-500 rounded" />
+                      </div>
+                    </div>
+                    <div className="h-px w-full bg-border" />
+                    <div className="flex gap-2 h-12 items-end">
                       {[40, 70, 55, 90, 65].map((h, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ height: 0 }}
-                          animate={{ height: `${h}%` }}
-                          transition={{
-                            delay: 0.8 + i * 0.1,
-                            duration: 0.8,
-                            ease: "backOut",
-                          }}
-                          className={`w-4 rounded-t ${h === 90 ? "bg-sapphire shadow-[0_0_15px_rgba(31,75,255,0.3)]" : "bg-blue-200 dark:bg-blue-800/40"}`}
+                        <div 
+                          key={i} 
+                          className={`w-2.5 rounded-t-sm ${h === 90 ? 'bg-sapphire' : 'bg-blue-100 dark:bg-blue-900/40'}`}
+                          style={{ height: `${h}%` }}
                         />
                       ))}
                     </div>
-                    <div className="mt-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">
-                      Student Progress
-                    </div>
                   </div>
+                </motion.div>
 
-                  {/* Stats Row */}
-                  <motion.div
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                    className="flex justify-center gap-6"
-                  >
-                    <div className="text-center">
-                      <div className="text-2xl font-black text-sapphire">
-                        500+
+                {/* Floating Stats Label */}
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1, duration: 0.8 }}
+                  className="absolute bottom-12 -left-4 p-6 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl rounded-[2.5rem] border border-white/20 shadow-2xl z-20 min-w-[200px]"
+                >
+                   <div className="flex items-center justify-center gap-6">
+                      <div className="text-center">
+                        <div className="text-2xl font-black text-sapphire tracking-tighter leading-none mb-1">95%</div>
+                        <div className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Satisfaction</div>
                       </div>
-                      <div className="text-xs font-bold text-slate-400">
-                        Tutors
+                      <div className="w-px h-8 bg-border" />
+                      <div className="text-center">
+                        <div className="text-2xl font-black text-sapphire tracking-tighter leading-none mb-1">10K+</div>
+                        <div className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Students</div>
                       </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-black text-sapphire">
-                        10K+
-                      </div>
-                      <div className="text-xs font-bold text-slate-400">
-                        Students
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-black text-sapphire">
-                        95%
-                      </div>
-                      <div className="text-xs font-bold text-slate-400">
-                        Satisfaction
-                      </div>
-                    </div>
-                  </motion.div>
-                </div>
+                   </div>
+                </motion.div>
               </div>
+
+              {/* Decorative Accents */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-sapphire/5 rounded-full blur-[100px] -z-10" />
             </motion.div>
           </div>
         </div>
@@ -486,7 +537,7 @@ export default function K12OnlineTutoringPage() {
               },
               {
                 title: "Specialized/Test Prep",
-                subjects: "AP/IB courses, SAT/ACT preparation, and computer science/coding",
+                subjects: "AP, IB, & A-Level courses, SAT/ACT preparation, and computer science/coding",
                 icon: Target,
                 color: "text-rose-600",
                 bg: "bg-rose-100/50"

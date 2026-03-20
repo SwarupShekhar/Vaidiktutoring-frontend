@@ -2,8 +2,23 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function SubjectFAQ() {
-    const questions = [
+export interface FAQItemType {
+    q: string;
+    a: string;
+}
+
+interface SubjectFAQProps {
+    items?: FAQItemType[];
+    title?: string;
+    description?: string;
+}
+
+export default function SubjectFAQ({ 
+    items, 
+    title = "Common Questions", 
+    description = "Everything you need to know about our structured learning approach." 
+}: SubjectFAQProps) {
+    const defaultQuestions = [
         {
             q: "Is this aligned with my child's school curriculum?",
             a: "Yes. Whether your child follows the US Common Core, UK National Curriculum, IB, or Cambridge standards, our tutors align every session directly with their specific school goals."
@@ -22,15 +37,17 @@ export default function SubjectFAQ() {
         }
     ];
 
+    const questions = items || defaultQuestions;
+
     return (
-        <section className="py-24 px-6 bg-background">
+        <section className="py-16 md:py-24 px-6 bg-background">
             <div className="max-w-3xl mx-auto">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl font-extrabold text-deep-navy mb-4">
-                        Common Questions
+                <div className="text-center mb-10 md:mb-16">
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-deep-navy mb-4 dark:text-white">
+                        {title}
                     </h2>
-                    <p className="text-text-secondary">
-                        Everything you need to know about our structured learning approach.
+                    <p className="text-text-secondary text-sm md:text-base">
+                        {description}
                     </p>
                 </div>
 

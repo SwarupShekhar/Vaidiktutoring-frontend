@@ -117,7 +117,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 ],
                 contactPoint: {
                   "@type": "ContactPoint",
-                  telephone: "+1-555-0123",
                   contactType: "customer service",
                   email: "support@studyhours.com",
                 },

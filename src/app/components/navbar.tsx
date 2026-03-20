@@ -30,6 +30,10 @@ export default function Navbar() {
 
   const resourceLinks = [
     { name: "K-12 Online Tutoring", href: "/k-12-online-tutoring" },
+    { name: "IB Tutors Online", href: "/resources/ib-tutors-online" },
+    { name: "A-Level Tutors Online", href: "/a-level-online-tutoring" },
+    { name: "IGCSE Tutors Online", href: "/igcse-online-tutoring" },
+    { name: "GCSE Tutors Online", href: "/gcse-online-tutoring" },
   ];
 
   return (
@@ -67,7 +71,7 @@ export default function Navbar() {
               onClick={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}
               onMouseEnter={() => setResourcesDropdownOpen(true)}
               className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1 ${
-                pathname?.startsWith("/k-12-online-tutoring")
+                resourceLinks.some((link) => isActive(link.href))
                   ? "bg-white dark:bg-white/10 text-primary shadow-sm"
                   : "text-text-secondary hover:text-primary"
               }`}
@@ -79,7 +83,12 @@ export default function Navbar() {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
@@ -222,7 +231,9 @@ export default function Navbar() {
 
             {/* Mobile Resources Submenu */}
             <div className="py-2">
-              <p className="px-3 py-1 text-xs font-bold text-text-secondary uppercase tracking-wide">Resources</p>
+              <p className="px-3 py-1 text-xs font-bold text-text-secondary uppercase tracking-wide">
+                Resources
+              </p>
               {resourceLinks.map((link) => (
                 <Link
                   key={link.name}

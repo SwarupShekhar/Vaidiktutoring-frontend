@@ -1,4 +1,9 @@
-import React from 'react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Find a Tutor | StudyHours',
+    description: 'Search for expert tutors across A-Level, IB, and IGCSE subjects. Find the perfect match for your academic goals.',
+};
 
 // Placeholder Search Page
 export default function SearchPage({ searchParams }: { searchParams: { subject?: string } }) {

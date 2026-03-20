@@ -38,10 +38,18 @@ export async function generateMetadata(
                 title,
                 description,
                 images: [image],
+            },
+            alternates: {
+                canonical: `/blogs/${id}`,
             }
         };
     } catch (e) {
-        return { title: 'Blog Error | Vaidik Tutoring' };
+        return { 
+            title: 'Blog Error | Vaidik Tutoring',
+            alternates: {
+                canonical: '/blogs'
+            }
+        };
     }
 }
 
