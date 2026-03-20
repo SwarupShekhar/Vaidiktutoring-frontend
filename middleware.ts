@@ -29,6 +29,7 @@ const isPublicRoute = createRouteMatcher([
     '/experts(.*)',
     '/careers(.*)',
     '/onboarding(.*)',
+    '/k-12-online-tutoring(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

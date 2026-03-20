@@ -3,6 +3,9 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "K–12 Online Tutoring | Expert Live Classes for All Subjects",
   description: "At Studyhours, join K–12 online tutoring with live classes in math, English, science & more. Get personalized support and improve academic performance.",
+  alternates: {
+    canonical: "https://studyhours.com/k-12-online-tutoring",
+  },
   openGraph: {
     title: "K–12 Online Tutoring | Expert Live Classes for All Subjects",
     description: "At Studyhours, join K–12 online tutoring with live classes in math, English, science & more. Get personalized support and improve academic performance.",
