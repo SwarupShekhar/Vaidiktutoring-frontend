@@ -22,6 +22,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
+  alternates: {
+    canonical: "/",
+  },
   twitter: {
     card: "summary_large_image",
     title: "StudyHours | Personalized K-12 Tutoring",

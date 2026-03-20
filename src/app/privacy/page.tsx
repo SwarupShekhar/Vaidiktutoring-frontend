@@ -1,3 +1,24 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | StudyHours",
+  description: "Read our privacy policy to understand how we collect, use, and protect your personal data.",
+  alternates: {
+    canonical: "/privacy",
+  },
+  openGraph: {
+    title: "Privacy Policy | StudyHours",
+    description: "Read our privacy policy to understand how we protect your data.",
+    url: "/privacy",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Privacy Policy | StudyHours",
+    description: "Read our privacy policy to understand how we protect your data.",
+  },
+};
+
 export default function PrivacyPage() {
     return (
         <div className="min-h-screen py-24 px-6 md:px-12 bg-white dark:bg-black text-gray-900 dark:text-gray-100">

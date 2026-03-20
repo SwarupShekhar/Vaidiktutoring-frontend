@@ -8,10 +8,10 @@ export const metadata: Metadata = {
     title: "Our Methodology | StudyHours",
     description:
       "Structured, measurable, and outcome-driven learning for K-12 students.",
-    url: "https://studyhours.com/methodology",
+    url: "/methodology",
     images: [
       {
-        url: "https://studyhours.com/hero_calm_education.png",
+        url: "/hero_calm_education.png",
         width: 1200,
         height: 630,
         alt: "StudyHours Methodology",
@@ -19,12 +19,15 @@ export const metadata: Metadata = {
     ],
     type: "website",
   },
+  alternates: {
+    canonical: "/methodology",
+  },
   twitter: {
     card: "summary_large_image",
     title: "Our Methodology | StudyHours",
     description:
       "Structured, measurable, and outcome-driven learning for K-12 students.",
-    images: ["https://studyhours.com/hero_calm_education.png"],
+    images: ["/hero_calm_education.png"],
   },
 };
 

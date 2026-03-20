@@ -8,10 +8,10 @@ export const metadata: Metadata = {
     title: "K-12 Tutoring Subjects | StudyHours",
     description:
       "Expert tutoring across Math, Science, Humanities and more for K-12 students.",
-    url: "https://studyhours.com/subjects",
+    url: "/subjects",
     images: [
       {
-        url: "https://studyhours.com/hero_calm_education.png",
+        url: "/hero_calm_education.png",
         width: 1200,
         height: 630,
         alt: "StudyHours Subjects",
@@ -19,12 +19,15 @@ export const metadata: Metadata = {
     ],
     type: "website",
   },
+  alternates: {
+    canonical: "/subjects",
+  },
   twitter: {
     card: "summary_large_image",
     title: "K-12 Tutoring Subjects | StudyHours",
     description:
       "Expert tutoring across Math, Science, Humanities and more for K-12 students.",
-    images: ["https://studyhours.com/hero_calm_education.png"],
+    images: ["/hero_calm_education.png"],
   },
 };
 

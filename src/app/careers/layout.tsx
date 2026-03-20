@@ -7,8 +7,18 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Careers | StudyHours",
     description: "Help us transform K-12 education. Join the StudyHours team.",
-    url: "https://studyhours.com/careers",
+    url: "/careers",
     type: "website",
+    images: [{ url: "/hero_calm_education.png" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Careers | Join the StudyHours Team",
+    description: "Help us transform K-12 education. Join the StudyHours team.",
+    images: ["/hero_calm_education.png"],
+  },
+  alternates: {
+    canonical: "/careers",
   },
 };
 

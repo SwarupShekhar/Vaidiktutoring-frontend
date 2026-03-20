@@ -8,10 +8,10 @@ export const metadata: Metadata = {
     title: "Pricing & Learning Plans | StudyHours",
     description:
       "Transparent, flexible tutoring plans built around your child’s needs.",
-    url: "https://studyhours.com/pricing",
+    url: "/pricing",
     images: [
       {
-        url: "https://studyhours.com/hero_calm_education.png",
+        url: "/hero_calm_education.png",
         width: 1200,
         height: 630,
         alt: "StudyHours Pricing Plans",
@@ -19,12 +19,15 @@ export const metadata: Metadata = {
     ],
     type: "website",
   },
+  alternates: {
+    canonical: "/pricing",
+  },
   twitter: {
     card: "summary_large_image",
     title: "Pricing & Learning Plans | StudyHours",
     description:
       "Transparent, flexible tutoring plans built around your child’s needs.",
-    images: ["https://studyhours.com/hero_calm_education.png"],
+    images: ["/hero_calm_education.png"],
   },
 };
 

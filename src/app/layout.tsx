@@ -15,8 +15,8 @@ import VerificationBanner from "./components/auth/VerificationBanner";
 import { Analytics } from "@vercel/analytics/next";
 
 import { ClerkProvider } from "@clerk/nextjs";
-
 import { Luckiest_Guy } from "next/font/google";
+import { Metadata } from "next";
 
 const luckiestGuy = Luckiest_Guy({
   weight: "400",
@@ -24,12 +24,13 @@ const luckiestGuy = Luckiest_Guy({
   variable: "--font-luckiest-guy",
 });
 
-export const metadata = {
-  title: "StudyHours",
-  description: "StudyHours Platform",
-  alternates: {
-    canonical: "https://studyhours.com",
+export const metadata: Metadata = {
+  metadataBase: new URL('https://studyhours.com'),
+  title: {
+    default: "StudyHours | Outcome-Driven K-12 Tutoring Platform",
+    template: "%s | StudyHours"
   },
+  description: "Expert-guided K-12 tutoring for Math, Science, English and more. Personalized 1-on-1 sessions aligned with IB, IGCSE, and US curricula.",
   verification: {
     google: "QIHTWX5Vy3mZhNRYxfyyTc5YDUOA2DSyS6BCx-7xwy0",
   },
