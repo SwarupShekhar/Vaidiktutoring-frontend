@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "International Baccalaureate (IB) Tutors Online | StudyHours",
-  description: "Expert IB tutoring for PYP, MYP, DP, and CP. Get personalized 1-on-1 support for all IB subjects, External Assessments, and Internal Assessments.",
+  title: "IB Coaching Classes | Expert IB Tutors & Exam Preparation",
+  description: "Join professional IB coaching classes with expert tutors. Get personalized support, clear concepts & effective exam preparation for better results.",
   alternates: {
     canonical: "/resources/ib-tutors-online",
   },

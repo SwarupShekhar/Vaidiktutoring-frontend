@@ -132,7 +132,7 @@ export default function IBTutorsPage() {
       {/* ============================================
           SECTION 1: HERO (The Navigator)
       ============================================ */}
-      <section className="min-h-[90vh] flex items-center pt-32 pb-24 px-6 relative overflow-hidden bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background">
+      <section className="min-h-[90vh] flex items-center pt-64 pb-24 px-6 relative overflow-hidden bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background">
         {/* Constellation Background */}
         <ConstellationBackground />
 
@@ -142,17 +142,34 @@ export default function IBTutorsPage() {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="relative"
             >
-              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface/60 dark:bg-surface/5 backdrop-blur-md border border-border text-[10px] font-black tracking-[0.2em] text-sapphire mb-6 md:mb-10 shadow-sm">
+              {/* Added Hero Image - Absolute positioned to sit in whitespace */}
+               <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.8 }}
+                className="hidden md:block absolute -top-56 left-0 w-[180px] h-[220px] rounded-[3.5rem] overflow-hidden shadow-xl"
+              >
+                <Image
+                  src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774008401/Candid_portrait_photography_202603201735_q92yxy.jpg"
+                  alt="IB Student"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </motion.div>
+
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface/60 dark:bg-surface/5 backdrop-blur-md border border-border text-[10px] font-black tracking-[0.2em] text-sapphire mb-6 md:mb-10 shadow-sm relative z-10">
                 <Award size={14} className="text-sapphire" />
                 PREMIUM IB DIPLOMA TUTORING
               </div>
-              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-deep-navy dark:text-white mb-6 md:mb-8 tracking-tighter leading-[0.95]">
-                Expert{" "}
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-deep-navy dark:text-white mb-6 md:mb-8 tracking-tighter leading-[0.95] relative z-10">
+                International <br />
                 <span className="text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary">
-                  IB Tutoring,
+                  Baccalaureate Tutors
                 </span>{" "}
-                Across Every Group and Component
+                Online
               </h1>
               <p className="text-lg md:text-2xl text-text-secondary mb-8 md:mb-12 leading-relaxed font-medium max-w-xl opacity-90">
                 Specialized guidance for{" "}
