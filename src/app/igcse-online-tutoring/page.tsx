@@ -730,7 +730,7 @@ export default function IGCSEOnlineTutoringPage() {
                 IGCSE Cambridge · Grades 9-10
               </span>
               <Link
-                 href="/resources/ib-tutors-online"
+                 href="/ib-online-tutoring"
                 className="text-[10px] font-black uppercase tracking-[0.4em] text-white hover:text-sapphire transition-colors"
               >
                 Switch to IB Diploma →

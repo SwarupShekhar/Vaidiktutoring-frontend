@@ -30,7 +30,7 @@ export default function Navbar() {
 
   const resourceLinks = [
     { name: "K-12 Online Tutoring", href: "/k-12-online-tutoring" },
-    { name: "IB Tutors Online", href: "/resources/ib-tutors-online" },
+    { name: "IB Tutors Online", href: "/ib-online-tutoring" },
     { name: "A-Level Tutors Online", href: "/a-level-online-tutoring" },
     { name: "IGCSE Tutors Online", href: "/igcse-online-tutoring" },
     { name: "GCSE Tutors Online", href: "/gcse-online-tutoring" },

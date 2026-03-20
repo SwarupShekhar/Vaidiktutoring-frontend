@@ -30,11 +30,11 @@ import {
   Infinity as InfinityIcon,
 } from "lucide-react";
 import { useAuthContext } from "@/app/context/AuthContext";
-import ParentTestimonials from "../../components/subjects/ParentTestimonials";
-import StickyCTA from "../../components/subjects/StickyCTA";
-import SubjectFAQ, { FAQItemType } from "../../components/subjects/SubjectFAQ";
-import { ConstellationBackground } from "../../components/ib/ConstellationBackground";
-import Counter from "../../components/ui/Counter";
+import ParentTestimonials from "../components/subjects/ParentTestimonials";
+import StickyCTA from "../components/subjects/StickyCTA";
+import SubjectFAQ, { FAQItemType } from "../components/subjects/SubjectFAQ";
+import { ConstellationBackground } from "../components/ib/ConstellationBackground";
+import Counter from "../components/ui/Counter";
 
 export default function IBTutorsPage() {
   const { user } = useAuthContext();
@@ -90,7 +90,7 @@ export default function IBTutorsPage() {
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studyhours.com" },
       { "@type": "ListItem", "position": 2, "name": "Programs", "item": "https://studyhours.com/k-12-online-tutoring" },
-      { "@type": "ListItem", "position": 3, "name": "IB Tutoring", "item": "https://studyhours.com/resources/ib-tutors-online" }
+      { "@type": "ListItem", "position": 3, "name": "IB Tutoring", "item": "https://studyhours.com/ib-online-tutoring" }
     ]
   };
 
