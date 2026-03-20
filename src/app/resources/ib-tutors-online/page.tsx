@@ -886,44 +886,44 @@ export default function IBTutorsPage() {
       {/* ============================================
           SECTION 9: FINAL CONVERSION (The Grand CTA)
       ============================================ */}
-      <section className="py-40 px-6 bg-[#05010a] relative overflow-hidden">
+      <section className="py-24 md:py-32 px-6 bg-[#05010a] relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full">
           <div className="absolute top-[20%] right-0 w-[600px] h-[600px] bg-sapphire/20 rounded-full blur-[140px]" />
           <div className="absolute bottom-[20%] left-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px]" />
         </div>
 
-        <div className="max-w-4xl mx-auto text-center relative z-10">
+        <div className="max-w-3xl mx-auto text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1 }}
           >
-            <h2 className="text-4xl sm:text-6xl md:text-8xl font-black text-white mb-8 md:mb-10 tracking-tight leading-none uppercase">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-8 md:mb-10 tracking-tight leading-none uppercase">
               Your IB Score Is <br />
               <span className="text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary transition-all">
                 Still Yours to Define.
               </span>
             </h2>
-            <p className="text-lg md:text-2xl text-slate-400 mb-12 md:mb-16 font-medium leading-relaxed max-w-2xl mx-auto px-4 md:px-0">
+            <p className="text-lg md:text-xl text-slate-400 mb-12 md:mb-16 font-medium leading-relaxed max-w-2xl mx-auto px-4 md:px-0">
               Join the students achieving 40+ points with specialized,
               one-on-one IB mentorship.
             </p>
-            <div className="flex flex-col sm:flex-row items-center gap-8 justify-center">
+            <div className="flex flex-col sm:flex-row items-center gap-6 justify-center">
               <Link
                 href={user ? "/bookings/new" : "/signup?type=assessment"}
-                className="w-full sm:w-auto px-16 py-6 bg-white text-black font-black rounded-3xl hover:bg-primary hover:text-white transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)] text-xl tracking-wide active:scale-95"
+                className="w-full sm:w-auto px-12 py-5 bg-white text-black font-black rounded-3xl hover:bg-primary hover:text-white transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)] text-lg tracking-wide active:scale-95"
               >
                 Book a Session
               </Link>
               <Link
                 href="/contact"
-                className="w-full sm:w-auto px-16 py-6 border-2 border-white/20 text-white font-black rounded-3xl hover:bg-white/5 transition-all text-xl tracking-wide"
+                className="w-full sm:w-auto px-12 py-5 border-2 border-white/20 text-white font-black rounded-3xl hover:bg-white/5 transition-all text-lg tracking-wide"
               >
                 Speak with an Advisor
               </Link>
             </div>
-            <div className="mt-24 pt-12 border-t border-white/5 flex items-center justify-between opacity-40">
+            <div className="mt-16 pt-12 border-t border-white/5 flex items-center justify-between opacity-40">
               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white">
                 IB Diploma 2025
               </span>

@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "A-Level Online Tutoring | Expert Specialist Tutors & Results",
-  description: "Unlock your university goals with StudyHours. Expert A-Level online tutoring for every subject - from first lesson to final exam. Achieve top results through personalized 1-on-1 support.",
+  title: "A Level Tutors Online | Top Experts | Study Hours",
+  description: "Find expert A Level tutors online at Study Hours. Built by educators and engineers to enhance teaching and help students achieve academic success.",
   alternates: {
     canonical: "/a-level-online-tutoring",
   },
