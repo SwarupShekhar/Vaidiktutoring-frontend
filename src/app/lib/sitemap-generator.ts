@@ -52,9 +52,10 @@ const MANUAL_PAGES: Record<
   "/login": { priority: 0.6, changeFrequency: "monthly" },
   "/k-12-online-tutoring": { priority: 0.8, changeFrequency: "weekly" },
   "/gcse-online-tutoring": { priority: 0.8, changeFrequency: "weekly" },
-  "/igcse-online-tutoring": { priority: 0.7, changeFrequency: "weekly" },
+  "/igcse-online-tutoring": { priority: 0.8, changeFrequency: "weekly" },
   "/a-level-online-tutoring": { priority: 0.8, changeFrequency: "weekly" },
-  "/resources/ib-tutors-online": { priority: 0.7, changeFrequency: "weekly" },
+  "/ib-online-tutoring": { priority: 0.8, changeFrequency: "weekly" },
+  "/search": { priority: 0.8, changeFrequency: "weekly" },
 };
 
 /**
@@ -63,9 +64,18 @@ const MANUAL_PAGES: Record<
 const EXCLUDED_PATHS = [
   "/api",
   "/admin",
-  "/login",
-  "/signup",
+  "/parent",
+  "/school",
+  "/students",
+  "/tutor",
+  "/suspended",
   "/unauthorized",
+  "/verify-email",
+  "/change-password",
+  "/checkout",
+  "/bookings",
+  "/onboarding",
+  "/signup/check-inbox",
   "/blog",
   "/404",
   "/500",
@@ -178,14 +188,15 @@ export function generateSitemapEntries(
         );
 
         if (hasPageFile) {
+          const routeWithSlash = `/${newRoute}`;
           // Check exclusions
-          if (isExcluded(newRoute) || isDynamicRoute(newRoute)) {
+          if (isExcluded(routeWithSlash) || isDynamicRoute(routeWithSlash)) {
             scanDirectory(fullPath, newRoute);
             continue;
           }
 
           // Check if this page is in manual config
-          const manualConfig = MANUAL_PAGES[`/${newRoute}`];
+          const manualConfig = MANUAL_PAGES[routeWithSlash];
 
           if (!seenUrls.has(newRoute)) {
             seenUrls.add(newRoute);

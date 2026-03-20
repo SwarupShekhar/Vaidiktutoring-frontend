@@ -34,6 +34,11 @@ const nextConfig: NextConfig = {
         destination: '/blogs/:slug*',
         permanent: true,
       },
+      {
+        source: '/resources/ib-tutors-online',
+        destination: '/ib-online-tutoring',
+        permanent: true,
+      },
     ];
   },
   // Security headers
