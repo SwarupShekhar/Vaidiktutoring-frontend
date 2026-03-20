@@ -150,13 +150,13 @@ export default function GCSEOnlineTutoringPage() {
                 Specialist UK GCSE Support
               </div>
               <h1 className="text-4xl md:text-6xl font-black text-deep-navy dark:text-white mb-8 tracking-tighter leading-[0.95] uppercase">
-                Your Child's GCSE Results <br />
+                Your Child&apos;s GCSE Results <br />
                 <span className="text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic">
                   Are Not Fixed Yet.
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed font-medium max-w-xl">
-                Behind on GCSEs? There's still time to turn grades around - if you start now. 
+                 Behind on GCSEs? There&apos;s still time to turn grades around - if you start now. 
                 We provide the calm, structured plan your child needs.
               </p>
 
@@ -232,7 +232,7 @@ export default function GCSEOnlineTutoringPage() {
                 icon: AlertTriangle
               },
               { 
-                title: "Exams are months away and revision hasn't started", 
+                title: "Exams are months away and revision hasn&apos;t started", 
                 desc: "Procrastination is usually hidden anxiety. We break the syllabus down into manageable daily wins to get momentum back instantly.",
                 icon: Clock
               },
@@ -280,7 +280,7 @@ export default function GCSEOnlineTutoringPage() {
                 {[
                   "Avoiding homework or revision",
                   "Grades dropping between assessments",
-                  "Saying they 'understand' but struggling in tests",
+                   "Saying they &apos;understand&apos; but struggling in tests",
                   "Disorganised notes or missing classwork",
                   "Increased stress or anxiety around schoolwork",
                 ].map((sign, i) => (
@@ -364,7 +364,7 @@ export default function GCSEOnlineTutoringPage() {
 
         <div className="max-w-7xl mx-auto mt-16 text-center border-t border-border pt-12">
           <p className="text-lg font-black text-deep-navy/60 italic uppercase tracking-tight">
-            Don't see your subject? We likely cover it - <Link href="/contact" className="text-sapphire underline underline-offset-4 hover:text-primary transition-colors">get in touch.</Link>
+             Don&apos;t see your subject? We likely cover it - <Link href="/contact" className="text-sapphire underline underline-offset-4 hover:text-primary transition-colors">get in touch.</Link>
           </p>
         </div>
 
@@ -378,14 +378,14 @@ export default function GCSEOnlineTutoringPage() {
       <section className="py-24 px-6 bg-background relative overflow-hidden">
         <div className="max-w-5xl mx-auto relative z-10 text-center mb-20">
            <h2 className="text-4xl md:text-5xl font-black text-deep-navy tracking-tighter uppercase leading-none mb-6">
-              How Our Classes <span className="text-sapphire italic">Work</span>
+               How Our Classes <span className="text-sapphire italic">Work</span>
            </h2>
            <p className="text-xl font-medium text-text-secondary opacity-70">A calm, structured path to the results your child deserves.</p>
         </div>
 
         <div className="max-w-5xl mx-auto space-y-4">
           {[
-            { step: "01", title: "Initial Assessment", desc: "Understand your child's starting level and specific conceptual gaps." },
+             { step: "01", title: "Initial Assessment", desc: "Understand your child&apos;s starting level and specific conceptual gaps." },
             { step: "02", title: "Personalised Plan", desc: "Built entirely around their specific exam board and revision timetable." },
             { step: "03", title: "Live 1-on-1 Sessions", desc: "Pure focus on concept clarity followed by rigorous exam technique practice." },
             { step: "04", title: "Regular Progress Reports", desc: "So you always know where they stand: no more guessing or uncertainty.", featured: true },
@@ -436,17 +436,17 @@ export default function GCSEOnlineTutoringPage() {
                     title="Conceptual Teaching Only" 
                     desc="Focus on 'understanding the topic' but failing to bridge the gap into actually scoring marks." 
                   />
-                  <ComparisonItem 
+                   <ComparisonItem 
                     title="Vague Weekly Lessons" 
-                    desc="Tutorials based on 'what was done in school' with no long-term roadmap or goal tracking." 
+                    desc="Tutorials based on &apos;what was done in school&apos; with no long-term roadmap or goal tracking." 
                   />
                   <ComparisonItem 
                     title="Informal Feedback" 
                     desc="Subjective verbal updates after class rather than data-driven progress reporting for parents." 
                   />
-                  <ComparisonItem 
+                   <ComparisonItem 
                     title="Soft Skill Support" 
-                    desc="Homework help that keeps students afloat but doesn't prepare them for terminal exams." 
+                    desc="Homework help that keeps students afloat but doesn&apos;t prepare them for terminal exams." 
                   />
                 </div>
               </div>
@@ -473,7 +473,7 @@ export default function GCSEOnlineTutoringPage() {
                     title="Measurable Performance" 
                     desc="Real-time reporting and automated grade projections so you always know their standing." 
                   />
-                  <ComparisonItem 
+                   <ComparisonItem 
                     isPositive 
                     title="Term-End Success" 
                     desc="Rigorous, timed past-paper practice designed to build stamina and eliminate exam-day anxiety." 
@@ -639,7 +639,7 @@ export default function GCSEOnlineTutoringPage() {
             <h2 className="text-4xl md:text-6xl font-black text-white mb-10 tracking-tighter uppercase leading-[0.9]">
               Give Your Child the <br />
               <span className="text-sapphire dark:text-blue-400">Support They Need</span> <br />
-              Before It's Too Late.
+               Before It&apos;s Too Late.
             </h2>
             <div className="flex flex-col sm:flex-row items-center gap-6 justify-center">
               <Link

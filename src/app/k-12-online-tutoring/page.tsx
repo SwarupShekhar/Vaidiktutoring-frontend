@@ -132,7 +132,7 @@ export default function K12OnlineTutoringPage() {
                 K-12 Online Tutoring Service
               </h1>
               <p className="text-xl md:text-2xl text-text-secondary mb-4 leading-relaxed font-medium">
-                Take the best step for your child's academic success with personalized tutoring.
+                Take the best step for your child&apos;s academic success with personalized tutoring.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start mt-8">
@@ -275,7 +275,7 @@ export default function K12OnlineTutoringPage() {
                 Personalized K-12 Tutoring for Smarter Learning
               </h2>
               <p className="text-lg text-text-secondary mb-6 leading-relaxed">
-                StudyHours offers customized K-12 tutoring that adapts to each student's unique learning pace and style. Our expert instructors simplify complex concepts and build strong study habits that provide a lifelong academic advantage.
+                StudyHours offers customized K-12 tutoring that adapts to each student&apos;s unique learning pace and style. Our expert instructors simplify complex concepts and build strong study habits that provide a lifelong academic advantage.
               </p>
               <p className="text-lg text-text-secondary mb-8 leading-relaxed">
                 We create a supportive atmosphere where students feel confident to ask questions and grow, with the flexibility to learn anytime, anywhere.
@@ -356,8 +356,8 @@ export default function K12OnlineTutoringPage() {
                 Flexible Online Tutoring That Turns Learning into Understanding
               </h2>
               <p className="text-lg md:text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
-                Every student learns differently. In an everyday classroom, it's
-                easy to become behind or miss the point entirely. That's where
+                Every student learns differently. In an everyday classroom, it&apos;s
+                easy to become behind or miss the point entirely. That&apos;s where
                 online tutoring can be very helpful.
               </p>
             </motion.div>
@@ -422,7 +422,7 @@ export default function K12OnlineTutoringPage() {
                 Our Tutoring Programs Works
               </h2>
               <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-                Getting started with StudyHours is easy and stress-free. We've
+                Getting started with StudyHours is easy and stress-free. We&apos;ve
                 kept the process simple so students can begin learning smoothly.
               </p>
               <div className="w-20 h-1.5 bg-sapphire mx-auto rounded-full mt-6"></div>
@@ -749,7 +749,7 @@ export default function K12OnlineTutoringPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6">
-              Ready to Transform Your Child's Learning?
+              Ready to Transform Your Child&apos;s Learning?
             </h2>
             <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
               Join thousands of students who have improved their grades and

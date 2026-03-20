@@ -274,7 +274,7 @@ export default function IBTutorsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
             {[
               {
-                title: "HL Concepts That Won't Simplify Themselves",
+                title: "HL Concepts That Won&apos;t Simplify Themselves",
                 desc: "For the student drowning in content - we strip back the noise and focus on mastery.",
                 icon: Zap,
               },
@@ -544,7 +544,7 @@ export default function IBTutorsPage() {
 
           <div className="text-center border-b border-border pb-16">
             <p className="text-lg font-black text-deep-navy/60 italic uppercase tracking-tight">
-              Don't see your subject? We likely cover it — <Link href="/contact" className="text-sapphire underline underline-offset-4 hover:text-primary transition-colors">GET IN TOUCH.</Link>
+              Don&apos;t see your subject? We likely cover it — <Link href="/contact" className="text-sapphire underline underline-offset-4 hover:text-primary transition-colors">GET IN TOUCH.</Link>
             </p>
           </div>
         </div>
