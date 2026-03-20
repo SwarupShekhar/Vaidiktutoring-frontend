@@ -159,14 +159,13 @@ export default function IGCSEOnlineTutoringPage() {
                 CAMBRIDGE & EDEXCEL SPECIALISTS
               </div>
               <h1 className="text-4xl md:text-6xl xl:text-7xl font-black text-deep-navy dark:text-white mb-8 tracking-tighter leading-[0.95] uppercase">
-                From Grade 5 <br />
+                IGCSE <br />
                 <span className="text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic">
-                  to Grade 9.
+                  Tutors Online
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed font-medium max-w-xl opacity-90">
-                Your IGCSE results are still yours to define. We provide the
-                structured path from where you are to where you need to be.
+                Your child&apos;s <span className="font-black text-deep-navy dark:text-white">IGCSE results are not fixed yet.</span> We provide the <span className="font-black text-deep-navy dark:text-white">structured path</span> from where they are to where they need to be.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-6 justify-start">
