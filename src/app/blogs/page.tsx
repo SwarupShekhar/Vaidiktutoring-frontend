@@ -14,13 +14,13 @@ export const metadata: Metadata = {
     description: "Expert educational resources for students and parents.",
     url: "https://studyhours.com/blogs",
     type: "website",
-    images: [{ url: "/hero_calm_education.png" }],
+    images: [{ url: "https://studyhours.com/hero_calm_education.png" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Educational Insights & Study Tips | StudyHours Blog",
     description: "Expert educational resources for students and parents.",
-    images: ["/hero_calm_education.png"],
+    images: ["https://studyhours.com/hero_calm_education.png"],
   },
 };
 

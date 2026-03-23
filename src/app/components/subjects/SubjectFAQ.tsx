@@ -67,11 +67,7 @@ function AccordionItem({ question, answer }: { question: string, answer: string 
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex items-center justify-between p-6 text-left hover:bg-background transition-colors"
             >
-                {question === "How do I choose a reliable GCSE tutor service?" ? (
-                    <h3 className="font-bold text-(--color-text-primary) text-lg pr-8">{question}</h3>
-                ) : (
-                    <span className="font-bold text-(--color-text-primary) text-lg pr-8">{question}</span>
-                )}
+                <h3 className="font-bold text-(--color-text-primary) text-lg pr-8">{question}</h3>
                 <span className={`shrink-0 w-8 h-8 rounded-full border border-border flex items-center justify-center text-primary transition-all duration-300 ${isOpen ? 'bg-primary text-white rotate-45 border-primary' : 'bg-surface'}`}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19"></line>

@@ -109,13 +109,6 @@ export default function ALevelTutoringPage() {
     "@type": "EducationalOrganization",
     name: "Expert A-Level Tutors Online — Private A-Level Tuition",
     "image": "https://studyhours.com/hero_calm_education.png",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "1200",
-      "bestRating": "5",
-      "worstRating": "1"
-    }
   };
 
   return (
@@ -644,9 +637,18 @@ export default function ALevelTutoringPage() {
   );
 }
 
-function SubjectGroup({ title, subjects, boards, icon: Icon, isExpandable, initialShow }: any) {
+interface SubjectGroupProps {
+  title: string;
+  subjects: string[];
+  boards?: string[];
+  icon: any;
+  isExpandable?: boolean;
+  initialShow?: number;
+}
+
+function SubjectGroup({ title, subjects, boards, icon: Icon, isExpandable, initialShow }: SubjectGroupProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const displayedSubjects = isExpandable && !isExpanded ? subjects.slice(0, initialShow) : subjects;
+  const displayedSubjects = isExpandable && (initialShow !== undefined) && !isExpanded ? subjects.slice(0, initialShow) : subjects;
 
   return (
      <div className="p-8 rounded-4xl bg-white dark:bg-slate-900/50 border border-border dark:border-white/10 shadow-sm hover:shadow-xl transition-all group">
@@ -669,7 +671,7 @@ function SubjectGroup({ title, subjects, boards, icon: Icon, isExpandable, initi
             </motion.span>
           ))}
         </AnimatePresence>
-        {isExpandable && subjects.length > initialShow && !isExpanded && (
+        {isExpandable && initialShow !== undefined && subjects.length > initialShow && !isExpanded && (
           <button 
             onClick={() => setIsExpanded(true)}
             className="px-3 py-1.5 rounded-xl border border-sapphire/30 text-[10px] font-black text-sapphire uppercase tracking-tight hover:bg-sapphire/5 transition-colors"

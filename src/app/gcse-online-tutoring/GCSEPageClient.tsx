@@ -118,15 +118,8 @@ export default function GCSEOnlineTutoringPage() {
   const ratingSchema = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
-    name: "GCSE Online Tutoring",
+    name: "GCSE Tutors Online — Specialist UK GCSE Support",
     image: "https://studyhours.com/hero_calm_education.png",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "1200",
-      bestRating: "5",
-      worstRating: "1",
-    },
   };
 
   return (
@@ -768,9 +761,12 @@ export default function GCSEOnlineTutoringPage() {
                 <p className="text-sm font-medium text-text-secondary dark:text-slate-400 opacity-80 mb-6">
                   {pt.desc}
                 </p>
-                <button className="text-xs font-black text-sapphire uppercase tracking-widest hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary pb-1">
+                <Link
+                  href={user ? `/bookings/new?stage=${encodeURIComponent(pt.year)}` : `/signup?type=assessment&stage=${encodeURIComponent(pt.year)}`}
+                  className="text-xs font-black text-sapphire uppercase tracking-widest hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary pb-1"
+                >
                   Select This Stage
-                </button>
+                </Link>
               </motion.div>
             ))}
           </div>
@@ -969,6 +965,15 @@ export default function GCSEOnlineTutoringPage() {
   );
 }
 
+interface SubjectGroupProps {
+  title: string;
+  subjects: string[];
+  boards?: string[];
+  icon: any;
+  isExpandable?: boolean;
+  defaultExpanded?: boolean;
+}
+
 function SubjectGroup({
   title,
   subjects,
@@ -976,7 +981,7 @@ function SubjectGroup({
   icon: Icon,
   isExpandable,
   defaultExpanded,
-}: any) {
+}: SubjectGroupProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded ?? false);
 
   return (
@@ -1041,7 +1046,14 @@ function SubjectGroup({
   );
 }
 
-function DiagnosticCard({ title, desc, target, icon: Icon }: any) {
+interface DiagnosticCardProps {
+  title: string;
+  desc: string;
+  target: string;
+  icon: any;
+}
+
+function DiagnosticCard({ title, desc, target, icon: Icon }: DiagnosticCardProps) {
   return (
     <div className="p-10 rounded-4xl bg-white dark:bg-slate-900/50 border border-border dark:border-white/10 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
       <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-10 transition-opacity">

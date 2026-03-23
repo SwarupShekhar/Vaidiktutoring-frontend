@@ -10,12 +10,12 @@ export default function BlogsPage({ initialBlogs = [] }: { initialBlogs?: BlogPo
     const [loading, setLoading] = useState(initialBlogs.length === 0);
     const [error, setError] = useState('');
     const [category, setCategory] = useState('All');
-    const [hasFetched, setHasFetched] = useState(initialBlogs.length > 0);
+    const [fetchedCategory, setFetchedCategory] = useState<string | null>(initialBlogs.length > 0 ? 'All' : null);
 
     useEffect(() => {
         const fetchBlogs = async () => {
-            // Skip first fetch if we have initial blogs and category is All
-            if (hasFetched && category === 'All') {
+            // Skip if we already fetched this category
+            if (fetchedCategory === category) {
                 return;
             }
 
@@ -23,18 +23,18 @@ export default function BlogsPage({ initialBlogs = [] }: { initialBlogs?: BlogPo
             try {
                 const res = await blogsApi.getAll(1, 100, category);
                 setBlogs(res.data);
+                setFetchedCategory(category);
                 setError('');
             } catch (err) {
                 console.error(err);
                 setError('Failed to load blogs.');
             } finally {
                 setLoading(false);
-                setHasFetched(true);
             }
         };
 
         fetchBlogs();
-    }, [category, hasFetched]);
+    }, [category, fetchedCategory]);
 
     const categories = ['All', 'Math', 'Science', 'Study Tips', 'College Prep'];
 
@@ -86,7 +86,7 @@ export default function BlogsPage({ initialBlogs = [] }: { initialBlogs?: BlogPo
                                 <motion.article
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: idx * 0.1 }}
+                                    transition={{ delay: Math.min(idx * 0.1, 0.5) }}
                                     className="group h-full bg-glass rounded-4xl border border-white/10 overflow-hidden hover:border-primary/50 transition-all hover:shadow-2xl hover:-translate-y-1 flex flex-col"
                                 >
                                     {/* Image */}

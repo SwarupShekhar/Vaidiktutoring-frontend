@@ -124,15 +124,8 @@ export default function IBTutorsPage() {
   const ratingSchema = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
-    name: "IB Online Tutoring",
+    name: "IB Online Tutoring — Premium IB Diploma Tuition",
     image: "https://studyhours.com/hero_calm_education.png",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "1200",
-      bestRating: "5",
-      worstRating: "1",
-    },
   };
 
   return (
@@ -278,12 +271,13 @@ export default function IBTutorsPage() {
                       "Chemistry SL",
                       "English A",
                     ].map((subject) => (
-                      <button
+                      <Link
                         key={subject}
+                        href={user ? `/bookings/new?subject=${encodeURIComponent(subject)}` : `/signup?type=assessment&subject=${encodeURIComponent(subject)}`}
                         className="px-5 py-2.5 rounded-xl border border-border text-[11px] font-black text-text-secondary dark:text-text-secondary hover:border-sapphire hover:text-white hover:bg-sapphire transition-all duration-300 shadow-sm"
                       >
                         {subject}
-                      </button>
+                      </Link>
                     ))}
                   </div>
                   <Link
@@ -1099,7 +1093,7 @@ export default function IBTutorsPage() {
             </div>
             <div className="mt-16 pt-12 border-t border-white/5 flex items-center justify-between opacity-40">
               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white">
-                IB Diploma 2025
+                IB Diploma {new Date().getFullYear() + (new Date().getMonth() > 6 ? 1 : 0)}
               </span>
               <Link
                 href="/igcse-online-tutoring"
@@ -1145,6 +1139,16 @@ export default function IBTutorsPage() {
   );
 }
 
+interface SubjectGroupProps {
+  cardId: string;
+  title: string;
+  icon: any;
+  subjects: string[];
+  isExpandable?: boolean;
+  initialShow?: number;
+  note?: string;
+}
+
 function SubjectGroup({
   cardId,
   title,
@@ -1153,10 +1157,10 @@ function SubjectGroup({
   isExpandable,
   initialShow,
   note,
-}: any) {
+}: SubjectGroupProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const displayedSubjects =
-    isExpandable && !isExpanded ? subjects.slice(0, initialShow) : subjects;
+    isExpandable && initialShow !== undefined && !isExpanded ? subjects.slice(0, initialShow) : subjects;
 
   return (
     <div className="p-10 rounded-[3rem] bg-white dark:bg-slate-900/50 border border-border dark:border-white/10 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
@@ -1186,7 +1190,7 @@ function SubjectGroup({
               </motion.span>
             ))}
           </AnimatePresence>
-          {isExpandable && subjects.length > initialShow && !isExpanded && (
+          {isExpandable && initialShow !== undefined && subjects.length > initialShow && !isExpanded && (
             <button
               onClick={() => setIsExpanded(true)}
               className="px-3 py-1.5 rounded-xl border border-sapphire/30 text-[10px] font-black text-sapphire uppercase tracking-tight hover:bg-sapphire/5 transition-colors"

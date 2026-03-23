@@ -147,7 +147,7 @@ export default function K12OnlineTutoringPage() {
                 Premium K–12 Online Tutoring Service
               </h1>
               <div className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-8 leading-tight">
-                K-12 Online Tutoring Service
+                Transform Your Child's Learning Journey
               </div>
               <p className="text-xl md:text-2xl text-text-secondary mb-4 leading-relaxed font-medium">
                 Take the best step for your child's academic success with personalized tutoring.
