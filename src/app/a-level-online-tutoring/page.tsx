@@ -109,9 +109,6 @@ export default function ALevelTutoringPage() {
     "@type": "EducationalOrganization",
     name: "A-Level Online Tutoring",
     "image": "https://studyhours.com/hero_calm_education.png",
-    "priceRange": "$149 - $499",
-    "serviceType": "Tutoring",
-    "provider": { "@type": "Organization", "name": "StudyHours" },
     "aggregateRating": {
       "@type": "AggregateRating",
       "ratingValue": "4.9",
@@ -490,7 +487,7 @@ export default function ALevelTutoringPage() {
 
         <div className="max-w-7xl mx-auto mt-16 text-center border-t border-border pt-12">
           <p className="text-lg font-black text-deep-navy/60 italic uppercase tracking-tight">
-            Don&apos;t see your subject? We likely cover it - <Link href="/contact" className="text-sapphire underline underline-offset-4 hover:text-primary transition-colors">GET IN TOUCH.</Link>
+            Don't see your subject? We likely cover it - <Link href="/contact" className="text-sapphire underline underline-offset-4 hover:text-primary transition-colors">GET IN TOUCH.</Link>
           </p>
         </div>
       </section>

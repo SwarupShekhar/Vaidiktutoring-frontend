@@ -126,8 +126,6 @@ export default function IBTutorsPage() {
     "@type": "EducationalOrganization",
     name: "IB Online Tutoring",
     image: "https://studyhours.com/hero_calm_education.png",
-    priceRange: "$149 - $499",
-    provider: { "@type": "Organization", name: "StudyHours" },
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "4.9",
@@ -319,7 +317,7 @@ export default function IBTutorsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
             {[
               {
-                title: "HL Concepts That Won&apos;t Simplify Themselves",
+                title: "HL Concepts That Won't Simplify Themselves",
                 desc: "For the student drowning in content - we strip back the noise and focus on mastery.",
                 icon: Zap,
               },
@@ -680,7 +678,7 @@ export default function IBTutorsPage() {
 
           <div className="text-center border-b border-border pb-16">
             <p className="text-lg font-black text-deep-navy/60 italic uppercase tracking-tight">
-              Don&apos;t see your subject? We likely cover it —{" "}
+              Don't see your subject? We likely cover it —{" "}
               <Link
                 href="/contact"
                 className="text-sapphire underline underline-offset-4 hover:text-primary transition-colors"
@@ -818,7 +816,7 @@ export default function IBTutorsPage() {
               <h2 className="text-5xl md:text-7xl font-black text-deep-navy dark:text-white mb-8 tracking-tighter leading-tight">
                 IB Exams in May? <br />
                 <span className="text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary transition-all">
-                  Let&apos;s build your prep plan now.
+                  Let's build your prep plan now.
                 </span>
               </h2>
               <p className="text-xl text-text-secondary dark:text-slate-400 mb-12 font-medium leading-relaxed max-w-xl">

@@ -120,8 +120,6 @@ export default function GCSEOnlineTutoringPage() {
     "@type": "EducationalOrganization",
     name: "GCSE Online Tutoring",
     image: "https://studyhours.com/hero_calm_education.png",
-    priceRange: "$149 - $499",
-    provider: { "@type": "Organization", name: "StudyHours" },
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "4.9",
@@ -173,11 +171,11 @@ export default function GCSEOnlineTutoringPage() {
                 GCSE Tutors Online
               </h1>
               <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-10 leading-tight">
-                Your Child&apos;s GCSE Results <br />
+                Your Child's GCSE Results <br />
                 Are Not Fixed Yet.
               </div>
               <p className="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed font-medium max-w-xl">
-                Behind on GCSEs? There&apos;s still time to turn grades around -
+                Behind on GCSEs? There's still time to turn grades around -
                 if you start now. We provide the calm, structured plan your
                 child needs.
               </p>
@@ -268,7 +266,7 @@ export default function GCSEOnlineTutoringPage() {
                 icon: AlertTriangle,
               },
               {
-                title: "Exams are months away and revision hasn&apos;t started",
+                title: "Exams are months away and revision hasn't started",
                 desc: "Procrastination is usually hidden anxiety. We break the syllabus down into manageable daily wins to get momentum back instantly.",
                 icon: Clock,
               },
@@ -320,7 +318,7 @@ export default function GCSEOnlineTutoringPage() {
                 {[
                   "Avoiding homework or revision",
                   "Grades dropping between assessments",
-                  "Saying they &apos;understand&apos; but struggling in tests",
+                  "Saying they 'understand' but struggling in tests",
                   "Disorganised notes or missing classwork",
                   "Increased stress or anxiety around schoolwork",
                 ].map((sign, i) => (
@@ -441,7 +439,7 @@ export default function GCSEOnlineTutoringPage() {
 
         <div className="max-w-7xl mx-auto mt-16 text-center border-t border-border pt-12">
           <p className="text-lg font-black text-deep-navy/60 italic uppercase tracking-tight">
-            Don&apos;t see your subject? We likely cover it -{" "}
+            Don't see your subject? We likely cover it -{" "}
             <Link
               href="/contact"
               className="text-sapphire underline underline-offset-4 hover:text-primary transition-colors"
@@ -470,7 +468,7 @@ export default function GCSEOnlineTutoringPage() {
             {
               step: "01",
               title: "Initial Assessment",
-              desc: "Understand your child&apos;s starting level and specific conceptual gaps.",
+              desc: "Understand your child's starting level and specific conceptual gaps.",
             },
             {
               step: "02",
@@ -816,7 +814,7 @@ export default function GCSEOnlineTutoringPage() {
                 Support They Need
               </span>{" "}
               <br />
-              Before It&apos;s Too Late.
+              Before It's Too Late.
             </h2>
             <div className="flex flex-col sm:flex-row items-center gap-6 justify-center">
               <Link

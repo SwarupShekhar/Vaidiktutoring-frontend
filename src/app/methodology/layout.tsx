@@ -83,7 +83,6 @@ export default function MethodologyLayout({
             "@type": "EducationalOrganization",
             "name": "StudyHours Methodology",
             "image": "https://studyhours.com/hero_calm_education.png",
-            "priceRange": "$149 - $499",
             "description": "AI-based learning approach designed to personalize tutoring and identify gaps.",
             "address": {
               "@type": "PostalAddress",

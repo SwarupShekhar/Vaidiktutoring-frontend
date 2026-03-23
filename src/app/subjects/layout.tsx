@@ -63,7 +63,6 @@ export default function SubjectsLayout({
             "@type": "EducationalOrganization",
             "name": "StudyHours",
             "image": "https://studyhours.com/hero_calm_education.png",
-            "priceRange": "$149 - $499",
             "description": "Expert curriculum aligned tutoring for US, UK & IB students.",
             "address": {
               "@type": "PostalAddress",

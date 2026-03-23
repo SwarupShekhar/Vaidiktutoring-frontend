@@ -91,7 +91,7 @@ export default function MethodologyPage() {
               <p className="text-(--color-text-primary) leading-relaxed font-medium">
                 Sessions are led by trained subject specialists who follow
                 structured, curriculum-aligned lesson plans designed for your
-                child&apos;s specific system.
+                child's specific system.
               </p>
             </motion.div>
 
@@ -151,7 +151,7 @@ export default function MethodologyPage() {
             What Sets Our Experts Apart
           </h2>
           <p className="text-text-secondary text-lg">
-            We don&apos;t just find tutors; we build education specialists.
+            We don't just find tutors; we build education specialists.
           </p>
         </div>
 

@@ -46,7 +46,6 @@ export default function AboutLayout({
             "@type": "EducationalOrganization",
             "name": "StudyHours",
             "image": "https://studyhours.com/hero_calm_education.png",
-            "priceRange": "$149 - $499",
             "description": "A modern learning platform combining expert tutors and AI tools.",
             "address": {
               "@type": "PostalAddress",

@@ -123,8 +123,6 @@ export default function IGCSEOnlineTutoringPage() {
     "@type": "EducationalOrganization",
     name: "IGCSE Online Tutoring",
     image: "https://studyhours.com/hero_calm_education.png",
-    priceRange: "$149 - $499",
-    provider: { "@type": "Organization", name: "StudyHours" },
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "4.9",
@@ -181,7 +179,7 @@ export default function IGCSEOnlineTutoringPage() {
                 Cambridge & Edexcel Specialists
               </div>
               <p className="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed font-medium max-w-xl opacity-90">
-                Your child&apos;s{" "}
+                Your child's{" "}
                 <span className="font-black text-deep-navy dark:text-white">
                   IGCSE results are not fixed yet.
                 </span>{" "}
@@ -809,7 +807,7 @@ export default function IGCSEOnlineTutoringPage() {
                 </span>
               </h2>
               <p className="text-xl text-text-secondary dark:text-slate-400 mb-12 font-medium leading-relaxed max-w-xl">
-                Let&apos;s start your revision plan this week. We have tutors
+                Let's start your revision plan this week. We have tutors
                 ready to focus specifically on the June Cambridge and Edexcel
                 papers.
               </p>
@@ -873,7 +871,7 @@ export default function IGCSEOnlineTutoringPage() {
               </span>
             </h2>
             <p className="text-lg md:text-xl text-slate-400 mb-12 md:mb-16 font-medium leading-relaxed max-w-2xl mx-auto px-4 md:px-0">
-              Let&apos;s make sure you earn yours. Join the students securing
+              Let's make sure you earn yours. Join the students securing
               top results with Cambridge-specialist mentorship.
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-6 justify-center">
