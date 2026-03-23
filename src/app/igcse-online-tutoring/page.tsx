@@ -105,7 +105,7 @@ export default function IGCSEOnlineTutoringPage() {
 
   const ratingSchema = {
     "@context": "https://schema.org",
-    "@type": "Service",
+    "@type": "LocalBusiness",
     "name": "IGCSE Online Tutoring",
     "serviceType": "Tutoring",
     "provider": { "@type": "Organization", "name": "StudyHours" },

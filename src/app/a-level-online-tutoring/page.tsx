@@ -91,7 +91,7 @@ export default function ALevelTutoringPage() {
 
   const ratingSchema = {
     "@context": "https://schema.org",
-    "@type": "Service",
+    "@type": "LocalBusiness",
     "name": "A-Level Online Tutoring",
     "serviceType": "Tutoring",
     "provider": { "@type": "Organization", "name": "StudyHours" },

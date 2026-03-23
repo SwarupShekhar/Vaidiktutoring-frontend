@@ -64,7 +64,7 @@ export default function K12OnlineTutoringPage() {
 
   const ratingSchema = {
     "@context": "https://schema.org",
-    "@type": "Service",
+    "@type": "LocalBusiness",
     "name": "K-12 Online Tutoring",
     "serviceType": "Tutoring",
     "provider": { "@type": "Organization", "name": "StudyHours" },

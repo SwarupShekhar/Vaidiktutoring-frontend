@@ -98,7 +98,7 @@ export default function GCSEOnlineTutoringPage() {
 
   const ratingSchema = {
     "@context": "https://schema.org",
-    "@type": "Service",
+    "@type": "LocalBusiness",
     "name": "GCSE Online Tutoring",
     "serviceType": "Tutoring",
     "provider": { "@type": "Organization", "name": "StudyHours" },

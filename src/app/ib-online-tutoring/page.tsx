@@ -96,7 +96,7 @@ export default function IBTutorsPage() {
 
   const ratingSchema = {
     "@context": "https://schema.org",
-    "@type": "Service",
+    "@type": "LocalBusiness",
     "name": "IB Online Tutoring",
     "serviceType": "Tutoring",
     "provider": { "@type": "Organization", "name": "StudyHours" },
