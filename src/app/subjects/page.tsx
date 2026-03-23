@@ -83,7 +83,7 @@ export default function SubjectsPage() {
 
             {/* Final Strong CTA Section */}
             <div className="px-6 max-w-7xl mx-auto text-center mt-20 mb-32 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-                <h2 className="text-3xl font-bold text-deep-navy mb-8">Ready to unlock your child's potential?</h2>
+                <h2 className="text-3xl font-bold text-deep-navy dark:text-white mb-8">Ready to unlock your child's potential?</h2>
 
                 <Link
                     href={user ? '/students/dashboard' : '/signup'}

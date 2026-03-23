@@ -58,7 +58,8 @@ export default function K12OnlineTutoringPage() {
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studyhours.com" },
-      { "@type": "ListItem", "position": 2, "name": "Programs", "item": "https://studyhours.com/k-12-online-tutoring" }
+      { "@type": "ListItem", "position": 2, "name": "Subjects", "item": "https://studyhours.com/subjects" },
+      { "@type": "ListItem", "position": 3, "name": "K-12 Tutoring", "item": "https://studyhours.com/k-12-online-tutoring" }
     ]
   };
 
@@ -66,6 +67,8 @@ export default function K12OnlineTutoringPage() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "K-12 Online Tutoring",
+    "image": "https://studyhours.com/hero_calm_education.png",
+    "priceRange": "$149 - $499",
     "serviceType": "Tutoring",
     "provider": { "@type": "Organization", "name": "StudyHours" },
     "aggregateRating": {
@@ -110,7 +113,7 @@ export default function K12OnlineTutoringPage() {
       {/* ============================================
           SECTION 1: HERO BANNER
       ============================================ */}
-      <section className="min-h-[90vh] flex items-center pt-32 pb-24 px-6 relative overflow-hidden bg-linear-to-b from-ice-blue to-background">
+      <section className="min-h-[90vh] flex items-center pt-32 pb-24 px-6 relative overflow-hidden bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background">
         {/* Background Decorations */}
         <div className="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none">
           <div className="absolute top-[10%] right-[5%] w-[500px] h-[500px] bg-sapphire/10 rounded-full blur-[120px]" />
@@ -129,8 +132,11 @@ export default function K12OnlineTutoringPage() {
                 K-12 Online Tutoring
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-deep-navy dark:text-white mb-6 tracking-tight leading-[1.1]">
-                K-12 Online Tutoring Service
+                Online Tutoring for Kids
               </h1>
+              <div className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-8 leading-tight">
+                K-12 Online Tutoring Service
+              </div>
               <p className="text-xl md:text-2xl text-text-secondary mb-4 leading-relaxed font-medium">
                 Take the best step for your child&apos;s academic success with personalized tutoring.
               </p>
@@ -169,7 +175,7 @@ export default function K12OnlineTutoringPage() {
                 <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-ice-blue/20 dark:to-slate-900/20 rounded-[4rem] z-0" />
                 <Image
                   src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774006824/a_young_student_202603201710-Photoroom_ebs8yl.png"
-                  alt="Young student smiling and learning"
+                  alt="Expert K-12 online tutoring session | StudyHours"
                   fill
                   className="object-contain object-bottom z-10 drop-shadow-2xl"
                   priority
@@ -244,7 +250,7 @@ export default function K12OnlineTutoringPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-deep-navy mb-6">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-deep-navy dark:text-white mb-6">
                 Online tutoring that accelerates{" "}
                 <span className="text-sapphire">Student Outcomes</span>
               </h2>
@@ -271,7 +277,7 @@ export default function K12OnlineTutoringPage() {
                 <Target size={16} />
                 Personalized Learning
               </div>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy mb-6">
+              <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy dark:text-white mb-6">
                 Personalized K-12 Tutoring for Smarter Learning
               </h2>
               <p className="text-lg text-text-secondary mb-6 leading-relaxed">
@@ -330,7 +336,7 @@ export default function K12OnlineTutoringPage() {
                   <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mb-4">
                     <item.icon size={24} />
                   </div>
-                  <h3 className="text-lg font-bold text-deep-navy mb-2">
+                  <h3 className="text-lg font-bold text-deep-navy dark:text-white mb-2">
                     {item.title}
                   </h3>
                   <p className="text-sm text-text-secondary">{item.desc}</p>
@@ -352,7 +358,7 @@ export default function K12OnlineTutoringPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-deep-navy mb-6">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-deep-navy dark:text-white mb-6">
                 Flexible Online Tutoring That Turns Learning into Understanding
               </h2>
               <p className="text-lg md:text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
@@ -395,7 +401,7 @@ export default function K12OnlineTutoringPage() {
                 <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-sapphire to-blue-400 flex items-center justify-center text-white mb-6">
                   <item.icon size={28} />
                 </div>
-                <h3 className="text-xl font-bold text-deep-navy mb-4">
+                <h3 className="text-xl font-bold text-deep-navy dark:text-white mb-4">
                   {item.title}
                 </h3>
                 <p className="text-text-secondary leading-relaxed">
@@ -418,7 +424,7 @@ export default function K12OnlineTutoringPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy mb-4">
+              <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy dark:text-white mb-4">
                 Our Tutoring Programs Works
               </h2>
               <p className="text-lg text-text-secondary max-w-2xl mx-auto">
@@ -468,7 +474,7 @@ export default function K12OnlineTutoringPage() {
                   <div className="text-4xl font-black text-sapphire/20 mb-4">
                     {item.step}
                   </div>
-                  <h3 className="text-xl font-bold text-deep-navy mb-3">
+                  <h3 className="text-xl font-bold text-deep-navy dark:text-white mb-3">
                     {item.title}
                   </h3>
                   <p className="text-sm text-text-secondary leading-relaxed">
@@ -497,7 +503,7 @@ export default function K12OnlineTutoringPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-deep-navy mb-4">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-deep-navy dark:text-white mb-4">
                 Subjects Offered in our K-12 Programs.
               </h2>
               <div className="w-20 h-1.5 bg-sapphire mx-auto rounded-full mt-6"></div>
@@ -561,7 +567,7 @@ export default function K12OnlineTutoringPage() {
                 <div className={`w-12 h-12 rounded-2xl ${category.bg} ${category.color} flex items-center justify-center mb-6`}>
                   <category.icon size={24} />
                 </div>
-                <h3 className="text-xl font-bold text-deep-navy mb-3">
+                <h3 className="text-xl font-bold text-deep-navy dark:text-white mb-3">
                   {category.title}
                 </h3>
                 <p className="text-text-secondary text-sm leading-relaxed">
@@ -584,7 +590,7 @@ export default function K12OnlineTutoringPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-deep-navy mb-4">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-deep-navy dark:text-white mb-4">
                 Benefits of Our Online Tutoring
               </h2>
               <p className="text-lg text-text-secondary max-w-2xl mx-auto">
@@ -641,7 +647,7 @@ export default function K12OnlineTutoringPage() {
                 <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 mb-4">
                   <CheckCircle2 size={24} />
                 </div>
-                <h3 className="text-xl font-bold text-deep-navy mb-3">
+                <h3 className="text-xl font-bold text-deep-navy dark:text-white mb-3">
                   {benefit.title}
                 </h3>
                 <p className="text-text-secondary leading-relaxed">
@@ -664,7 +670,7 @@ export default function K12OnlineTutoringPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-5xl font-extrabold text-deep-navy mb-6">
+              <h2 className="text-3xl md:text-5xl font-extrabold text-deep-navy dark:text-white mb-6">
                 Our Science-Backed Learning Framework
               </h2>
               <p className="text-lg md:text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
@@ -709,7 +715,7 @@ export default function K12OnlineTutoringPage() {
                 <div className={`w-14 h-14 rounded-2xl ${item.bg} ${item.color} flex items-center justify-center mb-8`}>
                   <item.icon size={32} />
                 </div>
-                <h3 className="text-2xl font-bold text-deep-navy mb-4">
+                <h3 className="text-2xl font-bold text-deep-navy dark:text-white mb-4">
                   {item.title}
                 </h3>
                 <p className="text-lg text-text-secondary leading-relaxed">
@@ -735,7 +741,7 @@ export default function K12OnlineTutoringPage() {
       {/* ============================================
           SECTION 9: FINAL CTA
       ============================================ */}
-      <section className="py-24 px-6 bg-deep-navy relative overflow-hidden">
+      <section className="py-24 px-6 bg-deep-navy dark:bg-slate-950 relative overflow-hidden">
         {/* Background Effects */}
         <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
           <div className="absolute top-[20%] right-[10%] w-[400px] h-[400px] bg-sapphire/30 rounded-full blur-[100px]" />
@@ -787,7 +793,7 @@ export default function K12OnlineTutoringPage() {
       <section className="py-24 px-6 relative overflow-hidden bg-surface">
         <div className="max-w-4xl mx-auto relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-extrabold text-deep-navy mb-6">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-deep-navy dark:text-white mb-6">
               Frequently Asked Questions
             </h2>
           </div>
@@ -843,7 +849,7 @@ function FAQItem({ faq, index }: { faq: { q: string; a: string }; index: number 
           <span className="w-8 h-8 rounded-full bg-sapphire/10 text-sapphire flex items-center justify-center text-sm font-bold shrink-0 mt-0.5">
             Q
           </span>
-          <span className="text-lg font-bold text-deep-navy group-hover:text-sapphire transition-colors pt-1">
+          <span className="text-lg font-bold text-deep-navy dark:text-white group-hover:text-sapphire transition-colors pt-1">
             {faq.q}
           </span>
         </div>

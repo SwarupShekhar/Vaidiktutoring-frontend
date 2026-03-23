@@ -11,17 +11,17 @@ export default function SubjectsHero() {
 
     return (
         <div className="text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-deep-navy mb-6 tracking-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-deep-navy dark:text-white mb-6 tracking-tight">
                 Learning Paths That Align With<br className="hidden md:block" /> Your Child’s School
             </h1>
-            <p className="text-xl md:text-2xl text-text-secondary max-w-3xl mx-auto leading-relaxed mb-10 font-medium">
+            <p className="text-xl md:text-2xl text-text-secondary dark:text-slate-400 max-w-3xl mx-auto leading-relaxed mb-10 font-medium">
                 Our programs adapt to US, UK, and International curricula while building real academic skills.
             </p>
             <div className="flex flex-wrap justify-center gap-2.5">
                 {frameworks.map((framework, index) => (
                     <span
                         key={index}
-                        className="px-4 py-2 rounded-full bg-ice-blue/50 border border-powder-blue text-sm font-semibold text-sapphire shadow-sm backdrop-blur-sm"
+                        className="px-4 py-2 rounded-full bg-ice-blue/50 dark:bg-slate-800/50 border border-powder-blue dark:border-white/10 text-sm font-semibold text-sapphire dark:text-blue-400 shadow-sm backdrop-blur-sm"
                     >
                         {framework}
                     </span>

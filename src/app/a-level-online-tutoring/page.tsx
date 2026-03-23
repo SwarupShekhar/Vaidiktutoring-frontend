@@ -84,7 +84,7 @@ export default function ALevelTutoringPage() {
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studyhours.com" },
-      { "@type": "ListItem", "position": 2, "name": "Programs", "item": "https://studyhours.com/k-12-online-tutoring" },
+      { "@type": "ListItem", "position": 2, "name": "Subjects", "item": "https://studyhours.com/subjects" },
       { "@type": "ListItem", "position": 3, "name": "A-Level Tutoring", "item": "https://studyhours.com/a-level-online-tutoring" }
     ]
   };
@@ -93,6 +93,8 @@ export default function ALevelTutoringPage() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "A-Level Online Tutoring",
+    "image": "https://studyhours.com/hero_calm_education.png",
+    "priceRange": "$149 - $499",
     "serviceType": "Tutoring",
     "provider": { "@type": "Organization", "name": "StudyHours" },
     "aggregateRating": {
@@ -140,12 +142,13 @@ export default function ALevelTutoringPage() {
                 <ShieldCheck size={14} className="text-sapphire" />
                 Specialist A-Level Support
               </div>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-deep-navy dark:text-white mb-8 tracking-tighter leading-[0.95] uppercase">
-                A-Level Tutoring <br />
-                <span className="text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic">
-                  Built Around Your University Goals
-                </span>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-deep-navy dark:text-white mb-6 tracking-tighter leading-[0.95] uppercase">
+                A-Level Tutors Online
               </h1>
+              <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-10 leading-tight">
+                A-Level Tutoring <br />
+                Built Around Your University Goals
+              </div>
               <p className="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed font-medium max-w-xl">
                 Expert one-on-one support across every A-Level subject - from first lesson to final exam.
               </p>
@@ -179,7 +182,7 @@ export default function ALevelTutoringPage() {
             >
               <Image
                 src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774006053/Candid_photography_of_202603201657-Photoroom_o5gy9i.png"
-                alt="A-Level tutor and student collaborating"
+                alt="Expert A-Level online tutor and student collaborating on exam preparation | StudyHours"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 priority
@@ -253,7 +256,7 @@ export default function ALevelTutoringPage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="mb-20 text-balance">
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-sapphire mb-6 block">The Context</span>
-            <h2 className="text-4xl md:text-5xl font-black text-deep-navy tracking-tighter uppercase leading-none mb-6">
+            <h2 className="text-4xl md:text-5xl font-black text-deep-navy dark:text-white tracking-tighter uppercase leading-none mb-6">
               Why A-Level Students <span className="text-sapphire">Come to Us</span>
             </h2>
           </div>
@@ -380,7 +383,7 @@ export default function ALevelTutoringPage() {
       <section className="py-24 px-6 bg-surface dark:bg-slate-900/50 relative overflow-hidden">
         <div className="max-w-5xl mx-auto relative z-10 text-center mb-20">
            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-sapphire mb-3 block">Process</span>
-           <h2 className="text-4xl md:text-5xl font-black text-deep-navy tracking-tighter uppercase leading-none mb-6">
+           <h2 className="text-4xl md:text-5xl font-black text-deep-navy dark:text-white tracking-tighter uppercase leading-none mb-6">
               How We Support Your <span className="text-sapphire italic">A-Level Journey</span>
            </h2>
         </div>
@@ -438,7 +441,7 @@ export default function ALevelTutoringPage() {
       <section className="py-24 md:py-40 px-6 bg-background relative overflow-hidden border-y border-border">
         <div className="max-w-7xl mx-auto relative z-10 text-center mb-20">
           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-sapphire mb-6 block">Selection</span>
-          <h2 className="text-4xl md:text-5xl font-black text-deep-navy tracking-tighter uppercase leading-none">
+          <h2 className="text-4xl md:text-5xl font-black text-deep-navy dark:text-white tracking-tighter uppercase leading-none">
             Every A-Level Subject, <br />
             <span className="text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary">One Specialist Platform</span>
           </h2>
@@ -483,7 +486,7 @@ export default function ALevelTutoringPage() {
       <section className="py-16 px-6 bg-surface border-y border-border">
          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="max-w-md">
-              <h2 className="text-2xl font-black text-deep-navy uppercase tracking-tighter leading-none mb-2">We Tutor Across All <br /> <span className="text-sapphire">Major A-Level Exam Boards.</span></h2>
+              <h2 className="text-2xl font-black text-deep-navy dark:text-white uppercase tracking-tighter leading-none mb-2">We Tutor Across All <br /> <span className="text-sapphire">Major A-Level Exam Boards.</span></h2>
               <p className="text-sm font-medium text-text-secondary">Your tutor will know your exact syllabus, mark scheme, and assessment structure.</p>
               
               <div className="flex items-center gap-6 mt-6">

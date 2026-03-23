@@ -9,7 +9,7 @@ export default function SubjectMetrics() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     {/* Left: Text & Key Stats */}
                     <div>
-                        <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy mb-6">
+                        <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy dark:text-white mb-6">
                             Real results, real confidence.
                         </h2>
                         <p className="text-lg text-text-secondary mb-12">
@@ -22,7 +22,7 @@ export default function SubjectMetrics() {
                                     95%
                                 </div>
                                 <div>
-                                    <p className="text-lg font-bold text-deep-navy">Confidence Boost</p>
+                                    <p className="text-lg font-bold text-deep-navy dark:text-white">Confidence Boost</p>
                                     <p className="text-text-secondary">of students report higher academic confidence</p>
                                 </div>
                             </div>
@@ -32,7 +32,7 @@ export default function SubjectMetrics() {
                                     72%
                                 </div>
                                 <div>
-                                    <p className="text-lg font-bold text-deep-navy">Grade Improvement</p>
+                                    <p className="text-lg font-bold text-deep-navy dark:text-white">Grade Improvement</p>
                                     <p className="text-text-secondary">average grade improvement within three months</p>
                                 </div>
                             </div>
@@ -42,7 +42,7 @@ export default function SubjectMetrics() {
                                     4.9/5
                                 </div>
                                 <div>
-                                    <p className="text-lg font-bold text-deep-navy">Parent Satisfaction</p>
+                                    <p className="text-lg font-bold text-deep-navy dark:text-white">Parent Satisfaction</p>
                                     <p className="text-text-secondary">average rating from over 10,000 parents</p>
                                 </div>
                             </div>
@@ -52,7 +52,7 @@ export default function SubjectMetrics() {
                     {/* Right: Progress Visualization */}
                     <div className="bg-surface rounded-4xl p-8 shadow-2xl shadow-blue-900/10 border border-border h-full flex flex-col justify-between transform hover:scale-[1.02] transition-transform duration-500">
                         <div className="mb-8">
-                            <h3 className="text-xl font-bold text-deep-navy mb-2">Trackable Progress</h3>
+                            <h3 className="text-xl font-bold text-deep-navy dark:text-white mb-2">Trackable Progress</h3>
                             <p className="text-sm text-text-secondary">
                                 We visualize growth over time, so you always know where your child stands.
                             </p>

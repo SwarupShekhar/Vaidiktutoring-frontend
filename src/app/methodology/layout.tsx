@@ -1,13 +1,13 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Our Methodology | StudyHours",
+  title: "AI-Based Learning Approach | StudyHours Methodology",
   description:
-    "Discover our structured, outcome-driven tutoring approach that blends expert educators with data-driven insights for deep learning and measurable academic growth.",
+    "Explore our AI-based learning approach designed to personalize tutoring, identify gaps, and help students achieve better academic results.",
   openGraph: {
-    title: "Our Methodology | StudyHours",
+    title: "AI-Based Learning Approach | StudyHours Methodology",
     description:
-      "Structured, measurable, and outcome-driven learning for K-12 students.",
+      "Explore our AI-based learning approach designed to personalize tutoring, identify gaps, and help students achieve better academic results.",
     url: "/methodology",
     images: [
       {
@@ -20,13 +20,13 @@ export const metadata: Metadata = {
     type: "website",
   },
   alternates: {
-    canonical: "/methodology",
+    canonical: "https://studyhours.com/methodology",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Our Methodology | StudyHours",
+    title: "AI-Based Learning Approach | StudyHours Methodology",
     description:
-      "Structured, measurable, and outcome-driven learning for K-12 students.",
+      "Explore our AI-based learning approach designed to personalize tutoring, identify gaps, and help students achieve better academic results.",
     images: ["/hero_calm_education.png"],
   },
 };
@@ -72,6 +72,36 @@ export default function MethodologyLayout({
                 },
               ],
             },
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "StudyHours Methodology",
+            "image": "https://studyhours.com/hero_calm_education.png",
+            "priceRange": "$149 - $499",
+            "description": "AI-based learning approach designed to personalize tutoring and identify gaps.",
+            "address": {
+              "@type": "PostalAddress",
+              "addressCountry": "Global"
+            }
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studyhours.com" },
+              { "@type": "ListItem", "position": 2, "name": "Methodology", "item": "https://studyhours.com/methodology" }
+            ]
           }),
         }}
       />

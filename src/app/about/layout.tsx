@@ -1,13 +1,13 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About Us | StudyHours",
+  title: "StudyHours | Expert Tutors & AI Learning System",
   description:
-    "Learn about StudyHours academic mission, our hybrid pedagogy, and how we are reimagining K-12 learning support through expert tutors and intelligent systems.",
+    "A modern learning platform combining expert tutors and AI tools to deliver structured, personalized education for students worldwide.",
   openGraph: {
-    title: "About Us | StudyHours",
+    title: "StudyHours | Expert Tutors & AI Learning System",
     description:
-      "Reimagining K-12 learning support through expert educators and intelligent systems.",
+      "A modern learning platform combining expert tutors and AI tools to deliver structured, personalized education for students worldwide.",
     url: "/about",
     images: [
       {
@@ -20,13 +20,13 @@ export const metadata: Metadata = {
     type: "website",
   },
   alternates: {
-    canonical: "/about",
+    canonical: "https://studyhours.com/about",
   },
   twitter: {
     card: "summary_large_image",
-    title: "About Us | StudyHours",
+    title: "StudyHours | Expert Tutors & AI Learning System",
     description:
-      "Reimagining K-12 learning support through expert educators and intelligent systems.",
+      "A modern learning platform combining expert tutors and AI tools to deliver structured, personalized education for students worldwide.",
     images: ["/hero_calm_education.png"],
   },
 };
@@ -36,5 +36,39 @@ export default function AboutLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "StudyHours",
+            "image": "https://studyhours.com/hero_calm_education.png",
+            "priceRange": "$149 - $499",
+            "description": "A modern learning platform combining expert tutors and AI tools.",
+            "address": {
+              "@type": "PostalAddress",
+              "addressCountry": "Global"
+            }
+          }),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studyhours.com" },
+              { "@type": "ListItem", "position": 2, "name": "About", "item": "https://studyhours.com/about" }
+            ]
+          }),
+        }}
+      />
+      {children}
+    </>
+  );
 }

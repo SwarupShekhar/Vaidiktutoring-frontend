@@ -73,7 +73,7 @@ export default function SubjectLearningPath({ subject, isLoading }: LearningPath
             {/* Learning Stages - The Core */}
             <section>
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl font-extrabold text-deep-navy">The Learning Progression</h2>
+                    <h2 className="text-3xl font-extrabold text-deep-navy dark:text-white">The Learning Progression</h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
@@ -107,7 +107,7 @@ export default function SubjectLearningPath({ subject, isLoading }: LearningPath
                                                 Ages {stage.ageRange}
                                             </span>
                                         </div>
-                                        <h3 className="text-2xl font-extrabold text-deep-navy">{stage.label}</h3>
+                                        <h3 className="text-2xl font-extrabold text-deep-navy dark:text-white">{stage.label}</h3>
                                     </div>
 
                                     {/* Body */}
@@ -125,7 +125,7 @@ export default function SubjectLearningPath({ subject, isLoading }: LearningPath
                                     {/* Footer: Aligned With */}
                                     <div className={`mt-auto pt-6 border-t ${borderColorClass} border-dashed`}>
                                         <div className="flex items-center gap-2 mb-3">
-                                            <span className="text-xs font-black text-deep-navy uppercase tracking-tighter">Aligned With:</span>
+                                            <span className="text-xs font-black text-deep-navy dark:text-white uppercase tracking-tighter">Aligned With:</span>
                                         </div>
                                         <div className="space-y-3">
                                             {stage.curriculumFrameworks.map((cf, index) => (

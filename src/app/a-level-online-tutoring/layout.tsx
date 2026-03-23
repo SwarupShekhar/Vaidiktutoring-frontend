@@ -1,15 +1,15 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "A Level Tutors Online | Top Experts | Study Hours",
-  description: "Find expert A Level tutors online at Study Hours. Built by educators and engineers to enhance teaching and help students achieve academic success.",
+  title: "A-Level Tutors Online | Top Experts | Study Hours",
+  description: "Looking for top A-Level tutors online StudyHours offers personalized 1-on-1 tutoring from experts to help students improve grades & boost confidence.",
   alternates: {
-    canonical: "/a-level-online-tutoring",
+    canonical: "https://studyhours.com/a-level-online-tutoring",
   },
   openGraph: {
-    title: "A-Level Tutors Online | Personalized University Prep",
-    description: "Get the best A-Level online tuition with expert specialist tutors. Achieve your university offers through personalized 1-on-1 learning.",
-    url: "/a-level-online-tutoring",
+    title: "A-Level Tutors Online | Top Experts | Study Hours",
+    description: "Looking for top A-Level tutors online StudyHours offers personalized 1-on-1 tutoring from experts to help students improve grades & boost confidence.",
+    url: "https://studyhours.com/a-level-online-tutoring",
     images: [
       {
         url: "/hero_calm_education.png",
@@ -22,8 +22,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "A-Level Online Tutoring | StudyHours",
-    description: "Expert specialist tutors for all A-Level subjects including Maths, Sciences, and Humanities.",
+    title: "A-Level Tutors Online | Top Experts | Study Hours",
+    description: "Looking for top A-Level tutors online StudyHours offers personalized 1-on-1 tutoring from experts to help students improve grades & boost confidence.",
     images: ["/hero_calm_education.png"],
   },
 };

@@ -91,7 +91,7 @@ export default function GCSEOnlineTutoringPage() {
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studyhours.com" },
-      { "@type": "ListItem", "position": 2, "name": "Programs", "item": "https://studyhours.com/k-12-online-tutoring" },
+      { "@type": "ListItem", "position": 2, "name": "Subjects", "item": "https://studyhours.com/subjects" },
       { "@type": "ListItem", "position": 3, "name": "GCSE Tutoring", "item": "https://studyhours.com/gcse-online-tutoring" }
     ]
   };
@@ -100,6 +100,8 @@ export default function GCSEOnlineTutoringPage() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "GCSE Online Tutoring",
+    "image": "https://studyhours.com/hero_calm_education.png",
+    "priceRange": "$149 - $499",
     "serviceType": "Tutoring",
     "provider": { "@type": "Organization", "name": "StudyHours" },
     "aggregateRating": {
@@ -149,12 +151,13 @@ export default function GCSEOnlineTutoringPage() {
                 <ShieldCheck size={14} className="text-sapphire" />
                 Specialist UK GCSE Support
               </div>
-              <h1 className="text-4xl md:text-6xl font-black text-deep-navy dark:text-white mb-8 tracking-tighter leading-[0.95] uppercase">
-                Your Child&apos;s GCSE Results <br />
-                <span className="text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic">
-                  Are Not Fixed Yet.
-                </span>
+              <h1 className="text-4xl md:text-6xl font-black text-deep-navy dark:text-white mb-6 tracking-tighter leading-[0.95] uppercase">
+                GCSE Tutors Online
               </h1>
+              <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-10 leading-tight">
+                Your Child&apos;s GCSE Results <br />
+                Are Not Fixed Yet.
+              </div>
               <p className="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed font-medium max-w-xl">
                  Behind on GCSEs? There&apos;s still time to turn grades around - if you start now. 
                 We provide the calm, structured plan your child needs.
@@ -202,7 +205,7 @@ export default function GCSEOnlineTutoringPage() {
                 <div className="absolute inset-0 bg-deep-navy/10 group-hover:bg-transparent transition-colors z-10" />
                 <Image
                   src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774002647/Tutor_and_young_202603201600-Photoroom_tumr1w.png"
-                  alt="Tutor and Student Working Together"
+                  alt="Expert online GCSE tutor for private tuition and exam prep | StudyHours"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-[4s]"
                 />
@@ -219,7 +222,7 @@ export default function GCSEOnlineTutoringPage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-20 text-balance">
             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-sapphire mb-6 block">The Problem We Solve</span>
-            <h2 className="text-4xl md:text-5xl font-black text-deep-navy tracking-tighter uppercase leading-none mb-6">
+            <h2 className="text-4xl md:text-5xl font-black text-deep-navy dark:text-white tracking-tighter uppercase leading-none mb-6">
               Recognise These <span className="text-sapphire">Moments?</span>
             </h2>
           </div>
@@ -272,7 +275,7 @@ export default function GCSEOnlineTutoringPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-5xl font-black text-deep-navy mb-8 tracking-tighter uppercase leading-none">
+              <h2 className="text-4xl md:text-5xl font-black text-deep-navy dark:text-white mb-8 tracking-tighter uppercase leading-none">
                 Is Your Child Showing <br />
                 <span className="text-sapphire">These Signs?</span>
               </h2>
@@ -323,7 +326,7 @@ export default function GCSEOnlineTutoringPage() {
       <section className="py-24 px-6 bg-surface dark:bg-slate-900/50 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10 text-center mb-20">
           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-sapphire mb-6 block">Selection</span>
-          <h2 className="text-4xl md:text-5xl font-black text-deep-navy tracking-tighter uppercase leading-none">
+          <h2 className="text-4xl md:text-5xl font-black text-deep-navy dark:text-white tracking-tighter uppercase leading-none">
             Every GCSE Subject, <span className="text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary">One Trusted Platform</span>
           </h2>
         </div>
@@ -377,7 +380,7 @@ export default function GCSEOnlineTutoringPage() {
       ============================================ */}
       <section className="py-24 px-6 bg-background relative overflow-hidden">
         <div className="max-w-5xl mx-auto relative z-10 text-center mb-20">
-           <h2 className="text-4xl md:text-5xl font-black text-deep-navy tracking-tighter uppercase leading-none mb-6">
+           <h2 className="text-4xl md:text-5xl font-black text-deep-navy dark:text-white tracking-tighter uppercase leading-none mb-6">
                How Our Classes <span className="text-sapphire italic">Work</span>
            </h2>
            <p className="text-xl font-medium text-text-secondary opacity-70">A calm, structured path to the results your child deserves.</p>
@@ -491,7 +494,7 @@ export default function GCSEOnlineTutoringPage() {
       <section className="py-24 px-6 bg-surface dark:bg-slate-900 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-black text-deep-navy tracking-tighter uppercase leading-none mb-6">
+            <h2 className="text-4xl md:text-5xl font-black text-deep-navy dark:text-white tracking-tighter uppercase leading-none mb-6">
                When Should You <span className="text-sapphire">Start?</span>
             </h2>
           </div>
@@ -533,7 +536,7 @@ export default function GCSEOnlineTutoringPage() {
       <section className="py-16 px-6 bg-background border-y border-border">
          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="max-w-md">
-              <h3 className="text-2xl font-black text-deep-navy uppercase tracking-tighter leading-none mb-2">We tutor across all <br /> <span className="text-sapphire">Major UK Exam Boards.</span></h3>
+              <h3 className="text-2xl font-black text-deep-navy dark:text-white uppercase tracking-tighter leading-none mb-2">We tutor across all <br /> <span className="text-sapphire">Major UK Exam Boards.</span></h3>
               <p className="text-sm font-medium text-text-secondary">Official curriculum alignment for maximum grade protection.</p>
               
               {/* Added Trust Icons */}
@@ -585,7 +588,7 @@ export default function GCSEOnlineTutoringPage() {
       <section className="py-24 px-6 bg-surface dark:bg-slate-900 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10 text-center mb-20">
           <span className="text-[10px] font-black uppercase tracking-[0.4em] text-sapphire mb-6 block">Diagnostic</span>
-          <h2 className="text-4xl md:text-5xl font-black text-deep-navy tracking-tighter uppercase leading-none">
+          <h2 className="text-4xl md:text-5xl font-black text-deep-navy dark:text-white tracking-tighter uppercase leading-none">
             Where is Your <span className="text-sapphire">Child Right Now?</span>
           </h2>
         </div>

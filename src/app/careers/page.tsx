@@ -5,9 +5,9 @@ import { Award, Briefcase, Heart, Rocket, UserPlus } from "lucide-react";
 
 export default function CareersPage() {
   return (
-    <main className="min-h-screen pt-32 pb-24 px-6 bg-linear-to-b from-indigo-50 to-background">
+    <main className="min-h-screen pt-32 pb-24 px-6 bg-linear-to-b from-indigo-50 to-background dark:from-slate-900/50 dark:to-background">
       <div className="max-w-4xl mx-auto text-center mb-20">
-        <h1 className="text-4xl md:text-6xl font-black text-deep-navy mb-6 tracking-tight">
+        <h1 className="text-4xl md:text-6xl font-black text-deep-navy dark:text-white mb-6 tracking-tight">
           Join the Mission
         </h1>
         <p className="text-xl text-text-secondary font-medium leading-relaxed max-w-2xl mx-auto">
@@ -56,7 +56,7 @@ export default function CareersPage() {
         <div className="w-20 h-20 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-8">
           <Briefcase size={40} />
         </div>
-        <h2 className="text-3xl font-black text-deep-navy mb-4">
+        <h2 className="text-3xl font-black text-deep-navy dark:text-white mb-4">
           Current Opportunities
         </h2>
         <p className="text-text-secondary font-medium mb-10 max-w-lg mx-auto">

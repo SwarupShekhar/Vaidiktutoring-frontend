@@ -33,7 +33,7 @@ export default function ParentTestimonials() {
         <section className="py-24 px-6 bg-surface overflow-hidden">
             <div className="max-w-[100vw] mx-auto">
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl font-extrabold text-deep-navy mb-4">
+                    <h2 className="text-3xl font-extrabold text-deep-navy dark:text-white mb-4">
                         Trusted by Parents
                     </h2>
                     <div className="flex items-center justify-center gap-2 text-yellow-500 mb-2">
@@ -78,7 +78,7 @@ export default function ParentTestimonials() {
                                     </p>
 
                                     <div className="mt-auto">
-                                        <p className="font-bold text-deep-navy">{testimonial.author}</p>
+                                        <p className="font-bold text-deep-navy dark:text-white">{testimonial.author}</p>
                                         <p className="text-sm text-text-secondary uppercase tracking-wider font-semibold">{testimonial.role}</p>
                                     </div>
                                 </div>

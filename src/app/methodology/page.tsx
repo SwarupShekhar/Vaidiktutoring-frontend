@@ -67,7 +67,7 @@ export default function MethodologyPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy mb-4">
+              <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy dark:text-white mb-4">
                 How We Teach
               </h2>
               <div className="w-20 h-1.5 bg-sapphire mx-auto rounded-full"></div>
@@ -85,7 +85,7 @@ export default function MethodologyPage() {
               <div className="w-16 h-16 bg-ice-blue rounded-2xl flex items-center justify-center text-sapphire mb-6 transition-transform group-hover:rotate-6">
                 <Video size={32} />
               </div>
-              <h3 className="text-2xl font-bold text-deep-navy mb-4">
+              <h3 className="text-2xl font-bold text-deep-navy dark:text-white mb-4">
                 Expert-Led Instruction
               </h3>
               <p className="text-(--color-text-primary) leading-relaxed font-medium">
@@ -111,7 +111,7 @@ export default function MethodologyPage() {
               <div className="w-16 h-16 bg-ice-blue rounded-2xl flex items-center justify-center text-sapphire mb-6">
                 <BrainCircuit size={32} className="animate-pulse" />
               </div>
-              <h3 className="text-2xl font-bold text-deep-navy mb-4">
+              <h3 className="text-2xl font-bold text-deep-navy dark:text-white mb-4">
                 AI-Assisted Feedback
               </h3>
               <p className="text-(--color-text-primary) leading-relaxed font-medium">
@@ -132,7 +132,7 @@ export default function MethodologyPage() {
               <div className="w-16 h-16 bg-ice-blue rounded-2xl flex items-center justify-center text-sapphire mb-6 transition-transform group-hover:-rotate-6">
                 <LineChart size={32} />
               </div>
-              <h3 className="text-2xl font-bold text-deep-navy mb-4">
+              <h3 className="text-2xl font-bold text-deep-navy dark:text-white mb-4">
                 Outcome-Based Learning
               </h3>
               <p className="text-(--color-text-primary) leading-relaxed font-medium">
@@ -147,7 +147,7 @@ export default function MethodologyPage() {
       {/* Section 3: Expert Differentiation (What Sets Us Apart) */}
       <section className="py-24 px-6 max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy mb-4">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy dark:text-white mb-4">
             What Sets Our Experts Apart
           </h2>
           <p className="text-text-secondary text-lg">

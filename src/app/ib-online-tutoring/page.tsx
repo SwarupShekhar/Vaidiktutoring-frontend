@@ -89,7 +89,7 @@ export default function IBTutorsPage() {
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studyhours.com" },
-      { "@type": "ListItem", "position": 2, "name": "Programs", "item": "https://studyhours.com/k-12-online-tutoring" },
+      { "@type": "ListItem", "position": 2, "name": "Subjects", "item": "https://studyhours.com/subjects" },
       { "@type": "ListItem", "position": 3, "name": "IB Tutoring", "item": "https://studyhours.com/ib-online-tutoring" }
     ]
   };
@@ -98,6 +98,8 @@ export default function IBTutorsPage() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "IB Online Tutoring",
+    "image": "https://studyhours.com/hero_calm_education.png",
+    "priceRange": "$149 - $499",
     "serviceType": "Tutoring",
     "provider": { "@type": "Organization", "name": "StudyHours" },
     "aggregateRating": {
@@ -153,7 +155,7 @@ export default function IBTutorsPage() {
               >
                 <Image
                   src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774008401/Candid_portrait_photography_202603201735_q92yxy.jpg"
-                  alt="IB Student"
+                  alt="Expert IB online tutoring student in learning session | StudyHours"
                   fill
                   className="object-cover"
                   priority
@@ -164,13 +166,13 @@ export default function IBTutorsPage() {
                 <Award size={14} className="text-sapphire" />
                 PREMIUM IB DIPLOMA TUTORING
               </div>
-              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-deep-navy dark:text-white mb-6 md:mb-8 tracking-tighter leading-[0.95] relative z-10">
-                International <br />
-                <span className="text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary">
-                  Baccalaureate Tutors
-                </span>{" "}
-                Online
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-deep-navy dark:text-white mb-6 md:mb-8 tracking-tighter leading-[0.95] relative z-10 uppercase">
+                Online IB Tutors
               </h1>
+              <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-6 md:mb-10 leading-tight relative z-10">
+                International <br />
+                Baccalaureate Tutors
+              </div>
               <p className="text-lg md:text-2xl text-text-secondary mb-8 md:mb-12 leading-relaxed font-medium max-w-xl opacity-90">
                 Specialized guidance for{" "}
                 <span className="font-black text-deep-navy dark:text-white">

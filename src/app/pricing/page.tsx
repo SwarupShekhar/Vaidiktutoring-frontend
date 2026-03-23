@@ -11,7 +11,7 @@ import StickyCTA from '../components/subjects/StickyCTA';
 // --- Section 1: HeroPricing ---
 const HeroPricing = () => {
     return (
-        <section className="pt-32 pb-20 px-6 relative overflow-hidden bg-linear-to-b from-ice-blue to-background">
+        <section className="pt-32 pb-20 px-6 relative overflow-hidden bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background">
             <div className="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none">
                 <div className="absolute top-[10%] right-[5%] w-[500px] h-[500px] bg-sapphire/10 rounded-full blur-[120px]" />
             </div>

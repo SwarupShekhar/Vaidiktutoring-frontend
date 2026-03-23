@@ -1,13 +1,13 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Online GCSE Tutor | GCSE Private Tuition & Exam Prep",
-  description: "Find a reliable online GCSE tutor for private tuition and exam prep. Get expert guidance, practice, and support to achieve top results and boost confidence.",
+  title: "GCSE Tutors Online | Personalized 1-on-1 Learning",
+  description: "Find expert GCSE tutors online at StudyHours. Get personalized 1-on-1 learning to improve grades and build confidence across all subjects.",
   alternates: {
-    canonical: "/gcse-online-tutoring",
+    canonical: "https://studyhours.com/gcse-online-tutoring",
   },
   openGraph: {
-    title: "GCSE Tutors Online | Personalized Exam Success",
+    title: "GCSE Tutors Online | Personalized 1-on-1 Learning",
     description: "Get the best GCSE online tuition with expert tutors. Achieve top results through personalized 1-on-1 learning.",
     url: "/gcse-online-tutoring",
     images: [
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "GCSE Online Tutoring | StudyHours",
+    title: "GCSE Tutors Online | Personalized 1-on-1 Learning",
     description: "Expert tutors for all GCSE subjects including Maths, Sciences, and Humanities.",
     images: ["/hero_calm_education.png"],
   },

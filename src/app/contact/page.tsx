@@ -40,7 +40,7 @@ export default function ContactPage() {
       </div>
 
       {/* Secondary CTA */}
-      <div className="max-w-3xl mx-auto p-12 md:p-20 rounded-[3.5rem] bg-deep-navy text-white text-center shadow-3xl relative overflow-hidden group">
+      <div className="max-w-3xl mx-auto p-12 md:p-20 rounded-[3.5rem] bg-deep-navy dark:bg-slate-950 text-white text-center shadow-3xl relative overflow-hidden group">
         {/* Background Decorations */}
         <div className="absolute inset-0 bg-linear-to-br from-sapphire/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
         <div className="absolute -top-24 -right-24 w-64 h-64 bg-sapphire/10 rounded-full blur-[80px]" />

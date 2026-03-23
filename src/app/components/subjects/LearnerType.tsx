@@ -33,7 +33,7 @@ export default function LearnerType() {
     return (
         <section className="mb-32">
             <div className="text-center mb-16">
-                <h2 className="text-3xl font-extrabold text-deep-navy mb-4">Tailored for Every Learner</h2>
+                <h2 className="text-3xl font-extrabold text-deep-navy dark:text-white mb-4">Tailored for Every Learner</h2>
                 <p className="text-lg text-text-secondary">We meet students exactly where they are.</p>
             </div>
             <StyledWrapper>

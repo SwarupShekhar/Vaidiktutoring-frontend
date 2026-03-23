@@ -2,13 +2,13 @@ import NarrativeHome from "@/app/components/home/narrative/NarrativeHome";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "StudyHours | Outcome-Driven K-12 Tutoring Platform",
+  title: "Online Tutoring for Kids | 1-on-1 Learning | StudyHours",
   description:
-    "Expert-guided K-12 tutoring for Math, Science, English and more. Personalized 1-on-1 sessions aligned with IB, IGCSE, and US curricula.",
+    "Find an expert online tutoring for kids with personalized 1-on-1 sessions. StudyHours helps students improve grades, confidence, and learning outcomes.",
   openGraph: {
-    title: "StudyHours | Personalized K-12 Tutoring",
+    title: "Online Tutoring for Kids | 1-on-1 Learning | StudyHours",
     description:
-      "Empowering students with personalized, world-class tutoring. Expert tutors guided by intelligent systems.",
+      "Find an expert online tutoring for kids with personalized 1-on-1 sessions. StudyHours helps students improve grades, confidence, and learning outcomes.",
     url: "https://studyhours.com",
     siteName: "StudyHours",
     images: [
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "StudyHours | Personalized K-12 Tutoring",
+    title: "Online Tutoring for Kids | 1-on-1 Learning | StudyHours",
     description:
-      "Expert tutors guided by intelligent systems, delivering personalized 1-on-1 sessions.",
+      "Find an expert online tutoring for kids with personalized 1-on-1 sessions. StudyHours helps students improve grades, confidence, and learning outcomes.",
     images: ["https://studyhours.com/hero_calm_education.png"],
   },
 };

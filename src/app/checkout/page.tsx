@@ -34,7 +34,7 @@ const CheckoutContent = () => {
     // Show loading while checking auth
     if (authLoading || !user) {
         return (
-            <div className="min-h-screen pt-32 pb-24 px-6 bg-linear-to-b from-ice-blue to-background flex items-center justify-center">
+            <div className="min-h-screen pt-32 pb-24 px-6 bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background flex items-center justify-center">
                 <div className="animate-pulse flex flex-col items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-primary/20" />
                     <p className="text-text-secondary font-medium">Verifying authentication...</p>
@@ -171,7 +171,7 @@ const CheckoutContent = () => {
     const currentCredits = planConfig?.credits || 8;
 
     return (
-        <div className="min-h-screen pt-32 pb-24 px-6 bg-linear-to-b from-ice-blue to-background">
+        <div className="min-h-screen pt-32 pb-24 px-6 bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background">
             <div className="max-w-xl mx-auto">
                 <Link_Next
                     href={`/pricing?region=${region}`}

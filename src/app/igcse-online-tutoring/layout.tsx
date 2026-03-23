@@ -1,13 +1,13 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "IGCSE Online Tuition | Expert Tutors & Online Courses",
-  description: "At Studyhours, get quality IGCSE online tuition with expert tutors. Join flexible IGCSE online courses & improve your grades with personalized learning support.",
+  title: "IGCSE Online Tutoring | Personalised 1-on-1 Classes",
+  description: "Boost your grades with IGCSE online tutoring. Get personalised 1-on-1 classes from expert tutors and master every subject with confidence.",
   alternates: {
-    canonical: "/igcse-online-tutoring",
+    canonical: "https://studyhours.com/igcse-online-tutoring",
   },
   openGraph: {
-    title: "IGCSE Tutors Online | Personalized Exam Success",
+    title: "IGCSE Online Tutoring | Personalised 1-on-1 Classes",
     description: "Get the best IGCSE online tuition with expert tutors. Achieve top results through personalized 1-on-1 learning.",
     url: "/igcse-online-tutoring",
     images: [
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "IGCSE Online Tuition | StudyHours",
+    title: "IGCSE Online Tutoring | Personalised 1-on-1 Classes",
     description: "Expert tutors for all IGCSE subjects including Maths, Sciences, and Humanities.",
     images: ["/hero_calm_education.png"],
   },

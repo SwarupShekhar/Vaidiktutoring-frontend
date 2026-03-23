@@ -5,7 +5,7 @@ export default function DeliveryModel() {
     return (
         <section className="mt-32 mb-24 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
             <div className="text-center mb-16">
-                <h2 className="text-3xl font-extrabold text-deep-navy mb-6">How Learning Happens</h2>
+                <h2 className="text-3xl font-extrabold text-deep-navy dark:text-white mb-6">How Learning Happens</h2>
                 <div className="w-24 h-1 bg-sapphire mx-auto rounded-full mb-6"></div>
                 <p className="text-xl text-text-secondary max-w-2xl mx-auto">
                     A hybrid approach that combines expert human instruction with cutting-edge AI verification.
@@ -16,7 +16,7 @@ export default function DeliveryModel() {
                     <div className="w-20 h-20 mx-auto mb-8 bg-ice-blue rounded-full flex items-center justify-center text-sapphire">
                         <Video size={36} />
                     </div>
-                    <h3 className="text-xl font-bold text-deep-navy mb-4">Live Expert Teaching</h3>
+                    <h3 className="text-xl font-bold text-deep-navy dark:text-white mb-4">Live Expert Teaching</h3>
                     <p className="text-(--color-text-primary) leading-relaxed">
                         Interaction with top-tier tutors who guide students through complex concepts and facilitate deep understanding.
                     </p>
@@ -25,7 +25,7 @@ export default function DeliveryModel() {
                     <div className="w-20 h-20 mx-auto mb-8 bg-purple-50 dark:bg-purple-900/20 rounded-full flex items-center justify-center text-purple-600 dark:text-purple-400">
                         <BrainCircuit size={36} />
                     </div>
-                    <h3 className="text-xl font-bold text-deep-navy mb-4">Data-Driven Learning</h3>
+                    <h3 className="text-xl font-bold text-deep-navy dark:text-white mb-4">Data-Driven Learning</h3>
                     <p className="text-(--color-text-primary) leading-relaxed">
                         Every session generates measurable performance data that helps tutors personalize instruction and helps students see clear, trackable improvement over time.
                     </p>
@@ -34,7 +34,7 @@ export default function DeliveryModel() {
                     <div className="w-20 h-20 mx-auto mb-8 bg-green-50 dark:bg-green-900/20 rounded-full flex items-center justify-center text-green-600 dark:text-green-400">
                         <FileBarChart size={36} />
                     </div>
-                    <h3 className="text-xl font-bold text-deep-navy mb-4">Progress Reports</h3>
+                    <h3 className="text-xl font-bold text-deep-navy dark:text-white mb-4">Progress Reports</h3>
                     <p className="text-(--color-text-primary) leading-relaxed">
                         Detailed analytics and evidence-based reports that map student growth against international benchmarks.
                     </p>

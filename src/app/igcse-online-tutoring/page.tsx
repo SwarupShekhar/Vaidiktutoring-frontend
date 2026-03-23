@@ -98,7 +98,7 @@ export default function IGCSEOnlineTutoringPage() {
     "@type": "BreadcrumbList",
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studyhours.com" },
-      { "@type": "ListItem", "position": 2, "name": "Programs", "item": "https://studyhours.com/k-12-online-tutoring" },
+      { "@type": "ListItem", "position": 2, "name": "Subjects", "item": "https://studyhours.com/subjects" },
       { "@type": "ListItem", "position": 3, "name": "IGCSE Tutoring", "item": "https://studyhours.com/igcse-online-tutoring" }
     ]
   };
@@ -107,6 +107,8 @@ export default function IGCSEOnlineTutoringPage() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "IGCSE Online Tutoring",
+    "image": "https://studyhours.com/hero_calm_education.png",
+    "priceRange": "$149 - $499",
     "serviceType": "Tutoring",
     "provider": { "@type": "Organization", "name": "StudyHours" },
     "aggregateRating": {
@@ -158,12 +160,12 @@ export default function IGCSEOnlineTutoringPage() {
                 <ShieldCheck size={14} className="text-sapphire" />
                 CAMBRIDGE & EDEXCEL SPECIALISTS
               </div>
-              <h1 className="text-4xl md:text-6xl xl:text-7xl font-black text-deep-navy dark:text-white mb-8 tracking-tighter leading-[0.95] uppercase">
-                IGCSE <br />
-                <span className="text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic">
-                  Tutors Online
-                </span>
+              <h1 className="text-4xl md:text-6xl xl:text-7xl font-black text-deep-navy dark:text-white mb-6 tracking-tighter leading-[0.95] uppercase">
+                IGCSE Tutors Online
               </h1>
+              <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-10 leading-tight">
+                Cambridge & Edexcel Specialists
+              </div>
               <p className="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed font-medium max-w-xl opacity-90">
                 Your child&apos;s <span className="font-black text-deep-navy dark:text-white">IGCSE results are not fixed yet.</span> We provide the <span className="font-black text-deep-navy dark:text-white">structured path</span> from where they are to where they need to be.
               </p>
@@ -288,7 +290,7 @@ export default function IGCSEOnlineTutoringPage() {
                 <div className="absolute inset-0 bg-linear-to-t from-deep-navy/40 to-transparent z-10" />
                 <Image
                   src="https://res.cloudinary.com/de8vvmpip/image/upload/v1773999715/Young_Student_and_202603201511-Photoroom_vze242.png"
-                  alt="Student learning"
+                  alt="Expert IGCSE online tutoring session with student | StudyHours"
                   fill
                   className="object-contain"
                   priority
