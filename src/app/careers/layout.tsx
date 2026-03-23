@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description:
     "Join our mission to reimagine K-12 education. Explore career opportunities for expert tutors, learning designers, and engineers at StudyHours.",
   openGraph: {
-    title: "Careers | StudyHours",
+    title: "Careers | Join the StudyHours Team",
     description: "Help us transform K-12 education. Join the StudyHours team.",
     url: "/careers",
     type: "website",

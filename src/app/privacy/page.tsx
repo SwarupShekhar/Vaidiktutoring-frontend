@@ -4,12 +4,12 @@ export const metadata: Metadata = {
   title: "Privacy Policy | StudyHours",
   description: "Read our privacy policy to understand how we collect, use, and protect your personal data.",
   alternates: {
-    canonical: "/privacy",
+    canonical: "https://studyhours.com/privacy",
   },
   openGraph: {
     title: "Privacy Policy | StudyHours",
     description: "Read our privacy policy to understand how we protect your data.",
-    url: "/privacy",
+    url: "https://studyhours.com/privacy",
     type: "website",
   },
   twitter: {

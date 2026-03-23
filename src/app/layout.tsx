@@ -34,6 +34,9 @@ export const metadata: Metadata = {
   verification: {
     google: "QIHTWX5Vy3mZhNRYxfyyTc5YDUOA2DSyS6BCx-7xwy0",
   },
+  alternates: {
+    canonical: "https://studyhours.com",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

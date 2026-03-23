@@ -1,5 +1,5 @@
 "use client";
-
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import SHLogo from "./SHLogo";
@@ -8,6 +8,10 @@ import LinkedInButton from "./LinkedInButton";
 
 export default function Footer() {
   const pathname = usePathname();
+  const [year, setYear] = useState(2026);
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
   if (pathname?.startsWith("/session")) return null;
 
   return (
@@ -197,7 +201,7 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-500 dark:text-gray-500">
-            &copy; {new Date().getFullYear()} StudyHours. All rights reserved.
+            &copy; {year} StudyHours. All rights reserved.
           </p>
           <div className="flex gap-4 items-center">
             <InstagramButton />
