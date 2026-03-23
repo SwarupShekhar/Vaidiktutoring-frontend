@@ -43,7 +43,7 @@ export default function AboutLayout({
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "LocalBusiness",
+            "@type": "EducationalOrganization",
             "name": "StudyHours",
             "image": "https://studyhours.com/hero_calm_education.png",
             "priceRange": "$149 - $499",

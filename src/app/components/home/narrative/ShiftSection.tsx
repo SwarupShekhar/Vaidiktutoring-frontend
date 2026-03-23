@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import FadeUpSection from './FadeUpSection';
 import HighImpactThreePillars from './HighImpactThreePillars';
 
@@ -17,6 +18,7 @@ export default function ShiftSection() {
                                 In most classrooms, children wait to be noticed.<br />
                                 <span className="text-text-secondary/50">In our system, they are always seen.</span>
                             </h2>
+
                             <div className="space-y-6 max-w-lg">
                                 <p className="text-lg text-foreground/80 font-medium leading-relaxed">
                                     Real learning happens in a loop<br />
@@ -29,29 +31,43 @@ export default function ShiftSection() {
                         </FadeUpSection>
                     </div>
 
-                    <div className="lg:w-1/2 relative">
-                        <FadeUpSection className="bg-surface p-12 rounded-[3rem] shadow-2xl border border-border/50">
+                    <div className="lg:w-1/2 relative lg:p-0">
+                        {/* Background Student Photo - 100% Visibility (Desktop only) */}
+                        <div className="absolute inset-0 z-0 rounded-[3rem] overflow-hidden hidden lg:block">
+                            <Image 
+                                src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774248455/Candid_photography_of_202603231216-Photoroom_efcj3m.png" 
+                                alt="Personalized Learning Background | StudyHours" 
+                                fill 
+                                className="object-cover object-center"
+                            />
+                        </div>
+
+                        <FadeUpSection className="bg-white/5 dark:bg-slate-950/5 p-12 rounded-[3rem] shadow-2xl border border-white/10 relative z-10">
                             {/* Animated Diagram Area */}
                             <div className="relative h-[400px] flex flex-col justify-center gap-12 text-foreground">
                                 {/* Traditional Row */}
                                 <div className="space-y-4">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">Traditional Instruction</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">
+                                        <span className="bg-white/90 dark:bg-slate-900/90 px-3 py-1.5 rounded-lg inline-block shadow-lg border border-border/50">Traditional Instruction</span>
+                                    </p>
                                     <div className="flex items-center gap-4">
-                                        <div className="px-4 py-2 bg-background rounded-lg text-xs font-bold text-text-secondary">Tutor Talks</div>
+                                        <div className="px-5 py-2.5 bg-background dark:bg-slate-800 rounded-xl text-xs font-black text-text-secondary shadow-xl border border-border/50">Tutor Talks</div>
                                         <motion.div
                                             animate={{ x: [0, 40, 0] }}
                                             transition={{ repeat: Infinity, duration: 4 }}
-                                            className="w-12 h-0.5 bg-border"
+                                            className="w-12 h-1 bg-border/40 rounded-full shadow-inner"
                                         />
-                                        <div className="px-4 py-2 bg-background rounded-lg text-xs font-bold text-text-secondary opacity-50">Student Listens</div>
+                                        <div className="px-5 py-2.5 bg-background/95 dark:bg-slate-800/95 rounded-xl text-xs font-black text-text-secondary opacity-60 shadow-xl border border-border/50">Student Listens</div>
                                     </div>
                                 </div>
 
-                                <div className="h-px bg-border w-full" />
+                                <div className="h-px bg-border w-full opacity-50" />
 
                                 {/* Our System Row */}
                                 <div className="space-y-6">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">Our Attention Loops</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary">
+                                        <span className="bg-white/90 dark:bg-slate-900/90 px-3 py-1.5 rounded-lg inline-block shadow-lg border border-primary/20">Our Attention Loops</span>
+                                    </p>
                                     <div className="relative flex flex-wrap gap-4">
                                         {['Explain', 'Respond', 'Correct', 'Improve'].map((step, i) => (
                                             <React.Fragment key={step}>
@@ -59,7 +75,7 @@ export default function ShiftSection() {
                                                     initial={{ scale: 0.8, opacity: 0 }}
                                                     whileInView={{ scale: 1, opacity: 1 }}
                                                     transition={{ delay: i * 0.4, duration: 0.5 }}
-                                                    className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-tighter ${i === 0 ? 'bg-primary text-white' : 'bg-primary/5 text-primary border border-primary/20'}`}
+                                                    className={`px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-tight shadow-xl flex items-center justify-center min-w-[100px] ${i === 0 ? 'bg-primary text-white' : 'bg-white dark:bg-slate-800 text-primary border border-primary/20'}`}
                                                 >
                                                     {step}
                                                 </motion.div>
@@ -70,7 +86,7 @@ export default function ShiftSection() {
                                                         transition={{ delay: i * 0.4 + 0.2, duration: 0.3 }}
                                                         className="h-4 flex items-center"
                                                     >
-                                                        <svg className="w-full text-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5-5 5" /></svg>
+                                                        <svg className="w-full text-primary drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5-5 5" /></svg>
                                                     </motion.div>
                                                 )}
                                             </React.Fragment>
@@ -83,13 +99,15 @@ export default function ShiftSection() {
                                             transition={{ delay: 1.8, duration: 1 }}
                                             className="absolute -bottom-8 left-0 right-0 h-8"
                                         >
-                                            <svg className="w-full h-full text-primary/10" viewBox="0 0 300 40" fill="none">
+                                            <svg className="w-full h-full text-primary/40" viewBox="0 0 300 40" fill="none">
                                                 <path d="M280 10C280 30 20 30 20 10" stroke="currentColor" strokeWidth="2" strokeDasharray="5 5" />
                                                 <path d="M15 10L20 5L25 10" stroke="currentColor" strokeWidth="2" />
                                             </svg>
                                         </motion.div>
                                     </div>
-                                    <p className="text-[10px] font-bold text-text-secondary mt-8 italic">The attention loop repeats until mastery is achieved.</p>
+                                    <p className="text-[10px] font-bold text-text-secondary mt-10 italic">
+                                        <span className="bg-white/95 dark:bg-slate-900/95 px-3 py-1.5 rounded-lg inline-block shadow-lg border border-border/50">The attention loop repeats until mastery is achieved.</span>
+                                    </p>
                                 </div>
                             </div>
                         </FadeUpSection>

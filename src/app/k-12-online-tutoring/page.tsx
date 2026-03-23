@@ -56,17 +56,32 @@ export default function K12OnlineTutoringPage() {
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studyhours.com" },
-      { "@type": "ListItem", "position": 2, "name": "Subjects", "item": "https://studyhours.com/subjects" },
-      { "@type": "ListItem", "position": 3, "name": "K-12 Tutoring", "item": "https://studyhours.com/k-12-online-tutoring" }
-    ]
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://studyhours.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Subjects",
+        item: "https://studyhours.com/subjects",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "K-12 Tutoring",
+        item: "https://studyhours.com/k-12-online-tutoring",
+      },
+    ],
   };
 
   const ratingSchema = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "K-12 Online Tutoring",
+    "@type": "EducationalOrganization",
+    name: "K-12 Online Tutoring",
     "image": "https://studyhours.com/hero_calm_education.png",
     "priceRange": "$149 - $499",
     "serviceType": "Tutoring",

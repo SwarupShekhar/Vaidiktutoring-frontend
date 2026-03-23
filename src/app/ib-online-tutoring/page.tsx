@@ -61,54 +61,80 @@ export default function IBTutorsPage() {
   const subjectSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Language & Literature (Group 1)" },
-      { "@type": "ListItem", "position": 2, "name": "Language Acquisition (Group 2)" },
-      { "@type": "ListItem", "position": 3, "name": "Individuals & Societies (Group 3)" },
-      { "@type": "ListItem", "position": 4, "name": "Sciences (Group 4)" },
-      { "@type": "ListItem", "position": 5, "name": "Mathematics (Group 5)" },
-      { "@type": "ListItem", "position": 6, "name": "The Arts (Group 6)" }
-    ]
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Language & Literature (Group 1)",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Language Acquisition (Group 2)",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "Individuals & Societies (Group 3)",
+      },
+      { "@type": "ListItem", position: 4, name: "Sciences (Group 4)" },
+      { "@type": "ListItem", position: 5, name: "Mathematics (Group 5)" },
+      { "@type": "ListItem", position: 6, name: "The Arts (Group 6)" },
+    ],
   };
 
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": ibFaqs.map(faq => ({
+    mainEntity: ibFaqs.map((faq) => ({
       "@type": "Question",
-      "name": faq.q,
-      "acceptedAnswer": {
+      name: faq.q,
+      acceptedAnswer: {
         "@type": "Answer",
-        "text": faq.a
-      }
-    }))
+        text: faq.a,
+      },
+    })),
   };
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studyhours.com" },
-      { "@type": "ListItem", "position": 2, "name": "Subjects", "item": "https://studyhours.com/subjects" },
-      { "@type": "ListItem", "position": 3, "name": "IB Tutoring", "item": "https://studyhours.com/ib-online-tutoring" }
-    ]
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://studyhours.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Subjects",
+        item: "https://studyhours.com/subjects",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "IB Tutoring",
+        item: "https://studyhours.com/ib-online-tutoring",
+      },
+    ],
   };
 
   const ratingSchema = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "IB Online Tutoring",
-    "image": "https://studyhours.com/hero_calm_education.png",
-    "priceRange": "$149 - $499",
-    "serviceType": "Tutoring",
-    "provider": { "@type": "Organization", "name": "StudyHours" },
-    "aggregateRating": {
+    "@type": "EducationalOrganization",
+    name: "IB Online Tutoring",
+    image: "https://studyhours.com/hero_calm_education.png",
+    priceRange: "$149 - $499",
+    provider: { "@type": "Organization", name: "StudyHours" },
+    aggregateRating: {
       "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "1200",
-      "bestRating": "5",
-      "worstRating": "1"
-    }
+      ratingValue: "4.9",
+      reviewCount: "1200",
+      bestRating: "5",
+      worstRating: "1",
+    },
   };
 
   return (
@@ -147,7 +173,7 @@ export default function IBTutorsPage() {
               className="relative"
             >
               {/* Added Hero Image - Absolute positioned to sit in whitespace */}
-               <motion.div
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.8 }}
@@ -353,7 +379,8 @@ export default function IBTutorsPage() {
                 age: "Ages 3-12",
                 accent: "from-blue-400 to-blue-600",
                 link: user ? "/bookings/new" : "/signup?type=assessment",
-                image: "https://res.cloudinary.com/de8vvmpip/image/upload/v1773997910/PYP___Young_202603201440-Photoroom_gbq65j.png",
+                image:
+                  "https://res.cloudinary.com/de8vvmpip/image/upload/v1773997910/PYP___Young_202603201440-Photoroom_gbq65j.png",
                 size: "w-72 h-72",
               },
               {
@@ -364,7 +391,8 @@ export default function IBTutorsPage() {
                 age: "Ages 11-16",
                 accent: "from-indigo-400 to-indigo-600",
                 link: user ? "/bookings/new" : "/signup?type=assessment",
-                image: "https://res.cloudinary.com/de8vvmpip/image/upload/v1773998172/MYP___Early_202603201445-Photoroom_gncugc.png",
+                image:
+                  "https://res.cloudinary.com/de8vvmpip/image/upload/v1773998172/MYP___Early_202603201445-Photoroom_gncugc.png",
                 size: "w-64 h-64",
               },
               {
@@ -376,7 +404,8 @@ export default function IBTutorsPage() {
                 accent: "from-sapphire to-blue-800",
                 link: user ? "/bookings/new" : "/signup?type=assessment",
                 featured: true,
-                image: "https://res.cloudinary.com/de8vvmpip/image/upload/v1773998262/DP___Older_202603201447-Photoroom_k8kaqj.png",
+                image:
+                  "https://res.cloudinary.com/de8vvmpip/image/upload/v1773998262/DP___Older_202603201447-Photoroom_k8kaqj.png",
                 size: "w-64 h-64",
               },
               {
@@ -387,7 +416,8 @@ export default function IBTutorsPage() {
                 age: "Ages 16-19",
                 accent: "from-cyan-400 to-cyan-600",
                 link: user ? "/bookings/new" : "/signup?type=assessment",
-                image: "https://res.cloudinary.com/de8vvmpip/image/upload/v1773998340/CP___Career-Focused_202603201448-Photoroom_yp2m68.png",
+                image:
+                  "https://res.cloudinary.com/de8vvmpip/image/upload/v1773998340/CP___Career-Focused_202603201448-Photoroom_yp2m68.png",
                 size: "w-64 h-64",
               },
             ].map((prog, idx) => (
@@ -434,7 +464,9 @@ export default function IBTutorsPage() {
                   </div>
 
                   {/* Student Cutout Image */}
-                  <div className={`absolute -bottom-10 -right-12 ${prog.size || "w-64 h-64"} pointer-events-none transition-all duration-700 group-hover:scale-110 group-hover:-translate-y-2 opacity-30 dark:opacity-45 group-hover:opacity-100 z-10`}>
+                  <div
+                    className={`absolute -bottom-10 -right-12 ${prog.size || "w-64 h-64"} pointer-events-none transition-all duration-700 group-hover:scale-110 group-hover:-translate-y-2 opacity-30 dark:opacity-45 group-hover:opacity-100 z-10`}
+                  >
                     <div className="relative w-full h-full">
                       <Image
                         src={prog.image}
@@ -545,25 +577,116 @@ export default function IBTutorsPage() {
       <section className="py-24 md:py-40 px-6 bg-surface dark:bg-slate-900/50 relative overflow-hidden">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-24">
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-sapphire mb-6 block">The Diploma Core</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-sapphire mb-6 block">
+              The Diploma Core
+            </span>
             <h2 className="text-4xl md:text-7xl font-black text-deep-navy dark:text-white mb-6 tracking-tighter">
               Expert Support Across <br />
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary">Every IB Subject Group</span>
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary">
+                Every IB Subject Group
+              </span>
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            <SubjectGroup cardId="1" title="Group 1: Language & Literature" icon={Languages} subjects={["Language A: Literature", "Language A: Language & Literature", "Literature & Performance", "Self-Taught Literature Support"]} />
-            <SubjectGroup cardId="2" title="Group 2: Language Acquisition" icon={Languages} isExpandable initialShow={6} subjects={["English B", "French B", "Spanish B", "German B", "Mandarin B", "Arabic B", "Japanese B", "Italian B", "Russian B", "Hindi B", "French ab initio", "Spanish ab initio", "German ab initio", "Mandarin ab initio", "Arabic ab initio", "Latin", "Ancient Greek"]} />
-            <SubjectGroup cardId="3" title="Group 3: Individuals & Societies" icon={Globe} isExpandable initialShow={6} subjects={["Business Management", "Economics", "Geography", "Global Politics", "History", "ITGS", "Philosophy", "Psychology", "Social & Cultural Anthropology", "World Religions", "Environmental Systems & Societies (ESS)"]} />
-            <SubjectGroup cardId="4" title="Group 4: Sciences" icon={FlaskConical} subjects={["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Sports Exercise & Health Science (SEHS)", "Environmental Systems & Societies (ESS)"]} />
-            <SubjectGroup cardId="5" title="Group 5: Mathematics" icon={Calculator} subjects={["Mathematics: Analysis & Approaches (AA)", "Mathematics: Applications & Interpretation (AI)"]} note="Available at both Standard Level (SL) and Higher Level (HL)" />
-            <SubjectGroup cardId="6" title="Group 6: The Arts" icon={Palette} subjects={["Dance", "Film", "Music", "Theatre", "Visual Arts"]} />
+            <SubjectGroup
+              cardId="1"
+              title="Group 1: Language & Literature"
+              icon={Languages}
+              subjects={[
+                "Language A: Literature",
+                "Language A: Language & Literature",
+                "Literature & Performance",
+                "Self-Taught Literature Support",
+              ]}
+            />
+            <SubjectGroup
+              cardId="2"
+              title="Group 2: Language Acquisition"
+              icon={Languages}
+              isExpandable
+              initialShow={6}
+              subjects={[
+                "English B",
+                "French B",
+                "Spanish B",
+                "German B",
+                "Mandarin B",
+                "Arabic B",
+                "Japanese B",
+                "Italian B",
+                "Russian B",
+                "Hindi B",
+                "French ab initio",
+                "Spanish ab initio",
+                "German ab initio",
+                "Mandarin ab initio",
+                "Arabic ab initio",
+                "Latin",
+                "Ancient Greek",
+              ]}
+            />
+            <SubjectGroup
+              cardId="3"
+              title="Group 3: Individuals & Societies"
+              icon={Globe}
+              isExpandable
+              initialShow={6}
+              subjects={[
+                "Business Management",
+                "Economics",
+                "Geography",
+                "Global Politics",
+                "History",
+                "ITGS",
+                "Philosophy",
+                "Psychology",
+                "Social & Cultural Anthropology",
+                "World Religions",
+                "Environmental Systems & Societies (ESS)",
+              ]}
+            />
+            <SubjectGroup
+              cardId="4"
+              title="Group 4: Sciences"
+              icon={FlaskConical}
+              subjects={[
+                "Biology",
+                "Chemistry",
+                "Physics",
+                "Computer Science",
+                "Design Technology",
+                "Sports Exercise & Health Science (SEHS)",
+                "Environmental Systems & Societies (ESS)",
+              ]}
+            />
+            <SubjectGroup
+              cardId="5"
+              title="Group 5: Mathematics"
+              icon={Calculator}
+              subjects={[
+                "Mathematics: Analysis & Approaches (AA)",
+                "Mathematics: Applications & Interpretation (AI)",
+              ]}
+              note="Available at both Standard Level (SL) and Higher Level (HL)"
+            />
+            <SubjectGroup
+              cardId="6"
+              title="Group 6: The Arts"
+              icon={Palette}
+              subjects={["Dance", "Film", "Music", "Theatre", "Visual Arts"]}
+            />
           </div>
 
           <div className="text-center border-b border-border pb-16">
             <p className="text-lg font-black text-deep-navy/60 italic uppercase tracking-tight">
-              Don&apos;t see your subject? We likely cover it — <Link href="/contact" className="text-sapphire underline underline-offset-4 hover:text-primary transition-colors">GET IN TOUCH.</Link>
+              Don&apos;t see your subject? We likely cover it —{" "}
+              <Link
+                href="/contact"
+                className="text-sapphire underline underline-offset-4 hover:text-primary transition-colors"
+              >
+                GET IN TOUCH.
+              </Link>
             </p>
           </div>
         </div>
@@ -576,29 +699,39 @@ export default function IBTutorsPage() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {[
-              { 
-                title: "Internal Assessments (IA)", 
-                subtitle: "Specialist support for all IB IA components — drafting, structure, and submission",
-                icon: PenTool
+              {
+                title: "Internal Assessments (IA)",
+                subtitle:
+                  "Specialist support for all IB IA components — drafting, structure, and submission",
+                icon: PenTool,
               },
-              { 
-                title: "Exam Preparation", 
-                subtitle: "Targeted past paper practice and revision strategy for May and November series",
-                icon: Clock
+              {
+                title: "Exam Preparation",
+                subtitle:
+                  "Targeted past paper practice and revision strategy for May and November series",
+                icon: Clock,
               },
-              { 
-                title: "University Admissions Guidance", 
-                subtitle: "Personal statement support and subject selection advice for top university applications",
-                icon: GraduationCap
-              }
+              {
+                title: "University Admissions Guidance",
+                subtitle:
+                  "Personal statement support and subject selection advice for top university applications",
+                icon: GraduationCap,
+              },
             ].map((item, i) => (
               <div key={i} className="flex flex-col">
                 <div className="w-12 h-12 rounded-xl bg-sapphire/10 text-sapphire flex items-center justify-center mb-6">
                   <item.icon size={24} />
                 </div>
-                <h3 className="text-xl font-black text-deep-navy dark:text-white mb-2 uppercase italic tracking-tight">{item.title}</h3>
-                <p className="text-sm font-medium text-text-secondary dark:text-slate-400 mb-6 leading-relaxed opacity-80">{item.subtitle}</p>
-                <Link href="/contact" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-sapphire hover:text-primary transition-colors">
+                <h3 className="text-xl font-black text-deep-navy dark:text-white mb-2 uppercase italic tracking-tight">
+                  {item.title}
+                </h3>
+                <p className="text-sm font-medium text-text-secondary dark:text-slate-400 mb-6 leading-relaxed opacity-80">
+                  {item.subtitle}
+                </p>
+                <Link
+                  href="/contact"
+                  className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-sapphire hover:text-primary transition-colors"
+                >
                   Get Started <ArrowRight size={14} />
                 </Link>
               </div>
@@ -727,7 +860,11 @@ export default function IBTutorsPage() {
                   {/* Academic Doodles */}
                   <motion.div
                     animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                    transition={{
+                      duration: 5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
                     className="absolute top-[15%] left-[10%] text-sapphire/20 dark:text-sapphire/30 blur-[0.5px]"
                   >
                     <Atom size={64} strokeWidth={1} />
@@ -735,7 +872,11 @@ export default function IBTutorsPage() {
 
                   <motion.div
                     animate={{ y: [0, 25, 0], rotate: [0, -15, 0] }}
-                    transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+                    transition={{
+                      duration: 7,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
                     className="absolute top-[40%] right-[10%] text-primary/20 dark:text-primary/30 blur-[0.5px]"
                   >
                     <Calculator size={48} strokeWidth={1} />
@@ -743,7 +884,11 @@ export default function IBTutorsPage() {
 
                   <motion.div
                     animate={{ y: [0, -30, 0], rotate: [5, -5, 5] }}
-                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                    transition={{
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
                     className="absolute bottom-[25%] left-[15%] text-sapphire/20 dark:text-sapphire/30 blur-[0.5px]"
                   >
                     <FlaskConical size={52} strokeWidth={1} />
@@ -751,7 +896,11 @@ export default function IBTutorsPage() {
 
                   <motion.div
                     animate={{ scale: [1, 1.1, 1], rotate: [0, 20, 0] }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                    transition={{
+                      duration: 8,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
                     className="absolute bottom-[40%] right-[15%] text-primary/20 dark:text-primary/30 blur-[0.5px]"
                   >
                     <PenTool size={40} strokeWidth={1} />
@@ -759,7 +908,11 @@ export default function IBTutorsPage() {
 
                   <motion.div
                     animate={{ y: [0, 15, 0], opacity: [0.1, 0.3, 0.1] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
                     className="absolute top-[25%] right-[25%] text-sapphire/10 dark:text-sapphire/20"
                   >
                     <div className="text-4xl font-black italic tracking-tighter">
@@ -769,7 +922,11 @@ export default function IBTutorsPage() {
 
                   <motion.div
                     animate={{ x: [0, 15, 0], y: [0, 10, 0] }}
-                    transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+                    transition={{
+                      duration: 9,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
                     className="absolute top-[35%] left-[5%] text-primary/15 dark:text-primary/25 blur-[1px]"
                   >
                     <Globe size={56} strokeWidth={1} />
@@ -777,7 +934,11 @@ export default function IBTutorsPage() {
 
                   <motion.div
                     animate={{ scale: [1, 1.2, 1], rotate: [0, -10, 0] }}
-                    transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
+                    transition={{
+                      duration: 11,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
                     className="absolute top-[10%] right-[30%] text-sapphire/20 dark:text-sapphire/30 blur-[0.5px]"
                   >
                     <Brain size={44} strokeWidth={1} />
@@ -785,7 +946,11 @@ export default function IBTutorsPage() {
 
                   <motion.div
                     animate={{ y: [0, -25, 0], x: [0, 10, 0] }}
-                    transition={{ duration: 13, repeat: Infinity, ease: "easeInOut" }}
+                    transition={{
+                      duration: 13,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
                     className="absolute bottom-[10%] right-[35%] text-primary/10 dark:text-primary/20"
                   >
                     <Palette size={48} strokeWidth={1} />
@@ -793,7 +958,11 @@ export default function IBTutorsPage() {
 
                   <motion.div
                     animate={{ rotate: [0, 360] }}
-                    transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 25,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                     className="absolute bottom-[15%] left-[40%] text-sapphire/20"
                   >
                     <InfinityIcon size={32} strokeWidth={1} />
@@ -801,7 +970,11 @@ export default function IBTutorsPage() {
 
                   <motion.div
                     animate={{ y: [0, 30, 0] }}
-                    transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                    transition={{
+                      duration: 10,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
                     className="absolute top-[45%] left-[35%] text-primary/10"
                   >
                     <div className="text-5xl font-black italic tracking-tighter">
@@ -942,9 +1115,30 @@ export default function IBTutorsPage() {
 
       <section className="py-24 px-6 bg-background relative overflow-hidden">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-xl font-bold text-deep-navy dark:text-white mb-6 tracking-normal">Which IB Subjects Do We Cover?</h2>
+          <h2 className="text-xl font-bold text-deep-navy dark:text-white mb-6 tracking-normal">
+            Which IB Subjects Do We Cover?
+          </h2>
           <p className="text-sm text-text-secondary dark:text-slate-400 leading-relaxed font-normal opacity-80 max-w-4xl">
-            Our tutors provide specialist support across all six IB Diploma subject groups. In Group 1 we cover Language A Literature, Language A Language and Literature, Literature and Performance, and Self-Taught Literature. Group 2 language acquisition support includes English B, French B, Spanish B, German B, Mandarin B, Arabic B, Japanese B, Italian B, Russian B, Hindi B, and ab initio courses in French, Spanish, German, Mandarin, and Arabic, as well as Latin and Ancient Greek. Group 3 Individuals and Societies subjects include Business Management, Economics, Geography, Global Politics, History, ITGS, Philosophy, Psychology, Social and Cultural Anthropology, World Religions, and Environmental Systems and Societies. Group 4 Sciences covered include Biology, Chemistry, Physics, Computer Science, Design Technology, Sports Exercise and Health Science, and Environmental Systems and Societies. Group 5 Mathematics support covers both Mathematics Analysis and Approaches and Mathematics Applications and Interpretation at Standard and Higher Level. Group 6 Arts subjects include Dance, Film, Music, Theatre, and Visual Arts. We also provide dedicated support for Internal Assessments, exam preparation, and university admissions guidance.
+            Our tutors provide specialist support across all six IB Diploma
+            subject groups. In Group 1 we cover Language A Literature, Language
+            A Language and Literature, Literature and Performance, and
+            Self-Taught Literature. Group 2 language acquisition support
+            includes English B, French B, Spanish B, German B, Mandarin B,
+            Arabic B, Japanese B, Italian B, Russian B, Hindi B, and ab initio
+            courses in French, Spanish, German, Mandarin, and Arabic, as well as
+            Latin and Ancient Greek. Group 3 Individuals and Societies subjects
+            include Business Management, Economics, Geography, Global Politics,
+            History, ITGS, Philosophy, Psychology, Social and Cultural
+            Anthropology, World Religions, and Environmental Systems and
+            Societies. Group 4 Sciences covered include Biology, Chemistry,
+            Physics, Computer Science, Design Technology, Sports Exercise and
+            Health Science, and Environmental Systems and Societies. Group 5
+            Mathematics support covers both Mathematics Analysis and Approaches
+            and Mathematics Applications and Interpretation at Standard and
+            Higher Level. Group 6 Arts subjects include Dance, Film, Music,
+            Theatre, and Visual Arts. We also provide dedicated support for
+            Internal Assessments, exam preparation, and university admissions
+            guidance.
           </p>
         </div>
       </section>
@@ -952,9 +1146,18 @@ export default function IBTutorsPage() {
   );
 }
 
-function SubjectGroup({ cardId, title, icon: Icon, subjects, isExpandable, initialShow, note }: any) {
+function SubjectGroup({
+  cardId,
+  title,
+  icon: Icon,
+  subjects,
+  isExpandable,
+  initialShow,
+  note,
+}: any) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const displayedSubjects = isExpandable && !isExpanded ? subjects.slice(0, initialShow) : subjects;
+  const displayedSubjects =
+    isExpandable && !isExpanded ? subjects.slice(0, initialShow) : subjects;
 
   return (
     <div className="p-10 rounded-[3rem] bg-white dark:bg-slate-900/50 border border-border dark:border-white/10 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
@@ -962,16 +1165,18 @@ function SubjectGroup({ cardId, title, icon: Icon, subjects, isExpandable, initi
       <div className="absolute top-4 left-4 text-[120px] font-black text-sapphire/5 select-none pointer-events-none leading-none z-0">
         {cardId}
       </div>
-      
+
       <div className="relative z-10">
         <div className="w-12 h-12 rounded-xl bg-sapphire/5 text-sapphire flex items-center justify-center mb-8 group-hover:bg-sapphire group-hover:text-white transition-colors">
           <Icon size={24} />
         </div>
-        <h3 className="text-xl font-black text-deep-navy dark:text-white mb-6 tracking-tight uppercase italic">{title}</h3>
+        <h3 className="text-xl font-black text-deep-navy dark:text-white mb-6 tracking-tight uppercase italic">
+          {title}
+        </h3>
         <div className="flex flex-wrap gap-2 mb-8">
           <AnimatePresence mode="popLayout">
             {displayedSubjects.map((sub: string) => (
-              <motion.span 
+              <motion.span
                 key={sub}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -983,7 +1188,7 @@ function SubjectGroup({ cardId, title, icon: Icon, subjects, isExpandable, initi
             ))}
           </AnimatePresence>
           {isExpandable && subjects.length > initialShow && !isExpanded && (
-            <button 
+            <button
               onClick={() => setIsExpanded(true)}
               className="px-3 py-1.5 rounded-xl border border-sapphire/30 text-[10px] font-black text-sapphire uppercase tracking-tight hover:bg-sapphire/5 transition-colors"
             >

@@ -82,17 +82,32 @@ export default function ALevelTutoringPage() {
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://studyhours.com" },
-      { "@type": "ListItem", "position": 2, "name": "Subjects", "item": "https://studyhours.com/subjects" },
-      { "@type": "ListItem", "position": 3, "name": "A-Level Tutoring", "item": "https://studyhours.com/a-level-online-tutoring" }
-    ]
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://studyhours.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Subjects",
+        item: "https://studyhours.com/subjects",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "A-Level Tutoring",
+        item: "https://studyhours.com/a-level-online-tutoring",
+      },
+    ],
   };
 
   const ratingSchema = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "A-Level Online Tutoring",
+    "@type": "EducationalOrganization",
+    name: "A-Level Online Tutoring",
     "image": "https://studyhours.com/hero_calm_education.png",
     "priceRange": "$149 - $499",
     "serviceType": "Tutoring",

@@ -80,7 +80,7 @@ export default function MethodologyLayout({
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "LocalBusiness",
+            "@type": "EducationalOrganization",
             "name": "StudyHours Methodology",
             "image": "https://studyhours.com/hero_calm_education.png",
             "priceRange": "$149 - $499",
