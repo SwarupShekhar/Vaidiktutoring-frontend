@@ -297,7 +297,7 @@ export default function K12OnlineTutoringPage() {
                 StudyHours offers customized K-12 tutoring that adapts to each student's unique learning pace and style. As a dedicated online learning tutor, our expert instructors simplify complex concepts and build strong study habits that provide a lifelong academic advantage.
               </p>
               <p className="text-lg text-text-secondary mb-8 leading-relaxed">
-                Through our specialized k_12 program, we create a supportive atmosphere where students feel confident to ask questions and grow, with the flexibility to learn anytime, anywhere with a qualified k-12 tutor.
+                Through our specialized k-12 program, we create a supportive atmosphere where students feel confident to ask questions and grow, with the flexibility to learn anytime, anywhere with a qualified k-12 tutor.
               </p>
 
               <Link
@@ -379,7 +379,7 @@ export default function K12OnlineTutoringPage() {
                 easy to fall behind or miss the point entirely. That's where a
                 professional online learning tutor can be very helpful,
                 providing the personalized attention found in our comprehensive
-                k_12 program.
+                k-12 program.
               </p>
             </motion.div>
           </div>
