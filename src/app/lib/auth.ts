@@ -93,7 +93,7 @@ export async function changePassword(payload: { currentPassword?: string; passwo
 
 export async function getMe() {
   try {
-    const res = await api.get('/auth/me');
+    const res = await api.get('/auth/profile');
     return res.data;
   } catch (error: any) {
     // If 401, it might be expected during auth transitions
