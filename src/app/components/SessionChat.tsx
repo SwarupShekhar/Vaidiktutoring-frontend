@@ -67,6 +67,7 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
 
     // Socket State
     const [socket, setSocket] = useState<Socket | null>(null);
+    const [isConnected, setIsConnected] = useState(false);
 
     // Initialize Socket
     useEffect(() => {
@@ -94,12 +95,9 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
             withCredentials: true
         });
 
-        setSocket(newSocket);
-
         newSocket.on('connect', () => {
             console.log('[Chat] Connected to socket! ID:', newSocket.id);
-            // Payload must match: @MessageBody() data: { sessionId: string; userId: string }
-            // Added ACK callback for debugging
+            setIsConnected(true);
             newSocket.emit('joinSession', {
                 sessionId,
                 userId: user.sub || user.id
@@ -108,11 +106,17 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
             });
         });
 
-
+        newSocket.on('disconnect', () => {
+            console.log('[Chat] Socket disconnected');
+            setIsConnected(false);
+        });
 
         newSocket.on('connect_error', (err) => {
             console.error('[Chat] Socket connection error:', err);
+            setIsConnected(false);
         });
+
+        setSocket(newSocket);
 
 
         // Gateway emits: client.broadcast.to(...).emit('receiveMessage', ...)
@@ -234,13 +238,13 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
                                     <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">
                                         💬
                                     </div>
-                                    <div className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-transparent rounded-full ${socket?.connected ? 'bg-green-400' : 'bg-red-500'}`} />
+                                    <div className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-transparent rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-500'}`} />
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-sm">Live Chat</h3>
                                     <span className="text-xs text-white/80 flex items-center gap-1">
-                                        <span className={`w-1.5 h-1.5 rounded-full ${socket?.connected ? 'bg-green-400 animate-pulse' : 'bg-red-500'}`} />
-                                        {socket?.connected ? 'Online' : 'Connecting...'}
+                                        <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-400 animate-pulse' : 'bg-red-500'}`} />
+                                        {isConnected ? 'Online' : 'Connecting...'}
                                     </span>
                                 </div>
                             </div>
@@ -291,13 +295,13 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
                                     type="text"
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
-                                    placeholder={socket?.connected ? "Type your message..." : "Connecting..."}
-                                    disabled={!socket?.connected}
+                                    placeholder={isConnected ? "Type your message..." : "Connecting..."}
+                                    disabled={!isConnected}
                                     className="flex-1 px-4 py-2 rounded-xl bg-white/50 dark:bg-black/50 border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary text-sm text-(--color-text-primary) placeholder-text-secondary disabled:opacity-50"
                                 />
                                 <button
                                     type="submit"
-                                    disabled={!newMessage.trim() || !socket?.connected}
+                                    disabled={!newMessage.trim() || !isConnected}
                                     className="p-2 rounded-xl bg-primary text-white disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-blue-500/20"
                                 >
                                     <svg className="w-5 h-5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
