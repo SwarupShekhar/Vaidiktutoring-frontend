@@ -36,7 +36,7 @@ export default function K12OnlineTutoringPage() {
       a: "To provide a strong academic foundation, helping students improve through their school years. It focuses on conceptual clarity and preparing students for higher education and careers."
     },
     {
-      q: "Is K12 a good homeschool program?",
+      q: "Is K-12 a good homeschool program?",
       a: "Yes, it offers a well-organized curriculum and guided study journey. It works well for families who prefer a directed learning path with structured lesson plans."
     },
     {
@@ -819,10 +819,10 @@ export default function K12OnlineTutoringPage() {
                 q: "What is the purpose of the K-12 program?",
                 a: "To provide a strong academic foundation, helping students improve through their school years. It focuses on conceptual clarity and preparing students for higher education and careers."
               },
-              {
-                q: "Is K12 a good homeschool program?",
-                a: "Yes, it offers a well-organized curriculum and guided study journey. It works well for families who prefer a directed learning path with structured lesson plans."
-              },
+               {
+                 q: "Is K-12 a good homeschool program?",
+                 a: "Yes, it offers a well-organized curriculum and guided study journey. It works well for families who prefer a directed learning path with structured lesson plans."
+               },
               {
                 q: "What is the difference between K-12 and higher education?",
                 a: "K-12 builds a foundational footing across different subjects from early schooling to high school. Higher education focuses on specialized learning in a specific field for career growth."
