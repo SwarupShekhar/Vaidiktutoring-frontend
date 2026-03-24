@@ -2,14 +2,16 @@ import { Metadata } from "next";
 import K12PageClient from "./K12PageClient";
 
 export const metadata: Metadata = {
-  title: "Premium K-12 Online Tutoring Service | StudyHours",
-  description: "Achieve better results with our K-12 online tutoring service. Personalized live classes and academic support programs for students in every grade.",
+  title: "K-12 Online Tutoring | Expert Live Classes for All Subjects",
+  description:
+    "At Studyhours, join K-12 online tutoring with live classes in math, English, science & more. Get personalized support and improve academic performance.",
   alternates: {
     canonical: "https://studyhours.com/k-12-online-tutoring",
   },
   openGraph: {
-    title: "Premium K-12 Online Tutoring Service | StudyHours",
-    description: "Achieve better results with our K-12 online tutoring service. Personalized live classes and academic support programs for students in every grade.",
+    title: "K-12 Online Tutoring | Expert Live Classes for All Subjects",
+    description:
+      "At Studyhours, join K-12 online tutoring with live classes in math, English, science & more. Get personalized support and improve academic performance.",
     url: "https://studyhours.com/k-12-online-tutoring",
     images: [
       {
@@ -23,8 +25,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Premium K-12 Online Tutoring Service | StudyHours",
-    description: "Achieve better results with our K-12 online tutoring service. Personalized live classes and academic support programs for students in every grade.",
+    title: "K-12 Online Tutoring | Expert Live Classes for All Subjects",
+    description:
+      "At Studyhours, join K-12 online tutoring with live classes in math, English, science & more. Get personalized support and improve academic performance.",
   },
 };
 
