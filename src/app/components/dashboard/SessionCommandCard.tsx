@@ -22,7 +22,7 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
 
     if (!session) {
         return (
-            <div className="relative overflow-hidden bg-white border border-slate-100 rounded-3xl p-8 text-center shadow-sm">
+            <div className="relative overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 rounded-3xl p-8 text-center shadow-sm">
                 <div className="w-16 h-16 bg-slate-100 dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner">
                     📭
                 </div>
@@ -63,7 +63,7 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-            className="group relative overflow-hidden bg-white rounded-[2.5rem] border border-slate-100 shadow-sm transition-all duration-300"
+            className="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-sm transition-all duration-300"
         >
 
             <div className="p-8 relative z-10">
@@ -118,7 +118,7 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
                     ) : (
                         <button
                             onClick={() => router.push(`/session/${session.id}`)}
-                            className="flex-2 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-lg active:scale-98"
+                            className="flex-2 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-lg active:scale-[0.98]"
                         >
                             <ArrowRight size={18} />
                             View Session Details

@@ -56,7 +56,7 @@ export const StatCard = ({
         >
             
             {/* Main Card Container */}
-            <div className="group h-full flex flex-col p-6 rounded-4xl bg-white border border-slate-100 shadow-sm transition-all duration-300 overflow-hidden relative">
+            <div className="group h-full flex flex-col p-6 rounded-4xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 shadow-sm transition-all duration-300 overflow-hidden relative">
                 
 
                 {/* Header: Icon + Label */}
