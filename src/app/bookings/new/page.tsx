@@ -7,6 +7,8 @@ import api from '@/app/lib/api';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import BookingWizard from '@/app/components/bookings/BookingWizard';
 import { useAuthContext } from '@/app/context/AuthContext';
+import { useCreditStatus } from '@/app/Hooks/useCreditStatus';
+import { useRouter } from 'next/navigation';
 
 interface StudentSummary {
     id: string;
@@ -15,7 +17,16 @@ interface StudentSummary {
 
 export default function NewBookingPage() {
     const { user } = useAuthContext();
+    const router = useRouter();
     const isParent = user?.role === 'parent';
+    const { status: creditStatus } = useCreditStatus();
+
+    // Redirect to dashboard if student can't book
+    React.useEffect(() => {
+        if (creditStatus && !creditStatus.canBook && user?.role === 'student') {
+            router.push('/students/dashboard');
+        }
+    }, [creditStatus, user?.role, router]);
 
     const {
         data: students = [],

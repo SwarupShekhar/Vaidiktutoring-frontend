@@ -4,9 +4,12 @@ import React, { useMemo } from 'react';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import { useAuthContext } from '@/app/context/AuthContext';
 import useStudentDashboard from '@/app/Hooks/useStudentDashboard';
+import { useCreditStatus } from '@/app/Hooks/useCreditStatus';
 import { useRouter } from 'next/navigation';
 import { StatCard } from '@/app/components/dashboard/StatCard';
 import { SessionCommandCard } from '@/app/components/dashboard/SessionCommandCard';
+import { TrialBanner } from '@/app/components/dashboard/TrialBanner';
+import { UpgradeNudge } from '@/app/components/dashboard/UpgradeNudge';
 import {
   CheckCircle2,
   Hourglass,
@@ -24,6 +27,7 @@ export default function StudentDashboardPage() {
   const { user } = useAuthContext();
   const router = useRouter();
   const { upcomingSessions, pastSessions, bookings, loading } = useStudentDashboard();
+  const { status: creditStatus, loading: creditLoading, refetch: refetchCredits } = useCreditStatus();
 
   // Profile State
   const [isEditProfileOpen, setIsEditProfileOpen] = React.useState(false);
@@ -163,14 +167,35 @@ export default function StudentDashboardPage() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={() => router.push('/bookings/new')}
-              className="hidden sm:flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 hover:scale-[1.03] active:scale-95 transition-all text-sm"
+              onClick={() => {
+                if (!creditStatus?.canBook) return;
+                router.push('/bookings/new');
+              }}
+              disabled={creditStatus?.canBook === false}
+              className={`hidden sm:flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 hover:scale-[1.03] active:scale-95 transition-all text-sm ${
+                creditStatus?.canBook === false ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
               <Plus size={18} />
               Book New Session
             </button>
           </div>
         </motion.header>
+
+        {/* TRIAL BANNER */}
+        {creditStatus?.mode === 'trial_active' && (
+          <TrialBanner status={creditStatus} />
+        )}
+
+        {/* CONDITIONAL: Show UpgradeNudge OR normal dashboard */}
+        {(creditStatus?.mode === 'trial_exhausted' || creditStatus?.mode === 'trial_expired') ? (
+          <UpgradeNudge
+            status={creditStatus}
+            pastSessions={pastSessions}
+            onSubscribed={refetchCredits}
+          />
+        ) : (
+        <>
 
         {/* STATS OVERVIEW */}
         <motion.section variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -191,8 +216,16 @@ export default function StudentDashboardPage() {
           <StatCard
             icon={Calendar}
             label="Next Session"
-            value={nextSession ? formatDate(nextSession.start_time).split(',')[0] : 'None'}
-            description={nextSession ? formatDate(nextSession.start_time).split(',')[1] : 'Book one today'}
+            value={
+              creditStatus?.mode !== 'trial_active' && creditStatus?.mode !== 'paid'
+                ? '—'
+                : nextSession ? formatDate(nextSession.start_time).split(',')[0] : 'None'
+            }
+            description={
+              creditStatus?.mode !== 'trial_active' && creditStatus?.mode !== 'paid'
+                ? 'Subscribe to book'
+                : nextSession ? formatDate(nextSession.start_time).split(',')[1] : 'Book one today'
+            }
             color="#3b82f6"
           />
         </motion.section>
@@ -320,13 +353,22 @@ export default function StudentDashboardPage() {
         {/* MOBILE CTA */}
         <motion.div variants={itemVariants} className="flex sm:hidden">
           <button
-            onClick={() => router.push('/bookings/new')}
-            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white font-bold rounded-2xl shadow-xl hover:bg-blue-600 transition-all"
+            onClick={() => {
+              if (!creditStatus?.canBook) return;
+              router.push('/bookings/new');
+            }}
+            disabled={creditStatus?.canBook === false}
+            className={`w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white font-bold rounded-2xl shadow-xl hover:bg-blue-600 transition-all ${
+              creditStatus?.canBook === false ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
             <Plus size={20} />
             Book Session
           </button>
         </motion.div>
+
+        </>
+        )}
 
       </motion.div>
 
