@@ -101,7 +101,7 @@ export function UpgradeNudge({
       {/* Top Banner */}
       <motion.div
         variants={itemVariants}
-        className="relative overflow-hidden rounded-2xl border border-orange-200 bg-linear-to-r from-orange-50 via-amber-50 to-orange-50 p-6 shadow-sm"
+        className="relative overflow-hidden rounded-2xl border border-orange-200 dark:border-orange-500/20 bg-linear-to-r from-orange-50/50 via-amber-50/50 to-orange-50/50 dark:from-orange-900/20 dark:via-amber-900/20 dark:to-orange-900/20 p-6 shadow-sm"
       >
         <div className="absolute top-[-30px] right-[-30px] w-40 h-40 bg-orange-200/20 rounded-full blur-3xl pointer-events-none" />
         <div className="flex items-start gap-4 relative z-10">
@@ -109,12 +109,12 @@ export function UpgradeNudge({
             <AlertTriangle className="text-orange-600" size={24} />
           </div>
           <div>
-            <h2 className="text-lg font-extrabold text-orange-900 tracking-tight">
+            <h2 className="text-lg font-extrabold text-orange-900 dark:text-orange-400 tracking-tight">
               {status.mode === "trial_exhausted"
                 ? "Your trial credits are used up"
                 : "Your trial has expired"}
             </h2>
-            <p className="text-sm text-orange-700/80 mt-1">
+            <p className="text-sm text-orange-700/80 dark:text-orange-300/60 mt-1">
               You completed {status.sessionsUsed} session
               {status.sessionsUsed !== 1 ? "s" : ""} — subscribe to keep going
             </p>
@@ -129,7 +129,7 @@ export function UpgradeNudge({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3 text-red-800"
+            className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/20 rounded-xl p-4 flex items-center gap-3 text-red-800 dark:text-red-300"
           >
             <X size={16} />
             <p className="text-sm font-medium">{error}</p>
@@ -144,7 +144,7 @@ export function UpgradeNudge({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3 text-green-800"
+            className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/20 rounded-xl p-4 flex items-center gap-3 text-green-800 dark:text-green-300"
           >
             <Check size={18} className="text-green-600" />
             <p className="text-sm font-bold">
@@ -176,28 +176,28 @@ export function UpgradeNudge({
       {trialSessions.length > 0 && (
         <motion.div
           variants={itemVariants}
-          className="bg-glass rounded-2xl p-6 border border-white/20 shadow-sm"
+          className="bg-glass rounded-2xl p-6 border border-border shadow-sm font-sans"
         >
-          <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-4">
+          <h3 className="text-sm font-bold text-text-secondary uppercase tracking-wider mb-4">
             Your Trial Sessions
           </h3>
           <div className="space-y-3">
             {trialSessions.map((session: any) => (
               <div
                 key={session.id}
-                className="flex items-center justify-between p-3 rounded-xl bg-white/40 border border-white/20"
+                className="flex items-center justify-between p-3 rounded-xl bg-surface border border-border"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
                     📚
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-800">
+                    <p className="text-sm font-bold text-foreground">
                       {session.subject?.name ||
                         session.subjects?.name ||
                         "Session"}
                     </p>
-                    <p className="text-[10px] text-gray-500">
+                    <p className="text-[10px] text-text-secondary">
                       {session.start_time || session.requested_start
                         ? new Date(
                             session.start_time || session.requested_start,
@@ -252,10 +252,10 @@ function PricingCard({
     <motion.div
       whileHover={{ y: -4, scale: 1.01 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className={`relative rounded-2xl p-6 flex flex-col bg-white shadow-sm transition-all ${
+      className={`relative rounded-2xl p-6 flex flex-col bg-surface shadow-sm transition-all ${
         plan.recommended
-          ? "border-2 border-indigo-500 shadow-indigo-100/50 shadow-lg"
-          : "border border-gray-100"
+          ? "border-2 border-primary shadow-primary/20 shadow-lg"
+          : "border border-border"
       }`}
     >
       {/* Recommended badge */}
@@ -269,18 +269,18 @@ function PricingCard({
 
       {/* Plan Header */}
       <div className={`mb-5 ${plan.recommended ? "mt-2" : ""}`}>
-        <h3 className="text-lg font-extrabold text-gray-900">{plan.name}</h3>
+        <h3 className="text-lg font-extrabold text-foreground">{plan.name}</h3>
         <div className="flex items-baseline gap-1 mt-2">
-          <span className="text-3xl font-black text-gray-900">
+          <span className="text-3xl font-black text-foreground">
             ${plan.price}
           </span>
-          <span className="text-sm text-gray-400 font-medium">/mo</span>
+          <span className="text-sm text-text-secondary font-medium">/mo</span>
         </div>
         <div className="mt-2 flex items-center gap-3">
           <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">
             {plan.sessionsPerMonth} sessions/mo
           </span>
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-text-secondary">
             {plan.sessionsPerWeek}/week
           </span>
         </div>
@@ -300,7 +300,7 @@ function PricingCard({
               )}
             </div>
             <span
-              className={`text-xs ${feature.included ? "text-gray-700" : "text-gray-300 line-through"}`}
+              className={`text-xs ${feature.included ? "text-foreground" : "text-text-secondary line-through"}`}
             >
               {feature.label}
             </span>

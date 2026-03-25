@@ -16,18 +16,18 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
 
     if (loading) {
         return (
-            <div className="animate-pulse bg-slate-100 dark:bg-white/5 rounded-3xl h-64 w-full border border-slate-200/50 dark:border-white/5" />
+            <div className="animate-pulse bg-background rounded-3xl h-64 w-full border border-border" />
         );
     }
 
     if (!session) {
         return (
-            <div className="relative overflow-hidden bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 rounded-3xl p-8 text-center shadow-sm">
-                <div className="w-16 h-16 bg-slate-100 dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner">
+            <div className="relative overflow-hidden bg-surface border border-border rounded-3xl p-8 text-center shadow-sm">
+                <div className="w-16 h-16 bg-background rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner border border-border">
                     📭
                 </div>
-                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">No sessions scheduled</h3>
-                <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 max-w-xs mx-auto">Book a new class to start your personalized learning journey!</p>
+                <h3 className="text-xl font-black text-foreground mb-2 tracking-tight">No sessions scheduled</h3>
+                <p className="text-text-secondary text-sm mb-6 max-w-xs mx-auto">Book a new class to start your personalized learning journey!</p>
                 <button
                     onClick={() => router.push('/bookings/new')}
                     className="px-8 py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-md"
@@ -63,18 +63,18 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-            className="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-sm transition-all duration-300"
+            className="group relative overflow-hidden bg-surface rounded-[2.5rem] border border-border shadow-sm transition-all duration-300"
         >
 
             <div className="p-8 relative z-10">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                     <div className="flex items-center gap-4">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border border-slate-100 ${isLive ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-indigo-600'}`}>
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border border-border ${isLive ? 'bg-red-50 text-red-600' : 'bg-background text-indigo-600'}`}>
                             <BookOpen size={28} strokeWidth={2.5} />
                         </div>
                         <div>
                             <div className="flex items-center gap-2 mb-1">
-                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide flex items-center gap-1.5 ${isLive ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-600'}`}>
+                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide flex items-center gap-1.5 ${isLive ? 'bg-red-100 text-red-600' : 'bg-background border border-border text-text-secondary'}`}>
                                     {isLive && <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />}
                                     {isLive ? 'Live Now' : 'Upcoming Priority'}
                                 </span>
@@ -84,20 +84,20 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
                                     </span>
                                 )}
                             </div>
-                            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
+                            <h2 className="text-2xl font-black text-foreground tracking-tight leading-none">
                                 {subjectName}
                             </h2>
                         </div>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
-                        <div className="px-4 py-2 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/5 flex items-center gap-2">
+                        <div className="px-4 py-2 bg-background rounded-2xl border border-border flex items-center gap-2">
                             <Calendar size={14} className="text-slate-400" />
                             <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
                                 {startTime.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
                             </span>
                         </div>
-                        <div className="px-4 py-2 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/5 flex items-center gap-2">
+                        <div className="px-4 py-2 bg-background rounded-2xl border border-border flex items-center gap-2">
                             <Clock size={14} className="text-slate-400" />
                             <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
                                 {startTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
@@ -118,7 +118,7 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
                     ) : (
                         <button
                             onClick={() => router.push(`/session/${session.id}`)}
-                            className="flex-2 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-lg active:scale-[0.98]"
+                            className="flex-2 py-4 bg-foreground text-background rounded-2xl font-black flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-lg active:scale-[0.98]"
                         >
                             <ArrowRight size={18} />
                             View Session Details
@@ -126,7 +126,7 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
                     )}
                     
                     <button 
-                        className="flex-1 py-4 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-white/10 transition-all border border-slate-200/50 dark:border-white/5"
+                        className="flex-1 py-4 bg-background text-text-secondary rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-border transition-all border border-border"
                     >
                         <User size={16} />
                         Get Help

@@ -135,19 +135,19 @@ export default function StudentDashboardPage() {
           <div>
             <div className="flex items-center gap-3 mb-1">
               <motion.div
-                className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold"
+                className="w-10 h-10 rounded-full bg-background border border-border flex items-center justify-center text-primary font-bold shadow-inner"
               >
                 {user?.first_name?.[0] || user?.firstName?.[0] || 'S'}
               </motion.div>
-              <p className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-tighter">
+              <p className="text-sm font-bold text-blue-600 dark:text-blue-400 bg-background px-3 py-1 rounded-full uppercase tracking-tighter border border-border">
                 Student Portal
               </p>
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-(--color-text-primary) tracking-tight">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
               {getGreeting()}, {user?.firstName && user.firstName !== 'New' ? user.firstName : (user?.first_name !== 'New' ? user?.first_name : 'Scholar')}
             </h1>
             <div className="flex items-center gap-3">
-              <p className="text-text-secondary opacity-80">
+              <p className="text-text-secondary">
                 Your learning dashboard is up to date.
               </p>
               <button
@@ -228,7 +228,7 @@ export default function StudentDashboardPage() {
         <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-(--color-text-primary) flex items-center gap-2">
+              <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <GraduationCap className="text-blue-500" size={20} />
                 Priority Task
               </h3>
@@ -253,13 +253,13 @@ export default function StudentDashboardPage() {
             </AnimatePresence>
 
             {/* UPCOMING MINI LIST */}
-            <motion.div variants={itemVariants} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+            <motion.div variants={itemVariants} className="bg-surface rounded-3xl p-6 border border-border shadow-sm">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-(--color-text-primary) flex items-center gap-2">
+                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
                   <Calendar size={20} className="text-blue-500" />
                   Upcoming Schedule
                 </h2>
-                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
+                <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-background px-2 py-1 rounded-md border border-border">
                   {otherUpcoming.length} Other Classes
                 </span>
               </div>
@@ -269,13 +269,13 @@ export default function StudentDashboardPage() {
                   <div className="py-10 text-center text-blue-300">Loading schedule...</div>
                 ) : otherUpcoming.length > 0 ? (
                   otherUpcoming.map((session: any) => (
-                    <div key={session.id} className="p-4 rounded-xl bg-white/40 border border-white/20 flex justify-between items-center group hover:bg-white/60 transition-all cursor-default">
+                    <div key={session.id} className="p-4 rounded-xl bg-surface border border-border flex justify-between items-center group hover:bg-background transition-all cursor-default">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-lg shadow-sm">
+                        <div className="w-10 h-10 rounded-lg bg-background flex items-center justify-center text-lg shadow-sm">
                           📚
                         </div>
                         <div>
-                          <h3 className="font-bold text-(--color-text-primary) group-hover:text-blue-600 transition-colors">
+                          <h3 className="font-bold text-foreground group-hover:text-blue-600 transition-colors">
                             {session.subject?.name || 'Class Session'}
                           </h3>
                           <p className="text-xs text-text-secondary">
@@ -287,7 +287,7 @@ export default function StudentDashboardPage() {
                     </div>
                   ))
                 ) : (
-                  <div className="py-8 text-center bg-white/20 rounded-2xl border border-dashed border-white/40">
+                  <div className="py-8 text-center bg-background rounded-2xl border border-dashed border-border">
                     <p className="text-sm text-text-secondary italic">
                       No other classes scheduled.
                     </p>
@@ -299,8 +299,8 @@ export default function StudentDashboardPage() {
 
           {/* SIDEBAR: CLASS HISTORY */}
           <aside className="space-y-6">
-            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm overflow-hidden relative">
-              <h2 className="text-lg font-bold text-(--color-text-primary) mb-6 flex items-center gap-2 relative z-10">
+            <div className="bg-surface rounded-3xl p-6 border border-border shadow-sm overflow-hidden relative">
+              <h2 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2 relative z-10">
                 <CheckCircle2 size={18} className="text-green-500" />
                 Recently Finished
               </h2>
@@ -308,10 +308,10 @@ export default function StudentDashboardPage() {
               <div className="space-y-4 relative z-10 max-h-[500px] overflow-y-auto pr-2 scrollbar-hide">
                 {pastSessions.length > 0 ? (
                   pastSessions.map((session: any) => (
-                    <div key={session.id} className="relative pl-6 border-l-2 border-green-100 pb-4 last:pb-0">
+                    <div key={session.id} className="relative pl-6 border-l-2 border-green-100 dark:border-green-900/30 pb-4 last:pb-0">
                       <div className="absolute left-[-5px] top-1 w-2 h-2 rounded-full bg-green-400" />
                       <div>
-                        <h4 className="text-sm font-bold text-(--color-text-primary)">
+                        <h4 className="text-sm font-bold text-foreground">
                           {session.subject?.name || 'Session'}
                         </h4>
                         <p className="text-[10px] text-text-secondary uppercase font-bold opacity-60">

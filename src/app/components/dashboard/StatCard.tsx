@@ -56,19 +56,19 @@ export const StatCard = ({
         >
             
             {/* Main Card Container */}
-            <div className="group h-full flex flex-col p-6 rounded-4xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 shadow-sm transition-all duration-300 overflow-hidden relative">
+            <div className="group h-full flex flex-col p-6 rounded-4xl bg-surface border border-border shadow-sm transition-all duration-300 overflow-hidden relative">
                 
 
                 {/* Header: Icon + Label */}
                 <div className="flex items-center gap-4 mb-6">
                     <div 
-                        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-slate-100 bg-slate-50"
+                        className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-border bg-background"
                     >
                         <Icon size={20} className="text-slate-600" strokeWidth={2} />
                     </div>
                     
                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 dark:text-slate-500 mb-0.5">
+                        <p className="text-[10px] font-black uppercase tracking-[0.15em] text-text-secondary mb-0.5">
                             {label}
                         </p>
                         <div 
@@ -80,9 +80,9 @@ export const StatCard = ({
 
                 {/* Content: Value + Description */}
                 <div className="mt-auto">
-                    <h3 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-3">
+                    <h3 className="text-4xl font-black text-foreground tracking-tight leading-none mb-3">
                         {loading ? (
-                            <div className="h-10 w-24 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-xl" />
+                            <div className="h-10 w-24 bg-border animate-pulse rounded-xl" />
                         ) : (
                             displayValue
                         )}
@@ -90,7 +90,7 @@ export const StatCard = ({
                     
                     {description && (
                         <div className="flex items-center gap-2">
-                             <div className="h-1 flex-1 bg-slate-100 rounded-full overflow-hidden">
+                             <div className="h-1 flex-1 bg-border rounded-full overflow-hidden">
                                 <motion.div 
                                     initial={{ width: 0 }}
                                     animate={{ width: '100%' }}
@@ -99,7 +99,7 @@ export const StatCard = ({
                                     style={{ backgroundColor: color }}
                                 />
                              </div>
-                             <span className="text-[10px] font-bold text-slate-400 uppercase">{description}</span>
+                             <span className="text-[10px] font-bold text-text-secondary uppercase">{description}</span>
                         </div>
                     )}
                 </div>
