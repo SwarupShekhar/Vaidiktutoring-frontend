@@ -35,7 +35,7 @@ export function TrialBanner({ status }: TrialBannerProps) {
             </h3>
             <p className="text-xs text-indigo-600/80 mt-0.5 flex items-center gap-1.5">
               <Clock size={12} />
-              Expires in {status.daysLeft} day{status.daysLeft !== 1 ? "s" : ""}{" "}
+              Expires in {status.daysLeft ?? 7} day{(status.daysLeft ?? 7) !== 1 ? "s" : ""}{" "}
               · {status.sessionsUsed} session
               {status.sessionsUsed !== 1 ? "s" : ""} used
             </p>
