@@ -225,85 +225,48 @@ export default function SessionPage({ params }: SessionProps) {
         import('@excalidraw/excalidraw/index.css');
     }, []);
 
-    // Yjs Collaboration Logic
+    // Whiteboard Sync State (Socket.io based)
+    const whiteboardRef = useRef<{ isUpdating: boolean }>({ isUpdating: false });
+
     useEffect(() => {
-        if (!excalidrawAPI || !sessionId || !user?.role) return;
+        if (!excalidrawAPI || !socket || !sessionId) return;
         
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://k-12-backend.onrender.com';
-        const WS_URL = process.env.NEXT_PUBLIC_WS_URL || `${API_URL.replace('http', 'ws')}/whiteboard`;
-        
-        console.log('[Collab] Syncing with Whiteboard URL:', WS_URL);
+        console.log('[Collab] Initializing Whiteboard sync via Socket.io');
 
-        let yDoc: any;
-        let yProvider: any;
-        let isUpdatingFromRemote = false;
-
-        const initCollab = async () => {
-            try {
-                const Y = await import('yjs');
-                const { WebsocketProvider } = await import('y-websocket');
-
-                yDoc = new Y.Doc();
-                yProvider = new WebsocketProvider(WS_URL, `session-${sessionId}`, yDoc);
-
-                // Use a Map for O(1) element updates and better sync performance
-                const yElementsMap = yDoc.getMap('elements-map');
-
-                // Remote -> Local: Observe changes in the map
-                yElementsMap.observe(() => {
-                    if (isUpdatingFromRemote) return;
-                    
-                    const remoteElements = Array.from(yElementsMap.values());
-                    isUpdatingFromRemote = true;
-                    
-                    // Update only if data exists to avoid flickering
-                    if (remoteElements.length > 0 || yElementsMap.size === 0) {
-                        excalidrawAPI.updateScene({ elements: remoteElements });
-                    }
-                    
-                    requestAnimationFrame(() => {
-                        isUpdatingFromRemote = false;
-                    });
-                });
-
-                // Local -> Remote: Handle changes (Tutor side)
-                if (user.role === 'tutor') {
-                    excalidrawAPI.onChange((elements: any[]) => {
-                        if (isUpdatingFromRemote) return;
-
-                        yDoc.transact(() => {
-                            // 1. Sync updated/new elements
-                            elements.forEach(el => {
-                                const current = yElementsMap.get(el.id);
-                                // Deep comparison or version check via versionNonce
-                                if (!current || current.versionNonce !== el.versionNonce || current.version !== el.version) {
-                                    yElementsMap.set(el.id, el);
-                                }
-                            });
-
-                            // 2. Cleanup deleted elements
-                            const localIds = new Set(elements.map(el => el.id));
-                            yElementsMap.forEach((_: any, id: string) => {
-                                if (!localIds.has(id)) {
-                                    yElementsMap.delete(id);
-                                }
-                            });
-                        });
-                    });
-                }
-            } catch (err) {
-                console.error('[Collab] Failed to initialize Yjs:', err);
+        // Receives update from Tutor
+        const handleRemoteUpdate = (remoteElements: any[]) => {
+            if (whiteboardRef.current.isUpdating) return;
+            
+            whiteboardRef.current.isUpdating = true;
+            // Only update if we have actual data
+            if (JSON.stringify(excalidrawAPI.getSceneElements()) !== JSON.stringify(remoteElements)) {
+                excalidrawAPI.updateScene({ elements: remoteElements });
             }
+            
+            requestAnimationFrame(() => {
+                whiteboardRef.current.isUpdating = false;
+            });
         };
 
-        const timer = setTimeout(initCollab, 100);
+        socket.on('whiteboard.receiveUpdate', handleRemoteUpdate);
+
+        // Sends update to Student (if user is tutor)
+        if (user?.role === 'tutor') {
+            excalidrawAPI.onChange((elements: any[]) => {
+                if (whiteboardRef.current.isUpdating) return;
+
+                // Simple throttling or equality check
+                socket.emit('whiteboard.update', {
+                    sessionId,
+                    update: elements
+                });
+            });
+        }
 
         return () => {
-            clearTimeout(timer);
-            if (yProvider) yProvider.destroy();
-            if (yDoc) yDoc.destroy();
+            socket.off('whiteboard.receiveUpdate', handleRemoteUpdate);
         };
-    }, [excalidrawAPI, sessionId, user?.role]);
+    }, [excalidrawAPI, socket, sessionId, user?.role]);
 
     // Fetch Daily.co Room & Token
     useEffect(() => {
@@ -476,10 +439,11 @@ export default function SessionPage({ params }: SessionProps) {
             </div>
 
             {/* 3. OVERLAY LAYER: CHAT SIDEBAR */}
-            <div className="absolute right-4 top-32 bottom-24 z-10 w-80 pointer-events-auto">
+            <div className="absolute right-4 bottom-24 z-50 w-80 pointer-events-auto">
                 <SessionChat
                     key={booking?.sessions?.[0]?.id || sessionId}
                     sessionId={booking?.sessions?.[0]?.id || sessionId}
+                    socket={socket}
                 />
             </div>
 

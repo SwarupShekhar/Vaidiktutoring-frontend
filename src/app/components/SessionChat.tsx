@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuthContext } from '@/app/context/AuthContext';
-import { io, Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 import { useParams } from 'next/navigation';
 import api from '@/app/lib/api';
 import ChatLoader from './ChatLoader';
@@ -15,9 +15,10 @@ type Message = {
 
 interface SessionChatProps {
     sessionId?: string; // Explicit session ID from booking data
+    socket: Socket | null;
 }
 
-export default function SessionChat({ sessionId: propSessionId }: SessionChatProps) {
+export default function SessionChat({ sessionId: propSessionId, socket }: SessionChatProps) {
     const { user } = useAuthContext();
     const params = useParams();
 
@@ -25,34 +26,17 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
     // NOTE: For correct chat, this MUST be the real Session UUID, not booking UUID
     const sessionId = propSessionId || (params?.id as string);
 
-    useEffect(() => {
-        console.log('[SessionChat] Mounted with Session ID:', sessionId);
-    }, [sessionId]);
-
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [hasInteracted, setHasInteracted] = useState(false);
+    const [isConnected, setIsConnected] = useState(false);
 
     // Sound Effect
     const notificationSound = useRef<HTMLAudioElement | null>(null);
 
     useEffect(() => {
-        // Use a reliable Base64 sound to avoid 404/NotSupported errors
-        // Simple "Pop" / "Ping" sound
-        const beep = "data:audio/wav;base64,UklGRl9vT1BXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU"; // Truncated placeholder, I will use a real short base64 string
-        notificationSound.current = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"); // Using a reliable hosted URL for now, or revert to base64 if needed.
-        // Actually, let's use a very standard hosted sound or a real base64.
-        // Let's us a simple public URL that is known to work, or the base64 approach.
-        // Base64 is safest.
-
-        // This is a short 'pop' sound base64
-        const popSound = "data:audio/mpeg;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAAZAAABmwACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC//uQxAAAADH+QAAAAAAABAAAAAAAAAAABNpbmcAAAAQAAAAIQAAAZsAAwMDCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsL//uQxAAAAy2QAAAAAAAABAAAAAAAAAAABAAAAAAAAAAAAAAP/7kMQAAABiUkUAAAAAABAAAAAAAAAAABAAAAAAAAAAAAAAP/7kMQAAABiUkUAAAAAABAAAAAAAAAAABAAAAAAAAAAAAAAP/7kMQAAABiUkUAAAAAABAAAAAAAAAAABAAAAAAAAAAAAAAP/7kMQAAABiUkUAAAAAABAAAAAAAAAAABAAAAAAAAAAAAAAP/7kMQAAABiUkUAAAAAABAAAAAAAAAAABAAAAAAAAAAAAAAP/7kMQAAABiUkUAAAAAABAAAAAAAAAAABAAAAAAAAAAAAAAP/7kMQAAABiUkUAAAAAABAAAAAAAAAAABAAAAAAAAAAAAAAP/7kMQAAABiUkUAAAAAABAAAAAAAAAAABAAAAAAAAAAAAAAA==";
-
-        // Trying a different simple one, or actually just handling the error better.
-        // The previous error was "NotSupported".
-        // Let's try a standard hosted URL for a notification sound to test.
         notificationSound.current = new Audio("https://commondatastorage.googleapis.com/codeskulptor-assets/week7-brrring.m4a");
         notificationSound.current.volume = 0.5;
     }, []);
@@ -65,62 +49,12 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
         }
     };
 
-    // Socket State
-    const [socket, setSocket] = useState<Socket | null>(null);
-    const [isConnected, setIsConnected] = useState(false);
-
-    // Initialize Socket
+    // Initialize Socket Listeners
     useEffect(() => {
-        if (!user || !sessionId) return;
+        if (!user || !sessionId || !socket) return;
 
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://k-12-backend.onrender.com';
+        setIsConnected(socket.connected);
 
-        const bookingId = params?.id as string;
-        console.log('[Chat] Connecting to socket. Session:', sessionId, 'Booking:', bookingId);
-
-        // BACKEND CONFIGURATION MATCH:
-        // Gateway: @WebSocketGateway({ namespace: 'sessions' })
-        // URL needs to be: https://backend.com/sessions
-        const SOCKET_URL = `${API_URL}/sessions`;
-
-        console.log('[Chat] Connecting to socket at:', SOCKET_URL, 'Session:', sessionId);
-
-        const newSocket = io(SOCKET_URL, {
-            query: {
-                sessionId,
-                userId: user.sub || user.id
-            },
-            transports: ['websocket'], // Force websocket to resolve "xhr poll error"
-            reconnectionAttempts: 5,
-            withCredentials: true
-        });
-
-        newSocket.on('connect', () => {
-            console.log('[Chat] Connected to socket! ID:', newSocket.id);
-            setIsConnected(true);
-            newSocket.emit('joinSession', {
-                sessionId,
-                userId: user.sub || user.id
-            }, (response: any) => {
-                console.log('[Chat] Join Session Response:', response);
-            });
-        });
-
-        newSocket.on('disconnect', () => {
-            console.log('[Chat] Socket disconnected');
-            setIsConnected(false);
-        });
-
-        newSocket.on('connect_error', (err) => {
-            console.error('[Chat] Socket connection error:', err);
-            setIsConnected(false);
-        });
-
-        setSocket(newSocket);
-
-
-        // Gateway emits: client.broadcast.to(...).emit('receiveMessage', ...)
-        // And emitNewMessage uses: .emit('newMessage', ...)
         const handleNewMessage = (payload: any) => {
             console.log('[Chat] Message received:', payload);
 
@@ -144,15 +78,21 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
             }
         };
 
-        newSocket.on('receiveMessage', handleNewMessage); // From handleSendMessage broadcast
-        newSocket.on('newMessage', handleNewMessage);     // From emitNewMessage
+        const handleConnect = () => setIsConnected(true);
+        const handleDisconnect = () => setIsConnected(false);
+
+        socket.on('receiveMessage', handleNewMessage);
+        socket.on('newMessage', handleNewMessage);
+        socket.on('connect', handleConnect);
+        socket.on('disconnect', handleDisconnect);
 
         return () => {
-            console.log('[Chat] Disconnecting socket');
-            newSocket.disconnect();
+            socket.off('receiveMessage', handleNewMessage);
+            socket.off('newMessage', handleNewMessage);
+            socket.off('connect', handleConnect);
+            socket.off('disconnect', handleDisconnect);
         };
-    }, [user, sessionId]);
-
+    }, [user, sessionId, socket]);
 
     // Auto-scroll to bottom
     const scrollToBottom = () => {
@@ -168,7 +108,7 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
 
     const handleSend = async (e?: React.FormEvent) => {
         e?.preventDefault();
-        if (!newMessage.trim()) return;
+        if (!newMessage.trim() || !user) return;
 
         const text = newMessage.trim();
         const msg: Message = {
@@ -184,7 +124,6 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
         setNewMessage('');
 
         try {
-            // Ensure sessionId is clean
             const safeSessionId = sessionId?.trim();
             if (!safeSessionId) throw new Error("Missing Session ID");
 
@@ -195,25 +134,19 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
                 senderId: user?.sub || user?.id,
             };
 
-            console.log('[Chat] Emitting sendMessage via Socket:', payload);
-
-            // Use Socket to send (triggers DB save + broadcast on backend)
             if (socket && socket.connected) {
                 socket.emit('sendMessage', payload, (response: any) => {
-                    // Ack callback if backend supports it (it returns {success: true})
                     console.log('[Chat] Socket Ack:', response);
                 });
             } else {
-                // Fallback to API if socket died (though broadcast might fail)
                 console.warn('[Chat] Socket not connected, falling back to API');
                 await api.post(`/sessions/${safeSessionId}/messages`, {
                     ...payload,
-                    userId: payload.senderId // API likely needs userId field
+                    userId: payload.senderId
                 });
             }
         } catch (error: any) {
             console.error('[Chat] Failed to send message:', error.response?.data || error.message || error);
-            // Optionally alert the user too
             alert(`Failed to send: ${error.response?.data?.message || 'Unknown error'}`);
         }
     };
@@ -225,20 +158,17 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
 
     return (
         <>
-            {/* FLOATING TRIGGER */}
             <div className={`fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2 pointer-events-none`}>
-
-                {/* Chat Popup */}
                 {isOpen && (
-                    <div className="pointer-events-auto w-[350px] md:w-[400px] h-[500px] max-h-[70vh] flex flex-col rounded-2xl overflow-hidden bg-glass border border-white/20 shadow-2xl origin-bottom-right transition-all animate-in fade-in zoom-in-95 duration-200">
+                    <div className="pointer-events-auto w-[350px] md:w-[400px] h-[500px] max-h-[70vh] flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-white/20 shadow-2xl origin-bottom-right transition-all animate-in fade-in zoom-in-95 duration-200">
                         {/* Header */}
-                        <div className="p-4 border-b border-white/10 bg-linear-to-r from-primary/90 to-purple-600/90 text-white flex justify-between items-center backdrop-blur-md">
+                        <div className="p-4 border-b border-white/10 bg-gradient-to-r from-blue-600 to-purple-600 text-white flex justify-between items-center backdrop-blur-md">
                             <div className="flex items-center gap-3">
                                 <div className="relative">
                                     <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">
                                         💬
                                     </div>
-                                    <div className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-transparent rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-500'}`} />
+                                    <div className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full ${isConnected ? 'bg-green-400' : 'bg-red-500'}`} />
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-sm">Live Chat</h3>
@@ -250,16 +180,16 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
                             </div>
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                                className="p-2 hover:bg-white/10 rounded-full transition-colors font-bold text-lg"
                             >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                &times;
                             </button>
                         </div>
 
                         {/* Messages Area */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white/30 dark:bg-black/20">
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-800/50">
                             {messages.length === 0 && (
-                                <div className="text-center text-text-secondary mt-10 text-sm">
+                                <div className="text-center text-gray-400 mt-10 text-sm">
                                     <p>No messages yet.</p>
                                     <p>Say hello! 👋</p>
                                 </div>
@@ -269,18 +199,18 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
                                     key={msg.id}
                                     className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}
                                 >
-                                    <span className="text-[10px] text-text-secondary mb-1 px-1">
+                                    <span className="text-[10px] text-gray-400 mb-1 px-1">
                                         {msg.sender === 'them' && msg.senderName}
                                     </span>
                                     <div className={`
-                                        max-w-[85%] px-4 py-2 rounded-2xl text-sm shadow-sm wrap-break-word
+                                        max-w-[85%] px-4 py-2 rounded-2xl text-sm shadow-sm break-words
                                         ${msg.sender === 'me'
-                                            ? 'bg-primary text-white rounded-tr-sm'
-                                            : 'bg-white dark:bg-gray-800 text-(--color-text-primary) border border-white/10 rounded-tl-sm'}
+                                            ? 'bg-blue-600 text-white rounded-tr-sm'
+                                            : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 border border-gray-100 dark:border-gray-600 rounded-tl-sm'}
                                     `}>
                                         {msg.text}
                                     </div>
-                                    <span className="text-[10px] text-text-secondary mt-1 px-1">
+                                    <span className="text-[10px] text-gray-400 mt-1 px-1">
                                         {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </span>
                                 </div>
@@ -289,7 +219,7 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
                         </div>
 
                         {/* Input Area */}
-                        <form onSubmit={handleSend} className="p-4 border-t border-white/10 bg-white/40 dark:bg-black/40 backdrop-blur-md">
+                        <form onSubmit={handleSend} className="p-4 border-t border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-900">
                             <div className="flex gap-2">
                                 <input
                                     type="text"
@@ -297,12 +227,12 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
                                     onChange={(e) => setNewMessage(e.target.value)}
                                     placeholder={isConnected ? "Type your message..." : "Connecting..."}
                                     disabled={!isConnected}
-                                    className="flex-1 px-4 py-2 rounded-xl bg-white/50 dark:bg-black/50 border border-white/10 focus:outline-none focus:ring-2 focus:ring-primary text-sm text-(--color-text-primary) placeholder-text-secondary disabled:opacity-50"
+                                    className="flex-1 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 disabled:opacity-50"
                                 />
                                 <button
                                     type="submit"
                                     disabled={!newMessage.trim() || !isConnected}
-                                    className="p-2 rounded-xl bg-primary text-white disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-blue-500/20"
+                                    className="p-2 rounded-xl bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
                                 >
                                     <svg className="w-5 h-5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
                                 </button>
@@ -311,11 +241,10 @@ export default function SessionChat({ sessionId: propSessionId }: SessionChatPro
                     </div>
                 )}
 
-                {/* ANIMATED LOADER TRIGGER */}
+                {/* LOADER TRIGGER */}
                 <div
                     onClick={toggleChat}
                     className="pointer-events-auto cursor-pointer hover:scale-105 transition-transform"
-                    title={isOpen ? "Close Chat" : "Open Chat"}
                 >
                     <ChatLoader />
                 </div>
