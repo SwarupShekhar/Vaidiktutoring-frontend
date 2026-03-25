@@ -14,7 +14,12 @@ export async function generateMetadata(
     
     try {
         const res = await fetch(`${API_URL}/blogs/${id}`, { next: { revalidate: 60 } });
-        if (!res.ok) return { title: 'Blog Not Found | StudyHours' };
+        if (!res.ok) return { 
+            title: 'Blog Not Found | StudyHours',
+            alternates: {
+                canonical: 'https://studyhours.com/blogs'
+            }
+        };
         
         const blog = await res.json();
         const title = blog.seoTitle || blog.title;
@@ -38,16 +43,13 @@ export async function generateMetadata(
                 title,
                 description,
                 images: [image],
-            },
-            alternates: {
-                canonical: `/blogs/${id}`,
             }
         };
     } catch (e) {
         return {
             title: 'Blog Error | StudyHours',
             alternates: {
-                canonical: '/blogs'
+                canonical: 'https://studyhours.com/blogs'
             }
         };
     }

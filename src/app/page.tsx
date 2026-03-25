@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   alternates: {
-    canonical: "/",
+    canonical: "https://studyhours.com",
   },
   twitter: {
     card: "summary_large_image",

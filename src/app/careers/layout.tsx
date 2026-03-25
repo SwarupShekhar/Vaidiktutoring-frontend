@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: "Careers | Join the StudyHours Team",
   description:
     "Join our mission to reimagine K-12 education. Explore career opportunities for expert tutors, learning designers, and engineers at StudyHours.",
+  robots: { index: true, follow: true },
   openGraph: {
     title: "Careers | Join the StudyHours Team",
     description: "Help us transform K-12 education. Join the StudyHours team.",
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     images: ["/hero_calm_education.png"],
   },
   alternates: {
-    canonical: "/careers",
+    canonical: "https://studyhours.com/careers",
   },
 };
 

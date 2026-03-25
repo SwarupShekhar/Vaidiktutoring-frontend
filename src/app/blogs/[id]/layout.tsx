@@ -21,6 +21,9 @@ export async function generateMetadata(props: BlogLayoutProps): Promise<Metadata
       return {
         title: 'Blog Not Found | StudyHours',
         description: 'This blog post could not be found.',
+        alternates: {
+          canonical: 'https://studyhours.com/blogs'
+        }
       };
     }
 
