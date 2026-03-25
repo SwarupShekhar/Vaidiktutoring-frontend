@@ -1,17 +1,15 @@
 {
   "name": "y-websocket-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Yjs collaborative whiteboard server for StudyHours",
+  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
+    "lib0": "^0.2.99",
     "ws": "^8.18.3",
-    "y-websocket": "^3.0.0"
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.27"
   }
 }
