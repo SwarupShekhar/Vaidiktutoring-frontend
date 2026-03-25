@@ -1,26 +1,61 @@
-import { Metadata } from 'next';
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: 'Find a Tutor | StudyHours',
-    description: 'Search for expert tutors across A-Level, IB, and IGCSE subjects. Find the perfect match for your academic goals.',
+  title: "Find a Tutor | StudyHours",
+  description:
+    "Search for expert tutors across A-Level, IB, and IGCSE subjects. Find the perfect match for your academic goals.",
+  alternates: {
+    canonical: "https://studyhours.com/search",
+  },
+  openGraph: {
+    title: "Find a Tutor | StudyHours",
+    description:
+      "Search for expert tutors across A-Level, IB, and IGCSE subjects.",
+    url: "https://studyhours.com/search",
+    images: [
+      {
+        url: "/hero_calm_education.png",
+        width: 1200,
+        height: 630,
+        alt: "StudyHours Tutor Search",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Find a Tutor | StudyHours",
+    description:
+      "Search for expert tutors across A-Level, IB, and IGCSE subjects.",
+    images: ["/hero_calm_education.png"],
+  },
 };
 
 // Placeholder Search Page
-export default function SearchPage({ searchParams }: { searchParams: { subject?: string } }) {
-    return (
-        <div className="min-h-screen bg-background text-(--color-text-primary) pt-32 px-4 flex flex-col items-center">
-            <div className="max-w-4xl w-full text-center">
-                <h1 className="text-4xl font-bold mb-4">Search Results</h1>
-                <p className="opacity-70 mb-8">
-                    Showing results for subject ID: <span className="font-mono bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">{searchParams.subject || 'All'}</span>
-                </p>
+export default function SearchPage({
+  searchParams,
+}: {
+  searchParams: { subject?: string };
+}) {
+  return (
+    <div className="min-h-screen bg-background text-(--color-text-primary) pt-32 px-4 flex flex-col items-center">
+      <div className="max-w-4xl w-full text-center">
+        <h1 className="text-4xl font-bold mb-4">Search Results</h1>
+        <p className="opacity-70 mb-8">
+          Showing results for subject ID:{" "}
+          <span className="font-mono bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">
+            {searchParams.subject || "All"}
+          </span>
+        </p>
 
-                <div className="p-12 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center text-center opacity-50">
-                    <span className="text-6xl mb-4">🔍</span>
-                    <h2 className="text-2xl font-semibold">Search functionality coming soon!</h2>
-                    <p>We are currently indexing our tutors and resources.</p>
-                </div>
-            </div>
+        <div className="p-12 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl flex flex-col items-center justify-center text-center opacity-50">
+          <span className="text-6xl mb-4">🔍</span>
+          <h2 className="text-2xl font-semibold">
+            Search functionality coming soon!
+          </h2>
+          <p>We are currently indexing our tutors and resources.</p>
         </div>
-    );
+      </div>
+    </div>
+  );
 }
