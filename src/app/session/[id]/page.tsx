@@ -225,44 +225,70 @@ export default function SessionPage({ params }: SessionProps) {
         import('@excalidraw/excalidraw/index.css');
     }, []);
 
-    // Yjs Collaboration Logic (Simplified for brevity as requested previously)
+    // Yjs Collaboration Logic
     useEffect(() => {
-        if (!excalidrawAPI) return;
+        if (!excalidrawAPI || !sessionId || !user?.role) return;
+        
         const WS_URL = process.env.NEXT_PUBLIC_WS_URL;
-        if (!WS_URL) return;
+        if (!WS_URL) {
+            console.error('[Collab] NEXT_PUBLIC_WS_URL not found');
+            return;
+        }
 
         let yDoc: any;
         let yProvider: any;
         let isUpdatingFromRemote = false;
 
-        import('yjs').then((Y: any) => {
-            return import('y-websocket').then((YWebsocket: any) => {
+        const initCollab = async () => {
+            try {
+                const Y = await import('yjs');
+                const { WebsocketProvider } = await import('y-websocket');
+
                 yDoc = new Y.Doc();
-                yProvider = new YWebsocket.WebsocketProvider(WS_URL, `session-${sessionId}`, yDoc);
+                yProvider = new WebsocketProvider(WS_URL, `session-${sessionId}`, yDoc);
                 const yElements = yDoc.getArray('elements');
 
                 yElements.observe(() => {
                     if (isUpdatingFromRemote) return;
+                    
                     const elements = yElements.toArray();
                     isUpdatingFromRemote = true;
                     excalidrawAPI.updateScene({ elements });
-                    setTimeout(() => { isUpdatingFromRemote = false; }, 100);
+                    // Use requestAnimationFrame for smoother state reset
+                    requestAnimationFrame(() => {
+                        isUpdatingFromRemote = false;
+                    });
                 });
 
-                if (user?.role === 'tutor') {
+                if (user.role === 'tutor') {
                     excalidrawAPI.onChange((elements: any[]) => {
                         if (isUpdatingFromRemote) return;
+                        
+                        // Performance optimization: only push if elements actually changed
+                        const currentYElements = yElements.toArray();
+                        if (currentYElements.length === elements.length && 
+                            JSON.stringify(currentYElements) === JSON.stringify(elements)) {
+                            return;
+                        }
+
                         yDoc.transact(() => {
                             yElements.delete(0, yElements.length);
                             yElements.push(elements);
                         });
                     });
                 }
-                return () => { yProvider?.destroy(); yDoc?.destroy(); };
-            });
-        }).catch(err => console.error('[Collab] Failed to load Yjs:', err));
+            } catch (err) {
+                console.error('[Collab] Failed to initialize Yjs:', err);
+            }
+        };
 
-        return () => { yProvider?.destroy(); yDoc?.destroy(); };
+        const timer = setTimeout(initCollab, 100);
+
+        return () => {
+            clearTimeout(timer);
+            if (yProvider) yProvider.destroy();
+            if (yDoc) yDoc.destroy();
+        };
     }, [excalidrawAPI, sessionId, user?.role]);
 
     // Fetch Daily.co Room & Token
