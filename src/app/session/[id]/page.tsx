@@ -229,11 +229,10 @@ export default function SessionPage({ params }: SessionProps) {
     useEffect(() => {
         if (!excalidrawAPI || !sessionId || !user?.role) return;
         
-        const WS_URL = process.env.NEXT_PUBLIC_WS_URL;
-        if (!WS_URL) {
-            console.error('[Collab] NEXT_PUBLIC_WS_URL not found');
-            return;
-        }
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://k-12-backend.onrender.com';
+        const WS_URL = process.env.NEXT_PUBLIC_WS_URL || `${API_URL.replace('http', 'ws')}/whiteboard`;
+        
+        console.log('[Collab] Syncing with Whiteboard URL:', WS_URL);
 
         let yDoc: any;
         let yProvider: any;
