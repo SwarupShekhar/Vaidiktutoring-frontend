@@ -22,8 +22,8 @@ export function TrialBanner({ status }: TrialBannerProps) {
       {/* Dynamic Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none -z-10">
         <svg viewBox="0 0 100 100" className="w-full h-full">
-          <circle cx="80" cy="20" r="30" fill="indigo" blur="40" />
-          <circle cx="20" cy="80" r="20" fill="purple" blur="40" />
+          <circle cx="80" cy="20" r="30" fill="indigo" style={{ filter: "blur(40px)" }} />
+          <circle cx="20" cy="80" r="20" fill="purple" style={{ filter: "blur(40px)" }} />
         </svg>
       </div>
 
