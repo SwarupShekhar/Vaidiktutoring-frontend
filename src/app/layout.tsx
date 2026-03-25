@@ -41,11 +41,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-  // Log current domain for debugging
-  if (typeof window !== "undefined") {
-    console.log("[Clerk] Current domain:", window.location.origin);
-    console.log("[Clerk] Publishable key present:", !!clerkPublishableKey);
-  }
+  // Log Clerk publishable key presence for debugging
+  console.log("[Clerk] Publishable key present:", !!clerkPublishableKey);
 
   // If Clerk key is missing, show a fallback layout without Clerk
   if (!clerkPublishableKey) {
