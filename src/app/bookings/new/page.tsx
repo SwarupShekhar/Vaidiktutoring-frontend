@@ -21,12 +21,16 @@ export default function NewBookingPage() {
     const isParent = user?.role === 'parent';
     const { status: creditStatus } = useCreditStatus();
 
+    const shouldRedirect = creditStatus && !creditStatus.canBook && user?.role === 'student';
+
     // Redirect to dashboard if student can't book
     React.useEffect(() => {
-        if (creditStatus && !creditStatus.canBook && user?.role === 'student') {
+        if (shouldRedirect) {
             router.push('/students/dashboard');
         }
-    }, [creditStatus, user?.role, router]);
+    }, [shouldRedirect, router]);
+
+    if (shouldRedirect) return null;
 
     const {
         data: students = [],

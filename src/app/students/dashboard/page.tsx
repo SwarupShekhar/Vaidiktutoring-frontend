@@ -168,12 +168,12 @@ export default function StudentDashboardPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => {
-                if (!creditStatus?.canBook) return;
+                if (creditStatus?.canBook !== true) return;
                 router.push('/bookings/new');
               }}
-              disabled={creditStatus?.canBook === false}
+              disabled={creditStatus?.canBook !== true}
               className={`hidden sm:flex items-center gap-2 px-6 py-3 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 hover:scale-[1.03] active:scale-95 transition-all text-sm ${
-                creditStatus?.canBook === false ? 'opacity-50 cursor-not-allowed' : ''
+                creditStatus?.canBook !== true ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
               <Plus size={18} />
@@ -354,12 +354,12 @@ export default function StudentDashboardPage() {
         <motion.div variants={itemVariants} className="flex sm:hidden">
           <button
             onClick={() => {
-              if (!creditStatus?.canBook) return;
+              if (creditStatus?.canBook !== true) return;
               router.push('/bookings/new');
             }}
-            disabled={creditStatus?.canBook === false}
+            disabled={creditStatus?.canBook !== true}
             className={`w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white font-bold rounded-2xl shadow-xl hover:bg-blue-600 transition-all ${
-              creditStatus?.canBook === false ? 'opacity-50 cursor-not-allowed' : ''
+              creditStatus?.canBook !== true ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
             <Plus size={20} />

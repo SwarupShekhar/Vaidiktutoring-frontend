@@ -41,18 +41,24 @@ export function UpgradeNudge({
     try {
       await api.post("/credits/subscribe", { plan: planKey });
       setSuccessPlan(planKey);
-      setTimeout(() => {
-        onSubscribed();
-      }, 1500);
     } catch (err: any) {
       setError(
         err?.response?.data?.message ||
           "Failed to subscribe. Please try again.",
       );
-    } finally {
       setSubscribing(null);
     }
   };
+
+  React.useEffect(() => {
+    if (successPlan) {
+      const timerId = setTimeout(() => {
+        onSubscribed();
+        setSubscribing(null);
+      }, 1500);
+      return () => clearTimeout(timerId);
+    }
+  }, [successPlan, onSubscribed]);
 
   const getFeatureIcon = (label: string) => {
     if (label.includes("sprint")) return <Clock size={14} />;
@@ -212,7 +218,9 @@ export function UpgradeNudge({
                 >
                   {session.is_free_session || session.credit_cost === 0
                     ? "Free"
-                    : `${session.credit_cost || 5} credits`}
+                    : typeof session.credit_cost === "number"
+                      ? `${session.credit_cost} credits`
+                      : "Credits used"}
                 </span>
               </div>
             ))}
