@@ -246,34 +246,49 @@ export default function SessionPage({ params }: SessionProps) {
 
                 yDoc = new Y.Doc();
                 yProvider = new WebsocketProvider(WS_URL, `session-${sessionId}`, yDoc);
-                const yElements = yDoc.getArray('elements');
 
-                yElements.observe(() => {
+                // Use a Map for O(1) element updates and better sync performance
+                const yElementsMap = yDoc.getMap('elements-map');
+
+                // Remote -> Local: Observe changes in the map
+                yElementsMap.observe(() => {
                     if (isUpdatingFromRemote) return;
                     
-                    const elements = yElements.toArray();
+                    const remoteElements = Array.from(yElementsMap.values());
                     isUpdatingFromRemote = true;
-                    excalidrawAPI.updateScene({ elements });
-                    // Use requestAnimationFrame for smoother state reset
+                    
+                    // Update only if data exists to avoid flickering
+                    if (remoteElements.length > 0 || yElementsMap.size === 0) {
+                        excalidrawAPI.updateScene({ elements: remoteElements });
+                    }
+                    
                     requestAnimationFrame(() => {
                         isUpdatingFromRemote = false;
                     });
                 });
 
+                // Local -> Remote: Handle changes (Tutor side)
                 if (user.role === 'tutor') {
                     excalidrawAPI.onChange((elements: any[]) => {
                         if (isUpdatingFromRemote) return;
-                        
-                        // Performance optimization: only push if elements actually changed
-                        const currentYElements = yElements.toArray();
-                        if (currentYElements.length === elements.length && 
-                            JSON.stringify(currentYElements) === JSON.stringify(elements)) {
-                            return;
-                        }
 
                         yDoc.transact(() => {
-                            yElements.delete(0, yElements.length);
-                            yElements.push(elements);
+                            // 1. Sync updated/new elements
+                            elements.forEach(el => {
+                                const current = yElementsMap.get(el.id);
+                                // Deep comparison or version check via versionNonce
+                                if (!current || current.versionNonce !== el.versionNonce || current.version !== el.version) {
+                                    yElementsMap.set(el.id, el);
+                                }
+                            });
+
+                            // 2. Cleanup deleted elements
+                            const localIds = new Set(elements.map(el => el.id));
+                            yElementsMap.forEach((_: any, id: string) => {
+                                if (!localIds.has(id)) {
+                                    yElementsMap.delete(id);
+                                }
+                            });
                         });
                     });
                 }
