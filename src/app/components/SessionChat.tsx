@@ -162,7 +162,7 @@ export default function SessionChat({ sessionId: propSessionId, socket }: Sessio
                 {isOpen && (
                     <div className="pointer-events-auto w-[350px] md:w-[400px] h-[500px] max-h-[70vh] flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-white/20 shadow-2xl origin-bottom-right transition-all animate-in fade-in zoom-in-95 duration-200">
                         {/* Header */}
-                        <div className="p-4 border-b border-white/10 bg-gradient-to-r from-blue-600 to-purple-600 text-white flex justify-between items-center backdrop-blur-md">
+                        <div className="p-4 border-b border-white/10 bg-linear-to-r from-blue-600 to-purple-600 text-white flex justify-between items-center backdrop-blur-md">
                             <div className="flex items-center gap-3">
                                 <div className="relative">
                                     <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">
@@ -203,7 +203,7 @@ export default function SessionChat({ sessionId: propSessionId, socket }: Sessio
                                         {msg.sender === 'them' && msg.senderName}
                                     </span>
                                     <div className={`
-                                        max-w-[85%] px-4 py-2 rounded-2xl text-sm shadow-sm break-words
+                                        max-w-[85%] px-4 py-2 rounded-2xl text-sm shadow-sm wrap-break-word
                                         ${msg.sender === 'me'
                                             ? 'bg-blue-600 text-white rounded-tr-sm'
                                             : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 border border-gray-100 dark:border-gray-600 rounded-tl-sm'}
