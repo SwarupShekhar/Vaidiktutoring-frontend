@@ -13,6 +13,7 @@ import GlobalNotification from "./components/GlobalNotification";
 import VerificationModal from "./components/auth/VerificationModal";
 import VerificationBanner from "./components/auth/VerificationBanner";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import { ClerkProvider } from "@clerk/nextjs";
 import { Luckiest_Guy } from "next/font/google";
@@ -25,12 +26,13 @@ const luckiestGuy = Luckiest_Guy({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://studyhours.com'),
+  metadataBase: new URL("https://studyhours.com"),
   title: {
     default: "StudyHours | Outcome-Driven K-12 Tutoring Platform",
-    template: "%s | StudyHours"
+    template: "%s | StudyHours",
   },
-  description: "Expert-guided K-12 tutoring for Math, Science, English and more. Personalized 1-on-1 sessions aligned with IB, IGCSE, and US curricula.",
+  description:
+    "Expert-guided K-12 tutoring for Math, Science, English and more. Personalized 1-on-1 sessions aligned with IB, IGCSE, and US curricula.",
   verification: {
     google: "QIHTWX5Vy3mZhNRYxfyyTc5YDUOA2DSyS6BCx-7xwy0",
   },
@@ -38,16 +40,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-  
+
   // Log current domain for debugging
-  if (typeof window !== 'undefined') {
-    console.log('[Clerk] Current domain:', window.location.origin);
-    console.log('[Clerk] Publishable key present:', !!clerkPublishableKey);
+  if (typeof window !== "undefined") {
+    console.log("[Clerk] Current domain:", window.location.origin);
+    console.log("[Clerk] Publishable key present:", !!clerkPublishableKey);
   }
-  
+
   // If Clerk key is missing, show a fallback layout without Clerk
   if (!clerkPublishableKey) {
-    console.warn('Clerk publishable key not found. Authentication features will be disabled.');
+    console.warn(
+      "Clerk publishable key not found. Authentication features will be disabled.",
+    );
     return (
       <html lang="en" suppressHydrationWarning>
         <body suppressHydrationWarning className={`${luckiestGuy.variable}`}>
@@ -74,6 +78,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               gtag('config', 'G-N9YTHTRMH1');
             `}
           </Script>
+          <Analytics />
+          <SpeedInsights />
         </body>
       </html>
     );
@@ -124,6 +130,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             }}
           />
           <Analytics />
+          <SpeedInsights />
           <Script
             async
             src="https://www.googletagmanager.com/gtag/js?id=G-N9YTHTRMH1"
