@@ -22,7 +22,7 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
 
     if (!session) {
         return (
-            <div className="relative overflow-hidden bg-white/80 dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200/60 dark:border-white/5 rounded-3xl p-8 text-center shadow-sm">
+            <div className="relative overflow-hidden bg-white border border-slate-100 rounded-3xl p-8 text-center shadow-sm">
                 <div className="w-16 h-16 bg-slate-100 dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl shadow-inner">
                     📭
                 </div>
@@ -30,7 +30,7 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
                 <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 max-w-xs mx-auto">Book a new class to start your personalized learning journey!</p>
                 <button
                     onClick={() => router.push('/bookings/new')}
-                    className="px-8 py-3 bg-indigo-600 text-white rounded-2xl text-sm font-black hover:bg-indigo-700 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-indigo-500/20"
+                    className="px-8 py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-md"
                 >
                     Book Now
                 </button>
@@ -59,23 +59,24 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
 
     return (
         <motion.div 
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="group relative overflow-hidden bg-white/80 dark:bg-slate-900/40 backdrop-blur-xl rounded-[2.5rem] border border-slate-200/60 dark:border-white/5 shadow-sm hover:shadow-2xl transition-all duration-500"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            className="group relative overflow-hidden bg-white rounded-[2.5rem] border border-slate-100 shadow-sm transition-all duration-300"
         >
-            {/* Background Glow */}
-            <div className={`absolute top-0 right-0 w-64 h-64 blur-[100px] opacity-10 -translate-y-1/2 translate-x-1/3 -z-10 transition-colors duration-500 ${isLive ? 'bg-red-500' : 'bg-indigo-500'}`} />
 
             <div className="p-8 relative z-10">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                     <div className="flex items-center gap-4">
-                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-lg ${isLive ? 'bg-red-100 dark:bg-red-500/20 text-red-600' : 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600'}`}>
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border border-slate-100 ${isLive ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-indigo-600'}`}>
                             <BookOpen size={28} strokeWidth={2.5} />
                         </div>
                         <div>
                             <div className="flex items-center gap-2 mb-1">
-                                <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${isLive ? 'bg-red-500 text-white animate-pulse' : 'bg-indigo-50 dark:bg-white/5 text-indigo-600 dark:text-indigo-400'}`}>
-                                    {isLive ? '● Live Now' : 'Upcoming Priority'}
+                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide flex items-center gap-1.5 ${isLive ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-600'}`}>
+                                    {isLive && <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />}
+                                    {isLive ? 'Live Now' : 'Upcoming Priority'}
                                 </span>
                                 {isLive && (
                                     <span className="text-[10px] font-bold text-red-500">
@@ -109,15 +110,15 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
                     {canJoin ? (
                         <button
                             onClick={() => router.push(`/session/${session.id}`)}
-                            className="flex-[2] py-4 bg-indigo-600 text-white rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-indigo-700 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-indigo-500/30 group/btn"
+                            className="flex-2 py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center justify-center gap-3 transition-all shadow-md active:scale-95"
                         >
-                            <Video size={18} className="group-hover/btn:rotate-12 transition-transform" />
+                            <Video size={20} />
                             Join Your Classroom
                         </button>
                     ) : (
                         <button
                             onClick={() => router.push(`/session/${session.id}`)}
-                            className="flex-[2] py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-lg active:scale-98"
+                            className="flex-2 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-lg active:scale-98"
                         >
                             <ArrowRight size={18} />
                             View Session Details
@@ -132,9 +133,6 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
                     </button>
                 </div>
             </div>
-            
-            {/* Hover Accent Line */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-indigo-500 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
         </motion.div>
     );
 };

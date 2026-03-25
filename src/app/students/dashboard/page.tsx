@@ -129,18 +129,12 @@ export default function StudentDashboardPage() {
         animate="visible"
         className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8 relative"
       >
-        {/* Decorative Background Blobs */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-          <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-blob" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-blob animation-delay-2000" />
-        </div>
 
         {/* TOP COMMAND BAR */}
         <motion.header variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-3 mb-1">
               <motion.div
-                whileHover={{ rotate: 10 }}
                 className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold"
               >
                 {user?.first_name?.[0] || user?.firstName?.[0] || 'S'}
@@ -259,7 +253,7 @@ export default function StudentDashboardPage() {
             </AnimatePresence>
 
             {/* UPCOMING MINI LIST */}
-            <motion.div variants={itemVariants} className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm">
+            <motion.div variants={itemVariants} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-(--color-text-primary) flex items-center gap-2">
                   <Calendar size={20} className="text-blue-500" />
@@ -305,7 +299,7 @@ export default function StudentDashboardPage() {
 
           {/* SIDEBAR: CLASS HISTORY */}
           <aside className="space-y-6">
-            <div className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm overflow-hidden relative">
+            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm overflow-hidden relative">
               <h2 className="text-lg font-bold text-(--color-text-primary) mb-6 flex items-center gap-2 relative z-10">
                 <CheckCircle2 size={18} className="text-green-500" />
                 Recently Finished
