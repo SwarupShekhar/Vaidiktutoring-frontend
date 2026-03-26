@@ -16,8 +16,9 @@ export async function generateMetadata(
         const res = await fetch(`${API_URL}/blogs/${id}`, { next: { revalidate: 60 } });
         if (!res.ok) return { 
             title: 'Blog Not Found | StudyHours',
+            robots: { index: false, follow: true },
             alternates: {
-                canonical: 'https://studyhours.com/blogs'
+                canonical: `https://studyhours.com/blogs/${id}`
             }
         };
         
@@ -31,10 +32,14 @@ export async function generateMetadata(
             title,
             description,
             keywords,
+            alternates: {
+                canonical: `https://studyhours.com/blogs/${id}`
+            },
             openGraph: {
                 title,
                 description,
                 images: [image],
+                url: `https://studyhours.com/blogs/${id}`,
                 type: 'article',
                 publishedTime: blog.publishedAt || blog.created_at || blog.createdAt,
             },
@@ -48,8 +53,9 @@ export async function generateMetadata(
     } catch (e) {
         return {
             title: 'Blog Error | StudyHours',
+            robots: { index: false, follow: false },
             alternates: {
-                canonical: 'https://studyhours.com/blogs'
+                canonical: `https://studyhours.com/blogs/${id}`
             }
         };
     }

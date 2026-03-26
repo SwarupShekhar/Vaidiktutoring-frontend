@@ -33,6 +33,14 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+    // Redirect www to non-www for SEO consistency
+    const host = req.headers.get("host");
+    if (host && host.startsWith("www.studyhours.com")) {
+        const url = req.nextUrl.clone();
+        url.host = "studyhours.com";
+        return Response.redirect(url, 301);
+    }
+
     // Allow public routes without authentication
     if (isPublicRoute(req)) {
         return; // Don't require auth
