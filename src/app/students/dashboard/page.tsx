@@ -87,9 +87,11 @@ export default function StudentDashboardPage() {
       const endTime = b.end_time ? new Date(b.end_time) : (b.requested_end ? new Date(b.requested_end) : null);
       if (!endTime) return false;
 
-      // Also count if status is completed, or it was confirmed and time has passed
-      return b.status === 'completed' || 
-             (['confirmed', 'scheduled', 'active'].includes(b.status) && endTime < now);
+      // Count if it's explicitly completed OR if it's in the past and NOT cancelled/declined
+      const inPast = endTime < now;
+      const isNotCancelled = b.status !== 'cancelled' && b.status !== 'declined';
+
+      return b.status === 'completed' || (inPast && isNotCancelled);
     });
 
     const totalMinutes = completed.reduce((acc: number, curr: any) => {
