@@ -80,17 +80,23 @@ export default function StudentDashboardPage() {
     }
   }, [user, fetchProfile]);
 
-  // DERIVE STATS
   const stats = useMemo(() => {
     const now = new Date();
     const completed = bookings.filter((b: any) => {
-      const endTime = new Date(b.end_time || b.requested_end);
-      return b.status === 'completed' || (['confirmed', 'scheduled'].includes(b.status) && endTime < now);
+      // Robust calculation: use actual end_time if available, else requested_end
+      const endTime = b.end_time ? new Date(b.end_time) : (b.requested_end ? new Date(b.requested_end) : null);
+      if (!endTime) return false;
+
+      // Also count if status is completed, or it was confirmed and time has passed
+      return b.status === 'completed' || 
+             (['confirmed', 'scheduled', 'active'].includes(b.status) && endTime < now);
     });
 
     const totalMinutes = completed.reduce((acc: number, curr: any) => {
-      const start = new Date(curr.start_time || curr.requested_start);
-      const end = new Date(curr.end_time || curr.requested_end);
+      const start = curr.start_time ? new Date(curr.start_time) : (curr.requested_start ? new Date(curr.requested_start) : null);
+      const end = curr.end_time ? new Date(curr.end_time) : (curr.requested_end ? new Date(curr.requested_end) : null);
+      
+      if (!start || !end) return acc;
       return acc + Math.max(0, differenceInMinutes(end, start));
     }, 0);
 
