@@ -105,7 +105,7 @@ export default function SessionPage({ params }: SessionProps) {
     // Timer & Reactions State
     const [timeRemaining, setTimeRemaining] = useState(((booking as any)?.duration || 60) * 60);
     const [showWrapUp, setShowWrapUp] = useState(false);
-    const [reactions, setReactions] = useState<{ id: string; emoji: string; x: number }[]>([]);
+    const [reactions, setReactions] = useState<{ id: string; emoji: string; x: number; delay?: number }[]>([]);
     
     // Whiteboard Multi-Slide State
     const [slides, setSlides] = useState<string[]>([]);
@@ -207,11 +207,20 @@ export default function SessionPage({ params }: SessionProps) {
     const sendReaction = (emoji: string) => {
         if (!socket) return;
         socket.emit('session.reaction', { sessionId, emoji });
-        const newReaction = { id: Math.random().toString(), emoji, x: Math.random() * 80 + 10 };
-        setReactions(prev => [...prev, newReaction]);
+        
+        // Spawn 6-8 emojis at random x positions
+        const count = 6 + Math.floor(Math.random() * 3);
+        const newReactions = Array.from({ length: count }).map(() => ({
+            id: Math.random().toString(),
+            emoji,
+            x: Math.random() * 90 + 5, // 5% to 95% width
+            delay: Math.random() * 0.5 // staggered start
+        }));
+        
+        setReactions(prev => [...prev, ...newReactions]);
         setTimeout(() => {
-            setReactions(prev => prev.filter(r => r.id !== newReaction.id));
-        }, 3000);
+            setReactions(prev => prev.filter(r => !newReactions.find(nr => nr.id === r.id)));
+        }, 4000);
     };
 
     // Draggable handlers
@@ -392,6 +401,11 @@ export default function SessionPage({ params }: SessionProps) {
         const file = e.target.files?.[0];
         if (!file || !sessionId) return;
         
+        // PPT Warning
+        if (file.name.toLowerCase().endsWith('.ppt') || file.name.toLowerCase().endsWith('.pptx')) {
+            toast.info('For best results, please export PPT to PDF before uploading.', { duration: 5000 });
+        }
+
         setUploadingSlides(true);
         try {
             const formData = new FormData();
@@ -406,7 +420,13 @@ export default function SessionPage({ params }: SessionProps) {
             });
             
             if (res.data.success && excalidrawAPI) {
-                if (file.name.toLowerCase().endsWith('.pdf')) {
+                // If backend returns base64 directly (images or processed slides)
+                if (res.data.base64) {
+                    await importImageToExcalidraw(res.data.base64, `slide_${Date.now()}`);
+                    toast.success('Image/Slide added to board');
+                } 
+                // Legacy PDF processing on client
+                else if (file.name.toLowerCase().endsWith('.pdf')) {
                     const fileReader = new FileReader();
                     fileReader.onload = async function() {
                         const typedarray = new Uint8Array(this.result as ArrayBuffer);
@@ -415,7 +435,7 @@ export default function SessionPage({ params }: SessionProps) {
                         
                         for (let i = 1; i <= pdf.numPages; i++) {
                             const page = await pdf.getPage(i);
-                            const viewport = page.getViewport({ scale: 2.0 }); // Higher scale for clarity
+                            const viewport = page.getViewport({ scale: 2.0 });
                             const canvas = document.createElement('canvas');
                             const context = canvas.getContext('2d');
                             canvas.height = viewport.height;
@@ -428,8 +448,6 @@ export default function SessionPage({ params }: SessionProps) {
                         setSlides(newSlides);
                         setCurrentSlideIndex(0);
                         setSlideAnnotations({});
-                        
-                        // Automatically load first slide
                         await switchSlide(0, newSlides);
                     };
                     fileReader.readAsArrayBuffer(file);
@@ -493,16 +511,28 @@ export default function SessionPage({ params }: SessionProps) {
 
         // Listens for confetti
         const handleConfetti = () => {
-            // Only students grade 6 or below auto-fire
             const isYoungStudent = user?.role === 'student' && studentData.grade > 0 && studentData.grade <= 6;
             const isTutor = user?.role === 'tutor';
             
             if (isTutor || isYoungStudent) {
-                confetti({
-                    particleCount: 150,
-                    spread: 70,
-                    origin: { y: 0.6 },
+                const config = {
+                    particleCount: 200,
+                    spread: 120,
+                    startVelocity: 55,
+                    scalar: 2.5,
+                    ticks: 300,
                     zIndex: 9999
+                };
+
+                // Fire from left
+                confetti({
+                    ...config,
+                    origin: { x: 0.2, y: 0.6 }
+                });
+                // Fire from right
+                confetti({
+                    ...config,
+                    origin: { x: 0.8, y: 0.6 }
                 });
             }
         };
@@ -538,21 +568,59 @@ export default function SessionPage({ params }: SessionProps) {
             }
         };
 
-        socket.on('whiteboard.receiveUpdate', handleRemoteUpdate);
+        // Receives dedicated element updates
+        const handleRemoteElementUpdate = (remoteElements: any[]) => {
+            if (whiteboardRef.current.isUpdating) return;
+            whiteboardRef.current.isUpdating = true;
+            
+            if (JSON.stringify(excalidrawAPI.getSceneElements()) !== JSON.stringify(remoteElements)) {
+                excalidrawAPI.updateScene({ elements: remoteElements });
+            }
+            
+            setTimeout(() => { whiteboardRef.current.isUpdating = false; }, 100);
+        };
+
+        // Receives heavy file payloads separately
+        const handleRemoteFiles = (remoteFiles: any) => {
+            if (remoteFiles && Object.keys(remoteFiles).length > 0) {
+                 excalidrawAPI.addFiles(Object.values(remoteFiles));
+            }
+        };
+
+        socket.on('whiteboard.receiveUpdate', (data: any) => {
+            const elements = Array.isArray(data) ? data : (data.elements || []);
+            handleRemoteElementUpdate(elements);
+        });
+        socket.on('whiteboard.receiveFiles', handleRemoteFiles);
+        
         socket.on('whiteboard.penAccessUpdated', handlePenAccess);
         socket.on('whiteboard.confettiFired', handleConfetti);
         socket.on('whiteboard.pointerUpdate', handlePointerUpdate);
         socket.on('whiteboard.slideChanged', handleSlideChange);
 
-        // Sends update to Student (if user is tutor or student with access)
+        // Track last synced files to avoid re-syncing heavy data
+        const lastSyncedFiles = { current: '' };
+
+        // Sends updates separated by type
         if (user?.role === 'tutor' || hasPenAccess) {
             excalidrawAPI.onChange((elements: any[], appState: any, files: any) => {
                 if (whiteboardRef.current.isUpdating) return;
 
+                // 1. Sync light elements for drawing strokes
                 socket.emit('whiteboard.update', {
                     sessionId,
-                    update: { elements, files }
+                    update: { elements }
                 });
+
+                // 2. Sync heavy files ONLY when changed (not on every stroke)
+                const filesString = JSON.stringify(files);
+                if (filesString !== lastSyncedFiles.current) {
+                    lastSyncedFiles.current = filesString;
+                    socket.emit('whiteboard.syncFiles', {
+                        sessionId,
+                        files
+                    });
+                }
             });
         }
 
@@ -699,6 +767,24 @@ export default function SessionPage({ params }: SessionProps) {
                 </div>
             )}
 
+            {/* FIXED OVERLAYS */}
+            {/* Fixed Timer Block */}
+            <div 
+                className={`fixed top-4 left-1/2 -translate-x-1/2 z-9999 px-6 py-3 rounded-full flex items-center gap-3 shadow-2xl border-2 backdrop-blur-xl transition-all duration-500 scale-110 ${
+                    timeRemaining <= 5 * 60 
+                    ? 'bg-red-600 border-red-400 text-white animate-pulse' 
+                    : timeRemaining <= 10 * 60 
+                        ? 'bg-amber-500 border-amber-300 text-white' 
+                        : 'bg-black/80 border-white/20 text-white'
+                }`}
+                title="Time Remaining"
+            >
+                <Timer size={20} className={timeRemaining <= 5 * 60 ? 'animate-spin-slow' : ''} />
+                <span className="font-black text-xl tracking-tighter tabular-nums">
+                    {formatTime(timeRemaining)}
+                </span>
+            </div>
+
             {/* 2. OVERLAY LAYER: FLOATING HEADER */}
             <div className="absolute top-16 left-4 right-4 z-10 flex justify-between items-start pointer-events-none">
                 <div className="bg-glass/90 backdrop-blur-md rounded-2xl p-3 border border-white/20 shadow-lg pointer-events-auto flex items-center gap-4 max-w-sm">
@@ -715,12 +801,6 @@ export default function SessionPage({ params }: SessionProps) {
                 </div>
 
                 <div className="flex gap-3 items-center pointer-events-auto">
-                    {/* Timer Display */}
-                    <div className={`px-4 py-2 rounded-xl text-sm font-bold shadow-lg border border-white/10 backdrop-blur-md flex items-center gap-2 ${timeRemaining <= 10 * 60 ? 'bg-orange-500/90 text-white animate-pulse' : 'bg-white/10 text-white'}`}>
-                        <Timer size={16} />
-                        {formatTime(timeRemaining)}
-                    </div>
-
                     {/* Reaction Buttons - Collapsible on Mobile */}
                     <div className="flex flex-wrap gap-1 bg-white/10 p-1 rounded-xl border border-white/10 backdrop-blur-md">
                         {['👍', '🎉', '💡', '❓'].map(emoji => (
@@ -886,7 +966,11 @@ export default function SessionPage({ params }: SessionProps) {
                     <div
                         key={r.id}
                         className="absolute bottom-0 text-4xl animate-float-up"
-                        style={{ left: `${r.x}%` }}
+                        style={{ 
+                            left: `${r.x}%`,
+                            fontSize: '64px',
+                            animationDelay: `${r.delay || 0}s`
+                        }}
                     >
                         {r.emoji}
                     </div>
@@ -895,14 +979,22 @@ export default function SessionPage({ params }: SessionProps) {
 
             <style>{`
                 @keyframes float-up {
-                    0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
-                    20% { opacity: 1; transform: translateY(80vh) scale(1.2); }
-                    80% { opacity: 1; transform: translateY(20vh) scale(1); }
-                    100% { transform: translateY(-10vh) scale(0.8); opacity: 0; }
+                    0% { transform: translateY(10vh) scale(0.5); opacity: 0; }
+                    10% { opacity: 1; transform: translateY(5vh) scale(1.2); }
+                    80% { opacity: 1; transform: translateY(-70vh) scale(1); }
+                    100% { transform: translateY(-110vh) scale(0.8); opacity: 0; }
                 }
                 .animate-float-up {
-                    animation: float-up 3s ease-out forwards;
+                    animation: float-up 4s ease-out forwards;
                 }
+                .animate-spin-slow {
+                    animation: spin 3s linear infinite;
+                }
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                .z-9999 { z-index: 9999; }
             `}</style>
         </div>
     );
