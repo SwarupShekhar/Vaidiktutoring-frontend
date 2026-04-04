@@ -208,8 +208,8 @@ export default function BookingsTableSection() {
                                     </td>
                                     <td className="py-4 px-4">
                                         <div className="flex items-center gap-2">
-                                        {!b.tutor && (
-                                            <button 
+                                        {!b.tutor ? (
+                                            <button
                                                 className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm transition-colors"
                                                 onClick={() => {
                                                     const evt = new CustomEvent('open-tutor-allocation', { detail: { booking: b } });
@@ -217,6 +217,16 @@ export default function BookingsTableSection() {
                                                 }}
                                             >
                                                 <User size={14} /> Assign
+                                            </button>
+                                        ) : b.status !== 'cancelled' && b.status !== 'completed' && (
+                                            <button
+                                                className="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm transition-colors"
+                                                onClick={() => {
+                                                    const evt = new CustomEvent('open-tutor-allocation', { detail: { booking: b } });
+                                                    window.dispatchEvent(evt);
+                                                }}
+                                            >
+                                                <User size={14} /> Switch
                                             </button>
                                         )}
                                         {b.sessions && b.sessions.length > 0 && b.status !== 'cancelled' && (
