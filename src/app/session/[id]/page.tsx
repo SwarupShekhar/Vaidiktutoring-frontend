@@ -326,8 +326,9 @@ export default function SessionPage({ params }: SessionProps) {
         const targetWidth = 800; 
         const targetHeight = 600;
         const appState = excalidrawAPI.getAppState();
-        const centerX = (appState.width / 2 - appState.scrollX) / appState.zoom;
-        const centerY = (appState.height / 2 - appState.scrollY) / appState.zoom;
+        const zoom = typeof appState.zoom === 'number' ? appState.zoom : (appState.zoom?.value ?? 1);
+        const centerX = (appState.width / 2 - appState.scrollX) / zoom;
+        const centerY = (appState.height / 2 - appState.scrollY) / zoom;
         const currentElements = excalidrawAPI.getSceneElements();
 
         excalidrawAPI.updateScene({
