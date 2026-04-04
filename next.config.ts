@@ -48,6 +48,13 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Ensure pdf.js worker is served with correct MIME type on all hosts
+        source: '/pdf.worker.min.mjs',
+        headers: [
+          { key: 'Content-Type', value: 'application/javascript' },
+        ],
+      },
+      {
         source: '/(.*)',
         headers: [
           {
