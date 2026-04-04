@@ -413,6 +413,7 @@ export default function SessionPage({ params }: SessionProps) {
             const token = localStorage.getItem('K12_TOKEN');
             
             const res = await api.post(`/sessions/${sessionId}/slides`, formData, {
+                timeout: 60000, // Explicit 60s timeout for large PDF/Slides
                 headers: { 
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}` 
@@ -420,44 +421,54 @@ export default function SessionPage({ params }: SessionProps) {
             });
             
             if (res.data.success && excalidrawAPI) {
-                // If backend returns base64 directly (images or processed slides)
+                // Return value is binary base64 directly from backend (for smaller images or fast response)
                 if (res.data.base64) {
                     await importImageToExcalidraw(res.data.base64, `slide_${Date.now()}`);
-                    toast.success('Image/Slide added to board');
+                    toast.success('Image/Slide inserted');
                 } 
-                // Legacy PDF processing on client
+                // Local PDF conversion fallback for legacy or high-quality needs
                 else if (file.name.toLowerCase().endsWith('.pdf')) {
+                    toast.info('Processing multi-page PDF locally...', { duration: 3000 });
                     const fileReader = new FileReader();
                     fileReader.onload = async function() {
-                        const typedarray = new Uint8Array(this.result as ArrayBuffer);
-                        const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                        const newSlides: string[] = [];
-                        
-                        for (let i = 1; i <= pdf.numPages; i++) {
-                            const page = await pdf.getPage(i);
-                            const viewport = page.getViewport({ scale: 2.0 });
-                            const canvas = document.createElement('canvas');
-                            const context = canvas.getContext('2d');
-                            canvas.height = viewport.height;
-                            canvas.width = viewport.width;
+                        try {
+                            const typedarray = new Uint8Array(this.result as ArrayBuffer);
+                            const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                            const newSlides: string[] = [];
                             
-                            await page.render({ canvasContext: context!, viewport: viewport, canvas: canvas }).promise;
-                            newSlides.push(canvas.toDataURL('image/png'));
+                            for (let i = 1; i <= pdf.numPages; i++) {
+                                const page = await pdf.getPage(i);
+                                const viewport = page.getViewport({ scale: 1.5 });
+                                const canvas = document.createElement('canvas');
+                                const context = canvas.getContext('2d');
+                                canvas.height = viewport.height;
+                                canvas.width = viewport.width;
+                                
+                                await page.render({ canvasContext: context!, viewport: viewport, canvas: canvas }).promise;
+                                newSlides.push(canvas.toDataURL('image/png'));
+                            }
+                            
+                            setSlides(newSlides);
+                            setCurrentSlideIndex(0);
+                            setSlideAnnotations({});
+                            
+                            // Insert first page automatically
+                            if (newSlides.length > 0) {
+                                await importImageToExcalidraw(newSlides[0], 'page_1');
+                            }
+                            toast.success(`Loaded ${newSlides.length} pages`);
+                        } catch (err) {
+                            console.error('[PDF] Local render failed:', err);
+                            toast.error('Failed to render PDF pages locally');
                         }
-                        
-                        setSlides(newSlides);
-                        setCurrentSlideIndex(0);
-                        setSlideAnnotations({});
-                        await switchSlide(0, newSlides);
                     };
                     fileReader.readAsArrayBuffer(file);
-                } else {
-                    toast.success('File uploaded successfully');
                 }
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to upload slide', err);
-            toast.error('Failed to upload slide');
+            const msg = err.code === 'ECONNABORTED' ? 'Upload timed out (60s). Try a smaller file.' : 'Failed to upload slides';
+            toast.error(msg);
         } finally {
             setUploadingSlides(false);
         }

@@ -13,7 +13,7 @@ export const api = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: false,
-  timeout: 10000, // 10 second timeout
+  timeout: 60000, // 60 second default timeout for slower networks
 });
 
 /**
