@@ -7,7 +7,6 @@ import SessionChat from '@/app/components/SessionChat';
 import api from '@/app/lib/api';
 // import { DailyProvider } from '@daily-co/daily-react'; // Not used directly, using iframe
 import AttendanceTracker from '@/app/components/session/AttendanceTracker';
-import SessionFlowBar, { SessionPhase } from '@/app/components/session/SessionFlowBar';
 import StudentSnapshotCard from '@/app/components/session/StudentSnapshotCard';
 import { io, Socket } from 'socket.io-client';
 import confetti from 'canvas-confetti';
@@ -98,7 +97,6 @@ export default function SessionPage({ params }: SessionProps) {
     const [showAssetLibrary, setShowAssetLibrary] = useState(false);
 
     // Session HUD State
-    const [sessionPhase, setSessionPhase] = useState<SessionPhase>('WARM_CONNECT');
     const [snapshotExpanded, setSnapshotExpanded] = useState(false);
     const [snapshotHidden, setSnapshotHidden] = useState(false);
     
@@ -210,11 +208,6 @@ export default function SessionPage({ params }: SessionProps) {
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
         return `${m}:${s < 10 ? '0' : ''}${s}`;
-    };
-
-    const handlePhaseChange = (phase: SessionPhase) => {
-        setSessionPhase(phase);
-        socket?.emit('whiteboard.phaseChange', { sessionId, phase });
     };
 
     const sendReaction = (emoji: string) => {
@@ -372,14 +365,21 @@ export default function SessionPage({ params }: SessionProps) {
             commitToHistory: true,
         });
 
-        // Center on the new image
+        // Center on the new image then force-sync so student receives it
         setTimeout(() => {
             excalidrawAPI.scrollToContent(excalidrawAPI.getSceneElements().filter((e: any) => e.id === elementId), {
                 fitToViewport: true,
                 padding: 20
             });
-        }, 100);
-    }, [excalidrawAPI]);
+            // Force-push current elements + files regardless of isUpdating state
+            if (socket && sessionId) {
+                const allElements = excalidrawAPI.getSceneElements();
+                const allFiles = excalidrawAPI.getFiles();
+                socket.emit('whiteboard.update', { sessionId, update: { elements: allElements } });
+                socket.emit('whiteboard.syncFiles', { sessionId, files: allFiles });
+            }
+        }, 150);
+    }, [excalidrawAPI, socket, sessionId]);
 
     const switchSlide = useCallback(async (index: number, overrideSlides?: string[], skipEmit = false) => {
         if (!excalidrawAPI) return;
@@ -640,46 +640,38 @@ export default function SessionPage({ params }: SessionProps) {
         socket.on('whiteboard.pointerUpdate', handlePointerUpdate);
         socket.on('whiteboard.slideChanged', handleSlideChange);
 
-        const handleRemotePhase = ({ phase }: { phase: SessionPhase }) => {
-            setSessionPhase(phase);
-        };
-        socket.on('whiteboard.phaseChange', handleRemotePhase);
-
-        // Track last synced files to avoid re-syncing heavy data
-        const lastSyncedFiles = { current: '' };
-
-        // Sends updates separated by type
-        if (user?.role === 'tutor' || hasPenAccess) {
-            excalidrawAPI.onChange((elements: any[], appState: any, files: any) => {
-                if (whiteboardRef.current.isUpdating) return;
-
-                // 1. Sync light elements for drawing strokes
-                socket.emit('whiteboard.update', {
-                    sessionId,
-                    update: { elements }
-                });
-
-                // 2. Sync heavy files ONLY when changed (not on every stroke)
-                const filesString = JSON.stringify(files);
-                if (filesString !== lastSyncedFiles.current) {
-                    lastSyncedFiles.current = filesString;
-                    socket.emit('whiteboard.syncFiles', {
-                        sessionId,
-                        files
-                    });
-                }
-            });
-        }
-
         return () => {
             socket.off('whiteboard.receiveUpdate', handleRemoteUpdate);
             socket.off('whiteboard.penAccessUpdated', handlePenAccess);
             socket.off('whiteboard.confettiFired', handleConfetti);
             socket.off('whiteboard.pointerUpdate', handlePointerUpdate);
             socket.off('whiteboard.slideChanged', handleSlideChange);
-            socket.off('whiteboard.phaseChange');
         };
     }, [excalidrawAPI, socket, sessionId, user?.role, hasPenAccess, studentData.grade, currentSlideIndex, switchSlide]);
+
+    // Stable onChange registration — separate effect so it never re-stacks
+    useEffect(() => {
+        if (!excalidrawAPI || !socket || !sessionId) return;
+        if (user?.role !== 'tutor' && !hasPenAccess) return;
+
+        const lastSyncedFiles = { current: '' };
+
+        const unsubscribe = excalidrawAPI.onChange((elements: any[], _appState: any, files: any) => {
+            if (whiteboardRef.current.isUpdating) return;
+
+            socket.emit('whiteboard.update', { sessionId, update: { elements } });
+
+            const filesString = JSON.stringify(files);
+            if (filesString !== lastSyncedFiles.current) {
+                lastSyncedFiles.current = filesString;
+                socket.emit('whiteboard.syncFiles', { sessionId, files });
+            }
+        });
+
+        return () => {
+            if (typeof unsubscribe === 'function') unsubscribe();
+        };
+    }, [excalidrawAPI, socket, sessionId, user?.role, hasPenAccess]);
 
 
 
@@ -818,7 +810,7 @@ export default function SessionPage({ params }: SessionProps) {
             {/* ── TOP HUD BAR ─────────────────────────────────────────────── */}
             <div className="absolute top-0 left-0 right-0 h-[52px] z-20 bg-black/80 backdrop-blur-xl border-b border-white/8 flex items-center px-4 gap-3">
                 {/* Left: live indicator + subject */}
-                <div className="flex items-center gap-2 min-w-[140px]">
+                <div className="flex items-center gap-2">
                     <div className="relative shrink-0">
                         <div className="w-2.5 h-2.5 rounded-full bg-green-500 relative z-10" />
                         <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-60" />
@@ -828,17 +820,8 @@ export default function SessionPage({ params }: SessionProps) {
                     </span>
                 </div>
 
-                {/* Centre: session flow bar (tutor-controlled, both see state) */}
-                <div className="flex-1 flex items-center justify-center">
-                    <SessionFlowBar
-                        currentPhase={sessionPhase}
-                        onPhaseChange={user?.role === 'tutor' ? handlePhaseChange : () => {}}
-                        variant="hud"
-                    />
-                </div>
-
                 {/* Right: timer + reactions + end */}
-                <div className="flex items-center gap-2 min-w-[200px] justify-end">
+                <div className="flex items-center gap-2 ml-auto">
                     <div className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-white/10 transition-all duration-500 tabular-nums ${
                         timeRemaining <= 5 * 60
                             ? 'bg-red-600/90 text-white animate-pulse'
