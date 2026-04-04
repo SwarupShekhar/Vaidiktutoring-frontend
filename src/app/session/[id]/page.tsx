@@ -745,8 +745,8 @@ export default function SessionPage({ params }: SessionProps) {
                 </div>
             )}
 
-            {/* 1. BASE LAYER: EXCALIDRAW WHITEBOARD */}
-            <div className={`absolute inset-0 z-0 ${user?.role === 'student' || user?.role === 'parent' ? (hasPenAccess ? '' : 'pointer-events-none') : ''}`}>
+            {/* 1. BASE LAYER: EXCALIDRAW WHITEBOARD (offset below HUD bar) */}
+            <div className={`absolute top-[52px] left-0 right-0 bottom-0 z-0 ${user?.role === 'student' || user?.role === 'parent' ? (hasPenAccess ? '' : 'pointer-events-none') : ''}`}>
                 {ExcalidrawComp ? (
                     <ExcalidrawComp
                         excalidrawAPI={(api: any) => setExcalidrawAPI(api)}
