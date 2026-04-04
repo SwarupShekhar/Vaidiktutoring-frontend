@@ -421,7 +421,7 @@ export default function SessionPage({ params }: SessionProps) {
                             canvas.height = viewport.height;
                             canvas.width = viewport.width;
                             
-                            await page.render({ canvasContext: context!, viewport: viewport }).promise;
+                            await page.render({ canvasContext: context!, viewport: viewport, canvas: canvas }).promise;
                             newSlides.push(canvas.toDataURL('image/png'));
                         }
                         
