@@ -69,7 +69,12 @@ export default clerkMiddleware(async (auth, req) => {
     
     // Protect other routes
     if (isProtectedRoute(req)) {
-        if (!userId) return redirectToSignIn();
+        const manualToken = req.cookies.get('manual_auth_token');
+        if (!userId && !manualToken) {
+            const signInUrl = new URL('/login', req.url);
+            signInUrl.searchParams.set('redirect_url', req.nextUrl.pathname);
+            return Response.redirect(signInUrl);
+        }
     }
 });
 

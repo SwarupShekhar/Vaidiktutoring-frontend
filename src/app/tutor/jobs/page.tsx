@@ -90,6 +90,16 @@ export default function JobBoardPage() {
                                                     <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-[10px] font-black uppercase rounded-lg border border-purple-200 dark:border-purple-800 tracking-widest">
                                                         {job.subject_name || 'General'}
                                                     </span>
+                                                    {job.grade && (
+                                                        <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase rounded-lg border border-blue-200 dark:border-blue-800 tracking-widest">
+                                                            Grade {job.grade}
+                                                        </span>
+                                                    )}
+                                                    {job.curriculum_name && (
+                                                        <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase rounded-lg border border-emerald-200 dark:border-emerald-800 tracking-widest">
+                                                            {job.curriculum_name}
+                                                        </span>
+                                                    )}
                                                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-tight">
                                                         Session ID: {job.id.slice(0, 8)}
                                                     </span>

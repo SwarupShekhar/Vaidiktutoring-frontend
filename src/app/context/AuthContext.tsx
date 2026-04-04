@@ -137,6 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setBackendUser(u);
 
       localStorage.setItem('auth_token', newToken); // Persist for session
+      document.cookie = `manual_auth_token=${newToken}; path=/; max-age=604800; SameSite=Lax`; // 1 week
 
       if (u.force_password_change) {
         router.push('/change-password');
@@ -164,6 +165,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function logout() {
+    localStorage.removeItem('auth_token');
+    document.cookie = "manual_auth_token=; path=/; max-age=0";
     signOut(() => router.push('/'));
   }
 

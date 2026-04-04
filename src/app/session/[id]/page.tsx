@@ -103,7 +103,7 @@ export default function SessionPage({ params }: SessionProps) {
     const [socket, setSocket] = useState<Socket | null>(null);
 
     // Timer & Reactions State
-    const [timeRemaining, setTimeRemaining] = useState<number>(60 * 60); // 60 mins default
+    const [timeRemaining, setTimeRemaining] = useState(((booking as any)?.duration || 60) * 60);
     const [showWrapUp, setShowWrapUp] = useState(false);
     const [reactions, setReactions] = useState<{ id: string; emoji: string; x: number }[]>([]);
     
@@ -181,8 +181,8 @@ export default function SessionPage({ params }: SessionProps) {
             const startTime = new Date(startTimeStr).getTime();
             const now = Date.now();
             
-            // Derive remaining from fixed session length (60m)
-            const durationMs = 60 * 60 * 1000;
+            // Derive remaining from dynamic session length
+            const durationMs = ((booking as any)?.duration || 60) * 60 * 1000;
             const elapsedMs = now - startTime;
             const remaining = Math.max(0, Math.floor((durationMs - elapsedMs) / 1000));
             

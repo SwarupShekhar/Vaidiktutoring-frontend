@@ -182,10 +182,20 @@ export default function TutorDashboardPage() {
                               </span>
                             </div>
                             <div>
-                              <div className="flex items-center gap-3 mb-2">
+                              <div className="flex flex-wrap items-center gap-3 mb-2">
                                 <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-[10px] font-black uppercase rounded-lg border border-purple-200 dark:border-purple-800">
                                   {session.subject_name}
                                 </span>
+                                {session.grade && (
+                                  <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase rounded-lg border border-blue-200 dark:border-blue-800">
+                                    Grade {session.grade}
+                                  </span>
+                                )}
+                                {session.curriculum_name && (
+                                  <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase rounded-lg border border-emerald-200 dark:border-emerald-800">
+                                    {session.curriculum_name}
+                                  </span>
+                                )}
                                 <span className="text-[10px] font-black text-slate-400 uppercase">
                                   Track ID: {session.id.slice(0, 8)}
                                 </span>
