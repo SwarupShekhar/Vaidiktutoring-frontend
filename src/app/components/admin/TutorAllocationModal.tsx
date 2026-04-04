@@ -7,9 +7,10 @@ import { Loader2, AlertCircle, CheckCircle2, UserPlus } from 'lucide-react';
 interface TutorAllocationModalProps {
     isOpen: boolean;
     onClose: () => void;
+    booking?: any;
 }
 
-export default function TutorAllocationModal({ isOpen, onClose }: TutorAllocationModalProps) {
+export default function TutorAllocationModal({ isOpen, onClose, booking }: TutorAllocationModalProps) {
     const { subjects, loading: loadingSubjects } = useCatalog();
     const [loadingData, setLoadingData] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -26,6 +27,16 @@ export default function TutorAllocationModal({ isOpen, onClose }: TutorAllocatio
         if (isOpen) {
             setLoadingData(true);
             setFetchError(null);
+            
+            if (booking) {
+                // If opened for a specific booking, prepopulate
+                setSelectedStudent(booking.student_id || booking.student?.id || '');
+                setSelectedSubject(booking.subject_id || booking.subject?.id || '');
+            } else {
+                setSelectedStudent('');
+                setSelectedSubject('');
+            }
+            
             // Load real data from admin endpoints
             Promise.all([
                 api.get('/admin/students?limit=100'),
@@ -50,23 +61,33 @@ export default function TutorAllocationModal({ isOpen, onClose }: TutorAllocatio
             setSelectedTutor('');
             setFetchError(null);
         }
-    }, [isOpen]);
+    }, [isOpen, booking]);
 
     // Filter tutors based on selected subject
     const availableTutors = selectedSubject
         ? tutors.filter(t => t.subjects?.includes(selectedSubject))
-        : [];
+        : tutors;
 
     const handleAllocate = async () => {
-        if (!selectedStudent || !selectedSubject || !selectedTutor) return;
+        if (!selectedTutor) return;
         setLoading(true);
         try {
-            await api.post('/admin/allocations', {
-                studentId: selectedStudent,
-                subjectId: selectedSubject,
-                tutorId: selectedTutor
-            });
+            if (booking && booking.id) {
+                // If we're allocating an existing unassigned booking
+                await api.patch(`/bookings/${booking.id}/assign-tutor`, {
+                    tutorId: selectedTutor
+                });
+            } else {
+                if (!selectedStudent || !selectedSubject) return;
+                // Traditional: Create a new allocation booking from scratch
+                await api.post('/admin/allocations', {
+                    studentId: selectedStudent,
+                    subjectId: selectedSubject,
+                    tutorId: selectedTutor
+                });
+            }
             alert('Tutor assigned and session confirmed successfully!');
+            window.dispatchEvent(new Event('refresh-bookings-table'));
             onClose();
         } catch (err: any) {
             console.error('[TutorAllocation] Submit failed:', err);
@@ -90,8 +111,12 @@ export default function TutorAllocationModal({ isOpen, onClose }: TutorAllocatio
                     <div className="w-16 h-16 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 mb-6">
                         <UserPlus size={32} />
                     </div>
-                    <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-2">Quick Allocation</h2>
-                    <p className="text-slate-500 dark:text-slate-400 font-medium">Match a student with a verified instructor.</p>
+                    <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-2">
+                        {booking ? 'Assign Tutor' : 'Quick Allocation'}
+                    </h2>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium">
+                        {booking ? 'Assign a tutor to an existing requested session.' : 'Match a student with a verified instructor.'}
+                    </p>
                 </div>
 
                 {fetchError ? (
@@ -112,7 +137,8 @@ export default function TutorAllocationModal({ isOpen, onClose }: TutorAllocatio
                             <select
                                 value={selectedStudent}
                                 onChange={e => setSelectedStudent(e.target.value)}
-                                className="w-full px-5 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/20 transition-all outline-none"
+                                disabled={!!booking}
+                                className="w-full px-5 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/20 transition-all outline-none disabled:opacity-50"
                             >
                                 <option value="">Select Student</option>
                                 {students.map(s => (
@@ -127,7 +153,8 @@ export default function TutorAllocationModal({ isOpen, onClose }: TutorAllocatio
                             <select
                                 value={selectedSubject}
                                 onChange={e => { setSelectedSubject(e.target.value); setSelectedTutor(''); }}
-                                className="w-full px-5 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/20 transition-all outline-none"
+                                disabled={!!booking}
+                                className="w-full px-5 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500/20 transition-all outline-none disabled:opacity-50"
                             >
                                 <option value="">Select Subject</option>
                                 {subjects?.map((s: any) => (
@@ -169,7 +196,7 @@ export default function TutorAllocationModal({ isOpen, onClose }: TutorAllocatio
                     </button>
                     <button
                         onClick={handleAllocate}
-                        disabled={loading || !selectedStudent || !selectedTutor || loadingData}
+                        disabled={loading || !selectedTutor || (!booking && (!selectedStudent || !selectedSubject)) || loadingData}
                         className="px-10 py-5 rounded-3xl bg-blue-600 text-white font-black hover:scale-105 active:scale-95 transition-all shadow-xl shadow-blue-500/20 disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3 group"
                     >
                         {loading ? (

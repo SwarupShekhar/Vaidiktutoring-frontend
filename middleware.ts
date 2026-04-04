@@ -41,15 +41,35 @@ export default clerkMiddleware(async (auth, req) => {
         return Response.redirect(url, 301);
     }
 
-    // Allow public routes without authentication
+    const authObject = await auth();
+    const { userId, sessionClaims, redirectToSignIn } = authObject;
+
+    // Allow public routes without authentication, BUT redirect authenticated users to their dashboard
     if (isPublicRoute(req)) {
-        return; // Don't require auth
+        if (userId) {
+            const path = req.nextUrl.pathname;
+            // Redirect from marketing/auth pages to dashboard
+            if (path === '/' || path.startsWith('/home') || path.startsWith('/about') || 
+                path.startsWith('/pricing') || path.startsWith('/login') || path.startsWith('/signup')) {
+                
+                // Get role from Clerk publicMetadata
+                const role = (sessionClaims?.publicMetadata as any)?.role || (sessionClaims?.metadata as any)?.role || 'student';
+                
+                let dashboardPath = '/dashboard';
+                if (role === 'admin') dashboardPath = '/admin/dashboard';
+                else if (role === 'tutor') dashboardPath = '/tutor/dashboard';
+                else if (role === 'student') dashboardPath = '/students/dashboard';
+                else if (role === 'parent') dashboardPath = '/parent/dashboard';
+
+                return Response.redirect(new URL(dashboardPath, req.url));
+            }
+        }
+        return; // Don't require auth for public routes if not logged in
     }
     
     // Protect other routes
     if (isProtectedRoute(req)) {
-        const { userId, redirectToSignIn } = await auth();
-        // if (!userId) return redirectToSignIn();
+        if (!userId) return redirectToSignIn();
     }
 });
 

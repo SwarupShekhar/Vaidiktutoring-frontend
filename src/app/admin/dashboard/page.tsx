@@ -5,6 +5,7 @@ import ProtectedClient from '@/app/components/ProtectedClient';
 import StudentListModal from '@/app/components/admin/StudentListModal';
 import TutorAllocationModal from '@/app/components/admin/TutorAllocationModal';
 import TutorListModal from '@/app/components/admin/TutorListModal';
+import AdminSessionSummaryModal from '@/app/components/admin/AdminSessionSummaryModal';
 import { useAuthContext } from '@/app/context/AuthContext';
 import Link from 'next/link';
 import api from '@/app/lib/api';
@@ -33,6 +34,9 @@ export default function AdminDashboardPage() {
     const [showStudents, setShowStudents] = useState(false);
     const [showAllocation, setShowAllocation] = useState(false);
     const [showTutors, setShowTutors] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState<any>(null);
+    const [summarySessionId, setSummarySessionId] = useState<string | null>(null);
+    const [showSummary, setShowSummary] = useState(false);
 
     React.useEffect(() => {
         const fetchStats = async () => {
@@ -49,7 +53,24 @@ export default function AdminDashboardPage() {
         fetchStats();
         // Auto-refresh stats every 10 seconds for a "Live" feel
         const interval = setInterval(fetchStats, 10000);
-        return () => clearInterval(interval);
+
+        const handleOpenAllocation = (e: any) => {
+            setSelectedBooking(e.detail?.booking || null);
+            setShowAllocation(true);
+        };
+        window.addEventListener('open-tutor-allocation', handleOpenAllocation);
+        
+        const handleOpenSummary = (e: any) => {
+            setSummarySessionId(e.detail?.sessionId || null);
+            setShowSummary(true);
+        };
+        window.addEventListener('open-admin-session-summary', handleOpenSummary);
+
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('open-tutor-allocation', handleOpenAllocation);
+            window.removeEventListener('open-admin-session-summary', handleOpenSummary);
+        };
     }, []);
 
     const getGreeting = () => {
@@ -240,8 +261,25 @@ export default function AdminDashboardPage() {
 
             {/* MODALS */}
             <StudentListModal isOpen={showStudents} onClose={() => setShowStudents(false)} />
-            <TutorAllocationModal isOpen={showAllocation} onClose={() => setShowAllocation(false)} />
+            <TutorAllocationModal 
+                isOpen={showAllocation} 
+                onClose={() => {
+                    setShowAllocation(false);
+                    setSelectedBooking(null);
+                    // trigger refresh of bookings table
+                    window.dispatchEvent(new CustomEvent('refresh-bookings-table'));
+                }} 
+                booking={selectedBooking}
+            />
             <TutorListModal isOpen={showTutors} onClose={() => setShowTutors(false)} />
+            <AdminSessionSummaryModal 
+                isOpen={showSummary} 
+                onClose={() => {
+                    setShowSummary(false);
+                    setSummarySessionId(null);
+                }} 
+                sessionId={summarySessionId}
+            />
         </ProtectedClient >
     );
 }

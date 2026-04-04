@@ -1,17 +1,31 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
 import SessionChat from '@/app/components/SessionChat';
 import api from '@/app/lib/api';
 // import { DailyProvider } from '@daily-co/daily-react'; // Not used directly, using iframe
 import AttendanceTracker from '@/app/components/session/AttendanceTracker';
-import AttentionFrameworkPanel from '@/app/components/session/AttentionFrameworkPanel';
-import StudentSnapshotCard from '@/app/components/session/StudentSnapshotCard';
-import SessionFlowBar, { SessionPhase } from '@/app/components/session/SessionFlowBar';
-import PhaseGuidancePanel from '@/app/components/session/PhaseGuidancePanel';
 import { io, Socket } from 'socket.io-client';
+import confetti from 'canvas-confetti';
+// @ts-ignore
+import * as pdfjsLib from 'pdfjs-dist';
+import { toast } from 'sonner';
+import { 
+    ChevronLeft, 
+    ChevronRight, 
+    PenTool, 
+    Library, 
+    FileUp, 
+    LogOut,
+    Timer,
+    Smile
+} from 'lucide-react';
+
+if (typeof window !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+}
 
 interface BookingDetails {
     id: string;
@@ -75,19 +89,47 @@ export default function SessionPage({ params }: SessionProps) {
     const dragStart = useRef({ x: 0, y: 0 });
     const startPos = useRef({ x: 0, y: 0 });
 
-    // --- Attention Framework State ---
-    const [socket, setSocket] = useState<Socket | null>(null);
-    const [lastResponseTime, setLastResponseTime] = useState<number>(Date.now());
-    const [showResponseNudge, setShowResponseNudge] = useState(false);
-    const [currentPhase, setCurrentPhase] = useState<SessionPhase>('WARM_CONNECT');
-    const [suggestedPhase, setSuggestedPhase] = useState<SessionPhase | null>(null);
+    // Whiteboard Enhancements State
+    const [hasPenAccess, setHasPenAccess] = useState(false);
+    const [uploadingSlides, setUploadingSlides] = useState(false);
+    const [showAssetLibrary, setShowAssetLibrary] = useState(false);
+    
+    // Mock Assets for Library
+    const mockLibraryAssets = [
+        { id: 'math1', type: 'image', url: 'https://placehold.co/400x300/e2e8f0/1e293b?text=Math+Diagram', label: 'Math Diagram' },
+        { id: 'sci1', type: 'image', url: 'https://placehold.co/400x300/fee2e2/991b1b?text=Biology+Cell', label: 'Cell Structure' },
+    ];
 
-    // REAL Student Data from Backend
+    const [socket, setSocket] = useState<Socket | null>(null);
+
+    // Timer & Reactions State
+    const [timeRemaining, setTimeRemaining] = useState<number>(60 * 60); // 60 mins default
+    const [showWrapUp, setShowWrapUp] = useState(false);
+    const [reactions, setReactions] = useState<{ id: string; emoji: string; x: number }[]>([]);
+    
+    // Whiteboard Multi-Slide State
+    const [slides, setSlides] = useState<string[]>([]);
+    const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+    const [slideAnnotations, setSlideAnnotations] = useState<Record<number, any[]>>({});
+    const [collaborators, setCollaborators] = useState<Map<string, any>>(new Map());
+
+    const slideRef = useRef(0);
+    const annotationsRef = useRef<Record<number, any[]>>({});
+
+    useEffect(() => {
+        slideRef.current = currentSlideIndex;
+    }, [currentSlideIndex]);
+
+    useEffect(() => {
+        annotationsRef.current = slideAnnotations;
+    }, [slideAnnotations]);
+
     const studentData = {
-        name: booking?.students ? `${booking.students.first_name} ${booking.students.last_name || ''}`.trim() : 'Student',
-        interests: booking?.students?.interests || [],
-        recentProgress: booking?.students?.recent_focus || 'Waiting for initial session assessment.',
-        struggleAreas: booking?.students?.struggle_areas || []
+        name: booking?.students ? `${(booking.students as any).first_name} ${(booking.students as any).last_name || ''}`.trim() : 'Student',
+        grade: (booking as any)?.students?.grade ? parseInt(String((booking as any).students.grade).replace(/\D/g, '')) : 0,
+        interests: (booking as any)?.students?.interests || [],
+        recentProgress: (booking as any)?.students?.recent_focus || 'Waiting for initial session assessment.',
+        struggleAreas: (booking as any)?.students?.struggle_areas || []
     };
 
     // Initialize Shared Socket for Attention Events
@@ -112,31 +154,16 @@ export default function SessionPage({ params }: SessionProps) {
             newSocket.emit('joinSession', { sessionId, userId: user.id });
         });
 
-        // Listen for new response events to reset the nudge timer
-        newSocket.on('session.attentionEvent.created', (event: any) => {
-            if (event.type === 'RESPONSE') {
-                setLastResponseTime(Date.now());
-                setShowResponseNudge(false);
-            }
-
-            // Auto-sync Phase Suggestions
-            const EVENT_TO_PHASE: Record<string, SessionPhase> = {
-                'CHECK_IN': 'WARM_CONNECT',
-                'EXPLANATION': 'MICRO_TEACH',
-                'RESPONSE': 'ACTIVE_RESPONSE',
-                'CORRECTION': 'REINFORCE',
-                'PRAISE': 'REINFORCE'
+        newSocket.on('session.reaction', (payload: { emoji: string }) => {
+            const newReaction = {
+                id: Math.random().toString(),
+                emoji: payload.emoji,
+                x: Math.random() * 80 + 10
             };
-
-            if (EVENT_TO_PHASE[event.type] && EVENT_TO_PHASE[event.type] !== currentPhase) {
-                setSuggestedPhase(EVENT_TO_PHASE[event.type]);
-            }
-        });
-
-        newSocket.on('session.phase.updated', (payload: any) => {
-            console.log('[Attention] Phase updated:', payload.phase);
-            setCurrentPhase(payload.phase as SessionPhase);
-            setSuggestedPhase(null); // Clear suggestion if phase matches
+            setReactions(prev => [...prev, newReaction]);
+            setTimeout(() => {
+                setReactions(prev => prev.filter(r => r.id !== newReaction.id));
+            }, 3000);
         });
 
         return () => {
@@ -144,26 +171,47 @@ export default function SessionPage({ params }: SessionProps) {
         };
     }, [user, sessionId, hasJoined]);
 
-    // Response Encouragement Logic (Check every 10 seconds)
+    // Timer Logic
     useEffect(() => {
-        if (user?.role !== 'tutor' || !hasJoined) return;
-
+        if (!hasJoined || !booking) return;
+        
         const interval = setInterval(() => {
-            const idleTime = Date.now() - lastResponseTime;
-            // If more than 5 minutes (300000ms) without a student response event
-            if (idleTime > 300000) {
-                setShowResponseNudge(true);
-            }
-        }, 10000);
+            const sessions = (booking as any).sessions || [];
+            const startTimeStr = sessions[0]?.start_time || (booking as any).start_time;
+            const startTime = new Date(startTimeStr).getTime();
+            const now = Date.now();
+            
+            // Derive remaining from fixed session length (60m)
+            const durationMs = 60 * 60 * 1000;
+            const elapsedMs = now - startTime;
+            const remaining = Math.max(0, Math.floor((durationMs - elapsedMs) / 1000));
+            
+            setTimeRemaining(prev => {
+                if (remaining === 10 * 60 && prev > 10 * 60) {
+                    setShowWrapUp(true);
+                    setTimeout(() => setShowWrapUp(false), 10000);
+                }
+                return remaining;
+            });
+        }, 1000);
 
         return () => clearInterval(interval);
-    }, [user?.role, hasJoined, lastResponseTime]);
+    }, [hasJoined, booking]);
 
-    const handlePhaseUpdate = (phase: SessionPhase) => {
+    const formatTime = (seconds: number) => {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+    };
+
+    const sendReaction = (emoji: string) => {
         if (!socket) return;
-        socket.emit('session.phase.update', { sessionId, phase });
-        setCurrentPhase(phase);
-        setSuggestedPhase(null);
+        socket.emit('session.reaction', { sessionId, emoji });
+        const newReaction = { id: Math.random().toString(), emoji, x: Math.random() * 80 + 10 };
+        setReactions(prev => [...prev, newReaction]);
+        setTimeout(() => {
+            setReactions(prev => prev.filter(r => r.id !== newReaction.id));
+        }, 3000);
     };
 
     // Draggable handlers
@@ -228,6 +276,175 @@ export default function SessionPage({ params }: SessionProps) {
     // Whiteboard Sync State (Socket.io based)
     const whiteboardRef = useRef<{ isUpdating: boolean }>({ isUpdating: false });
 
+    // Pointer Updates
+    const onPointerUpdate = useCallback((payload: any) => {
+        if (!socket || !sessionId) return;
+        socket.emit('whiteboard.pointerUpdate', {
+            sessionId,
+            userId: user?.id,
+            username: user?.first_name || 'User',
+            pointer: payload.pointer,
+            button: payload.button,
+            selectedElementIds: payload.selectedElementIds,
+        });
+    }, [socket, sessionId, user?.id, user?.first_name]);
+
+    const importImageToExcalidraw = useCallback(async (dataUrl: string, customFileId?: string) => {
+        if (!excalidrawAPI) return;
+        
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        
+        const fileId = customFileId || Math.random().toString(36).substring(7);
+        const mimeType = blob.type;
+        
+        excalidrawAPI.addFiles([{
+            id: fileId,
+            dataURL: dataUrl,
+            mimeType: mimeType,
+            created: Date.now(),
+            lastRetrieved: Date.now()
+        }]);
+
+        // Calculate center of viewport for placement
+        const appState = excalidrawAPI.getAppState();
+        const centerX = (appState.width / 2 - appState.scrollX) / appState.zoom;
+        const centerY = (appState.height / 2 - appState.scrollY) / appState.zoom;
+        
+        const currentElements = excalidrawAPI.getSceneElements();
+        
+        excalidrawAPI.updateScene({
+            elements: [
+                ...currentElements,
+                {
+                    type: 'image',
+                    version: 1,
+                    versionNonce: Math.floor(Math.random() * 1000000000),
+                    isDeleted: false,
+                    id: `img_${fileId}`,
+                    fillStyle: 'hachure',
+                    strokeWidth: 1,
+                    strokeStyle: 'solid',
+                    roughness: 1,
+                    opacity: 100,
+                    angle: 0,
+                    x: centerX - 200, // Offset to center 400px width
+                    y: centerY - 150, // Offset to center 300px height
+                    strokeColor: 'transparent',
+                    backgroundColor: 'transparent',
+                    width: 400,
+                    height: 300,
+                    seed: Math.floor(Math.random() * 1000000000),
+                    groupIds: [],
+                    roundness: null,
+                    boundElements: [],
+                    updated: Date.now(),
+                    link: null,
+                    locked: true,
+                    fileId: fileId,
+                    status: 'saved',
+                }
+            ]
+        });
+    }, [excalidrawAPI]);
+
+    const switchSlide = useCallback(async (index: number, overrideSlides?: string[], skipEmit = false) => {
+        if (!excalidrawAPI) return;
+        const targetSlides = overrideSlides || slides;
+        if (!targetSlides[index]) return;
+
+        // 1. Save current annotations
+        const currentElements = excalidrawAPI.getSceneElements();
+        // Filter out existing slide images
+        const annotationsOnly = currentElements.filter((el: any) => el.type !== 'image' || !el.fileId?.startsWith('slide_'));
+        
+        setSlideAnnotations(prev => {
+            const next = { ...prev, [slideRef.current]: annotationsOnly };
+            annotationsRef.current = next;
+            return next;
+        });
+
+        // 2. Clear scene COMPLETELY
+        excalidrawAPI.updateScene({ elements: [], appState: { isLoading: true } });
+
+        // 3. Insert new slide image
+        await importImageToExcalidraw(targetSlides[index], `slide_${index}`);
+
+        // 4. Restore annotations for new slide
+        const nextAnnotations = annotationsRef.current[index] || [];
+        const currentScene = excalidrawAPI.getSceneElements();
+        
+        excalidrawAPI.updateScene({ 
+            elements: [...currentScene, ...nextAnnotations],
+            appState: { isLoading: false }
+        });
+
+        setCurrentSlideIndex(index);
+        slideRef.current = index;
+        
+        if (!skipEmit) {
+            socket?.emit('whiteboard.slideChange', { sessionId, index });
+        }
+    }, [excalidrawAPI, slides, socket, sessionId, importImageToExcalidraw]);
+
+    // Handle slide upload
+    const handleSlideUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !sessionId) return;
+        
+        setUploadingSlides(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const token = localStorage.getItem('K12_TOKEN');
+            
+            const res = await api.post(`/sessions/${sessionId}/slides`, formData, {
+                headers: { 
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}` 
+                }
+            });
+            
+            if (res.data.success && excalidrawAPI) {
+                if (file.name.toLowerCase().endsWith('.pdf')) {
+                    const fileReader = new FileReader();
+                    fileReader.onload = async function() {
+                        const typedarray = new Uint8Array(this.result as ArrayBuffer);
+                        const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                        const newSlides: string[] = [];
+                        
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            const page = await pdf.getPage(i);
+                            const viewport = page.getViewport({ scale: 2.0 }); // Higher scale for clarity
+                            const canvas = document.createElement('canvas');
+                            const context = canvas.getContext('2d');
+                            canvas.height = viewport.height;
+                            canvas.width = viewport.width;
+                            
+                            await page.render({ canvasContext: context!, viewport: viewport }).promise;
+                            newSlides.push(canvas.toDataURL('image/png'));
+                        }
+                        
+                        setSlides(newSlides);
+                        setCurrentSlideIndex(0);
+                        setSlideAnnotations({});
+                        
+                        // Automatically load first slide
+                        await switchSlide(0, newSlides);
+                    };
+                    fileReader.readAsArrayBuffer(file);
+                } else {
+                    toast.success('File uploaded successfully');
+                }
+            }
+        } catch (err) {
+            console.error('Failed to upload slide', err);
+            toast.error('Failed to upload slide');
+        } finally {
+            setUploadingSlides(false);
+        }
+    };
+
     useEffect(() => {
         if (!excalidrawAPI || !socket || !sessionId) return;
         
@@ -248,14 +465,80 @@ export default function SessionPage({ params }: SessionProps) {
             });
         };
 
-        socket.on('whiteboard.receiveUpdate', handleRemoteUpdate);
+        // Listens for pen access changes
+        const handlePenAccess = (payload: any) => {
+            if (user?.id === payload.studentId || user?.role === 'student') {
+                const isNowGranted = payload.hasAccess;
+                setHasPenAccess(isNowGranted);
+                
+                if (isNowGranted) {
+                    toast.success('Pen access granted by tutor');
+                    excalidrawAPI.updateScene({ appState: { viewModeEnabled: false } });
+                } else {
+                    toast.info('Pen access removed');
+                    excalidrawAPI.updateScene({ appState: { viewModeEnabled: true } });
+                }
+            }
+        };
 
-        // Sends update to Student (if user is tutor)
-        if (user?.role === 'tutor') {
+        // Listens for confetti
+        const handleConfetti = () => {
+            // Only students grade 6 or below auto-fire
+            const isYoungStudent = user?.role === 'student' && studentData.grade > 0 && studentData.grade <= 6;
+            const isTutor = user?.role === 'tutor';
+            
+            if (isTutor || isYoungStudent) {
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    zIndex: 9999
+                });
+            }
+        };
+
+        // Collaborative Cursor Handling
+        const handlePointerUpdate = (payload: any) => {
+            if (payload.userId === user?.id) return;
+            
+            setCollaborators(prev => {
+                const next = new Map(prev);
+                next.set(payload.userId, {
+                    pointer: payload.pointer,
+                    button: payload.button,
+                    username: payload.username,
+                    selectedElementIds: payload.selectedElementIds,
+                });
+                return next;
+            });
+
+            if (excalidrawAPI) {
+                excalidrawAPI.updateScene({ collaborators: collaborators });
+            }
+        };
+
+        // Sync Slide Navigation
+        const handleSlideChange = (payload: any) => {
+            if (payload.index !== currentSlideIndex) {
+                // For non-tutors, we force the slide change
+                if (user?.role !== 'tutor') {
+                    // Trigger visual switch (skipEmit=true to avoid echo)
+                    switchSlide(payload.index, undefined, true);
+                }
+            }
+        };
+
+        socket.on('whiteboard.receiveUpdate', handleRemoteUpdate);
+        socket.on('whiteboard.penAccessUpdated', handlePenAccess);
+        socket.on('whiteboard.confettiFired', handleConfetti);
+        socket.on('whiteboard.pointerUpdate', handlePointerUpdate);
+        socket.on('whiteboard.slideChanged', handleSlideChange);
+
+        // Sends update to Student (if user is tutor or student with access)
+        if (user?.role === 'tutor' || hasPenAccess) {
             excalidrawAPI.onChange((elements: any[]) => {
                 if (whiteboardRef.current.isUpdating) return;
 
-                // Simple throttling or equality check
                 socket.emit('whiteboard.update', {
                     sessionId,
                     update: elements
@@ -265,8 +548,14 @@ export default function SessionPage({ params }: SessionProps) {
 
         return () => {
             socket.off('whiteboard.receiveUpdate', handleRemoteUpdate);
+            socket.off('whiteboard.penAccessUpdated', handlePenAccess);
+            socket.off('whiteboard.confettiFired', handleConfetti);
+            socket.off('whiteboard.pointerUpdate', handlePointerUpdate);
+            socket.off('whiteboard.slideChanged', handleSlideChange);
         };
-    }, [excalidrawAPI, socket, sessionId, user?.role]);
+    }, [excalidrawAPI, socket, sessionId, user?.role, hasPenAccess, studentData.grade, currentSlideIndex, switchSlide]);
+
+
 
     // Fetch Daily.co Room & Token
     useEffect(() => {
@@ -331,17 +620,18 @@ export default function SessionPage({ params }: SessionProps) {
             )}
 
             {/* 1. BASE LAYER: EXCALIDRAW WHITEBOARD */}
-            <div className={`absolute inset-0 z-0 ${user?.role === 'student' || user?.role === 'parent' ? 'pointer-events-none' : ''}`}>
+            <div className={`absolute inset-0 z-0 ${user?.role === 'student' || user?.role === 'parent' ? (hasPenAccess ? '' : 'pointer-events-none') : ''}`}>
                 {ExcalidrawComp ? (
                     <ExcalidrawComp
                         excalidrawAPI={(api: any) => setExcalidrawAPI(api)}
                         zenModeEnabled={false}
                         gridModeEnabled={false}
-                        viewModeEnabled={user?.role === 'student' || user?.role === 'parent'}
+                        viewModeEnabled={user?.role === 'student' || user?.role === 'parent' ? !hasPenAccess : false}
                         theme="light"
                         name="K12 Board"
+                        onPointerUpdate={onPointerUpdate}
                         initialData={{
-                            appState: { viewBackgroundColor: '#ffffff', currentItemFontFamily: 1, theme: 'light', zenModeEnabled: false, viewModeEnabled: user?.role === 'student' || user?.role === 'parent' },
+                            appState: { viewBackgroundColor: '#ffffff', currentItemFontFamily: 1, theme: 'light', zenModeEnabled: false, viewModeEnabled: user?.role === 'student' || user?.role === 'parent' ? !hasPenAccess : false },
                         }}
                         UIOptions={{
                             canvasActions: { loadScene: false, saveToActiveFile: false, export: { saveFileToDisk: true }, saveAsImage: true, toggleTheme: false }
@@ -414,12 +704,92 @@ export default function SessionPage({ params }: SessionProps) {
                     </div>
                 </div>
 
-                <div className="flex gap-3 pointer-events-auto">
+                <div className="flex gap-3 items-center pointer-events-auto">
+                    {/* Timer Display */}
+                    <div className={`px-4 py-2 rounded-xl text-sm font-bold shadow-lg border border-white/10 backdrop-blur-md flex items-center gap-2 ${timeRemaining <= 10 * 60 ? 'bg-orange-500/90 text-white animate-pulse' : 'bg-white/10 text-white'}`}>
+                        <Timer size={16} />
+                        {formatTime(timeRemaining)}
+                    </div>
+
+                    {/* Reaction Buttons - Collapsible on Mobile */}
+                    <div className="hidden sm:flex gap-1 bg-white/10 p-1 rounded-xl border border-white/10 backdrop-blur-md">
+                        {['👍', '🎉', '💡', '❓'].map(emoji => (
+                            <button
+                                key={emoji}
+                                onClick={() => sendReaction(emoji)}
+                                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/20 transition-colors text-white text-lg"
+                            >
+                                {emoji}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Tutor Whiteboard Controls */}
+                    {user?.role === 'tutor' && (
+                        <div className="flex gap-2">
+                            {/* Slide Navigation Overlay */}
+                            {slides.length > 0 && (
+                                <div className="flex items-center bg-white/10 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden shadow-lg">
+                                    <button 
+                                        onClick={() => switchSlide(currentSlideIndex - 1)}
+                                        disabled={currentSlideIndex === 0}
+                                        className="p-2 hover:bg-white/10 disabled:opacity-30 transition-colors text-white"
+                                    >
+                                        <ChevronLeft size={20} />
+                                    </button>
+                                    <span className="px-3 text-xs font-black text-white border-x border-white/10">
+                                        {currentSlideIndex + 1} / {slides.length}
+                                    </span>
+                                    <button 
+                                        onClick={() => switchSlide(currentSlideIndex + 1)}
+                                        disabled={currentSlideIndex === slides.length - 1}
+                                        className="p-2 hover:bg-white/10 disabled:opacity-30 transition-colors text-white"
+                                    >
+                                        <ChevronRight size={20} />
+                                    </button>
+                                </div>
+                            )}
+
+                            <button
+                                onClick={() => setShowAssetLibrary(!showAssetLibrary)}
+                                className={`hidden md:flex p-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 ${showAssetLibrary ? 'bg-purple-600 text-white' : 'bg-white/10 hover:bg-white/20 text-white backdrop-blur-md'}`}
+                                title="Library"
+                            >
+                                <Library size={20} />
+                            </button>
+                            <label className="cursor-pointer p-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md flex items-center gap-2" title="Upload PPT/PDF">
+                                {uploadingSlides ? <span className="animate-spin">⏳</span> : <FileUp size={20} />}
+                                <input type="file" accept=".pdf,.ppt,.pptx" className="hidden" onChange={handleSlideUpload} disabled={uploadingSlides} />
+                            </label>
+                            <button
+                                onClick={() => {
+                                    socket?.emit('whiteboard.togglePenAccess', {
+                                        sessionId,
+                                        studentId: booking?.students?.id || 'student1',
+                                        hasAccess: !hasPenAccess
+                                    });
+                                    setHasPenAccess(!hasPenAccess);
+                                }}
+                                className={`p-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 ${hasPenAccess ? 'bg-green-600 text-white' : 'bg-white/10 hover:bg-white/20 text-white backdrop-blur-md'}`}
+                                title={hasPenAccess ? 'Revoke Pen' : 'Grant Pen'}
+                            >
+                                <PenTool size={20} />
+                            </button>
+                            <button
+                                onClick={() => socket?.emit('whiteboard.triggerConfetti', { sessionId })}
+                                className="hidden lg:flex p-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 bg-pink-500/90 hover:bg-pink-600 text-white backdrop-blur-md"
+                                title="Celebration"
+                            >
+                                <Smile size={20} />
+                            </button>
+                        </div>
+                    )}
+
                     {/* Attendance Button (TUTOR ONLY) */}
                     {user?.role === 'tutor' && (
                         <button
                             onClick={() => setShowAttendance(!showAttendance)}
-                            className={`px-4 py-2 rounded-xl font-bold shadow-lg transition-all border border-white/10 ${showAttendance ? 'bg-blue-600 text-white' : 'bg-white/10 hover:bg-white/20 text-white backdrop-blur-md'}`}
+                            className="hidden xl:flex px-4 py-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md"
                         >
                             📝 Attendance
                         </button>
@@ -431,9 +801,10 @@ export default function SessionPage({ params }: SessionProps) {
                             else if (user?.role === 'parent') router.push('/parent/dashboard');
                             else router.push('/students/dashboard');
                         }}
-                        className="bg-red-500/90 hover:bg-red-600 backdrop-blur-md text-white px-4 py-2 rounded-xl font-bold shadow-lg transition-all"
+                        className="bg-red-500/90 hover:bg-red-600 backdrop-blur-md text-white p-2 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2"
                     >
-                        🚪 End Session
+                        <LogOut size={20} />
+                        <span className="hidden sm:inline">End Session</span>
                     </button>
                 </div>
             </div>
@@ -447,6 +818,28 @@ export default function SessionPage({ params }: SessionProps) {
                 />
             </div>
 
+            {/* ASSET LIBRARY PANEL (TUTOR ONLY) - Hidden on Mobile */}
+            {user?.role === 'tutor' && showAssetLibrary && (
+                <div className="absolute left-4 top-32 bottom-24 w-64 hidden md:flex bg-white/95 backdrop-blur-xl border border-purple-500/20 shadow-2xl rounded-2xl p-4 overflow-y-auto flex-col gap-4 pointer-events-auto z-40">
+                    <h2 className="font-bold text-lg text-purple-900 border-b pb-2">Asset Library</h2>
+                    <p className="text-xs text-text-secondary">Click to insert into canvas</p>
+                    <div className="grid grid-cols-1 gap-3">
+                        {mockLibraryAssets.map(asset => (
+                            <div 
+                                key={asset.id}
+                                className="border rounded-xl cursor-pointer overflow-hidden hover:ring-2 hover:ring-purple-400 transition-all bg-gray-50 flex flex-col"
+                                onClick={() => importImageToExcalidraw(asset.url)}
+                            >
+                                <img src={asset.url} alt={asset.label} className="w-full h-24 object-cover" />
+                                <div className="p-2 text-xs font-bold text-center text-gray-700 bg-white">
+                                    {asset.label}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* ATTENDANCE TRACKER OVERLAY */}
             <AttendanceTracker
                 isOpen={showAttendance}
@@ -456,83 +849,51 @@ export default function SessionPage({ params }: SessionProps) {
                 onSave={saveAttendance}
             />
 
-            {/* ATTENTION DESIGN FRAMEWORK OVERLAYS (TUTOR ONLY) */}
-            {user?.role === 'tutor' && hasJoined && (
-                <>
-                    {/* 0. Top: Session Flow Bar -> Moved to Bottom */}
-                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 w-[600px] pointer-events-auto">
-                        <SessionFlowBar
-                            currentPhase={currentPhase}
-                            onPhaseChange={handlePhaseUpdate}
-                        />
+            {/* WRAP UP CAPSULE */}
+            {showWrapUp && (
+                <div className="absolute top-24 left-1/2 -translate-x-1/2 z-50 animate-bounce cursor-pointer" onClick={() => setShowWrapUp(false)}>
+                    <div className="bg-orange-500 border-2 border-orange-400 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3">
+                        <span className="text-xl">⏰</span>
+                        <p className="font-bold text-sm">
+                            10 minutes remaining! Time to wrap up and ask final questions.
+                        </p>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowWrapUp(false);
+                            }}
+                            className="ml-2 w-6 h-6 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white font-bold"
+                        >
+                            ✕
+                        </button>
                     </div>
-
-                    {/* 1. Left Sidebar: Student Snapshot & Attention Panel */}
-                    <div className="absolute left-4 top-32 bottom-24 w-80 z-10 flex flex-col gap-4 pointer-events-none">
-                        <div className="pointer-events-auto">
-                            <StudentSnapshotCard
-                                studentName={studentData.name}
-                                interests={studentData.interests}
-                                recentProgress={studentData.recentProgress}
-                                struggleAreas={studentData.struggleAreas}
-                            />
-                        </div>
-
-                        <div className="pointer-events-auto">
-                            <PhaseGuidancePanel phase={currentPhase} suggestions={[]} />
-                        </div>
-
-                        <div className="flex-1 pointer-events-auto min-h-0">
-                            <AttentionFrameworkPanel
-                                sessionId={sessionId}
-                                studentId={booking?.students?.id || 'student-id'}
-                                tutorId={user?.id || 'tutor-id'}
-                                socket={socket}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Phase Suggestion Popup */}
-                    {suggestedPhase && (
-                        <div className="absolute bottom-32 left-8 z-50 animate-in slide-in-from-left-4 fade-in">
-                            <div className="bg-purple-900/90 backdrop-blur-md border border-purple-500/30 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-4">
-                                <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center animate-pulse">
-                                    💡
-                                </div>
-                                <div>
-                                    <p className="text-xs font-bold">Suggested Phase</p>
-                                    <p className="text-[10px] text-white/70">Move to <b>{suggestedPhase}</b> loop?</p>
-                                </div>
-                                <button
-                                    onClick={() => suggestedPhase && handlePhaseUpdate(suggestedPhase)}
-                                    className="px-3 py-1 bg-white text-purple-900 rounded-lg text-[10px] font-black uppercase hover:bg-gray-100"
-                                >
-                                    Shift
-                                </button>
-                                <button onClick={() => setSuggestedPhase(null)} className="text-white/40 hover:text-white">✕</button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* 2. Response Nudge (Structural UX) */}
-                    {showResponseNudge && (
-                        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-50 animate-bounce">
-                            <div className="bg-amber-100 border-2 border-amber-400 text-amber-900 px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
-                                <span className="text-xl">💡</span>
-                                <p className="font-bold text-sm">
-                                    Let the student explain in their own words.
-                                </p>
-                                <button
-                                    onClick={() => setShowResponseNudge(false)}
-                                    className="ml-2 text-amber-500 hover:text-amber-700 font-bold"
-                                >
-                                    ✕
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </>
+                </div>
             )}
+
+            {/* FLOATING REACTIONS */}
+            <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden">
+                {reactions.map(r => (
+                    <div
+                        key={r.id}
+                        className="absolute bottom-0 text-4xl animate-float-up"
+                        style={{ left: `${r.x}%` }}
+                    >
+                        {r.emoji}
+                    </div>
+                ))}
+            </div>
+
+            <style>{`
+                @keyframes float-up {
+                    0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+                    20% { opacity: 1; transform: translateY(80vh) scale(1.2); }
+                    80% { opacity: 1; transform: translateY(20vh) scale(1); }
+                    100% { transform: translateY(-10vh) scale(0.8); opacity: 0; }
+                }
+                .animate-float-up {
+                    animation: float-up 3s ease-out forwards;
+                }
+            `}</style>
         </div>
     );
 }
