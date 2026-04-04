@@ -79,9 +79,8 @@ export default function SessionPage({ params }: SessionProps) {
     ];
 
     const saveAttendance = (records: any) => {
-        console.log('Saving attendance:', records);
         // api.post(`/sessions/${sessionId}/attendance`, records);
-        alert('Attendance saved!');
+        toast.success('Attendance saved!');
     };
 
     // Video Card State
@@ -156,8 +155,20 @@ export default function SessionPage({ params }: SessionProps) {
         setSocket(newSocket);
 
         newSocket.on('connect', () => {
-            console.log('[Attention] Socket connected');
             newSocket.emit('joinSession', { sessionId, userId: user.id });
+            // On every (re)connect the tutor pushes the current scene so late-joining
+            // or reconnecting students receive the current whiteboard state immediately.
+            if (user.role === 'tutor') {
+                const api = excalidrawAPIRef.current;
+                if (api) {
+                    const elements = api.getSceneElements();
+                    const files = api.getFiles();
+                    if (elements.length > 0) {
+                        newSocket.emit('whiteboard.update', { sessionId, update: { elements } });
+                        newSocket.emit('whiteboard.syncFiles', { sessionId, files });
+                    }
+                }
+            }
         });
 
         newSocket.on('session.reaction', (payload: { emoji: string }) => {
@@ -272,6 +283,7 @@ export default function SessionPage({ params }: SessionProps) {
 
     // Excalidraw State
     const [excalidrawAPI, setExcalidrawAPI] = useState<any>(null);
+    const excalidrawAPIRef = useRef<any>(null);
     const [ExcalidrawComp, setExcalidrawComp] = useState<any>(null);
 
     // Patch for process.env
@@ -287,6 +299,9 @@ export default function SessionPage({ params }: SessionProps) {
         // @ts-ignore
         import('@excalidraw/excalidraw/index.css');
     }, []);
+
+    // Keep API ref in sync for use in async callbacks / reconnect handlers
+    useEffect(() => { excalidrawAPIRef.current = excalidrawAPI; }, [excalidrawAPI]);
 
     // Whiteboard Sync State (Socket.io based)
     const whiteboardRef = useRef<{ isUpdating: boolean }>({ isUpdating: false });
@@ -321,10 +336,17 @@ export default function SessionPage({ params }: SessionProps) {
             lastRetrieved: Date.now()
         }]);
 
-        // Use high-resolution scaling for the image (800x600 minimum)
+        // Determine actual dimensions so aspect ratio is preserved
+        const imgEl = document.createElement('img');
+        await new Promise<void>((resolve) => { imgEl.onload = () => resolve(); imgEl.src = dataUrl; });
+        const naturalW = imgEl.naturalWidth || 800;
+        const naturalH = imgEl.naturalHeight || 600;
+        const maxWidth = 900;
+        const scaleDown = naturalW > maxWidth ? maxWidth / naturalW : 1;
+        const targetWidth = Math.round(naturalW * scaleDown);
+        const targetHeight = Math.round(naturalH * scaleDown);
+
         const elementId = `img_${fileId}`;
-        const targetWidth = 800; 
-        const targetHeight = 600;
         const appState = excalidrawAPI.getAppState();
         const zoom = typeof appState.zoom === 'number' ? appState.zoom : (appState.zoom?.value ?? 1);
         const centerX = (appState.width / 2 - appState.scrollX) / zoom;
@@ -368,10 +390,10 @@ export default function SessionPage({ params }: SessionProps) {
 
         // Center on the new image then force-sync so student receives it
         setTimeout(() => {
-            excalidrawAPI.scrollToContent(excalidrawAPI.getSceneElements().filter((e: any) => e.id === elementId), {
-                fitToViewport: true,
-                padding: 20
-            });
+            const target = excalidrawAPI.getSceneElements().filter((e: any) => e.id === elementId);
+            if (target.length > 0) {
+                excalidrawAPI.scrollToContent(target, { fitToViewport: true, padding: 20 });
+            }
             // Force-push current elements + files regardless of isUpdating state
             if (socket && sessionId) {
                 const allElements = excalidrawAPI.getSceneElements();
@@ -432,6 +454,7 @@ export default function SessionPage({ params }: SessionProps) {
                 const newSlides: string[] = [];
 
                 for (let i = 1; i <= pdf.numPages; i++) {
+                    toast.info(`Processing page ${i} / ${pdf.numPages}…`, { id: 'pdf-progress', duration: 60000 });
                     const page = await pdf.getPage(i);
                     const viewport = page.getViewport({ scale: 1.5 });
                     const canvas = document.createElement('canvas');
@@ -440,7 +463,13 @@ export default function SessionPage({ params }: SessionProps) {
                     canvas.width = viewport.width;
                     await page.render({ canvasContext: context!, viewport, canvas }).promise;
                     newSlides.push(canvas.toDataURL('image/png'));
+                    // Release GPU texture immediately — prevents memory build-up on large PDFs
+                    canvas.width = 0;
+                    canvas.height = 0;
+                    // Yield to the event loop so the UI stays responsive
+                    await new Promise(r => setTimeout(r, 0));
                 }
+                toast.dismiss('pdf-progress');
 
                 setSlides(newSlides);
                 setCurrentSlideIndex(0);
@@ -517,33 +546,6 @@ export default function SessionPage({ params }: SessionProps) {
 
     useEffect(() => {
         if (!excalidrawAPI || !socket || !sessionId) return;
-        
-        console.log('[Collab] Initializing Whiteboard sync via Socket.io');
-
-        // Receives update from Tutor
-        const handleRemoteUpdate = (remoteData: any) => {
-            if (whiteboardRef.current.isUpdating) return;
-            
-            whiteboardRef.current.isUpdating = true;
-            
-            // remoteData could be an array (old payload format) or an object { elements, files }
-            const remoteElements = Array.isArray(remoteData) ? remoteData : (remoteData.elements || []);
-            const remoteFiles = !Array.isArray(remoteData) && remoteData.files ? remoteData.files : null;
-            
-            // 1. Add files to Excalidraw so images can render
-            if (remoteFiles && Object.keys(remoteFiles).length > 0) {
-                 excalidrawAPI.addFiles(Object.values(remoteFiles));
-            }
-            
-            // 2. Update the scene elements
-            if (JSON.stringify(excalidrawAPI.getSceneElements()) !== JSON.stringify(remoteElements)) {
-                excalidrawAPI.updateScene({ elements: remoteElements });
-            }
-            
-            requestAnimationFrame(() => {
-                whiteboardRef.current.isUpdating = false;
-            });
-        };
 
         // Listens for pen access updates
         const handlePenAccess = (payload: any) => {
@@ -616,55 +618,59 @@ export default function SessionPage({ params }: SessionProps) {
             }
         };
 
-        // Sync Slide Navigation
+        // Sync Slide Navigation — use slideRef.current to avoid stale closure
         const handleSlideChange = (payload: any) => {
-            if (payload.index !== currentSlideIndex) {
-                // For non-tutors, we force the slide change
-                if (user?.role !== 'tutor') {
-                    // Trigger visual switch (skipEmit=true to avoid echo)
-                    switchSlide(payload.index, undefined, true);
-                }
+            if (user?.role !== 'tutor' && payload.index !== slideRef.current) {
+                switchSlide(payload.index, undefined, true);
             }
         };
 
-        // Receives dedicated element updates
-        const handleRemoteElementUpdate = (remoteElements: any[]) => {
+        // Named handler so socket.off can actually remove it
+        const handleReceiveUpdate = (data: any) => {
             if (whiteboardRef.current.isUpdating) return;
             whiteboardRef.current.isUpdating = true;
-            
+            const remoteElements = Array.isArray(data) ? data : (data.elements || []);
             if (JSON.stringify(excalidrawAPI.getSceneElements()) !== JSON.stringify(remoteElements)) {
                 excalidrawAPI.updateScene({ elements: remoteElements });
             }
-            
-            setTimeout(() => { whiteboardRef.current.isUpdating = false; }, 100);
+            requestAnimationFrame(() => { whiteboardRef.current.isUpdating = false; });
         };
 
         // Receives heavy file payloads separately
         const handleRemoteFiles = (remoteFiles: any) => {
             if (remoteFiles && Object.keys(remoteFiles).length > 0) {
-                 excalidrawAPI.addFiles(Object.values(remoteFiles));
+                excalidrawAPI.addFiles(Object.values(remoteFiles));
             }
         };
 
-        socket.on('whiteboard.receiveUpdate', (data: any) => {
-            const elements = Array.isArray(data) ? data : (data.elements || []);
-            handleRemoteElementUpdate(elements);
-        });
-        socket.on('whiteboard.receiveFiles', handleRemoteFiles);
+        // When a student joins mid-session they emit whiteboard.requestSync;
+        // the tutor responds with the full current scene.
+        const handleSyncRequest = () => {
+            if (user?.role !== 'tutor') return;
+            const elements = excalidrawAPI.getSceneElements();
+            const files = excalidrawAPI.getFiles();
+            socket.emit('whiteboard.update', { sessionId, update: { elements } });
+            socket.emit('whiteboard.syncFiles', { sessionId, files });
+        };
 
+        socket.on('whiteboard.receiveUpdate', handleReceiveUpdate);
+        socket.on('whiteboard.receiveFiles', handleRemoteFiles);
         socket.on('whiteboard.penAccessUpdated', handlePenAccess);
         socket.on('whiteboard.confettiFired', handleConfetti);
         socket.on('whiteboard.pointerUpdate', handlePointerUpdate);
         socket.on('whiteboard.slideChanged', handleSlideChange);
+        socket.on('whiteboard.syncRequest', handleSyncRequest);
 
         return () => {
-            socket.off('whiteboard.receiveUpdate', handleRemoteUpdate);
+            socket.off('whiteboard.receiveUpdate', handleReceiveUpdate);
+            socket.off('whiteboard.receiveFiles', handleRemoteFiles);
             socket.off('whiteboard.penAccessUpdated', handlePenAccess);
             socket.off('whiteboard.confettiFired', handleConfetti);
             socket.off('whiteboard.pointerUpdate', handlePointerUpdate);
             socket.off('whiteboard.slideChanged', handleSlideChange);
+            socket.off('whiteboard.syncRequest', handleSyncRequest);
         };
-    }, [excalidrawAPI, socket, sessionId, user?.role, hasPenAccess, studentData.grade, currentSlideIndex, switchSlide]);
+    }, [excalidrawAPI, socket, sessionId, user?.role, hasPenAccess, studentData.grade, switchSlide]);
 
     // Stable onChange registration — separate effect so it never re-stacks
     useEffect(() => {
@@ -690,7 +696,13 @@ export default function SessionPage({ params }: SessionProps) {
         };
     }, [excalidrawAPI, socket, sessionId, user?.role, hasPenAccess]);
 
-
+    // Students/parents request the current whiteboard state when their canvas is ready.
+    // The tutor's handleSyncRequest handler responds with the full scene + files.
+    useEffect(() => {
+        if (!excalidrawAPI || !socket || !sessionId) return;
+        if (user?.role === 'tutor') return;
+        socket.emit('whiteboard.requestSync', { sessionId });
+    }, [excalidrawAPI, socket, sessionId, user?.role]);
 
     // Fetch Daily.co Room & Token
     useEffect(() => {
@@ -708,7 +720,7 @@ export default function SessionPage({ params }: SessionProps) {
                 })
                 .catch(err => {
                     console.error('[Daily] Failed to get token:', err);
-                    alert('Failed to join video session. Please try again.');
+                    toast.error('Failed to join video session. Please try again.');
                     setVideoLoading(false);
                 });
         }
