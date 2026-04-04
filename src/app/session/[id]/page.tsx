@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 
 if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version || '5.6.205'}/build/pdf.worker.min.mjs`;
 }
 
 interface BookingDetails {
@@ -451,11 +451,21 @@ export default function SessionPage({ params }: SessionProps) {
         console.log('[Collab] Initializing Whiteboard sync via Socket.io');
 
         // Receives update from Tutor
-        const handleRemoteUpdate = (remoteElements: any[]) => {
+        const handleRemoteUpdate = (remoteData: any) => {
             if (whiteboardRef.current.isUpdating) return;
             
             whiteboardRef.current.isUpdating = true;
-            // Only update if we have actual data
+            
+            // remoteData could be an array (old payload format) or an object { elements, files }
+            const remoteElements = Array.isArray(remoteData) ? remoteData : (remoteData.elements || []);
+            const remoteFiles = !Array.isArray(remoteData) && remoteData.files ? remoteData.files : null;
+            
+            // 1. Add files to Excalidraw so images can render
+            if (remoteFiles && Object.keys(remoteFiles).length > 0) {
+                 excalidrawAPI.addFiles(Object.values(remoteFiles));
+            }
+            
+            // 2. Update the scene elements
             if (JSON.stringify(excalidrawAPI.getSceneElements()) !== JSON.stringify(remoteElements)) {
                 excalidrawAPI.updateScene({ elements: remoteElements });
             }
@@ -536,12 +546,12 @@ export default function SessionPage({ params }: SessionProps) {
 
         // Sends update to Student (if user is tutor or student with access)
         if (user?.role === 'tutor' || hasPenAccess) {
-            excalidrawAPI.onChange((elements: any[]) => {
+            excalidrawAPI.onChange((elements: any[], appState: any, files: any) => {
                 if (whiteboardRef.current.isUpdating) return;
 
                 socket.emit('whiteboard.update', {
                     sessionId,
-                    update: elements
+                    update: { elements, files }
                 });
             });
         }
@@ -712,7 +722,7 @@ export default function SessionPage({ params }: SessionProps) {
                     </div>
 
                     {/* Reaction Buttons - Collapsible on Mobile */}
-                    <div className="hidden sm:flex gap-1 bg-white/10 p-1 rounded-xl border border-white/10 backdrop-blur-md">
+                    <div className="flex flex-wrap gap-1 bg-white/10 p-1 rounded-xl border border-white/10 backdrop-blur-md">
                         {['👍', '🎉', '💡', '❓'].map(emoji => (
                             <button
                                 key={emoji}
@@ -726,7 +736,7 @@ export default function SessionPage({ params }: SessionProps) {
 
                     {/* Tutor Whiteboard Controls */}
                     {user?.role === 'tutor' && (
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2">
                             {/* Slide Navigation Overlay */}
                             {slides.length > 0 && (
                                 <div className="flex items-center bg-white/10 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden shadow-lg">
@@ -752,7 +762,7 @@ export default function SessionPage({ params }: SessionProps) {
 
                             <button
                                 onClick={() => setShowAssetLibrary(!showAssetLibrary)}
-                                className={`hidden md:flex p-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 ${showAssetLibrary ? 'bg-purple-600 text-white' : 'bg-white/10 hover:bg-white/20 text-white backdrop-blur-md'}`}
+                                className={`flex p-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 ${showAssetLibrary ? 'bg-purple-600 text-white' : 'bg-white/10 hover:bg-white/20 text-white backdrop-blur-md'}`}
                                 title="Library"
                             >
                                 <Library size={20} />
@@ -777,7 +787,7 @@ export default function SessionPage({ params }: SessionProps) {
                             </button>
                             <button
                                 onClick={() => socket?.emit('whiteboard.triggerConfetti', { sessionId })}
-                                className="hidden lg:flex p-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 bg-pink-500/90 hover:bg-pink-600 text-white backdrop-blur-md"
+                                className="flex p-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 bg-pink-500/90 hover:bg-pink-600 text-white backdrop-blur-md"
                                 title="Celebration"
                             >
                                 <Smile size={20} />
@@ -789,7 +799,7 @@ export default function SessionPage({ params }: SessionProps) {
                     {user?.role === 'tutor' && (
                         <button
                             onClick={() => setShowAttendance(!showAttendance)}
-                            className="hidden xl:flex px-4 py-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md"
+                            className="flex px-4 py-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md"
                         >
                             📝 Attendance
                         </button>
