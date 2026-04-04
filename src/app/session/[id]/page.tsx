@@ -7,6 +7,8 @@ import SessionChat from '@/app/components/SessionChat';
 import api from '@/app/lib/api';
 // import { DailyProvider } from '@daily-co/daily-react'; // Not used directly, using iframe
 import AttendanceTracker from '@/app/components/session/AttendanceTracker';
+import SessionFlowBar, { SessionPhase } from '@/app/components/session/SessionFlowBar';
+import StudentSnapshotCard from '@/app/components/session/StudentSnapshotCard';
 import { io, Socket } from 'socket.io-client';
 import confetti from 'canvas-confetti';
 // @ts-ignore
@@ -84,7 +86,7 @@ export default function SessionPage({ params }: SessionProps) {
     };
 
     // Video Card State
-    const [position, setPosition] = useState({ x: 20, y: 20 });
+    const [position, setPosition] = useState({ x: 8, y: 280 });
     const [isExpanded, setIsExpanded] = useState(false);
     const isDragging = useRef(false);
     const dragStart = useRef({ x: 0, y: 0 });
@@ -94,6 +96,11 @@ export default function SessionPage({ params }: SessionProps) {
     const [hasPenAccess, setHasPenAccess] = useState(false);
     const [uploadingSlides, setUploadingSlides] = useState(false);
     const [showAssetLibrary, setShowAssetLibrary] = useState(false);
+
+    // Session HUD State
+    const [sessionPhase, setSessionPhase] = useState<SessionPhase>('WARM_CONNECT');
+    const [snapshotExpanded, setSnapshotExpanded] = useState(false);
+    const [snapshotHidden, setSnapshotHidden] = useState(false);
     
     // Mock Assets for Library
     const mockLibraryAssets = [
@@ -203,6 +210,11 @@ export default function SessionPage({ params }: SessionProps) {
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
         return `${m}:${s < 10 ? '0' : ''}${s}`;
+    };
+
+    const handlePhaseChange = (phase: SessionPhase) => {
+        setSessionPhase(phase);
+        socket?.emit('whiteboard.phaseChange', { sessionId, phase });
     };
 
     const sendReaction = (emoji: string) => {
@@ -622,11 +634,16 @@ export default function SessionPage({ params }: SessionProps) {
             handleRemoteElementUpdate(elements);
         });
         socket.on('whiteboard.receiveFiles', handleRemoteFiles);
-        
+
         socket.on('whiteboard.penAccessUpdated', handlePenAccess);
         socket.on('whiteboard.confettiFired', handleConfetti);
         socket.on('whiteboard.pointerUpdate', handlePointerUpdate);
         socket.on('whiteboard.slideChanged', handleSlideChange);
+
+        const handleRemotePhase = ({ phase }: { phase: SessionPhase }) => {
+            setSessionPhase(phase);
+        };
+        socket.on('whiteboard.phaseChange', handleRemotePhase);
 
         // Track last synced files to avoid re-syncing heavy data
         const lastSyncedFiles = { current: '' };
@@ -660,6 +677,7 @@ export default function SessionPage({ params }: SessionProps) {
             socket.off('whiteboard.confettiFired', handleConfetti);
             socket.off('whiteboard.pointerUpdate', handlePointerUpdate);
             socket.off('whiteboard.slideChanged', handleSlideChange);
+            socket.off('whiteboard.phaseChange');
         };
     }, [excalidrawAPI, socket, sessionId, user?.role, hasPenAccess, studentData.grade, currentSlideIndex, switchSlide]);
 
@@ -797,153 +815,183 @@ export default function SessionPage({ params }: SessionProps) {
                 </div>
             )}
 
-            {/* FIXED OVERLAYS */}
-            {/* 1. TOP-LEFT: SESSION INFO BOX */}
-            <div className="absolute top-16 left-4 z-10 pointer-events-none">
-                <div className="bg-glass/90 backdrop-blur-md rounded-2xl p-3 border border-white/20 shadow-lg pointer-events-auto flex items-center gap-4 max-w-sm">
-                    <div className="relative">
-                        <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse relative z-10" />
-                        <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-75" />
+            {/* ── TOP HUD BAR ─────────────────────────────────────────────── */}
+            <div className="absolute top-0 left-0 right-0 h-[52px] z-20 bg-black/80 backdrop-blur-xl border-b border-white/8 flex items-center px-4 gap-3">
+                {/* Left: live indicator + subject */}
+                <div className="flex items-center gap-2 min-w-[140px]">
+                    <div className="relative shrink-0">
+                        <div className="w-2.5 h-2.5 rounded-full bg-green-500 relative z-10" />
+                        <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-60" />
                     </div>
-                    <div>
-                        <h1 className="text-sm font-bold text-(--color-text-primary)">
-                            {booking?.subject?.name || 'Session'}
-                        </h1>
-                        <p className="text-xs text-text-secondary">ID: {sessionId.slice(0, 8)}...</p>
-                    </div>
+                    <span className="text-white text-xs font-bold truncate">
+                        {booking?.subject?.name || 'Session'}
+                    </span>
                 </div>
-            </div>
 
-            {/* 2. TOP-RIGHT: CONTROLS & TIMER (Left center free for toolbar) */}
-            <div className="absolute top-16 right-4 z-10 flex gap-3 items-center pointer-events-none">
-                    {/* Fixed Timer Block (Moved to avoid toolbar obstruction) */}
-                    <div 
-                        className={`px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg border border-white/10 backdrop-blur-md transition-all duration-500 pointer-events-auto ${
-                            timeRemaining <= 5 * 60 
-                            ? 'bg-red-600/90 text-white animate-pulse' 
-                            : timeRemaining <= 10 * 60 
-                                ? 'bg-amber-500/90 text-white' 
-                                : 'bg-black/40 text-white'
-                        }`}
-                        title="Time Remaining"
-                    >
-                        <Timer size={16} className={timeRemaining <= 5 * 60 ? 'animate-spin-slow' : ''} />
-                        <span className="font-bold text-sm tracking-tight tabular-nums">
-                            {formatTime(timeRemaining)}
-                        </span>
+                {/* Centre: session flow bar (tutor-controlled, both see state) */}
+                <div className="flex-1 flex items-center justify-center">
+                    <SessionFlowBar
+                        currentPhase={sessionPhase}
+                        onPhaseChange={user?.role === 'tutor' ? handlePhaseChange : () => {}}
+                        variant="hud"
+                    />
+                </div>
+
+                {/* Right: timer + reactions + end */}
+                <div className="flex items-center gap-2 min-w-[200px] justify-end">
+                    <div className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-white/10 transition-all duration-500 tabular-nums ${
+                        timeRemaining <= 5 * 60
+                            ? 'bg-red-600/90 text-white animate-pulse'
+                            : timeRemaining <= 10 * 60
+                            ? 'bg-amber-500/90 text-white'
+                            : 'bg-white/10 text-white'
+                    }`}>
+                        <Timer size={13} />
+                        <span className="font-bold text-xs tracking-tight">{formatTime(timeRemaining)}</span>
                     </div>
 
-                    {/* Reaction Buttons - Collapsible on Mobile */}
-                    <div className="flex flex-wrap gap-1 bg-white/10 p-1 rounded-xl border border-white/10 backdrop-blur-md pointer-events-auto">
+                    <div className="flex gap-0.5 bg-white/8 rounded-lg p-0.5 border border-white/8">
                         {['👍', '🎉', '💡', '❓'].map(emoji => (
                             <button
                                 key={emoji}
                                 onClick={() => sendReaction(emoji)}
-                                className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all text-2xl active:scale-90"
+                                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white/20 transition-all text-base active:scale-90"
                             >
                                 {emoji}
                             </button>
                         ))}
-                        {/* More Actions Menu */}
-                        <div className="flex items-center gap-1 border-l border-white/20 ml-1 pl-1">
-                            <button
-                                onClick={() => socket?.emit('whiteboard.triggerConfetti', { sessionId })}
-                                className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-pink-500 text-white transition-all active:scale-95"
-                                title="Surprise Confetti"
-                            >
-                                <Smile size={20} />
-                            </button>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 text-white transition-all opacity-50 cursor-not-allowed">
-                                <Share2 size={20} />
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* End Session Button Group (Pointer auto) */}
-                    <div className="flex items-center gap-2 pointer-events-auto">
-                        {user?.role === 'tutor' && (
-                            <button
-                                onClick={() => setShowAttendance(!showAttendance)}
-                                className="flex px-4 py-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md"
-                            >
-                                📝 Attendance
-                            </button>
-                        )}
-
                         <button
-                            onClick={() => {
-                                if (user?.role === 'tutor') router.push('/tutor/dashboard');
-                                else if (user?.role === 'parent') router.push('/parent/dashboard');
-                                else router.push('/students/dashboard');
-                            }}
-                            className="bg-red-500/90 hover:bg-red-600 backdrop-blur-md text-white p-2 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2"
+                            onClick={() => socket?.emit('whiteboard.triggerConfetti', { sessionId })}
+                            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-pink-500 text-white transition-all"
+                            title="Confetti"
                         >
-                            <LogOut size={20} />
-                            <span className="hidden sm:inline">End Session</span>
+                            <Smile size={15} />
                         </button>
                     </div>
 
-                    {/* Tutor Whiteboard Controls */}
                     {user?.role === 'tutor' && (
-                        <div className="flex flex-wrap gap-2">
-                            {/* Slide Navigation Overlay */}
-                            {slides.length > 0 && (
-                                <div className="flex items-center bg-white/10 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden shadow-lg">
-                                    <button 
-                                        onClick={() => switchSlide(currentSlideIndex - 1)}
-                                        disabled={currentSlideIndex === 0}
-                                        className="p-2 hover:bg-white/10 disabled:opacity-30 transition-colors text-white"
-                                    >
-                                        <ChevronLeft size={20} />
-                                    </button>
-                                    <span className="px-3 text-xs font-black text-white border-x border-white/10">
-                                        {currentSlideIndex + 1} / {slides.length}
-                                    </span>
-                                    <button 
-                                        onClick={() => switchSlide(currentSlideIndex + 1)}
-                                        disabled={currentSlideIndex === slides.length - 1}
-                                        className="p-2 hover:bg-white/10 disabled:opacity-30 transition-colors text-white"
-                                    >
-                                        <ChevronRight size={20} />
-                                    </button>
-                                </div>
-                            )}
+                        <button
+                            onClick={() => setShowAttendance(!showAttendance)}
+                            className="px-2.5 py-1.5 rounded-lg text-xs font-bold border border-white/10 bg-white/10 hover:bg-white/20 text-white transition-all"
+                            title="Attendance"
+                        >
+                            📝
+                        </button>
+                    )}
 
+                    <button
+                        onClick={() => {
+                            if (user?.role === 'tutor') router.push('/tutor/dashboard');
+                            else if (user?.role === 'parent') router.push('/parent/dashboard');
+                            else router.push('/students/dashboard');
+                        }}
+                        className="bg-red-500/90 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all"
+                    >
+                        <LogOut size={13} />
+                        <span className="hidden sm:inline">End</span>
+                    </button>
+                </div>
+            </div>
+
+            {/* ── STUDENT SNAPSHOT (tutor only, collapsible) ───────────────── */}
+            {user?.role === 'tutor' && !snapshotHidden && (
+                <div className="absolute top-[60px] left-2 z-10">
+                    <button
+                        onClick={() => setSnapshotExpanded(v => !v)}
+                        className="flex items-center gap-2 bg-black/70 backdrop-blur-xl border border-white/10 rounded-xl px-2.5 py-1.5 text-white hover:bg-black/80 transition-all"
+                    >
+                        <div className="w-6 h-6 rounded-lg bg-purple-600 flex items-center justify-center text-xs font-black shrink-0">
+                            {studentData.name.charAt(0)}
+                        </div>
+                        <div className="text-left">
+                            <div className="text-xs font-bold leading-none">{studentData.name}</div>
+                            <div className="text-[10px] text-green-400 leading-none mt-0.5">● Active</div>
+                        </div>
+                        <ChevronRight size={12} className={`text-white/30 transition-transform duration-200 ${snapshotExpanded ? 'rotate-90' : ''}`} />
+                    </button>
+
+                    {snapshotExpanded && (
+                        <div className="mt-1">
+                            <StudentSnapshotCard
+                                studentName={studentData.name}
+                                interests={studentData.interests}
+                                recentProgress={studentData.recentProgress}
+                                struggleAreas={studentData.struggleAreas}
+                            />
                             <button
-                                onClick={() => setShowAssetLibrary(!showAssetLibrary)}
-                                className={`flex p-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 ${showAssetLibrary ? 'bg-purple-600 text-white' : 'bg-white/10 hover:bg-white/20 text-white backdrop-blur-md'}`}
-                                title="Library"
+                                onClick={() => { setSnapshotHidden(true); setSnapshotExpanded(false); }}
+                                className="mt-1 text-[10px] text-white/20 hover:text-white/50 transition-colors w-full text-right pr-1"
                             >
-                                <Library size={20} />
-                            </button>
-                            <label className="cursor-pointer p-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md flex items-center gap-2" title="Upload PPT/PDF">
-                                {uploadingSlides ? <span className="animate-spin">⏳</span> : <FileUp size={20} />}
-                                <input type="file" accept=".pdf,.ppt,.pptx" className="hidden" onChange={handleSlideUpload} disabled={uploadingSlides} />
-                            </label>
-                            <button
-                                onClick={() => {
-                                    socket?.emit('whiteboard.togglePenAccess', {
-                                        sessionId,
-                                        studentId: booking?.students?.id || 'student1',
-                                        hasAccess: !hasPenAccess
-                                    });
-                                    setHasPenAccess(!hasPenAccess);
-                                }}
-                                className={`p-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 ${hasPenAccess ? 'bg-green-600 text-white' : 'bg-white/10 hover:bg-white/20 text-white backdrop-blur-md'}`}
-                                title={hasPenAccess ? 'Revoke Pen' : 'Grant Pen'}
-                            >
-                                <PenTool size={20} />
-                            </button>
-                            <button
-                                onClick={() => socket?.emit('whiteboard.triggerConfetti', { sessionId })}
-                                className="flex p-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 bg-pink-500/90 hover:bg-pink-600 text-white backdrop-blur-md"
-                                title="Celebration"
-                            >
-                                <Smile size={20} />
+                                Hide ×
                             </button>
                         </div>
                     )}
-            </div>
+                </div>
+            )}
+
+            {/* ── TUTOR TOOLS STRIP (right side, vertical) ─────────────────── */}
+            {user?.role === 'tutor' && (
+                <div className="absolute top-[60px] right-2 z-10">
+                    <div className="bg-black/70 backdrop-blur-xl border border-white/10 rounded-xl p-1.5 flex flex-col gap-1.5 items-center">
+                        <span className="text-white/20 text-[8px] font-black tracking-widest pt-0.5 pb-1">TOOLS</span>
+
+                        <label className="cursor-pointer w-9 h-9 rounded-lg bg-purple-600 hover:bg-purple-700 flex items-center justify-center text-white transition-all" title="Upload PDF / Slides">
+                            {uploadingSlides ? <span className="animate-spin text-sm">⏳</span> : <FileUp size={16} />}
+                            <input type="file" accept=".pdf,.ppt,.pptx" className="hidden" onChange={handleSlideUpload} disabled={uploadingSlides} />
+                        </label>
+
+                        <button
+                            onClick={() => setShowAssetLibrary(!showAssetLibrary)}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all ${showAssetLibrary ? 'bg-purple-600' : 'bg-white/10 hover:bg-white/20'}`}
+                            title="Asset Library"
+                        >
+                            <Library size={16} />
+                        </button>
+
+                        <button
+                            onClick={() => {
+                                socket?.emit('whiteboard.togglePenAccess', {
+                                    sessionId,
+                                    studentId: booking?.students?.id || 'student1',
+                                    hasAccess: !hasPenAccess
+                                });
+                                setHasPenAccess(!hasPenAccess);
+                            }}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${
+                                hasPenAccess ? 'bg-green-600 border-green-500/50' : 'bg-white/10 hover:bg-white/20 border-white/10'
+                            }`}
+                            title={hasPenAccess ? 'Revoke Pen' : 'Grant Pen'}
+                        >
+                            <PenTool size={16} />
+                        </button>
+
+                        {slides.length > 0 && (
+                            <>
+                                <div className="w-5 h-px bg-white/10 my-0.5" />
+                                <button
+                                    onClick={() => switchSlide(currentSlideIndex - 1)}
+                                    disabled={currentSlideIndex === 0}
+                                    className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white disabled:opacity-25 transition-all"
+                                    title="Previous slide"
+                                >
+                                    <ChevronLeft size={16} />
+                                </button>
+                                <span className="text-white/40 text-[9px] font-bold tabular-nums">
+                                    {currentSlideIndex + 1}/{slides.length}
+                                </span>
+                                <button
+                                    onClick={() => switchSlide(currentSlideIndex + 1)}
+                                    disabled={currentSlideIndex === slides.length - 1}
+                                    className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white disabled:opacity-25 transition-all"
+                                    title="Next slide"
+                                >
+                                    <ChevronRight size={16} />
+                                </button>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* 3. OVERLAY LAYER: CHAT SIDEBAR */}
             <div className="absolute right-4 bottom-24 z-50 w-80 pointer-events-auto">
@@ -954,9 +1002,33 @@ export default function SessionPage({ params }: SessionProps) {
                 />
             </div>
 
+            {/* ── PDF THUMBNAIL STRIP ──────────────────────────────────────── */}
+            {slides.length > 0 && (
+                <div className="absolute bottom-0 left-0 right-0 h-[68px] z-10 bg-black/88 backdrop-blur-xl border-t border-white/6 flex items-center gap-2 px-3 overflow-x-auto">
+                    <span className="text-white/25 text-[9px] font-black tracking-widest shrink-0 mr-1">SLIDES</span>
+                    {slides.map((slide, index) => (
+                        <button
+                            key={index}
+                            onClick={() => switchSlide(index)}
+                            className={`shrink-0 w-[44px] h-[44px] rounded-md overflow-hidden border-2 transition-all ${
+                                index === currentSlideIndex
+                                    ? 'border-white scale-105 shadow-lg shadow-purple-500/30'
+                                    : 'border-white/15 hover:border-white/40 opacity-60 hover:opacity-100'
+                            }`}
+                            title={`Slide ${index + 1}`}
+                        >
+                            <img src={slide} alt={`Slide ${index + 1}`} className="w-full h-full object-cover" />
+                        </button>
+                    ))}
+                    <span className="ml-auto text-white/25 text-[9px] font-semibold shrink-0 tabular-nums">
+                        {currentSlideIndex + 1} / {slides.length}
+                    </span>
+                </div>
+            )}
+
             {/* ASSET LIBRARY PANEL (TUTOR ONLY) - Hidden on Mobile */}
             {user?.role === 'tutor' && showAssetLibrary && (
-                <div className="absolute left-4 top-32 bottom-24 w-64 hidden md:flex bg-white/95 backdrop-blur-xl border border-purple-500/20 shadow-2xl rounded-2xl p-4 overflow-y-auto flex-col gap-4 pointer-events-auto z-40">
+                <div className="absolute left-4 top-[60px] bottom-24 w-64 hidden md:flex bg-white/95 backdrop-blur-xl border border-purple-500/20 shadow-2xl rounded-2xl p-4 overflow-y-auto flex-col gap-4 pointer-events-auto z-40">
                     <h2 className="font-bold text-lg text-purple-900 border-b pb-2">Asset Library</h2>
                     <p className="text-xs text-text-secondary">Click to insert into canvas</p>
                     <div className="grid grid-cols-1 gap-3">
