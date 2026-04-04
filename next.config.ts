@@ -56,7 +56,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://clerk.studyhours.com https://js.clerk.com https://challenges.cloudflare.com https://turnstile.cloudflare.com https://*.daily.co",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.daily.co",
-              "img-src 'self' data: https: https://*.daily.co",
+              "img-src 'self' data: blob: https: https://*.daily.co",
               "font-src 'self' https://fonts.gstatic.com https://*.daily.co data:",
               "connect-src 'self' data: blob: https://api.razorpay.com https://clerk.studyhours.com https://api.clerk.com https://challenges.cloudflare.com https://turnstile.cloudflare.com https://k-12-backend.onrender.com wss://k-12-backend.onrender.com https://va.vercel-scripts.com https://*.daily.co wss://*.daily.co",
               "frame-src 'self' https://checkout.razorpay.com https://api.razorpay.com https://clerk.studyhours.com https://challenges.cloudflare.com https://turnstile.cloudflare.com https://*.daily.co",

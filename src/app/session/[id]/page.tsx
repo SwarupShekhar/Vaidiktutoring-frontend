@@ -13,14 +13,15 @@ import confetti from 'canvas-confetti';
 import * as pdfjsLib from 'pdfjs-dist';
 import { toast } from 'sonner';
 import { 
-    ChevronLeft, 
-    ChevronRight, 
-    PenTool, 
     Library, 
     FileUp, 
     LogOut,
     Timer,
-    Smile
+    Smile,
+    Share2,
+    ChevronLeft,
+    ChevronRight,
+    PenTool
 } from 'lucide-react';
 
 if (typeof window !== 'undefined') {
@@ -315,13 +316,15 @@ export default function SessionPage({ params }: SessionProps) {
             lastRetrieved: Date.now()
         }]);
 
-        // Calculate center of viewport for placement
+        // Use high-resolution scaling for the image (800x600 minimum)
+        const elementId = `img_${fileId}`;
+        const targetWidth = 800; 
+        const targetHeight = 600;
         const appState = excalidrawAPI.getAppState();
         const centerX = (appState.width / 2 - appState.scrollX) / appState.zoom;
         const centerY = (appState.height / 2 - appState.scrollY) / appState.zoom;
-        
         const currentElements = excalidrawAPI.getSceneElements();
-        
+
         excalidrawAPI.updateScene({
             elements: [
                 ...currentElements,
@@ -330,31 +333,40 @@ export default function SessionPage({ params }: SessionProps) {
                     version: 1,
                     versionNonce: Math.floor(Math.random() * 1000000000),
                     isDeleted: false,
-                    id: `img_${fileId}`,
-                    fillStyle: 'hachure',
+                    id: elementId,
+                    fillStyle: 'solid',
                     strokeWidth: 1,
                     strokeStyle: 'solid',
-                    roughness: 1,
+                    roughness: 0,
                     opacity: 100,
                     angle: 0,
-                    x: centerX - 200, // Offset to center 400px width
-                    y: centerY - 150, // Offset to center 300px height
+                    x: centerX - targetWidth/2,
+                    y: centerY - targetHeight/2,
                     strokeColor: 'transparent',
                     backgroundColor: 'transparent',
-                    width: 400,
-                    height: 300,
+                    width: targetWidth,
+                    height: targetHeight,
                     seed: Math.floor(Math.random() * 1000000000),
                     groupIds: [],
                     roundness: null,
                     boundElements: [],
                     updated: Date.now(),
                     link: null,
-                    locked: true,
+                    locked: false,
                     fileId: fileId,
-                    status: 'saved',
-                }
-            ]
+                    scale: [1, 1],
+                },
+            ],
+            commitToHistory: true,
         });
+
+        // Center on the new image
+        setTimeout(() => {
+            excalidrawAPI.scrollToContent(excalidrawAPI.getSceneElements().filter((e: any) => e.id === elementId), {
+                fitToViewport: true,
+                padding: 20
+            });
+        }, 100);
     }, [excalidrawAPI]);
 
     const switchSlide = useCallback(async (index: number, overrideSlides?: string[], skipEmit = false) => {
@@ -504,18 +516,25 @@ export default function SessionPage({ params }: SessionProps) {
             });
         };
 
-        // Listens for pen access changes
+        // Listens for pen access updates
         const handlePenAccess = (payload: any) => {
-            if (user?.id === payload.studentId || user?.role === 'student') {
-                const isNowGranted = payload.hasAccess;
+            // Tutors always have pen access — they are never in view mode
+            if (user?.role === 'tutor') {
+                excalidrawAPI?.updateScene({ appState: { viewModeEnabled: false } });
+                return;
+            }
+
+            // Student logic
+            if (payload.studentId === user?.id || (user?.role === 'student')) {
+                const isNowGranted = !!payload.hasAccess;
                 setHasPenAccess(isNowGranted);
                 
                 if (isNowGranted) {
                     toast.success('Pen access granted by tutor');
-                    excalidrawAPI.updateScene({ appState: { viewModeEnabled: false } });
+                    excalidrawAPI?.updateScene({ appState: { viewModeEnabled: false } });
                 } else {
                     toast.info('Pen access removed');
-                    excalidrawAPI.updateScene({ appState: { viewModeEnabled: true } });
+                    excalidrawAPI?.updateScene({ appState: { viewModeEnabled: true } });
                 }
             }
         };
@@ -779,25 +798,8 @@ export default function SessionPage({ params }: SessionProps) {
             )}
 
             {/* FIXED OVERLAYS */}
-            {/* Fixed Timer Block */}
-            <div 
-                className={`fixed top-4 left-1/2 -translate-x-1/2 z-9999 px-6 py-3 rounded-full flex items-center gap-3 shadow-2xl border-2 backdrop-blur-xl transition-all duration-500 scale-110 ${
-                    timeRemaining <= 5 * 60 
-                    ? 'bg-red-600 border-red-400 text-white animate-pulse' 
-                    : timeRemaining <= 10 * 60 
-                        ? 'bg-amber-500 border-amber-300 text-white' 
-                        : 'bg-black/80 border-white/20 text-white'
-                }`}
-                title="Time Remaining"
-            >
-                <Timer size={20} className={timeRemaining <= 5 * 60 ? 'animate-spin-slow' : ''} />
-                <span className="font-black text-xl tracking-tighter tabular-nums">
-                    {formatTime(timeRemaining)}
-                </span>
-            </div>
-
-            {/* 2. OVERLAY LAYER: FLOATING HEADER */}
-            <div className="absolute top-16 left-4 right-4 z-10 flex justify-between items-start pointer-events-none">
+            {/* 1. TOP-LEFT: SESSION INFO BOX */}
+            <div className="absolute top-16 left-4 z-10 pointer-events-none">
                 <div className="bg-glass/90 backdrop-blur-md rounded-2xl p-3 border border-white/20 shadow-lg pointer-events-auto flex items-center gap-4 max-w-sm">
                     <div className="relative">
                         <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse relative z-10" />
@@ -810,19 +812,75 @@ export default function SessionPage({ params }: SessionProps) {
                         <p className="text-xs text-text-secondary">ID: {sessionId.slice(0, 8)}...</p>
                     </div>
                 </div>
+            </div>
 
-                <div className="flex gap-3 items-center pointer-events-auto">
+            {/* 2. TOP-RIGHT: CONTROLS & TIMER (Left center free for toolbar) */}
+            <div className="absolute top-16 right-4 z-10 flex gap-3 items-center pointer-events-none">
+                    {/* Fixed Timer Block (Moved to avoid toolbar obstruction) */}
+                    <div 
+                        className={`px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg border border-white/10 backdrop-blur-md transition-all duration-500 pointer-events-auto ${
+                            timeRemaining <= 5 * 60 
+                            ? 'bg-red-600/90 text-white animate-pulse' 
+                            : timeRemaining <= 10 * 60 
+                                ? 'bg-amber-500/90 text-white' 
+                                : 'bg-black/40 text-white'
+                        }`}
+                        title="Time Remaining"
+                    >
+                        <Timer size={16} className={timeRemaining <= 5 * 60 ? 'animate-spin-slow' : ''} />
+                        <span className="font-bold text-sm tracking-tight tabular-nums">
+                            {formatTime(timeRemaining)}
+                        </span>
+                    </div>
+
                     {/* Reaction Buttons - Collapsible on Mobile */}
-                    <div className="flex flex-wrap gap-1 bg-white/10 p-1 rounded-xl border border-white/10 backdrop-blur-md">
+                    <div className="flex flex-wrap gap-1 bg-white/10 p-1 rounded-xl border border-white/10 backdrop-blur-md pointer-events-auto">
                         {['👍', '🎉', '💡', '❓'].map(emoji => (
                             <button
                                 key={emoji}
                                 onClick={() => sendReaction(emoji)}
-                                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/20 transition-colors text-white text-lg"
+                                className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 transition-all text-2xl active:scale-90"
                             >
                                 {emoji}
                             </button>
                         ))}
+                        {/* More Actions Menu */}
+                        <div className="flex items-center gap-1 border-l border-white/20 ml-1 pl-1">
+                            <button
+                                onClick={() => socket?.emit('whiteboard.triggerConfetti', { sessionId })}
+                                className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-pink-500 text-white transition-all active:scale-95"
+                                title="Surprise Confetti"
+                            >
+                                <Smile size={20} />
+                            </button>
+                            <button className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/20 text-white transition-all opacity-50 cursor-not-allowed">
+                                <Share2 size={20} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* End Session Button Group (Pointer auto) */}
+                    <div className="flex items-center gap-2 pointer-events-auto">
+                        {user?.role === 'tutor' && (
+                            <button
+                                onClick={() => setShowAttendance(!showAttendance)}
+                                className="flex px-4 py-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md"
+                            >
+                                📝 Attendance
+                            </button>
+                        )}
+
+                        <button
+                            onClick={() => {
+                                if (user?.role === 'tutor') router.push('/tutor/dashboard');
+                                else if (user?.role === 'parent') router.push('/parent/dashboard');
+                                else router.push('/students/dashboard');
+                            }}
+                            className="bg-red-500/90 hover:bg-red-600 backdrop-blur-md text-white p-2 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2"
+                        >
+                            <LogOut size={20} />
+                            <span className="hidden sm:inline">End Session</span>
+                        </button>
                     </div>
 
                     {/* Tutor Whiteboard Controls */}
@@ -885,29 +943,6 @@ export default function SessionPage({ params }: SessionProps) {
                             </button>
                         </div>
                     )}
-
-                    {/* Attendance Button (TUTOR ONLY) */}
-                    {user?.role === 'tutor' && (
-                        <button
-                            onClick={() => setShowAttendance(!showAttendance)}
-                            className="flex px-4 py-2 rounded-xl text-sm font-bold shadow-lg transition-all border border-white/10 bg-white/10 hover:bg-white/20 text-white backdrop-blur-md"
-                        >
-                            📝 Attendance
-                        </button>
-                    )}
-
-                    <button
-                        onClick={() => {
-                            if (user?.role === 'tutor') router.push('/tutor/dashboard');
-                            else if (user?.role === 'parent') router.push('/parent/dashboard');
-                            else router.push('/students/dashboard');
-                        }}
-                        className="bg-red-500/90 hover:bg-red-600 backdrop-blur-md text-white p-2 rounded-xl font-bold shadow-lg transition-all flex items-center gap-2"
-                    >
-                        <LogOut size={20} />
-                        <span className="hidden sm:inline">End Session</span>
-                    </button>
-                </div>
             </div>
 
             {/* 3. OVERLAY LAYER: CHAT SIDEBAR */}
