@@ -420,74 +420,90 @@ export default function SessionPage({ params }: SessionProps) {
         }
     }, [excalidrawAPI, slides, socket, sessionId, importImageToExcalidraw]);
 
+    // Render a PDF file locally using pdf.js → PNG slides on the canvas
+    const renderPdfLocally = (file: File) => {
+        toast.info('Processing PDF...', { duration: 3000 });
+        const fileReader = new FileReader();
+        fileReader.onload = async function () {
+            try {
+                const typedarray = new Uint8Array(this.result as ArrayBuffer);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                const newSlides: string[] = [];
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    await page.render({ canvasContext: context!, viewport, canvas }).promise;
+                    newSlides.push(canvas.toDataURL('image/png'));
+                }
+
+                setSlides(newSlides);
+                setCurrentSlideIndex(0);
+                setSlideAnnotations({});
+
+                if (newSlides.length > 0) {
+                    await importImageToExcalidraw(newSlides[0], 'slide_0');
+                }
+                toast.success(`Loaded ${newSlides.length} page${newSlides.length !== 1 ? 's' : ''}`);
+            } catch (err) {
+                console.error('[PDF] Render failed:', err);
+                toast.error('Failed to render PDF. Is the file a valid PDF?');
+            } finally {
+                setUploadingSlides(false);
+            }
+        };
+        fileReader.readAsArrayBuffer(file);
+    };
+
     // Handle slide upload
     const handleSlideUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file || !sessionId) return;
-        
-        // PPT Warning
-        if (file.name.toLowerCase().endsWith('.ppt') || file.name.toLowerCase().endsWith('.pptx')) {
-            toast.info('For best results, please export PPT to PDF before uploading.', { duration: 5000 });
+
+        const name = file.name.toLowerCase();
+
+        // PPT/PPTX cannot be rendered in the browser — block early
+        if (name.endsWith('.ppt') || name.endsWith('.pptx')) {
+            toast.error('PowerPoint files cannot be rendered directly. Please export your slides as a PDF first, then upload the PDF.', { duration: 8000 });
+            return;
         }
 
         setUploadingSlides(true);
+
+        // PDFs are rendered locally via pdf.js — the backend only returns the raw
+        // binary as base64 (data:application/pdf) which Excalidraw cannot display.
+        if (name.endsWith('.pdf')) {
+            renderPdfLocally(file);
+            return; // setUploadingSlides(false) handled inside renderPdfLocally
+        }
+
+        // For regular images (png, jpg, webp, svg) — use backend route
         try {
             const formData = new FormData();
             formData.append('file', file);
             const token = localStorage.getItem('K12_TOKEN');
-            
+
             const res = await api.post(`/sessions/${sessionId}/slides`, formData, {
-                timeout: 60000, // Explicit 60s timeout for large PDF/Slides
-                headers: { 
+                timeout: 60000,
+                headers: {
                     'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}` 
+                    'Authorization': `Bearer ${token}`
                 }
             });
-            
-            if (res.data.success && excalidrawAPI) {
-                // Return value is binary base64 directly from backend (for smaller images or fast response)
-                if (res.data.base64) {
-                    await importImageToExcalidraw(res.data.base64, `slide_${Date.now()}`);
-                    toast.success('Image/Slide inserted');
-                } 
-                // Local PDF conversion fallback for legacy or high-quality needs
-                else if (file.name.toLowerCase().endsWith('.pdf')) {
-                    toast.info('Processing multi-page PDF locally...', { duration: 3000 });
-                    const fileReader = new FileReader();
-                    fileReader.onload = async function() {
-                        try {
-                            const typedarray = new Uint8Array(this.result as ArrayBuffer);
-                            const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                            const newSlides: string[] = [];
-                            
-                            for (let i = 1; i <= pdf.numPages; i++) {
-                                const page = await pdf.getPage(i);
-                                const viewport = page.getViewport({ scale: 1.5 });
-                                const canvas = document.createElement('canvas');
-                                const context = canvas.getContext('2d');
-                                canvas.height = viewport.height;
-                                canvas.width = viewport.width;
-                                
-                                await page.render({ canvasContext: context!, viewport: viewport, canvas: canvas }).promise;
-                                newSlides.push(canvas.toDataURL('image/png'));
-                            }
-                            
-                            setSlides(newSlides);
-                            setCurrentSlideIndex(0);
-                            setSlideAnnotations({});
-                            
-                            // Insert first page automatically
-                            if (newSlides.length > 0) {
-                                await importImageToExcalidraw(newSlides[0], 'page_1');
-                            }
-                            toast.success(`Loaded ${newSlides.length} pages`);
-                        } catch (err) {
-                            console.error('[PDF] Local render failed:', err);
-                            toast.error('Failed to render PDF pages locally');
-                        }
-                    };
-                    fileReader.readAsArrayBuffer(file);
+
+            if (res.data.success && excalidrawAPI && res.data.base64) {
+                // Verify the backend returned an image MIME type before inserting
+                const mime: string = res.data.mimeType || '';
+                if (!mime.startsWith('image/')) {
+                    toast.error(`Cannot display file type "${mime}". Upload a PNG, JPG, or PDF instead.`);
+                    return;
                 }
+                await importImageToExcalidraw(res.data.base64, `slide_${Date.now()}`);
+                toast.success('Image inserted');
             }
         } catch (err: any) {
             console.error('Failed to upload slide', err);
@@ -920,7 +936,7 @@ export default function SessionPage({ params }: SessionProps) {
 
                         <label className="cursor-pointer w-9 h-9 rounded-lg bg-purple-600 hover:bg-purple-700 flex items-center justify-center text-white transition-all" title="Upload PDF / Slides">
                             {uploadingSlides ? <span className="animate-spin text-sm">⏳</span> : <FileUp size={16} />}
-                            <input type="file" accept=".pdf,.ppt,.pptx" className="hidden" onChange={handleSlideUpload} disabled={uploadingSlides} />
+                            <input type="file" accept=".pdf,image/png,image/jpeg,image/webp,image/svg+xml" className="hidden" onChange={handleSlideUpload} disabled={uploadingSlides} />
                         </label>
 
                         <button
