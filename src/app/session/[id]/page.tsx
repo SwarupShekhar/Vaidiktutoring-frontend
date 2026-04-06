@@ -672,6 +672,7 @@ export default function SessionPage({ params }: SessionProps) {
                 toast.dismiss('pdf-progress');
 
                 setSlides(newSlides);
+                socket?.emit('whiteboard.syncSlides', { sessionId, slides: newSlides });
                 setCurrentSlideIndex(0);
                 setSlideAnnotations({});
 
@@ -855,6 +856,9 @@ export default function SessionPage({ params }: SessionProps) {
 
         socket.on('whiteboard.receiveUpdate', handleReceiveUpdate);
         socket.on('whiteboard.receiveFiles', handleRemoteFiles);
+        socket.on('whiteboard.receiveSlides', (slides: string[]) => {
+            setSlides(slides);
+        });
         socket.on('whiteboard.penAccessUpdated', handlePenAccess);
         socket.on('whiteboard.confettiFired', handleConfetti);
         socket.on('whiteboard.pointerUpdate', handlePointerUpdate);
@@ -884,6 +888,7 @@ export default function SessionPage({ params }: SessionProps) {
         return () => {
             socket.off('whiteboard.receiveUpdate', handleReceiveUpdate);
             socket.off('whiteboard.receiveFiles', handleRemoteFiles);
+            socket.off('whiteboard.receiveSlides');
             socket.off('whiteboard.penAccessUpdated', handlePenAccess);
             socket.off('whiteboard.confettiFired', handleConfetti);
             socket.off('whiteboard.pointerUpdate', handlePointerUpdate);
@@ -1341,7 +1346,11 @@ export default function SessionPage({ params }: SessionProps) {
                                                 const reader = new FileReader();
                                                 reader.onload = (event) => {
                                                     const url = event.target?.result as string;
-                                                    setSlides(prev => [...prev, url]);
+                                                    setSlides(prev => {
+                                                        const next = [...prev, url];
+                                                        socket?.emit('whiteboard.syncSlides', { sessionId, slides: next });
+                                                        return next;
+                                                    });
                                                     toast.success("Image added to Assets library");
                                                 };
                                                 reader.readAsDataURL(file);
