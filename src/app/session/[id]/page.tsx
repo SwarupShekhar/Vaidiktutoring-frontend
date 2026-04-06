@@ -562,6 +562,8 @@ export default function SessionPage({ params }: SessionProps) {
                     });
                 } else if (el.type === "text") {
                     const fontSize = el.fontSize || 20;
+                    const width = el.width || (el.text?.length || 1) * (fontSize * 0.6);
+                    const height = el.height || fontSize * 1.2;
                     newElements.push({
                         ...base,
                         type: "text",
@@ -570,8 +572,11 @@ export default function SessionPage({ params }: SessionProps) {
                         fontFamily: el.fontFamily || 1,
                         textAlign: el.textAlign || "left",
                         verticalAlign: el.verticalAlign || "top",
-                        width: el.width || (el.text?.length || 1) * (fontSize * 0.6),
-                        height: el.height || fontSize * 1.2
+                        width,
+                        height,
+                        // If center-aligned, ensure x corresponds to center by offsetting
+                        x: el.textAlign === 'center' ? base.x - (width / 2) : base.x,
+                        y: el.verticalAlign === 'middle' ? base.y - (height / 2) : base.y
                     });
                 }
             };

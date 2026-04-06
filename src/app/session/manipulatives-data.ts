@@ -186,23 +186,25 @@ export const MANIPULATIVES_DATA = {
         // Numbers 1-30 above each cm mark (except 0)
         ...Array.from({length: 30}).map((_, i) => ({
           type: 'text', 
-          x: -300 + ((i + 1) * 20) - 10, // Center: tick position minus half of width
-          y: -35, 
+          x: -300 + ((i + 1) * 20), 
+          y: -5, // Move INSIDE the ruler body for guaranteed visibility
           text: (i + 1).toString(), 
-          fontSize: 10, 
-          strokeColor: '#1e293b', 
+          fontSize: 12, 
+          strokeColor: '#000000', // Pure black for max contrast
           textAlign: 'center',
+          verticalAlign: 'middle',
           width: 20
         })),
         // "cm" label at the right end
         {
           type: 'text',
           x: 305,
-          y: -20,
+          y: 0,
           text: 'cm',
-          fontSize: 10,
-          strokeColor: '#1e293b',
-          textAlign: 'left'
+          fontSize: 12,
+          strokeColor: '#000000',
+          textAlign: 'left',
+          width: 30
         },
         // Half-cm markings
         ...Array.from({length: 30}).map((_, i) => ({
