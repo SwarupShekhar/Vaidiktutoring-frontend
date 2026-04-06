@@ -11,6 +11,7 @@ interface NotificationPayload {
     message: string;
     timestamp: Date;
     playAudio?: boolean;
+    onClick?: () => void;
 }
 
 interface NotificationContextType {
@@ -150,6 +151,21 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                     title: 'New Session Allocation',
                     message: `Please take session of ${data.studentName} at ${data.scheduledTime}.`,
                     playAudio: true
+                });
+            }
+        });
+
+        // 4. PARENT: Session Note Added
+        socketInstance.on('session:note_added', (data: any) => {
+            if (user.role === 'parent') {
+                addNotification({
+                    type: 'success',
+                    title: 'New Session Report!',
+                    message: `Tutor ${data.tutorName || 'Your tutor'} has left a note for ${data.studentName || 'your child'}'s last session.`,
+                    playAudio: true,
+                    onClick: () => {
+                        window.location.href = `/parent/dashboard?childId=${data.childId}&showHistory=true`;
+                    }
                 });
             }
         });

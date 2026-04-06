@@ -22,8 +22,12 @@ import {
     Share2,
     ChevronLeft,
     ChevronRight,
-    PenTool
+    ChevronDown,
+    PenTool,
+    BarChart,
+    X
 } from 'lucide-react';
+import { MANIPULATIVES_DATA, DICE_FACES } from '../manipulatives-data';
 
 if (typeof window !== 'undefined') {
   pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
@@ -91,13 +95,17 @@ export default function SessionPage({ params }: SessionProps) {
     const startPos = useRef({ x: 0, y: 0 });
 
     // Whiteboard Enhancements State
-    const [hasPenAccess, setHasPenAccess] = useState(false);
     const [uploadingSlides, setUploadingSlides] = useState(false);
     const [showAssetLibrary, setShowAssetLibrary] = useState(false);
 
     // Session HUD State
     const [snapshotExpanded, setSnapshotExpanded] = useState(false);
     const [snapshotHidden, setSnapshotHidden] = useState(false);
+    
+    // Note Modal State
+    const [showNoteModal, setShowNoteModal] = useState(false);
+    const [sessionNote, setSessionNote] = useState('');
+    const [submittingNote, setSubmittingNote] = useState(false);
     
     // Mock Assets for Library
     const mockLibraryAssets = [
@@ -117,6 +125,37 @@ export default function SessionPage({ params }: SessionProps) {
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
     const [slideAnnotations, setSlideAnnotations] = useState<Record<number, any[]>>({});
     const [collaborators, setCollaborators] = useState<Map<string, any>>(new Map());
+    const [hasPenAccess, setHasPenAccess] = useState(user?.role === 'tutor');
+    const lastInsertionPositions = useRef<Record<string, { x: number; y: number }>>({});
+
+    useEffect(() => {
+        if (user?.role === 'tutor') {
+            setHasPenAccess(true);
+        }
+    }, [user?.role]);
+
+    useEffect(() => {
+        return () => {
+            lastInsertionPositions.current = {};
+        };
+    }, []);
+
+    // Polling State
+    const [showPollModal, setShowPollModal] = useState(false);
+    const [pollQuestion, setPollQuestion] = useState('');
+    const [pollOptions, setPollOptions] = useState(['', '', '', '']);
+    const [activePoll, setActivePoll] = useState<{ question: string; options: string[] } | null>(null);
+    const [pollResults, setPollResults] = useState<{ results: number[]; totalResponses: number } | null>(null);
+    const [studentSelection, setStudentSelection] = useState<number | null>(null);
+    const [finalPollResults, setFinalPollResults] = useState<{ question: string; options: string[]; results: number[]; totalResponses: number } | null>(null);
+
+    // Library Tab State
+    const [libraryTab, setLibraryTab] = useState<'assets' | 'manipulatives'>('assets');
+    const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+        'k-1': true,
+        '2-3': true,
+        '4-6': true
+    });
 
     const slideRef = useRef(0);
     const annotationsRef = useRef<Record<number, any[]>>({});
@@ -404,6 +443,64 @@ export default function SessionPage({ params }: SessionProps) {
         }, 150);
     }, [excalidrawAPI, socket, sessionId]);
 
+    const insertManipulative = (manipulative: any) => {
+        if (!excalidrawAPI) {
+            toast.error("Whiteboard not ready");
+            return;
+        }
+        
+        try {
+            const appState = excalidrawAPI.getAppState();
+            const zoom = typeof appState.zoom === 'number' ? appState.zoom : (appState.zoom?.value ?? 1);
+            
+            const key = manipulative.id;
+            const lastPos = lastInsertionPositions.current[key];
+            
+            let centerX, centerY;
+            if (lastPos) {
+                centerX = lastPos.x + 20;
+                centerY = lastPos.y + 20;
+            } else {
+                centerX = ((appState.width / 2 - appState.scrollX) / zoom);
+                centerY = ((appState.height / 2 - appState.scrollY) / zoom);
+            }
+            lastInsertionPositions.current[key] = { x: centerX, y: centerY };
+            
+            const newElements = manipulative.elements.map((el: any) => ({
+                ...el,
+                x: el.x + centerX,
+                y: el.y + centerY,
+                id: Math.random().toString(36).substr(2, 9),
+                seed: Math.floor(Math.random() * 1000000),
+                version: 2,
+                versionNonce: Math.floor(Math.random() * 1000000),
+                isDeleted: false,
+                groupIds: [],
+                frameId: null,
+                boundElements: [],
+                updated: Date.now(),
+                link: null,
+                locked: false
+            }));
+            
+            excalidrawAPI.updateScene({
+                elements: [...excalidrawAPI.getSceneElements(), ...newElements],
+                commitToHistory: true,
+            });
+            
+            // Sync to others
+            socket?.emit('whiteboard.update', {
+                sessionId,
+                update: { elements: [...excalidrawAPI.getSceneElements(), ...newElements] }
+            });
+
+            toast.success(`Inserted ${manipulative.label}`);
+        } catch (error) {
+            console.error("Failed to insert manipulative:", error);
+            toast.error("Failed to insert manipulative");
+        }
+    };
+
     const switchSlide = useCallback(async (index: number, overrideSlides?: string[], skipEmit = false) => {
         if (!excalidrawAPI) return;
         const targetSlides = overrideSlides || slides;
@@ -661,6 +758,26 @@ export default function SessionPage({ params }: SessionProps) {
         socket.on('whiteboard.slideChanged', handleSlideChange);
         socket.on('whiteboard.syncRequest', handleSyncRequest);
 
+        // Polling Listeners
+        socket.on('poll:launched', (data: any) => {
+            setActivePoll(data);
+            setStudentSelection(null);
+            setPollResults(null);
+            setFinalPollResults(null);
+        });
+
+        socket.on('poll:results', (data: any) => {
+            if (user?.role === 'tutor') {
+                setPollResults(data);
+            }
+        });
+
+        socket.on('poll:closed', (data: any) => {
+            setActivePoll(null);
+            setFinalPollResults(data);
+            setTimeout(() => setFinalPollResults(null), 3000);
+        });
+
         return () => {
             socket.off('whiteboard.receiveUpdate', handleReceiveUpdate);
             socket.off('whiteboard.receiveFiles', handleRemoteFiles);
@@ -669,6 +786,9 @@ export default function SessionPage({ params }: SessionProps) {
             socket.off('whiteboard.pointerUpdate', handlePointerUpdate);
             socket.off('whiteboard.slideChanged', handleSlideChange);
             socket.off('whiteboard.syncRequest', handleSyncRequest);
+            socket.off('poll:launched');
+            socket.off('poll:results');
+            socket.off('poll:closed');
         };
     }, [excalidrawAPI, socket, sessionId, user?.role, hasPenAccess, studentData.grade, switchSlide]);
 
@@ -893,9 +1013,13 @@ export default function SessionPage({ params }: SessionProps) {
 
                     <button
                         onClick={() => {
-                            if (user?.role === 'tutor') router.push('/tutor/dashboard');
-                            else if (user?.role === 'parent') router.push('/parent/dashboard');
-                            else router.push('/students/dashboard');
+                            if (user?.role === 'tutor') {
+                                setShowNoteModal(true);
+                            } else if (user?.role === 'parent') {
+                                router.push('/parent/dashboard');
+                            } else {
+                                router.push('/students/dashboard');
+                            }
                         }}
                         className="bg-red-500/90 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all"
                     >
@@ -977,6 +1101,14 @@ export default function SessionPage({ params }: SessionProps) {
                             <PenTool size={16} />
                         </button>
 
+                        <button
+                            onClick={() => setShowPollModal(true)}
+                            className="w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all bg-white/10 hover:bg-white/20 border border-white/10"
+                            title="Quick Check"
+                        >
+                            <BarChart size={16} />
+                        </button>
+
                         {slides.length > 0 && (
                             <>
                                 <div className="w-5 h-px bg-white/10 my-0.5" />
@@ -1040,22 +1172,109 @@ export default function SessionPage({ params }: SessionProps) {
 
             {/* ASSET LIBRARY PANEL (TUTOR ONLY) - Hidden on Mobile */}
             {user?.role === 'tutor' && showAssetLibrary && (
-                <div className="absolute left-4 top-[60px] bottom-24 w-64 hidden md:flex bg-white/95 backdrop-blur-xl border border-purple-500/20 shadow-2xl rounded-2xl p-4 overflow-y-auto flex-col gap-4 pointer-events-auto z-40">
-                    <h2 className="font-bold text-lg text-purple-900 border-b pb-2">Asset Library</h2>
-                    <p className="text-xs text-text-secondary">Click to insert into canvas</p>
-                    <div className="grid grid-cols-1 gap-3">
-                        {mockLibraryAssets.map(asset => (
-                            <div 
-                                key={asset.id}
-                                className="border rounded-xl cursor-pointer overflow-hidden hover:ring-2 hover:ring-purple-400 transition-all bg-gray-50 flex flex-col"
-                                onClick={() => importImageToExcalidraw(asset.url)}
-                            >
-                                <img src={asset.url} alt={asset.label} className="w-full h-24 object-cover" />
-                                <div className="p-2 text-xs font-bold text-center text-gray-700 bg-white">
-                                    {asset.label}
-                                </div>
+                <div className="absolute left-4 top-[60px] bottom-24 w-72 hidden md:flex bg-white/95 backdrop-blur-xl border border-purple-500/20 shadow-2xl rounded-2xl p-4 overflow-y-auto flex-col pointer-events-auto z-40">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="font-bold text-lg text-purple-900 leading-none">Library</h2>
+                        <button onClick={() => setShowAssetLibrary(false)} className="text-gray-400 hover:text-gray-600">
+                             <X size={16} />
+                        </button>
+                    </div>
+
+                    <div className="flex bg-gray-100 p-1 rounded-xl mb-4 shrink-0">
+                        <button 
+                            onClick={() => setLibraryTab('assets')}
+                            className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${libraryTab === 'assets' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                        >
+                            Assets
+                        </button>
+                        <button 
+                            onClick={() => setLibraryTab('manipulatives')}
+                            className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${libraryTab === 'manipulatives' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                        >
+                            Manipulatives
+                        </button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
+                        {libraryTab === 'assets' ? (
+                            <div className="grid grid-cols-1 gap-3">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight mb-1">Uploaded Assets</p>
+                                {mockLibraryAssets.map(asset => (
+                                    <div 
+                                        key={asset.id}
+                                        className="border rounded-xl cursor-pointer overflow-hidden hover:ring-2 hover:ring-purple-400 transition-all bg-gray-50 flex flex-col group"
+                                        onClick={() => importImageToExcalidraw(asset.url)}
+                                    >
+                                        <div className="relative overflow-hidden h-24">
+                                            <img src={asset.url} alt={asset.label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                                        </div>
+                                        <div className="p-2 text-[10px] font-bold text-center text-gray-700 bg-white">
+                                            {asset.label}
+                                        </div>
+                                    </div>
+                                ))}
+                                {mockLibraryAssets.length === 0 && (
+                                    <div className="text-center py-8 border-2 border-dashed border-gray-100 rounded-2xl">
+                                        <p className="text-xs text-gray-400">No assets uploaded yet</p>
+                                    </div>
+                                )}
                             </div>
-                        ))}
+                        ) : (
+                            <div className="space-y-3">
+                                {Object.entries(MANIPULATIVES_DATA).map(([grade, items]) => (
+                                    <div key={grade} className="border-b border-gray-100 last:border-0 pb-2">
+                                        <button 
+                                            onClick={() => setExpandedSections(prev => ({ ...prev, [grade]: !prev[grade] }))}
+                                            className="w-full flex items-center justify-between py-2 text-left hover:bg-gray-50 rounded-lg px-2 transition-colors"
+                                        >
+                                            <span className="text-[11px] font-black text-purple-900 uppercase tracking-widest">
+                                                {grade === 'k-1' ? 'Grades K–1' : grade === '2-3' ? 'Grades 2–3' : 'Grades 4–6'}
+                                            </span>
+                                            {expandedSections[grade] ? <ChevronDown size={14} className="text-purple-400" /> : <ChevronRight size={14} className="text-purple-400" />}
+                                        </button>
+                                        
+                                        {expandedSections[grade] && (
+                                            <div className="grid grid-cols-2 gap-2 mt-2 px-1">
+                                                {items.map(item => (
+                                                    <div key={item.id} className="relative group">
+                                                        <button
+                                                            onClick={() => insertManipulative(item)}
+                                                            title={item.label}
+                                                            className="w-full flex flex-col items-center justify-center p-3 bg-gray-50 border border-gray-100 rounded-xl hover:border-purple-300 hover:bg-white hover:shadow-lg hover:shadow-purple-500/10 transition-all active:scale-95"
+                                                        >
+                                                            <span className="text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">{item.thumbnail}</span>
+                                                            <span className="text-[9px] font-bold text-gray-600 text-center leading-tight group-hover:text-purple-600 transition-colors">{item.label}</span>
+                                                        </button>
+                                                        {item.id.includes('dice') && (
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    const roll = Math.floor(Math.random() * 6) + 1;
+                                                                    const rolledItem = {
+                                                                        ...item,
+                                                                        elements: [
+                                                                            item.elements[0], // the box
+                                                                            ...DICE_FACES[roll as keyof typeof DICE_FACES]
+                                                                        ],
+                                                                        label: `Dice Rolled (${roll})`
+                                                                    };
+                                                                    insertManipulative(rolledItem);
+                                                                    toast.success(`🎲 Rolled a ${roll}!`);
+                                                                }}
+                                                                className="absolute top-1 right-1 bg-purple-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                                            >
+                                                                ROLL
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
@@ -1068,6 +1287,58 @@ export default function SessionPage({ params }: SessionProps) {
                 students={sessionRoster}
                 onSave={saveAttendance}
             />
+
+            {/* END SESSION NOTE MODAL (TUTOR ONLY) */}
+            {showNoteModal && (
+                <div className="fixed inset-0 z-100 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+                    <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="p-6">
+                            <h2 className="text-2xl font-black text-gray-900 mb-2">Wrap Up Session</h2>
+                            <p className="text-sm text-gray-500 mb-6">
+                                Please leave a quick note for the parents about {booking?.students?.first_name || 'the student'}&apos;s progress today.
+                            </p>
+
+                            <div className="relative">
+                                <textarea
+                                    value={sessionNote}
+                                    onChange={(e) => setSessionNote(e.target.value.slice(0, 500))}
+                                    placeholder="e.g. Alice did great with fractions today! We should focus more on long division next time..."
+                                    className="w-full h-40 p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-purple-500 focus:ring-0 transition-all text-sm resize-none"
+                                />
+                                <div className="absolute bottom-3 right-3 text-[10px] font-bold text-gray-400">
+                                    {500 - sessionNote.length} characters remaining
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-gray-50 p-4 flex gap-3">
+                            <button
+                                onClick={() => router.push('/tutor/dashboard')}
+                                className="flex-1 px-4 py-3 text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                                Not now, just end
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    setSubmittingNote(true);
+                                    try {
+                                        await api.patch(`/sessions/${sessionId}/tutor-note`, { note: sessionNote });
+                                        toast.success('Note sent to parents!');
+                                        router.push('/tutor/dashboard');
+                                    } catch (error) {
+                                        toast.error('Failed to save note');
+                                        setSubmittingNote(false);
+                                    }
+                                }}
+                                disabled={submittingNote}
+                                className="flex-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold font-sm shadow-lg shadow-purple-500/20 disabled:opacity-50 transition-all"
+                            >
+                                {submittingNote ? 'Saving...' : 'End & Add Note'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* WRAP UP CAPSULE */}
             {showWrapUp && (
@@ -1106,6 +1377,200 @@ export default function SessionPage({ params }: SessionProps) {
                     </div>
                 ))}
             </div>
+
+            {/* QUICK CHECK / POLL MODAL (TUTOR ONLY) */}
+            {showPollModal && (
+                <div className="fixed inset-0 z-100 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+                    <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="p-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-xl font-black text-gray-900">Push a Quick Check</h2>
+                                <button onClick={() => setShowPollModal(false)} className="text-gray-400 hover:text-gray-600">
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            
+                            <label className="block text-[10px] font-black text-purple-600 uppercase tracking-widest mb-1.5 ml-1">Question (Max 120 chars)</label>
+                            <input 
+                                type="text"
+                                maxLength={120}
+                                value={pollQuestion}
+                                onChange={(e) => setPollQuestion(e.target.value)}
+                                placeholder="e.g. What is the square root of 64?"
+                                className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-purple-500 focus:ring-0 transition-all text-sm mb-4"
+                            />
+
+                            <label className="block text-[10px] font-black text-purple-600 uppercase tracking-widest mb-1.5 ml-1">Options (Min 2)</label>
+                            <div className="space-y-2 mb-6">
+                                {['A', 'B', 'C', 'D'].map((label, idx) => (
+                                    <div key={label} className="relative">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-purple-400">{label}</div>
+                                        <input 
+                                            type="text"
+                                            value={pollOptions[idx]}
+                                            onChange={(e) => {
+                                                const newOpts = [...pollOptions];
+                                                newOpts[idx] = e.target.value;
+                                                setPollOptions(newOpts);
+                                            }}
+                                            placeholder={`Option ${label}`}
+                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-purple-500 focus:ring-0 transition-all text-sm"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+
+                            <button
+                                onClick={() => {
+                                    const validOptions = pollOptions.filter(o => o.trim().length > 0);
+                                    if (!pollQuestion.trim() || validOptions.length < 2) {
+                                        toast.error("Enter a question and at least 2 options");
+                                        return;
+                                    }
+                                    socket?.emit('poll:launch', { 
+                                        sessionId, 
+                                        question: pollQuestion, 
+                                        options: validOptions,
+                                        userId: user?.id
+                                    });
+                                    setShowPollModal(false);
+                                    setPollQuestion('');
+                                    setPollOptions(['', '', '', '']);
+                                }}
+                                className="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-bold shadow-lg shadow-purple-500/20 transition-all active:scale-95"
+                            >
+                                🚀 Launch Poll
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* TUTOR ACTIVE POLL RESULTS PANEL */}
+            {user?.role === 'tutor' && activePoll && (
+                <div className="absolute top-[60px] left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-4">
+                    <div className="bg-white/95 backdrop-blur-xl border border-purple-200 rounded-2xl shadow-xl p-5 animate-in slide-in-from-top-4 duration-300">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Live Poll Active</span>
+                            </div>
+                            <span className="text-[10px] font-bold text-gray-400">{pollResults?.totalResponses || 0} Responses</span>
+                        </div>
+                        <h3 className="text-sm font-bold text-gray-900 mb-4">{activePoll.question}</h3>
+                        
+                        <div className="space-y-2 mb-6">
+                            {activePoll.options.map((opt, idx) => {
+                                const count = pollResults?.results[idx] || 0;
+                                const total = pollResults?.totalResponses || 0;
+                                const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                                return (
+                                    <div key={idx} className="relative h-8 bg-gray-50 rounded-lg overflow-hidden border border-gray-100">
+                                        <div 
+                                            className="absolute inset-y-0 left-0 bg-purple-100 border-r border-purple-200 transition-all duration-500 ease-out" 
+                                            style={{ width: `${pct}%` }} 
+                                        />
+                                        <div className="absolute inset-0 px-3 flex items-center justify-between text-[11px] font-medium">
+                                            <span className="text-gray-900 truncate pr-4">{opt}</span>
+                                            <span className="text-purple-600 font-bold">{count} ({pct}%)</span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        
+                        <button
+                            onClick={() => socket?.emit('poll:close', { sessionId, userId: user?.id })}
+                            className="w-full py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+                        >
+                            Close Poll & Show Results
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* STUDENT POLL OVERLAY */}
+            {user?.role === 'student' && activePoll && (
+                <div className="fixed inset-0 z-40 bg-purple-900/40 backdrop-blur-lg flex items-center justify-center p-6 pb-24">
+                    <div className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+                        <div className="p-8 md:p-10 text-center">
+                            <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <BarChart className="text-purple-600" size={32} />
+                            </div>
+                            <h2 className="text-sm font-black text-purple-600 uppercase tracking-widest mb-2">Quick Check!</h2>
+                            <h3 className="text-2xl font-black text-gray-900 mb-8 leading-tight">{activePoll.question}</h3>
+                            
+                            {studentSelection === null ? (
+                                <div className="grid grid-cols-1 gap-3">
+                                    {activePoll.options.map((opt, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => {
+                                                setStudentSelection(idx);
+                                                socket?.emit('poll:respond', { sessionId, userId: user.id, optionIndex: idx });
+                                            }}
+                                            className="p-5 bg-gray-50 hover:bg-purple-600 hover:text-white border-2 border-gray-100 hover:border-purple-400 rounded-2xl text-left font-bold transition-all transform active:scale-[0.98] group"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-8 h-8 rounded-lg bg-white group-hover:bg-purple-500 shadow-sm flex items-center justify-center text-sm font-black text-purple-600 group-hover:text-white transition-colors">
+                                                    {['A', 'B', 'C', 'D'][idx]}
+                                                </div>
+                                                {opt}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="py-10">
+                                    <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Smile size={24} />
+                                    </div>
+                                    <p className="text-lg font-bold text-gray-900">Answer submitted!</p>
+                                    <p className="text-sm text-gray-500 mt-1">Waiting for the tutor to show results...</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* FINAL RESULTS POPUP (FOR EVERYONE) */}
+            {finalPollResults && (
+                <div className="fixed inset-0 z-100 bg-black/60 backdrop-blur-md flex items-center justify-center p-6">
+                    <div className="bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+                        <div className="p-8 text-center">
+                            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <span className="text-3xl">📊</span>
+                            </div>
+                            <h2 className="text-xs font-black text-green-600 uppercase tracking-widest mb-2">Poll Results</h2>
+                            <h3 className="text-xl font-bold text-gray-900 mb-6">{finalPollResults.question}</h3>
+                            
+                            <div className="space-y-2 text-left">
+                                {finalPollResults.options.map((opt, idx) => {
+                                    const count = finalPollResults.results[idx] || 0;
+                                    const total = finalPollResults.totalResponses || 0;
+                                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                                    return (
+                                        <div key={idx} className="relative h-10 bg-gray-50 rounded-xl overflow-hidden border border-gray-100">
+                                            <div 
+                                                className="absolute inset-y-0 left-0 bg-green-100/50 transition-all duration-700" 
+                                                style={{ width: `${pct}%` }} 
+                                            />
+                                            <div className="absolute inset-0 px-4 flex items-center justify-between text-xs font-bold">
+                                                <span className="text-gray-700">{opt}</span>
+                                                <span className="text-green-600">{pct}%</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            <p className="text-[10px] font-bold text-gray-400 mt-6 uppercase tracking-widest">
+                                Total Class Responses: {finalPollResults.totalResponses}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <style>{`
                 @keyframes float-up {

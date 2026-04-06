@@ -7,7 +7,7 @@ export default function GlobalNotification() {
     const { notifications, dismissNotification } = useNotification();
 
     return (
-        <div className="fixed z-[9999] pointer-events-none flex flex-col items-end gap-2 p-4 top-4 right-4 w-full max-w-sm">
+        <div className="fixed z-9999 pointer-events-none flex flex-col items-end gap-2 p-4 top-4 right-4 w-full max-w-sm">
             <AnimatePresence>
                 {notifications.map((notif) => {
                     const isLoud = notif.type === 'loud';
@@ -20,7 +20,7 @@ export default function GlobalNotification() {
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.8 }}
-                                className="fixed inset-0 flex items-center justify-center bg-black/60 pointer-events-auto backdrop-blur-sm p-4 z-[10000]"
+                                className="fixed inset-0 flex items-center justify-center bg-black/60 pointer-events-auto backdrop-blur-sm p-4 z-10000"
                             >
                                 <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 max-w-lg w-full border-2 border-purple-500 text-center relative overflow-hidden">
                                     {/* Pulsing background effect */}
@@ -50,7 +50,14 @@ export default function GlobalNotification() {
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 50 }}
-                            className={`pointer-events-auto w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl border-l-4 p-4 flex gap-3 items-start backdrop-blur-md bg-opacity-95
+                            onClick={() => {
+                                if (notif.onClick) {
+                                    notif.onClick();
+                                    dismissNotification(notif.id);
+                                }
+                            }}
+                            className={`pointer-events-auto w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl border-l-4 p-4 flex gap-3 items-start backdrop-blur-md bg-opacity-95 transition-all
+                                ${notif.onClick ? 'cursor-pointer hover:bg-gray-50 active:scale-[0.98]' : ''}
                                 ${notif.type === 'success' ? 'border-green-500' :
                                     notif.type === 'error' ? 'border-red-500' :
                                         notif.type === 'warning' ? 'border-yellow-500' : 'border-blue-500'}`}
@@ -66,7 +73,10 @@ export default function GlobalNotification() {
                                 <p className="text-xs text-gray-400 mt-2">{notif.timestamp.toLocaleTimeString()}</p>
                             </div>
                             <button
-                                onClick={() => dismissNotification(notif.id)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    dismissNotification(notif.id);
+                                }}
                                 className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                             >
                                 ✕
