@@ -23,9 +23,9 @@ import {
   FileText,
   X
 } from "lucide-react";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 
-export default function ParentDashboardPage() {
+function DashboardContent() {
   const { user } = useAuthContext();
   const {
     studentCount,
@@ -93,18 +93,17 @@ export default function ParentDashboardPage() {
       return date >= startOfLastMonth && date <= endOfLastMonth;
     }).length;
 
-    const growth =
+    const growthResult =
       lastMonth === 0
         ? thisMonth > 0
           ? 100
           : 0
         : Math.round(((thisMonth - lastMonth) / lastMonth) * 100);
 
-    return { growth, thisMonthCount: thisMonth };
+    return { growth: growthResult, thisMonthCount: thisMonth };
   }, [pastSessions]);
 
   return (
-    <ProtectedClient roles={["parent"]}>
       <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
         {/* HEADER */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -434,109 +433,121 @@ export default function ParentDashboardPage() {
             </div>
           </aside>
         </div>
-      </div>
 
-      {/* SESSION HISTORY MODAL */}
-      {showHistoryModal && (
-        <div className="fixed inset-0 z-100 flex items-center justify-end">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowHistoryModal(false)} />
-          <div className="relative w-full max-w-lg h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-            <div className="p-6 border-b flex items-center justify-between bg-purple-50">
-              <div>
-                <h2 className="text-xl font-black text-gray-900">Session History</h2>
-                <p className="text-xs text-purple-600 font-bold uppercase tracking-widest mt-1">
-                  {students.find(s => s.id === selectedChildId)?.first_name}'s Progress Roadmap
-                </p>
-              </div>
-              <button 
-                onClick={() => setShowHistoryModal(false)}
-                className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-400 hover:text-black shadow-sm transition-all"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              {childPastSessions[selectedChildId || '']?.length > 0 ? (
-                childPastSessions[selectedChildId || ''].map((booking, idx) => (
-                  <div key={booking.id} className="relative pl-8 group">
-                    {/* Timeline Line */}
-                    {idx !== childPastSessions[selectedChildId || ''].length - 1 && (
-                      <div className="absolute left-[11px] top-6 bottom-[-24px] w-0.5 bg-gray-100 group-hover:bg-purple-100 transition-colors" />
-                    )}
-                    
-                    {/* Timeline Dot */}
-                    <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-2 border-purple-500 z-10 flex items-center justify-center">
-                      <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-                    </div>
-
-                    <div className="bg-gray-50/50 rounded-2xl p-5 border border-transparent hover:border-purple-200 hover:bg-white transition-all shadow-sm hover:shadow-md">
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                            {new Date(booking.requested_start).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
-                          </div>
-                          <h3 className="text-sm font-bold text-gray-900 mt-1">{booking.subject?.name} session</h3>
-                        </div>
-                        <div className="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-lg">
-                          {booking.sessions?.[0]?.duration || 60} mins
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2 text-xs text-gray-600">
-                          <span className="shrink-0">👨‍🏫</span>
-                          <span className="font-medium">Tutor {booking.tutors?.users?.first_name}</span>
-                        </div>
-
-                        {booking.sessions?.[0]?.tutor_note ? (
-                          <div className="bg-white/80 p-3 rounded-xl border border-purple-100 relative overflow-hidden">
-                            <div className="absolute top-0 left-0 bottom-0 w-1 bg-purple-400" />
-                            <p className="text-[11px] text-gray-700 leading-relaxed">
-                              {booking.sessions[0].tutor_note}
-                            </p>
-                          </div>
-                        ) : (
-                          <p className="text-[11px] text-gray-400 italic">No notes recorded for this session.</p>
-                        )}
-
-                        {booking.sessions?.[0]?.session_recordings?.[0]?.file_url && (
-                          <a 
-                            href={booking.sessions[0].session_recordings[0].file_url}
-                            target="_blank"
-                            className="inline-flex items-center gap-1.5 text-[10px] font-black text-purple-600 hover:text-purple-800 uppercase tracking-wide group/link"
-                          >
-                            <ArrowUpRight size={12} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
-                            Watch Recording
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="h-full flex flex-col items-center justify-center text-center opacity-40 py-20">
-                  <div className="w-16 h-16 rounded-3xl bg-gray-100 flex items-center justify-center text-3xl mb-4">
-                    📖
-                  </div>
-                  <p className="text-sm font-bold uppercase tracking-widest">No Past Sessions</p>
-                  <p className="text-xs mt-1">Complete your first session to see history!</p>
+        {/* SESSION HISTORY MODAL */}
+        {showHistoryModal && (
+          <div className="fixed inset-0 z-100 flex items-center justify-end">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowHistoryModal(false)} />
+            <div className="relative w-full max-w-lg h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+              <div className="p-6 border-b flex items-center justify-between bg-purple-50">
+                <div>
+                  <h2 className="text-xl font-black text-gray-900">Session History</h2>
+                  <p className="text-xs text-purple-600 font-bold uppercase tracking-widest mt-1">
+                    {students.find(s => s.id === selectedChildId)?.first_name}'s Progress Roadmap
+                  </p>
                 </div>
-              )}
-            </div>
-            
-            <div className="p-6 border-t bg-gray-50/50">
-              <button 
-                onClick={() => setShowHistoryModal(false)}
-                className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold shadow-lg hover:shadow-gray-900/20 active:scale-[0.98] transition-all"
-              >
-                Close History
-              </button>
+                <button 
+                  onClick={() => setShowHistoryModal(false)}
+                  className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-400 hover:text-black shadow-sm transition-all"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {childPastSessions[selectedChildId || '']?.length > 0 ? (
+                  childPastSessions[selectedChildId || ''].map((booking, idx) => (
+                    <div key={booking.id} className="relative pl-8 group">
+                      {/* Timeline Line */}
+                      {idx !== childPastSessions[selectedChildId || ''].length - 1 && (
+                        <div className="absolute left-[11px] top-6 bottom-[-24px] w-0.5 bg-gray-100 group-hover:bg-purple-100 transition-colors" />
+                      )}
+                      
+                      {/* Timeline Dot */}
+                      <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-2 border-purple-500 z-10 flex items-center justify-center">
+                        <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                      </div>
+
+                      <div className="bg-gray-50/50 rounded-2xl p-5 border border-transparent hover:border-purple-200 hover:bg-white transition-all shadow-sm hover:shadow-md">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                              {new Date(booking.requested_start).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+                            </div>
+                            <h3 className="text-sm font-bold text-gray-900 mt-1">{booking.subject?.name} session</h3>
+                          </div>
+                          <div className="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-lg">
+                            {booking.sessions?.[0]?.duration || 60} mins
+                          </div>
+                         </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 text-xs text-gray-600">
+                            <span className="shrink-0">👨‍🏫</span>
+                            <span className="font-medium">Tutor {booking.tutors?.users?.first_name}</span>
+                          </div>
+
+                          {booking.sessions?.[0]?.tutor_note ? (
+                            <div className="bg-white/80 p-3 rounded-xl border border-purple-100 relative overflow-hidden">
+                              <div className="absolute top-0 left-0 bottom-0 w-1 bg-purple-400" />
+                              <p className="text-[11px] text-gray-700 leading-relaxed">
+                                {booking.sessions[0].tutor_note}
+                              </p>
+                            </div>
+                          ) : (
+                            <p className="text-[11px] text-gray-400 italic">No notes recorded for this session.</p>
+                          )}
+
+                          {booking.sessions?.[0]?.session_recordings?.[0]?.file_url && (
+                            <a 
+                              href={booking.sessions[0].session_recordings[0].file_url}
+                              target="_blank"
+                              className="inline-flex items-center gap-1.5 text-[10px] font-black text-purple-600 hover:text-purple-800 uppercase tracking-wide group/link"
+                            >
+                              <ArrowUpRight size={12} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+                              Watch Recording
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-center opacity-40 py-20">
+                    <div className="w-16 h-16 rounded-3xl bg-gray-100 flex items-center justify-center text-3xl mb-4">
+                      📖
+                    </div>
+                    <p className="text-sm font-bold uppercase tracking-widest">No Past Sessions</p>
+                    <p className="text-xs mt-1">Complete your first session to see history!</p>
+                  </div>
+                )}
+              </div>
+              
+              <div className="p-6 border-t bg-gray-50/50">
+                <button 
+                  onClick={() => setShowHistoryModal(false)}
+                  className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold shadow-lg hover:shadow-gray-900/20 active:scale-[0.98] transition-all"
+                >
+                  Close History
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+  );
+}
 
+export default function ParentDashboardPage() {
+  return (
+    <ProtectedClient roles={["parent"]}>
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+        </div>
+      }>
+        <DashboardContent />
+      </Suspense>
     </ProtectedClient>
   );
 }
