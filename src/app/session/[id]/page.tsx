@@ -463,7 +463,7 @@ export default function SessionPage({ params }: SessionProps) {
             toast.error("Whiteboard not ready");
             return;
         }
-        
+
         try {
             const appState = excalidrawAPI.getAppState();
             const zoom = typeof appState.zoom === 'number' ? appState.zoom : (appState.zoom?.value ?? 1);
@@ -474,63 +474,130 @@ export default function SessionPage({ params }: SessionProps) {
             // Calculate center of visible viewport in scene coordinates
             let centerX, centerY;
             if (lastPos) {
-                centerX = lastPos.x + 40; // Increased offset for better visibility
+                centerX = lastPos.x + 40;
                 centerY = lastPos.y + 40;
             } else {
                 centerX = (appState.width / 2 - appState.scrollX) / zoom;
                 centerY = (appState.height / 2 - appState.scrollY) / zoom;
             }
             lastInsertionPositions.current[key] = { x: centerX, y: centerY };
-            
+
             const groupId = `group_${Math.random().toString(36).substr(2, 9)}`;
-            
-            const newElements = manipulative.elements.map((el: any) => ({
-                ...el,
-                x: (el.x || 0) + centerX,
-                y: (el.y || 0) + centerY,
-                id: Math.random().toString(36).substr(2, 9),
-                seed: Math.floor(Math.random() * 1000000),
-                version: 2,
-                versionNonce: Math.floor(Math.random() * 1000000),
-                isDeleted: false,
-                groupIds: [groupId],
-                frameId: null,
-                boundElements: [],
-                updated: Date.now(),
-                link: null,
-                locked: false,
-                opacity: el.opacity ?? 100,
-                strokeWidth: el.strokeWidth ?? 2,
-                strokeStyle: el.strokeStyle ?? 'solid',
-                roughness: el.roughness ?? 0,
-                angle: 0,
-            }));
-            
-            const currentElements = excalidrawAPI.getSceneElements();
-            
+            const newElements: any[] = [];
+            const time = Date.now();
+
+            // Helper to create valid Excalidraw elements from simple definitions
+            const normalizeElement = (el: any, localGroupId: string) => {
+                const id = `${el.type}_${Math.random().toString(36).substr(2, 9)}`;
+                const base = {
+                    id,
+                    groupIds: [localGroupId],
+                    x: (el.x || 0) + centerX,
+                    y: (el.y || 0) + centerY,
+                    angle: 0,
+                    strokeColor: el.strokeColor || "#1e293b",
+                    backgroundColor: el.backgroundColor || "transparent",
+                    fillStyle: el.fillStyle || "solid",
+                    strokeWidth: el.strokeWidth || 1,
+                    strokeStyle: "solid",
+                    roughness: el.roughness ?? 0,
+                    opacity: 100,
+                    isDeleted: false,
+                    boundElements: null,
+                    link: null,
+                    locked: false,
+                    version: 2,
+                    versionNonce: Math.floor(Math.random() * 1000000000),
+                    updated: time
+                };
+
+                if (el.type === "rectangle" || el.type === "ellipse") {
+                    const shape = {
+                        ...base,
+                        type: el.type,
+                        width: el.width || 50,
+                        height: el.height || 50,
+                        roundness: el.roundness || null
+                    };
+                    newElements.push(shape);
+
+                    // If it has a label, create a text element centered inside it
+                    if (el.label) {
+                        const fontSize = 14;
+                        const textId = `text_${Math.random().toString(36).substr(2, 9)}`;
+                        newElements.push({
+                            ...base,
+                            id: textId,
+                            type: "text",
+                            x: shape.x + (shape.width / 2) - (el.label.length * 4), // Rough centering
+                            y: shape.y + (shape.height / 2) - (fontSize / 2),
+                            width: el.label.length * 8, 
+                            height: fontSize * 1.2,
+                            text: el.label,
+                            fontSize,
+                            fontFamily: 1,
+                            textAlign: "center",
+                            verticalAlign: "middle",
+                            strokeColor: el.labelColor || el.strokeColor || "#1e293b"
+                        });
+                    }
+                } else if (el.type === "line" || el.type === "arrow") {
+                    const points = el.points || [[0, 0], [10, 10]];
+                    const xs = points.map((p: any) => p[0]);
+                    const ys = points.map((p: any) => p[1]);
+                    const minX = Math.min(...xs);
+                    const minY = Math.min(...ys);
+                    const maxX = Math.max(...xs);
+                    const maxY = Math.max(...ys);
+
+                    newElements.push({
+                        ...base,
+                        type: el.type,
+                        points,
+                        width: Math.max(1, maxX - minX),
+                        height: Math.max(1, maxY - minY)
+                    });
+                } else if (el.type === "text") {
+                    const fontSize = el.fontSize || 20;
+                    newElements.push({
+                        ...base,
+                        type: "text",
+                        text: el.text || "",
+                        fontSize,
+                        fontFamily: el.fontFamily || 1,
+                        textAlign: el.textAlign || "left",
+                        verticalAlign: el.verticalAlign || "top",
+                        width: el.width || (el.text?.length || 1) * (fontSize * 0.6),
+                        height: el.height || fontSize * 1.2
+                    });
+                }
+            };
+
+            manipulative.elements.forEach((el: any) => normalizeElement(el, groupId));
+
+            const existingElements = excalidrawAPI.getSceneElements();
             excalidrawAPI.updateScene({
-                elements: [...currentElements, ...newElements],
-                commitToHistory: true,
+                elements: [...existingElements, ...newElements]
             });
-            
-            // Auto-scroll to the newly inserted manipulative so the tutor sees it immediately
+
             setTimeout(() => {
-                excalidrawAPI.scrollToContent(newElements, { 
-                    fitToViewport: false, 
-                    padding: 100 
-                });
-                
-                // Force sync to others after a short delay to ensure local state settled
-                socket?.emit('whiteboard.update', {
-                    sessionId,
-                    update: { elements: [...excalidrawAPI.getSceneElements()] }
+                excalidrawAPI.scrollToContent(newElements, {
+                    fitToViewport: false,
+                    padding: 150
                 });
             }, 100);
 
+            setTimeout(() => {
+                socket?.emit("whiteboard.update", {
+                    sessionId: sessionId,
+                    update: { elements: excalidrawAPI.getSceneElements() }
+                });
+            }, 500);
+
             toast.success(`Inserted ${manipulative.label}`);
-        } catch (error) {
-            console.error("Failed to insert manipulative:", error);
-            toast.error("Failed to insert manipulative");
+        } catch (err) {
+            console.error("Failed to insert manipulative:", err);
+            toast.error("Insertion failed");
         }
     };
 

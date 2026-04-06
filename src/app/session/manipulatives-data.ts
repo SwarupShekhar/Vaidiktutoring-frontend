@@ -171,6 +171,27 @@ export const MANIPULATIVES_DATA = {
         { type: 'rectangle', x: 15, y: -10, width: 20, height: 20, strokeColor: '#1d4ed8', backgroundColor: '#dbeafe', fillStyle: 'solid', label: '1', roughness: 0 },
         { type: 'rectangle', x: 40, y: -10, width: 20, height: 20, strokeColor: '#b91c1c', backgroundColor: '#fee2e2', fillStyle: 'solid', label: '-1', roughness: 0 }
       ]
+    },
+    {
+      id: 'ruler-30cm',
+      label: '30cm Ruler',
+      thumbnail: '📏',
+      elements: [
+        // Main ruler body (30cm = 600px, 1cm = 20px)
+        { type: 'rectangle', x: -300, y: -20, width: 600, height: 40, strokeColor: '#1e293b', backgroundColor: '#fefce8', fillStyle: 'solid', roughness: 0 },
+        // CM markings (every 1cm = 20px)
+        ...Array.from({length: 31}).map((_, i) => ({
+          type: 'line', x: -300 + (i * 20), y: -20, points: [[0,0], [0, 15]], strokeColor: '#1e293b', strokeWidth: 1
+        })),
+        // CM numbers (every 2cm = 40px)
+        ...Array.from({length: 16}).map((_, i) => ({
+          type: 'text', x: -304 + (i * 40), y: 0, text: (i * 2).toString(), fontSize: 10, strokeColor: '#475569'
+        })),
+        // Half-cm markings
+        ...Array.from({length: 30}).map((_, i) => ({
+          type: 'line', x: -290 + (i * 20), y: -20, points: [[0,0], [0, 8]], strokeColor: '#475569', strokeWidth: 0.5
+        }))
+      ]
     }
   ]
 };
