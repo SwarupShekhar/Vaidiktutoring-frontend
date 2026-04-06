@@ -183,10 +183,26 @@ export const MANIPULATIVES_DATA = {
         ...Array.from({length: 31}).map((_, i) => ({
           type: 'line', x: -300 + (i * 20), y: -20, points: [[0,0], [0, 15]], strokeColor: '#1e293b', strokeWidth: 1
         })),
-        // CM numbers (every 2cm = 40px)
-        ...Array.from({length: 16}).map((_, i) => ({
-          type: 'text', x: -304 + (i * 40), y: 0, text: (i * 2).toString(), fontSize: 10, strokeColor: '#475569'
+        // Numbers 1-30 above each cm mark (except 0)
+        ...Array.from({length: 30}).map((_, i) => ({
+          type: 'text', 
+          x: -300 + ((i + 1) * 20), 
+          y: -32, 
+          text: (i + 1).toString(), 
+          fontSize: 10, 
+          strokeColor: '#475569',
+          textAlign: 'center'
         })),
+        // "cm" label at the right end
+        {
+          type: 'text',
+          x: 305,
+          y: -20,
+          text: 'cm',
+          fontSize: 10,
+          strokeColor: '#475569',
+          textAlign: 'left'
+        },
         // Half-cm markings
         ...Array.from({length: 30}).map((_, i) => ({
           type: 'line', x: -290 + (i * 20), y: -20, points: [[0,0], [0, 8]], strokeColor: '#475569', strokeWidth: 0.5

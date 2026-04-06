@@ -107,13 +107,9 @@ export default function SessionPage({ params }: SessionProps) {
     const [sessionNote, setSessionNote] = useState('');
     const [submittingNote, setSubmittingNote] = useState(false);
     
-    // Mock Assets for Library
-    const mockLibraryAssets = [
-        { id: 'math1', type: 'image', url: 'https://placehold.co/400x300/e2e8f0/1e293b?text=Math+Diagram', label: 'Math Diagram' },
-        { id: 'sci1', type: 'image', url: 'https://placehold.co/400x300/fee2e2/991b1b?text=Biology+Cell', label: 'Cell Structure' },
-    ];
-
     const [socket, setSocket] = useState<Socket | null>(null);
+    const sessionStartRef = useRef<number>(Date.now());
+    const sessionDurationRef = useRef<number>(60);
 
     // Timer & Reactions State
     const [timeRemaining, setTimeRemaining] = useState(((booking as any)?.duration || 60) * 60);
@@ -209,7 +205,13 @@ export default function SessionPage({ params }: SessionProps) {
         setSocket(newSocket);
 
         newSocket.on('connect', () => {
-            newSocket.emit('joinSession', { sessionId, userId: user.id });
+            newSocket.emit('joinSession', { sessionId, userId: user.id }, (response: any) => {
+                console.log('[Session] Joined session room:', response);
+                if (response.success) {
+                    sessionStartRef.current = response.sessionStartTime;
+                    sessionDurationRef.current = response.sessionDuration;
+                }
+            });
             // On every (re)connect the tutor pushes the current scene so late-joining
             // or reconnecting students receive the current whiteboard state immediately.
             if (user.role === 'tutor') {
@@ -247,18 +249,16 @@ export default function SessionPage({ params }: SessionProps) {
         if (!hasJoined || !booking) return;
         
         const interval = setInterval(() => {
-            const sessions = (booking as any).sessions || [];
-            const startTimeStr = sessions[0]?.start_time || (booking as any).start_time;
-            const startTime = new Date(startTimeStr).getTime();
+            const startTime = sessionStartRef.current;
             const now = Date.now();
             
             // Derive remaining from dynamic session length
-            const durationMs = ((booking as any)?.duration || 60) * 60 * 1000;
+            const durationMs = (sessionDurationRef.current || 60) * 60 * 1000;
             const elapsedMs = now - startTime;
             const remaining = Math.max(0, Math.floor((durationMs - elapsedMs) / 1000));
             
             setTimeRemaining(prev => {
-                if (remaining === 10 * 60 && prev > 10 * 60) {
+                if (remaining <= 10 * 60 && prev > 10 * 60) {
                     setShowWrapUp(true);
                     setTimeout(() => setShowWrapUp(false), 10000);
                 }
@@ -1319,24 +1319,29 @@ export default function SessionPage({ params }: SessionProps) {
                         {libraryTab === 'assets' ? (
                             <div className="grid grid-cols-1 gap-3">
                                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1 ml-1">Uploaded Assets</p>
-                                {mockLibraryAssets.map(asset => (
+                                {slides.map((url, index) => (
                                     <div 
-                                        key={asset.id}
+                                        key={index}
                                         className="border rounded-xl cursor-pointer overflow-hidden hover:ring-2 hover:ring-purple-400 transition-all bg-gray-50 flex flex-col group"
-                                        onClick={() => importImageToExcalidraw(asset.url)}
+                                        onClick={() => importImageToExcalidraw(url)}
                                     >
-                                        <div className="relative overflow-hidden h-24">
-                                            <img src={asset.url} alt={asset.label} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        <div className="relative h-24 bg-white flex items-center justify-center overflow-hidden">
+                                            <img src={url} alt={`Slide ${index + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                                         </div>
-                                        <div className="p-2 text-[10px] font-bold text-center text-gray-700 bg-white">
-                                            {asset.label}
+                                        <div className="p-2 text-[9px] font-black uppercase tracking-tight text-center text-gray-500 bg-white border-t">
+                                            {`Slide ${index + 1}`}
                                         </div>
                                     </div>
                                 ))}
-                                {mockLibraryAssets.length === 0 && (
-                                    <div className="text-center py-8 border-2 border-dashed border-gray-100 rounded-2xl">
-                                        <p className="text-xs text-gray-400">No assets uploaded yet</p>
+                                {slides.length === 0 && (
+                                    <div className="text-center py-12 px-4 border-2 border-dashed border-gray-100 rounded-3xl flex flex-col items-center gap-3">
+                                        <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300">
+                                            <FileUp size={24} />
+                                        </div>
+                                        <p className="text-[10px] font-bold text-gray-400 leading-normal max-w-[140px] mx-auto uppercase tracking-wider">
+                                            No assets uploaded yet. Upload an image or PDF slide to add it here.
+                                        </p>
                                     </div>
                                 )}
                             </div>
