@@ -187,11 +187,12 @@ export const MANIPULATIVES_DATA = {
         ...Array.from({length: 30}).map((_, i) => ({
           type: 'text', 
           x: -300 + ((i + 1) * 20), 
-          y: -32, 
+          y: -35, // Slightly higher for better visibility
           text: (i + 1).toString(), 
           fontSize: 10, 
-          strokeColor: '#475569',
-          textAlign: 'center'
+          strokeColor: '#1e293b', // Darker color
+          textAlign: 'center',
+          width: 20
         })),
         // "cm" label at the right end
         {
@@ -200,7 +201,7 @@ export const MANIPULATIVES_DATA = {
           y: -20,
           text: 'cm',
           fontSize: 10,
-          strokeColor: '#475569',
+          strokeColor: '#1e293b',
           textAlign: 'left'
         },
         // Half-cm markings

@@ -524,10 +524,9 @@ export default function SessionPage({ params }: SessionProps) {
                     // If it has a label, create a text element centered inside it
                     if (el.label) {
                         const fontSize = 14;
-                        const textId = `text_${Math.random().toString(36).substr(2, 9)}`;
                         newElements.push({
                             ...base,
-                            id: textId,
+                            id: `text_${Math.random().toString(36).substr(2, 9)}`,
                             type: "text",
                             x: shape.x + (shape.width / 2) - (el.label.length * 4), // Rough centering
                             y: shape.y + (shape.height / 2) - (fontSize / 2),
@@ -538,7 +537,11 @@ export default function SessionPage({ params }: SessionProps) {
                             fontFamily: 1,
                             textAlign: "center",
                             verticalAlign: "middle",
-                            strokeColor: el.labelColor || el.strokeColor || "#1e293b"
+                            strokeColor: el.labelColor || el.strokeColor || "#1e293b",
+                            version: 2,
+                            versionNonce: Math.floor(Math.random() * 1000000000),
+                            updated: time,
+                            opacity: 100
                         });
                     }
                 } else if (el.type === "line" || el.type === "arrow") {
@@ -1318,7 +1321,34 @@ export default function SessionPage({ params }: SessionProps) {
                     <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
                         {libraryTab === 'assets' ? (
                             <div className="grid grid-cols-1 gap-3">
-                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1 ml-1">Uploaded Assets</p>
+                                <div className="flex items-center justify-between mb-1 ml-1 pr-1">
+                                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Uploaded Assets</p>
+                                    <button 
+                                        onClick={() => (document.getElementById('asset-upload-input') as HTMLInputElement)?.click()}
+                                        className="text-[9px] font-black text-purple-600 hover:text-purple-800 uppercase tracking-widest flex items-center gap-1"
+                                    >
+                                        <FileUp size={10} />
+                                        Upload
+                                    </button>
+                                    <input 
+                                        id="asset-upload-input"
+                                        type="file" 
+                                        accept="image/*" 
+                                        className="hidden" 
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                const reader = new FileReader();
+                                                reader.onload = (event) => {
+                                                    const url = event.target?.result as string;
+                                                    setSlides(prev => [...prev, url]);
+                                                    toast.success("Image added to Assets library");
+                                                };
+                                                reader.readAsDataURL(file);
+                                            }
+                                        }}
+                                    />
+                                </div>
                                 {slides.map((url, index) => (
                                     <div 
                                         key={index}
