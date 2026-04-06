@@ -471,43 +471,61 @@ export default function SessionPage({ params }: SessionProps) {
             const key = manipulative.id;
             const lastPos = lastInsertionPositions.current[key];
             
+            // Calculate center of visible viewport in scene coordinates
             let centerX, centerY;
             if (lastPos) {
-                centerX = lastPos.x + 20;
-                centerY = lastPos.y + 20;
+                centerX = lastPos.x + 40; // Increased offset for better visibility
+                centerY = lastPos.y + 40;
             } else {
-                centerX = ((appState.width / 2 - appState.scrollX) / zoom);
-                centerY = ((appState.height / 2 - appState.scrollY) / zoom);
+                centerX = (appState.width / 2 - appState.scrollX) / zoom;
+                centerY = (appState.height / 2 - appState.scrollY) / zoom;
             }
             lastInsertionPositions.current[key] = { x: centerX, y: centerY };
             
+            const groupId = `group_${Math.random().toString(36).substr(2, 9)}`;
+            
             const newElements = manipulative.elements.map((el: any) => ({
                 ...el,
-                x: el.x + centerX,
-                y: el.y + centerY,
+                x: (el.x || 0) + centerX,
+                y: (el.y || 0) + centerY,
                 id: Math.random().toString(36).substr(2, 9),
                 seed: Math.floor(Math.random() * 1000000),
                 version: 2,
                 versionNonce: Math.floor(Math.random() * 1000000),
                 isDeleted: false,
-                groupIds: [],
+                groupIds: [groupId],
                 frameId: null,
                 boundElements: [],
                 updated: Date.now(),
                 link: null,
-                locked: false
+                locked: false,
+                opacity: el.opacity ?? 100,
+                strokeWidth: el.strokeWidth ?? 2,
+                strokeStyle: el.strokeStyle ?? 'solid',
+                roughness: el.roughness ?? 0,
+                angle: 0,
             }));
             
+            const currentElements = excalidrawAPI.getSceneElements();
+            
             excalidrawAPI.updateScene({
-                elements: [...excalidrawAPI.getSceneElements(), ...newElements],
+                elements: [...currentElements, ...newElements],
                 commitToHistory: true,
             });
             
-            // Sync to others
-            socket?.emit('whiteboard.update', {
-                sessionId,
-                update: { elements: [...excalidrawAPI.getSceneElements(), ...newElements] }
-            });
+            // Auto-scroll to the newly inserted manipulative so the tutor sees it immediately
+            setTimeout(() => {
+                excalidrawAPI.scrollToContent(newElements, { 
+                    fitToViewport: false, 
+                    padding: 100 
+                });
+                
+                // Force sync to others after a short delay to ensure local state settled
+                socket?.emit('whiteboard.update', {
+                    sessionId,
+                    update: { elements: [...excalidrawAPI.getSceneElements()] }
+                });
+            }, 100);
 
             toast.success(`Inserted ${manipulative.label}`);
         } catch (error) {
