@@ -25,7 +25,8 @@ import {
     ChevronDown,
     PenTool,
     BarChart,
-    X
+    X,
+    Trash2
 } from 'lucide-react';
 import { MANIPULATIVES_DATA, DICE_FACES } from '../manipulatives-data';
 
@@ -106,6 +107,7 @@ export default function SessionPage({ params }: SessionProps) {
     const [showNoteModal, setShowNoteModal] = useState(false);
     const [sessionNote, setSessionNote] = useState('');
     const [submittingNote, setSubmittingNote] = useState(false);
+    const [showClearConfirm, setShowClearConfirm] = useState(false);
     
     const [socket, setSocket] = useState<Socket | null>(null);
     const sessionStartRef = useRef<number>(Date.now());
@@ -145,6 +147,27 @@ export default function SessionPage({ params }: SessionProps) {
     const [studentSelection, setStudentSelection] = useState<number | null>(null);
     const [finalPollResults, setFinalPollResults] = useState<{ question: string; options: string[]; results: number[]; totalResponses: number } | null>(null);
 
+    // Pre-join State
+    const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+    const [cameraError, setCameraError] = useState(false);
+    const [currentTime, setCurrentTime] = useState(new Date());
+    const [checklistItems, setChecklistItems] = useState([false, false, false]);
+    const videoRef = useRef<HTMLVideoElement>(null);
+
+    // Sticker State
+    const [showStickerPanel, setShowStickerPanel] = useState(false);
+    const [incomingSticker, setIncomingSticker] = useState<{ type: string; id: string } | null>(null);
+    const STICKERS = [
+        "crown.png", "Diamond.png", "Dinosaur.png", "Flame.png", "Rainbow.png", 
+        "Rocket.png", "Shining Star.png", "Star.png", "Trophy.png", "Unicorn.png"
+    ];
+
+    // Viewport Sync & Laser State
+    const [isFocusMode, setIsFocusMode] = useState(false);
+    const [isLaserMode, setIsLaserMode] = useState(false);
+    const focusIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const [followingTutor, setFollowingTutor] = useState(false);
+
     // Library Tab State
     const [libraryTab, setLibraryTab] = useState<'assets' | 'manipulatives'>('assets');
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -156,6 +179,41 @@ export default function SessionPage({ params }: SessionProps) {
     const slideRef = useRef(0);
     const annotationsRef = useRef<Record<number, any[]>>({});
     const [showLibraryTip, setShowLibraryTip] = useState(false);
+
+    // Pre-join Effects
+    useEffect(() => {
+        if (!hasJoined) {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then(stream => {
+                    setLocalStream(stream);
+                    if (videoRef.current) {
+                        videoRef.current.srcObject = stream;
+                    }
+                })
+                .catch(() => {
+                    setCameraError(true);
+                });
+        } else {
+            // Cleanup stream after join
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                setLocalStream(null);
+            }
+        }
+    }, [hasJoined]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        setTimeout(() => setChecklistItems([true, false, false]), 500);
+        setTimeout(() => setChecklistItems([true, true, false]), 1000);
+        setTimeout(() => setChecklistItems([true, true, true]), 1500);
+    }, []);
 
     useEffect(() => {
         if (user?.role === 'tutor') {
@@ -237,6 +295,47 @@ export default function SessionPage({ params }: SessionProps) {
             setTimeout(() => {
                 setReactions(prev => prev.filter(r => r.id !== newReaction.id));
             }, 3000);
+        });
+
+        // 4. Listen for stickers
+        newSocket.on('sticker:received', (payload: { stickerType: string; studentName: string }) => {
+            console.log('[Session] Sticker received:', payload.stickerType);
+            
+            // Show animation
+            const id = Math.random().toString();
+            setIncomingSticker({ type: payload.stickerType, id });
+            
+            if (user?.role === 'student' || user?.role === 'parent') {
+                toast(`⭐ Great job! ${payload.studentName} received a sticker!`, { duration: 4000 });
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            // Remove animation after duration
+            setTimeout(() => {
+                setIncomingSticker(null);
+            }, 3000);
+        });
+
+        // 5. Listen for Viewport Sync
+        newSocket.on('viewport:update', (payload: { scrollX: number; scrollY: number; zoom: number }) => {
+            if (user?.role !== 'tutor') {
+                setFollowingTutor(true);
+                excalidrawAPIRef.current?.updateScene({
+                    appState: {
+                        scrollX: payload.scrollX,
+                        scrollY: payload.scrollY,
+                        zoom: { value: payload.zoom }
+                    }
+                });
+                
+                // Reset following indicator after some time if no updates
+                const timer = setTimeout(() => setFollowingTutor(false), 2000);
+                return () => clearTimeout(timer);
+            }
         });
 
         return () => {
@@ -370,6 +469,7 @@ export default function SessionPage({ params }: SessionProps) {
             pointer: payload.pointer,
             button: payload.button,
             selectedElementIds: payload.selectedElementIds,
+            isLaserActive: isLaserMode && user?.role === 'tutor'
         });
     }, [socket, sessionId, user?.id, user?.first_name]);
 
@@ -609,6 +709,45 @@ export default function SessionPage({ params }: SessionProps) {
         }
     };
 
+    // Viewport Sync Effect
+    useEffect(() => {
+        if (!socket || user?.role !== 'tutor' || !isFocusMode) {
+            if (focusIntervalRef.current) clearInterval(focusIntervalRef.current);
+            return;
+        }
+
+        focusIntervalRef.current = setInterval(() => {
+            const api = excalidrawAPIRef.current;
+            if (!api) return;
+
+            const appState = api.getAppState();
+            socket.emit('viewport:sync', {
+                sessionId,
+                scrollX: appState.scrollX,
+                scrollY: appState.scrollY,
+                zoom: appState.zoom.value
+            });
+        }, 1000); // Sync every second while active
+
+        return () => {
+            if (focusIntervalRef.current) clearInterval(focusIntervalRef.current);
+        };
+    }, [isFocusMode, socket, sessionId, user?.role]);
+
+    // Give Sticker Logic
+    const giveSticker = (stickerType: string) => {
+        if (!socket || user?.role !== 'tutor' || !booking?.students?.id) return;
+        
+        socket.emit('sticker:give', {
+            sessionId,
+            studentId: booking.students.id,
+            stickerType
+        });
+        
+        setShowStickerPanel(false);
+        toast.success(`Sticker sent to ${booking.students.first_name}!`);
+    };
+
     const switchSlide = useCallback(async (index: number, overrideSlides?: string[], skipEmit = false) => {
         if (!excalidrawAPI) return;
         const targetSlides = overrideSlides || slides;
@@ -815,6 +954,8 @@ export default function SessionPage({ params }: SessionProps) {
                     button: payload.button,
                     username: payload.username,
                     selectedElementIds: payload.selectedElementIds,
+                    isLaserActive: payload.isLaserActive,
+                    color: payload.isLaserActive ? "#ef4444" : undefined
                 });
                 return next;
             });
@@ -993,27 +1134,81 @@ export default function SessionPage({ params }: SessionProps) {
 
     return (
         <div className="relative w-screen h-screen overflow-hidden bg-background">
-            {/* JOIN OVERLAY */}
+            {/* PRE-JOIN OVERLAY */}
             {!hasJoined && (
-                <div className="absolute inset-0 z-50 bg-linear-to-br from-purple-900/95 via-indigo-900/95 to-blue-900/95 backdrop-blur-md flex items-center justify-center">
-                    <div className="text-center max-w-md px-6">
-                        <div className="mb-8">
-                            <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm border border-white/20">
-                                <span className="text-4xl">🎓</span>
+                <div className="absolute inset-0 z-50 bg-linear-to-br from-gray-950 via-purple-950 to-gray-950 flex flex-col items-center justify-center p-6">
+                    {/* Ambient Background Orbs */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl animate-pulse"></div>
+                        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+                        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-pink-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+                    </div>
+
+                    {/* Top Bar */}
+                    <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-6 py-4">
+                        <div className="text-white font-bold text-xl">StudyHours</div>
+                        <div className="bg-black/20 text-white px-4 py-2 rounded-full text-sm">Room {sessionId.slice(0, 8)}</div>
+                        <div className="text-white text-sm">{currentTime.toLocaleTimeString()}</div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl">
+                        {/* Left: Camera Preview */}
+                        <div className="w-full md:w-3/5">
+                            <div className="relative w-full h-96 md:h-full rounded-2xl overflow-hidden bg-black/60 border border-purple-500/30">
+                                {cameraError ? (
+                                    <div className="flex flex-col items-center justify-center h-full text-white">
+                                        <div className="text-6xl mb-4">📷</div>
+                                        <p>Camera is off — you can turn it on after joining</p>
+                                    </div>
+                                ) : (
+                                    <video ref={videoRef} autoPlay muted className="w-full h-full object-cover" />
+                                )}
+                                <div className="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm">
+                                    {user?.first_name || 'You'}
+                                </div>
+                                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                                    <button className="w-10 h-10 bg-black/60 rounded-full flex items-center justify-center text-white">📹</button>
+                                    <button className="w-10 h-10 bg-black/60 rounded-full flex items-center justify-center text-white">🎤</button>
+                                </div>
                             </div>
-                            <h1 className="text-3xl font-bold text-white mb-2">
-                                {booking?.subject?.name || 'Tutoring Session'}
-                            </h1>
-                            <p className="text-white/70">Ready to start your session?</p>
                         </div>
 
-                        <button
-                            onClick={() => setHasJoined(true)}
-                            className="w-full py-4 px-8 bg-linear-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-2xl shadow-2xl shadow-green-500/25 transition-all transform hover:scale-105 active:scale-95"
-                        >
-                            🚀 Join Session
-                        </button>
-                        <p className="text-white/50 text-sm mt-4">Session ID: {sessionId.slice(0, 8)}...</p>
+                        {/* Right: Session Info Panel */}
+                        <div className="w-full md:w-2/5 p-8 text-white">
+                            <h1 className="text-4xl font-bold mb-2">{booking?.subject?.name || 'Tutoring Session'}</h1>
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                                    {(user?.role === 'tutor' ? booking?.students?.first_name : booking?.tutor?.first_name)?.charAt(0) || 'U'}
+                                </div>
+                                <div>
+                                    <p className="font-semibold">{user?.role === 'tutor' ? `${booking?.students?.first_name} ${booking?.students?.last_name}` : `${booking?.tutor?.first_name} ${booking?.tutor?.last_name}`}</p>
+                                    <p className="text-sm text-gray-300">{user?.role === 'tutor' ? 'Student' : 'Tutor'}</p>
+                                </div>
+                            </div>
+                            <p className="text-lg mb-6">Today at {booking?.start_time ? new Date(booking.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '3:00 PM'} · 60 minutes</p>
+                            <div className="border-t border-gray-600 pt-6 mb-6">
+                                <ul className="space-y-3">
+                                    {['Whiteboard ready', 'Session timer set', 'Materials loaded'].map((item, index) => (
+                                        <li key={index} className="flex items-center gap-3">
+                                            <div className={`w-5 h-5 rounded-full border-2 border-purple-500 flex items-center justify-center ${checklistItems[index] ? 'bg-purple-500' : ''}`}>
+                                                {checklistItems[index] && <span className="text-white text-xs">✓</span>}
+                                            </div>
+                                            <span className={checklistItems[index] ? 'text-white' : 'text-gray-400'}>{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <button
+                                onClick={() => setHasJoined(true)}
+                                disabled={videoLoading}
+                                className="w-full h-14 bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                                {videoLoading ? <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div> : null}
+                                {videoLoading ? 'Connecting...' : 'Join Session →'}
+                            </button>
+                            <p className="text-center text-gray-400 text-sm mt-3">Your camera and mic are off by default</p>
+                        </div>
                     </div>
                 </div>
             )}
@@ -1021,25 +1216,49 @@ export default function SessionPage({ params }: SessionProps) {
             {/* 1. BASE LAYER: EXCALIDRAW WHITEBOARD (offset below HUD bar) */}
             <div className={`absolute top-[52px] left-0 right-0 bottom-0 z-0 ${user?.role === 'student' || user?.role === 'parent' ? (hasPenAccess ? '' : 'pointer-events-none') : ''}`}>
                 {ExcalidrawComp ? (
-                    <ExcalidrawComp
-                        excalidrawAPI={(api: any) => setExcalidrawAPI(api)}
-                        zenModeEnabled={false}
-                        gridModeEnabled={false}
-                        viewModeEnabled={user?.role === 'student' || user?.role === 'parent' ? !hasPenAccess : false}
-                        theme="light"
-                        name="K12 Board"
-                        onPointerUpdate={onPointerUpdate}
-                        initialData={{
-                            appState: { viewBackgroundColor: '#ffffff', currentItemFontFamily: 1, theme: 'light', zenModeEnabled: false, viewModeEnabled: user?.role === 'student' || user?.role === 'parent' ? !hasPenAccess : false },
-                        }}
-                        UIOptions={{
-                            canvasActions: { loadScene: false, saveToActiveFile: false, export: { saveFileToDisk: true }, saveAsImage: true, toggleTheme: false },
-                            tools: { image: true },
-                            dockedSidebarBreakpoint: 0,
-                        }}
-                        libraryReturnUrl={undefined}
-                        onLibraryChange={() => {}}
-                    />
+                    <>
+                        <ExcalidrawComp
+                            excalidrawAPI={(api: any) => setExcalidrawAPI(api)}
+                            zenModeEnabled={false}
+                            gridModeEnabled={false}
+                            viewModeEnabled={user?.role === 'student' || user?.role === 'parent' ? !hasPenAccess : false}
+                            theme="light"
+                            name="K12 Board"
+                            onPointerUpdate={onPointerUpdate}
+                            initialData={{
+                                appState: { viewBackgroundColor: '#ffffff', currentItemFontFamily: 1, theme: 'light', zenModeEnabled: false, viewModeEnabled: user?.role === 'student' || user?.role === 'parent' ? !hasPenAccess : false },
+                            }}
+                            UIOptions={{
+                                canvasActions: { loadScene: false, saveToActiveFile: false, export: { saveFileToDisk: true }, saveAsImage: true, toggleTheme: false },
+                                tools: { image: true },
+                                dockedSidebarBreakpoint: 0,
+                            }}
+                            libraryReturnUrl={undefined}
+                            onLibraryChange={() => {}}
+                        />
+                        
+                        {/* LASER POINTER OVERLAY (Real-time collaborative) */}
+                        <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+                            {Array.from(collaborators.entries()).map(([cid, collab]) => {
+                                if (!collab.pointer || !collab.isLaserActive) return null;
+                                
+                                const appState = excalidrawAPI?.getAppState();
+                                if (!appState) return null;
+                                
+                                const zoom = typeof appState.zoom === 'number' ? appState.zoom : (appState.zoom?.value ?? 1);
+                                const x = collab.pointer.x * zoom + appState.scrollX;
+                                const y = collab.pointer.y * zoom + appState.scrollY;
+                                
+                                return (
+                                    <div 
+                                        key={`laser-${cid}`}
+                                        className="absolute w-4 h-4 -ml-2 -mt-2 rounded-full bg-red-500 shadow-[0_0_20px_6px_rgba(255,0,0,0.8),0_0_8px_2px_white] transition-all duration-75 ease-out opacity-100 animate-pulse"
+                                        style={{ left: x, top: y }}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </>
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-text-secondary bg-gray-50">
                         <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
@@ -1261,6 +1480,53 @@ export default function SessionPage({ params }: SessionProps) {
                             <BarChart size={16} />
                         </button>
 
+                        <div className="w-5 h-px bg-white/10 my-0.5" />
+
+                        <button
+                            onClick={() => setIsLaserMode(!isLaserMode)}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${
+                                isLaserMode ? 'bg-red-500 border-red-400 animate-pulse' : 'bg-white/10 hover:bg-white/20 border-white/10'
+                            }`}
+                            title="Laser Pointer"
+                        >
+                            <div className={`w-3 h-3 rounded-full ${isLaserMode ? 'bg-white shadow-[0_0_10px_2px_rgba(255,100,100,0.8)]' : 'border-2 border-white/30'}`} />
+                        </button>
+
+                        <button
+                            onClick={() => setIsFocusMode(!isFocusMode)}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${
+                                isFocusMode ? 'bg-blue-600 border-blue-500' : 'bg-white/10 hover:bg-white/20 border-white/10'
+                            }`}
+                            title="Focus Mode (Sync Viewport)"
+                        >
+                            <Share2 size={16} className={isFocusMode ? 'animate-pulse' : ''} />
+                        </button>
+
+                        <button
+                            onClick={() => setShowStickerPanel(!showStickerPanel)}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${
+                                showStickerPanel ? 'bg-orange-500 border-orange-400' : 'bg-white/10 hover:bg-white/20 border-white/10'
+                            }`}
+                            title="Give Sticker"
+                        >
+                            <Smile size={16} />
+                        </button>
+
+                        {showStickerPanel && (
+                            <div className="absolute right-12 top-0 bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-2xl p-3 shadow-2xl flex flex-wrap gap-2 w-48 animate-in slide-in-from-right-2 duration-200">
+                                <p className="w-full text-[10px] font-black text-white/50 uppercase tracking-widest mb-1 ml-1">Send a Sticker</p>
+                                {STICKERS.map(s => (
+                                    <button 
+                                        key={s} 
+                                        onClick={() => giveSticker(s)}
+                                        className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/20 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                                    >
+                                        <img src={`/stickers/${s}`} alt={s} className="w-8 h-8 object-contain" />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+
                         {slides.length > 0 && (
                             <>
                                 <div className="w-5 h-px bg-white/10 my-0.5" />
@@ -1285,6 +1551,16 @@ export default function SessionPage({ params }: SessionProps) {
                                 </button>
                             </>
                         )}
+
+                        <div className="w-5 h-px bg-white/10 my-0.5" />
+                        
+                        <button
+                            onClick={() => setShowClearConfirm(true)}
+                            className="w-9 h-9 rounded-lg flex items-center justify-center text-white/40 hover:text-red-400 transition-all bg-white/10 hover:bg-red-500/10 border border-white/10"
+                            title="Clear Board"
+                        >
+                            <Trash2 size={16} />
+                        </button>
                     </div>
                 </div>
             )}
@@ -1510,11 +1786,29 @@ export default function SessionPage({ params }: SessionProps) {
                                 onClick={async () => {
                                     setSubmittingNote(true);
                                     try {
+                                        // 1. Capture Whiteboard Snapshot
+                                        let snapshotUrl = null;
+                                        if (excalidrawAPI) {
+                                            const { exportToCanvas } = await import('@excalidraw/excalidraw');
+                                            const canvas = await exportToCanvas({
+                                                elements: excalidrawAPI.getSceneElements(),
+                                                appState: excalidrawAPI.getAppState(),
+                                                files: excalidrawAPI.getFiles(),
+                                                exportPadding: 20
+                                            });
+                                            snapshotUrl = canvas.toDataURL('image/jpeg', 0.8);
+                                            
+                                            // Background save snapshot
+                                            api.post(`/sessions/${sessionId}/whiteboard-snapshot`, { snapshotUrl }).catch(e => console.error('Snapshot failed', e));
+                                        }
+
+                                        // 2. Save Note
                                         await api.patch(`/sessions/${sessionId}/tutor-note`, { note: sessionNote });
-                                        toast.success('Note sent to parents!');
+                                        toast.success('Note & Snapshot saved!');
                                         router.push('/tutor/dashboard');
                                     } catch (error) {
-                                        toast.error('Failed to save note');
+                                        console.error('Finalize failed', error);
+                                        toast.error('Failed to end session properly');
                                         setSubmittingNote(false);
                                     }
                                 }}
@@ -1779,7 +2073,116 @@ export default function SessionPage({ params }: SessionProps) {
                     to { transform: rotate(360deg); }
                 }
                 .z-9999 { z-index: 9999; }
+                
+                @keyframes sticker-reveal {
+                    0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+                    50% { transform: scale(1.5) rotate(10deg); opacity: 1; filter: drop-shadow(0 0 30px rgba(255,215,0,0.5)); }
+                    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+                }
+                .animate-sticker-reveal {
+                    animation: sticker-reveal 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                }
             `}</style>
+
+            {/* STICKER OVERLAY */}
+            {incomingSticker && (
+                <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
+                    <div className="bg-white/10 backdrop-blur-md rounded-full p-12 lg:p-20 relative animate-sticker-reveal">
+                        <div className="absolute inset-0 bg-yellow-400/20 rounded-full blur-[80px] animate-pulse" />
+                        <img 
+                            src={`/stickers/${incomingSticker.type}`} 
+                            alt="Sticker Reward" 
+                            className="w-48 h-48 lg:w-64 lg:h-64 object-contain relative z-10"
+                        />
+                        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-center whitespace-nowrap">
+                            <h2 className="text-3xl lg:text-5xl font-black text-white italic tracking-tighter drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
+                                MARVELOUS! ⭐
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* VIEWPORT SYNC INDICATOR (STUDENT ONLY) */}
+            {followingTutor && user?.role !== 'tutor' && (
+                <div className="absolute top-20 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="bg-blue-600/90 text-white px-4 py-2 rounded-full flex items-center gap-2 border border-blue-400/30 backdrop-blur-sm shadow-xl shadow-blue-500/20">
+                        <div className="relative">
+                            <Share2 size={14} className="animate-pulse" />
+                            <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-white rounded-full animate-ping" />
+                        </div>
+                        <span className="text-xs font-black tracking-wider uppercase">Following Tutor</span>
+                    </div>
+                </div>
+            )}
+
+            {/* LASER POINTER OVERLAY */}
+            <div className="fixed inset-0 z-40 pointer-events-none overflow-hidden">
+                {Array.from(collaborators.entries()).map(([cid, data]) => {
+                    if (!data.isLaserActive || !data.pointer) return null;
+                    
+                    // Simple coordinate mapping - assumes full screen whiteboard
+                    // For more precision, we'd need to use scene coords -> viewport coords
+                    // but since Excalidraw fills the container, basic mapping is a good start.
+                    const appState = excalidrawAPI?.getAppState() || { zoom: { value: 1 }, scrollX: 0, scrollY: 0 };
+                    const zoom = typeof appState.zoom === 'number' ? appState.zoom : (appState.zoom?.value ?? 1);
+                    const x = (data.pointer.x * zoom) + appState.scrollX;
+                    const y = (data.pointer.y * zoom) + appState.scrollY;
+
+                    return (
+                        <div 
+                            key={`laser-${cid}`}
+                            className="absolute transition-all duration-75 ease-out"
+                            style={{ 
+                                left: x, 
+                                top: y,
+                                transform: 'translate(-50%, -50%)'
+                            }}
+                        >
+                            <div className="relative">
+                                <div className="w-4 h-4 bg-red-500 rounded-full blur-[2px] shadow-[0_0_15px_5px_rgba(239,68,68,0.8)]" />
+                                <div className="absolute inset-0 w-4 h-4 bg-white rounded-full scale-[0.3]" />
+                                <div className="absolute -inset-4 border border-red-500/20 rounded-full animate-ping" />
+                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-tighter whitespace-nowrap">
+                                    {data.username}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* CLEAR BOARD CONFIRMATION MODAL */}
+            {showClearConfirm && (
+                <div className="fixed inset-0 z-100 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+                    <div className="bg-gray-900 border border-white/10 rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <Trash2 className="text-red-500" size={32} />
+                        </div>
+                        <h3 className="text-xl font-bold text-white text-center mb-2">Clear Board?</h3>
+                        <p className="text-white/60 text-center text-sm mb-8">This will delete everything on the current slide. This action cannot be undone.</p>
+                        <div className="grid grid-cols-2 gap-4">
+                            <button 
+                                onClick={() => setShowClearConfirm(false)}
+                                className="py-3 px-6 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition-all"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    excalidrawAPI.updateScene({ elements: [] });
+                                    socket?.emit('whiteboard.update', { sessionId, update: { elements: [] } });
+                                    setShowClearConfirm(false);
+                                    toast.success("Board cleared");
+                                }}
+                                className="py-3 px-6 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-lg shadow-red-500/20 transition-all"
+                            >
+                                Clear All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

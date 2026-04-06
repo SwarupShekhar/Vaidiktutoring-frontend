@@ -21,7 +21,9 @@ import {
   History,
   ArrowUpRight,
   FileText,
-  X
+  X,
+  Star,
+  Layout
 } from "lucide-react";
 import { useState, Suspense } from "react";
 
@@ -498,15 +500,46 @@ function DashboardContent() {
                             <p className="text-[11px] text-gray-400 italic">No notes recorded for this session.</p>
                           )}
 
-                          {booking.sessions?.[0]?.session_recordings?.[0]?.file_url && (
-                            <a 
-                              href={booking.sessions[0].session_recordings[0].file_url}
-                              target="_blank"
-                              className="inline-flex items-center gap-1.5 text-[10px] font-black text-purple-600 hover:text-purple-800 uppercase tracking-wide group/link"
-                            >
-                              <ArrowUpRight size={12} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
-                              Watch Recording
-                            </a>
+                          <div className="flex flex-wrap gap-2">
+                            {booking.sessions?.[0]?.session_recordings?.[0]?.file_url && (
+                              <a 
+                                href={booking.sessions[0].session_recordings[0].file_url}
+                                target="_blank"
+                                className="inline-flex items-center gap-1.5 text-[10px] font-black text-purple-600 hover:text-purple-800 uppercase tracking-wide group/link bg-purple-50 px-2 py-1.5 rounded-lg border border-purple-100 transition-all"
+                              >
+                                <ArrowUpRight size={12} className="group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+                                Watch Recording
+                              </a>
+                            )}
+                            
+                            {booking.sessions?.[0]?.whiteboard_snapshot_url && (
+                              <a 
+                                href={booking.sessions[0].whiteboard_snapshot_url}
+                                target="_blank"
+                                className="inline-flex items-center gap-1.5 text-[10px] font-black text-blue-600 hover:text-blue-800 uppercase tracking-wide group/link bg-blue-50 px-2 py-1.5 rounded-lg border border-blue-100 transition-all"
+                              >
+                                <Layout size={12} className="group-hover/link:scale-110 transition-transform" />
+                                View Board
+                              </a>
+                            )}
+                          </div>
+
+                          {/* Sticker Rewards display */}
+                          {booking.sessions?.[0]?.sticker_rewards?.length > 0 && (
+                            <div className="pt-2 flex flex-wrap gap-2 items-center">
+                              <span className="text-[9px] font-black text-yellow-600 uppercase tracking-tighter">Gold Stars:</span>
+                              {booking.sessions[0].sticker_rewards.map((reward: any) => (
+                                <div key={reward.id} className="relative group/sticker">
+                                  <div className="absolute -inset-1 bg-yellow-400 rounded-full blur opacity-20 group-hover/sticker:opacity-40 transition-opacity" />
+                                  <img 
+                                    src={`/stickers/${reward.sticker}`} 
+                                    alt="Reward" 
+                                    className="w-6 h-6 object-contain relative z-10 transition-transform group-hover/sticker:scale-125" 
+                                    title="Sticker earned in this session!"
+                                  />
+                                </div>
+                              ))}
+                            </div>
                           )}
                         </div>
                       </div>
