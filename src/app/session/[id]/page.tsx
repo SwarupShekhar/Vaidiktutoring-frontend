@@ -831,15 +831,24 @@ export default function SessionPage({ params }: SessionProps) {
             }
         };
 
-        // Named handler so socket.off can actually remove it
+        // Optimized handler for real-time element sync
         const handleReceiveUpdate = (data: any) => {
             if (whiteboardRef.current.isUpdating) return;
-            whiteboardRef.current.isUpdating = true;
             const remoteElements = Array.isArray(data) ? data : (data.elements || []);
-            if (JSON.stringify(excalidrawAPI.getSceneElements()) !== JSON.stringify(remoteElements)) {
-                excalidrawAPI.updateScene({ elements: remoteElements });
+            if (!remoteElements || remoteElements.length === 0) return; // Prevent accidental clearing
+
+            whiteboardRef.current.isUpdating = true;
+            try {
+                excalidrawAPI.updateScene({ 
+                    elements: remoteElements,
+                    commitToHistory: false // Don't bloat undo stack with every stroke update
+                });
+            } finally {
+                // Return to normal mode after a small delay to catch consecutive frames
+                setTimeout(() => {
+                    whiteboardRef.current.isUpdating = false;
+                }, 10);
             }
-            requestAnimationFrame(() => { whiteboardRef.current.isUpdating = false; });
         };
 
         // Receives heavy file payloads separately
@@ -912,11 +921,21 @@ export default function SessionPage({ params }: SessionProps) {
 
         const lastSyncedFiles = { current: '' };
 
+        const lastEmitTime = { current: 0 };
+        const emitThrottle = 50; // ms
+
         const unsubscribe = excalidrawAPI.onChange((elements: any[], _appState: any, files: any) => {
+            // 1. Skip if we are currently receiving a remote update
             if (whiteboardRef.current.isUpdating) return;
 
-            socket.emit('whiteboard.update', { sessionId, update: { elements } });
+            // 2. Throttle element updates to ~20fps for performance
+            const now = Date.now();
+            if (now - lastEmitTime.current > emitThrottle) {
+                socket.emit('whiteboard.update', { sessionId, update: { elements } });
+                lastEmitTime.current = now;
+            }
 
+            // 3. Files are synced only whenever the file list changes (much rarer)
             const filesString = JSON.stringify(files);
             if (filesString !== lastSyncedFiles.current) {
                 lastSyncedFiles.current = filesString;
