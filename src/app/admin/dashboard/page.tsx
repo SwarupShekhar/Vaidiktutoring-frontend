@@ -27,7 +27,7 @@ import {
 
 export default function AdminDashboardPage() {
     const { user } = useAuthContext();
-    const [stats, setStats] = React.useState({ students: 0, parents: 0, tutors: 0, upcomingSessions: 0 });
+    const [stats, setStats] = React.useState({ students: 0, parents: 0, tutors: 0, upcomingSessions: 0, pendingAllocations: 0 });
     const [loading, setLoading] = React.useState(true);
 
     // Modal states
@@ -42,7 +42,7 @@ export default function AdminDashboardPage() {
         const fetchStats = async () => {
             try {
                 const res = await api.get('/admin/stats');
-                setStats(res.data || { students: 0, parents: 0, tutors: 0, upcomingSessions: 0 });
+                setStats(res.data || { students: 0, parents: 0, tutors: 0, upcomingSessions: 0, pendingAllocations: 0 });
             } catch (e) {
                 console.warn('Failed to fetch admin stats', e);
             } finally {
@@ -59,6 +59,7 @@ export default function AdminDashboardPage() {
             setShowAllocation(true);
         };
         window.addEventListener('open-tutor-allocation', handleOpenAllocation);
+        window.addEventListener('refresh-admin-stats', fetchStats);
         
         const handleOpenSummary = (e: any) => {
             setSummarySessionId(e.detail?.sessionId || null);
@@ -69,6 +70,7 @@ export default function AdminDashboardPage() {
         return () => {
             clearInterval(interval);
             window.removeEventListener('open-tutor-allocation', handleOpenAllocation);
+            window.removeEventListener('refresh-admin-stats', fetchStats);
             window.removeEventListener('open-admin-session-summary', handleOpenSummary);
         };
     }, []);
@@ -106,10 +108,15 @@ export default function AdminDashboardPage() {
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setShowAllocation(true)}
-                                className="px-6 py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:scale-[1.03] active:scale-95 transition-all text-sm flex items-center gap-2"
+                                className="px-6 py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:scale-[1.03] active:scale-95 transition-all text-sm flex items-center gap-2 relative"
                             >
                                 <Zap size={18} />
                                 Quick Allocation
+                                {stats.pendingAllocations > 0 && (
+                                    <span className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white animate-bounce shadow-lg">
+                                        {stats.pendingAllocations}
+                                    </span>
+                                )}
                             </button>
                         </div>
                     </div>

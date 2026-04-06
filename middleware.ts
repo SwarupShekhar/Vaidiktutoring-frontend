@@ -50,11 +50,15 @@ export default clerkMiddleware(async (auth, req) => {
         if (isPublicRoute(req)) {
             if (userId) {
                 const path = req.nextUrl.pathname;
-                if (path === '/' || path.startsWith('/home') || path.startsWith('/about') || 
-                    path.startsWith('/pricing') || path.startsWith('/login') || path.startsWith('/signup')) {
-                    
-                    const role = (sessionClaims?.publicMetadata as any)?.role || (sessionClaims?.metadata as any)?.role || 'student';
-                    
+                const marketingPaths = ['/', '/about', '/methodology', '/pricing', '/blog', '/blogs', '/careers', '/contact', '/home', '/login', '/signup'];
+                    const isMarketingPath = marketingPaths.some(p => p === path || path.startsWith(p + '/'));
+
+                    if (isMarketingPath) {
+                    const role = (sessionClaims?.publicMetadata as any)?.role || (sessionClaims?.metadata as any)?.role;
+
+                    // No role yet → mid-onboarding, allow through
+                    if (!role) return NextResponse.next();
+
                     let dashboardPath = '/dashboard';
                     if (role === 'admin') dashboardPath = '/admin/dashboard';
                     else if (role === 'tutor') dashboardPath = '/tutor/dashboard';

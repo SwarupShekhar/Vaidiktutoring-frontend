@@ -37,13 +37,13 @@ function GlassSelect({ label, value, options, onChange, placeholder, icon }: Gla
                 onBlur={() => setTimeout(() => setOpen(false), 200)} // Delay to allow click
                 className={`
                     w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all
-                    bg-black/20 hover:bg-black/30 text-left
-                    ${open ? 'border-blue-500 shadow-lg shadow-blue-500/20' : 'border-white/10 hover:border-white/20'}
+                    bg-gray-100 dark:bg-black/20 hover:bg-gray-200 dark:hover:bg-black/30 text-left
+                    ${open ? 'border-blue-500 shadow-lg shadow-blue-500/20' : 'border-gray-300 dark:border-white/10 hover:border-gray-400 dark:hover:border-white/20'}
                 `}
             >
                 <div className="flex items-center gap-3">
                     {icon && <span className="opacity-50">{icon}</span>}
-                    <span className={selected ? 'text-white' : 'text-gray-400'}>
+                    <span className={selected ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}>
                         {selected?.label || placeholder}
                     </span>
                 </div>
@@ -57,7 +57,7 @@ function GlassSelect({ label, value, options, onChange, placeholder, icon }: Gla
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute top-full left-0 right-0 mt-2 bg-[#1a1a2e] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-[250px] overflow-y-auto scrollbar-thin"
+                        className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-[250px] overflow-y-auto scrollbar-thin"
                     >
                         {options.length === 0 ? (
                             <div className="p-3 text-gray-500 text-sm text-center italic">No options available</div>
@@ -72,7 +72,7 @@ function GlassSelect({ label, value, options, onChange, placeholder, icon }: Gla
                                     }}
                                     className={`
                                         w-full text-left px-4 py-3 text-sm transition-colors flex items-center justify-between
-                                        ${value === opt.id ? 'bg-blue-600/20 text-blue-200' : 'hover:bg-white/5 text-gray-300'}
+                                        ${value === opt.id ? 'bg-blue-100 dark:bg-blue-600/20 text-blue-700 dark:text-blue-200' : 'hover:bg-gray-100 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300'}
                                     `}
                                 >
                                     {opt.label}
@@ -265,11 +265,11 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-400 to-violet-400">
                         New Session
                     </h1>
-                    <p className="text-gray-400 mt-1">Request a session in 3 simple steps.</p>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Request a session in 3 simple steps.</p>
                 </div>
 
                 {/* Steps Visual */}
-                <div className="flex bg-white/5 backdrop-blur-md rounded-2xl p-2 border border-white/10">
+                <div className="flex bg-gray-100 dark:bg-white/5 backdrop-blur-md rounded-2xl p-2 border border-gray-200 dark:border-white/10">
                     {steps.map((s, idx) => {
                         const isActive = step === idx;
                         const isDone = step > idx;
@@ -278,12 +278,12 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                                 <motion.div
                                     className={`
                                         flex items-center gap-3 px-5 py-2 rounded-xl transition-all
-                                        ${isActive ? 'bg-blue-500/20 text-blue-200 border border-blue-500/50' : ''}
-                                        ${isDone ? 'text-green-400 opacity-60' : ''}
+                                        ${isActive ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-200 border border-blue-400 dark:border-blue-500/50' : ''}
+                                        ${isDone ? 'text-green-600 dark:text-green-400 opacity-60' : ''}
                                         ${!isActive && !isDone ? 'text-gray-500' : ''}
                                     `}
                                 >
-                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isActive ? 'bg-blue-500 text-white' : 'bg-white/10'}`}>
+                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isActive ? 'bg-blue-500 text-white' : 'bg-gray-300 dark:bg-white/10 text-gray-600 dark:text-gray-400'}`}>
                                         {isDone ? <CheckCircle size={14} /> : idx + 1}
                                     </div>
                                     <div className="hidden sm:block">
@@ -301,14 +301,14 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
             {/* ERROR MSG */}
             <AnimatePresence>
                 {error && (
-                    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-500/20 text-red-200 p-4 rounded-xl border border-red-500/30 mb-6">
+                    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-200 p-4 rounded-xl border border-red-200 dark:border-red-500/30 mb-6">
                         {error}
                     </motion.div>
                 )}
             </AnimatePresence>
 
             {/* MAIN CONTENT AREA */}
-            <div className="bg-glass border border-white/10 rounded-3xl p-8 min-h-[500px] relative overflow-hidden backdrop-blur-2xl">
+            <div className="bg-white dark:bg-glass border border-gray-200 dark:border-white/10 rounded-3xl p-8 min-h-[500px] relative overflow-hidden backdrop-blur-2xl shadow-sm">
                 {/* Decorative gradients */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-violet-500/5 rounded-full blur-[100px] pointer-events-none" />
@@ -324,8 +324,8 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                             className="space-y-8 relative z-10"
                         >
                             <div className="max-w-xl mx-auto space-y-6">
-                                <h2 className="text-xl font-bold flex items-center gap-2 mb-6">
-                                    <Layers className="text-blue-400" size={20} /> Session Configuration
+                                <h2 className="text-xl font-bold flex items-center gap-2 mb-6 text-gray-900 dark:text-white">
+                                    <Layers className="text-blue-500 dark:text-blue-400" size={20} /> Session Configuration
                                 </h2>
 
                                 {/* Program Dropdown */}
@@ -383,10 +383,10 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                             className="max-w-xl mx-auto space-y-8 relative z-10"
                         >
                             <div className="space-y-6">
-                                <h2 className="text-xl font-bold flex items-center gap-2">
-                                    <Calendar className="text-green-400" size={20} /> Schedule Session
+                                <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900 dark:text-white">
+                                    <Calendar className="text-green-600 dark:text-green-400" size={20} /> Schedule Session
                                 </h2>
-                                <div className="bg-black/20 p-6 rounded-2xl border border-white/5">
+                                <div className="bg-gray-100 dark:bg-black/20 p-6 rounded-2xl border border-gray-200 dark:border-white/5">
                                     <TimeSlotPicker
                                         start={start}
                                         end={end}
@@ -407,36 +407,36 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                             className="max-w-2xl mx-auto space-y-8 relative z-10"
                         >
                             <div className="text-center mb-8">
-                                <h2 className="text-3xl font-bold text-white mb-2">Ready to Book?</h2>
-                                <p className="text-gray-400">Please review session details before confirming.</p>
+                                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Ready to Book?</h2>
+                                <p className="text-gray-500 dark:text-gray-400">Please review session details before confirming.</p>
                             </div>
 
-                            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 space-y-6 shadow-2xl">
-                                <div className="flex justify-between items-center pb-4 border-b border-white/10">
-                                    <span className="text-gray-400">Program</span>
-                                    <span className="text-xl font-bold text-white">{programs.find(p => p.id === programId)?.name}</span>
+                            <div className="bg-gray-50 dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-2xl p-8 space-y-6 shadow-md dark:shadow-2xl">
+                                <div className="flex justify-between items-center pb-4 border-b border-gray-200 dark:border-white/10">
+                                    <span className="text-gray-500 dark:text-gray-400">Program</span>
+                                    <span className="text-xl font-bold text-gray-900 dark:text-white">{programs.find(p => p.id === programId)?.name}</span>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-8">
                                     <div>
                                         <p className="text-xs text-gray-500 uppercase font-bold mb-1">Student</p>
-                                        <p className="text-lg font-medium text-blue-200">{students.find(s => s.id === studentId)?.name}</p>
+                                        <p className="text-lg font-medium text-blue-700 dark:text-blue-200">{students.find(s => s.id === studentId)?.name}</p>
                                     </div>
                                     <div className="text-right">
                                         <p className="text-xs text-gray-500 uppercase font-bold mb-1">Tutor</p>
-                                        <p className="text-lg font-medium text-orange-200 italic">To Be Assigned</p>
+                                        <p className="text-lg font-medium text-orange-600 dark:text-orange-200 italic">To Be Assigned</p>
                                     </div>
                                 </div>
 
-                                <div className="bg-black/20 rounded-xl p-4 flex justify-between items-center">
+                                <div className="bg-gray-100 dark:bg-black/20 rounded-xl p-4 flex justify-between items-center">
                                     <div>
                                         <p className="text-xs text-gray-500 uppercase font-bold mb-1">Date & Time</p>
-                                        <p className="text-white font-mono text-lg">
+                                        <p className="text-gray-900 dark:text-white font-mono text-lg">
                                             {start ? format(new Date(start), 'EEE, MMM d') : '-'}
                                         </p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-2xl font-bold text-green-400">
+                                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                                             {start ? format(new Date(start), 'h:mm a') : '-'}
                                         </p>
                                         <p className="text-xs text-gray-500">to {end ? format(new Date(end), 'h:mm a') : '-'}</p>
@@ -446,10 +446,10 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                                 <div>
                                     <p className="text-xs text-gray-500 uppercase font-bold mb-2">Subject Context</p>
                                     <div className="flex gap-2">
-                                        <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs border border-blue-500/30">
+                                        <span className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 text-xs border border-blue-300 dark:border-blue-500/30">
                                             {curricula?.find((c: any) => c.id === curriculumId)?.name}
                                         </span>
-                                        <span className="px-3 py-1 rounded-full bg-violet-500/20 text-violet-300 text-xs border border-violet-500/30">
+                                        <span className="px-3 py-1 rounded-full bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300 text-xs border border-violet-300 dark:border-violet-500/30">
                                             {subjects?.find((s: any) => s.id === subjectId)?.name}
                                         </span>
                                     </div>
@@ -459,7 +459,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                                     placeholder="Add notes for the tutor..."
                                     value={note}
                                     onChange={e => setNote(e.target.value)}
-                                    className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm focus:border-blue-500 focus:outline-none transition-colors"
+                                    className="w-full bg-white dark:bg-black/20 border border-gray-300 dark:border-white/10 rounded-xl p-4 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
                                     rows={3}
                                 />
                             </div>
@@ -473,7 +473,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                 <button
                     disabled={step === 0 || submitting}
                     onClick={() => setStep(s => Math.max(0, s - 1) as Step)}
-                    className="px-6 py-3 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 transition-all font-medium disabled:opacity-0"
+                    className="px-6 py-3 rounded-xl border border-gray-300 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-all font-medium disabled:opacity-0"
                 >
                     Back
                 </button>
