@@ -186,11 +186,11 @@ export const MANIPULATIVES_DATA = {
         // Numbers 1-30 above each cm mark (except 0)
         ...Array.from({length: 30}).map((_, i) => ({
           type: 'text', 
-          x: -300 + ((i + 1) * 20), 
-          y: -35, // Slightly higher for better visibility
+          x: -300 + ((i + 1) * 20) - 10, // Center: tick position minus half of width
+          y: -35, 
           text: (i + 1).toString(), 
           fontSize: 10, 
-          strokeColor: '#1e293b', // Darker color
+          strokeColor: '#1e293b', 
           textAlign: 'center',
           width: 20
         })),
