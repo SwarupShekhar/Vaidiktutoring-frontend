@@ -159,6 +159,21 @@ export default function SessionPage({ params }: SessionProps) {
 
     const slideRef = useRef(0);
     const annotationsRef = useRef<Record<number, any[]>>({});
+    const [showLibraryTip, setShowLibraryTip] = useState(false);
+
+    useEffect(() => {
+        if (user?.role === 'tutor') {
+            const hasSeenTip = localStorage.getItem('hasSeenLibraryTip');
+            if (!hasSeenTip) {
+                setShowLibraryTip(true);
+                const timer = setTimeout(() => {
+                    setShowLibraryTip(false);
+                    localStorage.setItem('hasSeenLibraryTip', 'true');
+                }, 3000);
+                return () => clearTimeout(timer);
+            }
+        }
+    }, [user?.role]);
 
     useEffect(() => {
         slideRef.current = currentSlideIndex;
@@ -901,8 +916,12 @@ export default function SessionPage({ params }: SessionProps) {
                             appState: { viewBackgroundColor: '#ffffff', currentItemFontFamily: 1, theme: 'light', zenModeEnabled: false, viewModeEnabled: user?.role === 'student' || user?.role === 'parent' ? !hasPenAccess : false },
                         }}
                         UIOptions={{
-                            canvasActions: { loadScene: false, saveToActiveFile: false, export: { saveFileToDisk: true }, saveAsImage: true, toggleTheme: false }
+                            canvasActions: { loadScene: false, saveToActiveFile: false, export: { saveFileToDisk: true }, saveAsImage: true, toggleTheme: false },
+                            tools: { image: true },
+                            dockedSidebarBreakpoint: 0,
                         }}
+                        libraryReturnUrl={undefined}
+                        onLibraryChange={() => {}}
                     />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-text-secondary bg-gray-50">
@@ -928,7 +947,13 @@ export default function SessionPage({ params }: SessionProps) {
                         onMouseDown={handleMouseDown}
                         className="absolute top-0 left-0 right-0 h-10 bg-linear-to-r from-purple-600 to-indigo-600 cursor-move flex items-center justify-between px-4 z-10"
                     >
-                        <span className="text-white text-sm font-bold">📹 Live Session</span>
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-0.5">Session Room</span>
+                            <span className="text-sm font-black text-white flex items-center gap-2">
+                                {booking?.students?.first_name || 'Student'}&apos;s Classroom
+                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+                            </span>
+                        </div>
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setIsExpanded(!isExpanded)}
@@ -1067,7 +1092,7 @@ export default function SessionPage({ params }: SessionProps) {
 
             {/* ── TUTOR TOOLS STRIP (right side, vertical) ─────────────────── */}
             {user?.role === 'tutor' && (
-                <div className="absolute top-[60px] right-2 z-10">
+                <div className="absolute top-[60px] right-2 z-50 pointer-events-auto">
                     <div className="bg-black/70 backdrop-blur-xl border border-white/10 rounded-xl p-1.5 flex flex-col gap-1.5 items-center">
                         <span className="text-white/20 text-[8px] font-black tracking-widest pt-0.5 pb-1">TOOLS</span>
 
@@ -1078,10 +1103,20 @@ export default function SessionPage({ params }: SessionProps) {
 
                         <button
                             onClick={() => setShowAssetLibrary(!showAssetLibrary)}
-                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all ${showAssetLibrary ? 'bg-purple-600' : 'bg-white/10 hover:bg-white/20'}`}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all relative ${showAssetLibrary ? 'bg-purple-600' : 'bg-white/10 hover:bg-white/20'}`}
                             title="Asset Library"
                         >
                             <Library size={16} />
+                            {showLibraryTip && (
+                                <>
+                                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse border-2 border-black" />
+                                    <div className="absolute right-12 top-0 bg-green-600 text-white text-[10px] font-black px-3 py-2 rounded-xl whitespace-nowrap shadow-2xl animate-in fade-in slide-in-from-right-2 duration-300 pointer-events-none">
+                                        Click to open Manipulatives & Assets
+                                        <div className="absolute right-[-4px] top-1/2 -translate-y-1/2 w-2 h-2 bg-green-600 rotate-45" />
+                                    </div>
+                                </>
+                            )}
+                            <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-900/90 text-[10px] font-black text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap border border-white/10 pointer-events-none shadow-xl">ASSET LIBRARY</span>
                         </button>
 
                         <button
@@ -1172,7 +1207,7 @@ export default function SessionPage({ params }: SessionProps) {
 
             {/* ASSET LIBRARY PANEL (TUTOR ONLY) - Hidden on Mobile */}
             {user?.role === 'tutor' && showAssetLibrary && (
-                <div className="absolute left-4 top-[60px] bottom-24 w-72 hidden md:flex bg-white/95 backdrop-blur-xl border border-purple-500/20 shadow-2xl rounded-2xl p-4 overflow-y-auto flex-col pointer-events-auto z-40">
+                <div className="absolute left-4 top-[60px] bottom-24 w-72 hidden md:flex bg-white/95 backdrop-blur-xl border border-purple-500/20 shadow-2xl rounded-2xl p-4 overflow-y-auto flex-col pointer-events-auto z-50">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="font-bold text-lg text-purple-900 leading-none">Library</h2>
                         <button onClick={() => setShowAssetLibrary(false)} className="text-gray-400 hover:text-gray-600">
@@ -1198,7 +1233,7 @@ export default function SessionPage({ params }: SessionProps) {
                     <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
                         {libraryTab === 'assets' ? (
                             <div className="grid grid-cols-1 gap-3">
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tight mb-1">Uploaded Assets</p>
+                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1 ml-1">Uploaded Assets</p>
                                 {mockLibraryAssets.map(asset => (
                                     <div 
                                         key={asset.id}
@@ -1244,7 +1279,7 @@ export default function SessionPage({ params }: SessionProps) {
                                                             className="w-full flex flex-col items-center justify-center p-3 bg-gray-50 border border-gray-100 rounded-xl hover:border-purple-300 hover:bg-white hover:shadow-lg hover:shadow-purple-500/10 transition-all active:scale-95"
                                                         >
                                                             <span className="text-2xl mb-1 group-hover:scale-110 transition-transform duration-300">{item.thumbnail}</span>
-                                                            <span className="text-[9px] font-bold text-gray-600 text-center leading-tight group-hover:text-purple-600 transition-colors">{item.label}</span>
+                                                            <span className="text-[9px] font-black text-gray-700 text-center leading-tight group-hover:text-purple-600 transition-colors">{item.label}</span>
                                                         </button>
                                                         {item.id.includes('dice') && (
                                                             <button 
@@ -1291,10 +1326,10 @@ export default function SessionPage({ params }: SessionProps) {
             {/* END SESSION NOTE MODAL (TUTOR ONLY) */}
             {showNoteModal && (
                 <div className="fixed inset-0 z-100 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+                    <div className="bg-gray-900 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 border border-white/10">
                         <div className="p-6">
-                            <h2 className="text-2xl font-black text-gray-900 mb-2">Wrap Up Session</h2>
-                            <p className="text-sm text-gray-500 mb-6">
+                            <h2 className="text-2xl font-black text-white mb-2">Wrap Up Session</h2>
+                            <p className="text-sm text-white/60 mb-6">
                                 Please leave a quick note for the parents about {booking?.students?.first_name || 'the student'}&apos;s progress today.
                             </p>
 
@@ -1303,18 +1338,18 @@ export default function SessionPage({ params }: SessionProps) {
                                     value={sessionNote}
                                     onChange={(e) => setSessionNote(e.target.value.slice(0, 500))}
                                     placeholder="e.g. Alice did great with fractions today! We should focus more on long division next time..."
-                                    className="w-full h-40 p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-purple-500 focus:ring-0 transition-all text-sm resize-none"
+                                    className="w-full h-40 p-4 bg-white/5 border-2 border-white/10 rounded-2xl focus:border-purple-500 focus:ring-0 transition-all text-sm text-white placeholder:text-white/20 resize-none"
                                 />
-                                <div className="absolute bottom-3 right-3 text-[10px] font-bold text-gray-400">
+                                <div className="absolute bottom-3 right-3 text-[10px] font-bold text-white/40">
                                     {500 - sessionNote.length} characters remaining
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-gray-50 p-4 flex gap-3">
+                        <div className="bg-white/5 p-4 flex gap-3 border-t border-white/10">
                             <button
                                 onClick={() => router.push('/tutor/dashboard')}
-                                className="flex-1 px-4 py-3 text-sm font-bold text-gray-400 hover:text-gray-600 transition-colors"
+                                className="flex-1 px-4 py-3 text-sm font-bold text-white/40 hover:text-white/70 transition-colors"
                             >
                                 Not now, just end
                             </button>
@@ -1381,30 +1416,30 @@ export default function SessionPage({ params }: SessionProps) {
             {/* QUICK CHECK / POLL MODAL (TUTOR ONLY) */}
             {showPollModal && (
                 <div className="fixed inset-0 z-100 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+                    <div className="bg-gray-900 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200 border border-white/10">
                         <div className="p-6">
                             <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-xl font-black text-gray-900">Push a Quick Check</h2>
-                                <button onClick={() => setShowPollModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <h2 className="text-xl font-black text-white">Push a Quick Check</h2>
+                                <button onClick={() => setShowPollModal(false)} className="text-white/40 hover:text-white/70">
                                     <X size={20} />
                                 </button>
                             </div>
                             
-                            <label className="block text-[10px] font-black text-purple-600 uppercase tracking-widest mb-1.5 ml-1">Question (Max 120 chars)</label>
+                            <label className="block text-[10px] font-black text-purple-400 uppercase tracking-widest mb-1.5 ml-1">Question (Max 120 chars)</label>
                             <input 
                                 type="text"
                                 maxLength={120}
                                 value={pollQuestion}
                                 onChange={(e) => setPollQuestion(e.target.value)}
                                 placeholder="e.g. What is the square root of 64?"
-                                className="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl focus:border-purple-500 focus:ring-0 transition-all text-sm mb-4"
+                                className="w-full p-4 bg-white/5 border-2 border-white/10 rounded-2xl focus:border-purple-500 focus:ring-0 transition-all text-sm text-white placeholder:text-white/20 mb-4"
                             />
 
-                            <label className="block text-[10px] font-black text-purple-600 uppercase tracking-widest mb-1.5 ml-1">Options (Min 2)</label>
+                            <label className="block text-[10px] font-black text-purple-400 uppercase tracking-widest mb-1.5 ml-1">Options (Min 2)</label>
                             <div className="space-y-2 mb-6">
                                 {['A', 'B', 'C', 'D'].map((label, idx) => (
                                     <div key={label} className="relative">
-                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-purple-400">{label}</div>
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-purple-400/60">{label}</div>
                                         <input 
                                             type="text"
                                             value={pollOptions[idx]}
@@ -1414,7 +1449,7 @@ export default function SessionPage({ params }: SessionProps) {
                                                 setPollOptions(newOpts);
                                             }}
                                             placeholder={`Option ${label}`}
-                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-purple-500 focus:ring-0 transition-all text-sm"
+                                            className="w-full pl-10 pr-4 py-3 bg-white/5 border-2 border-white/10 rounded-xl focus:border-purple-500 focus:ring-0 transition-all text-sm text-white placeholder:text-white/20"
                                         />
                                     </div>
                                 ))}
@@ -1449,15 +1484,15 @@ export default function SessionPage({ params }: SessionProps) {
             {/* TUTOR ACTIVE POLL RESULTS PANEL */}
             {user?.role === 'tutor' && activePoll && (
                 <div className="absolute top-[60px] left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-4">
-                    <div className="bg-white/95 backdrop-blur-xl border border-purple-200 rounded-2xl shadow-xl p-5 animate-in slide-in-from-top-4 duration-300">
+                    <div className="bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl p-5 animate-in slide-in-from-top-4 duration-300">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Live Poll Active</span>
+                                <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">Live Poll Active</span>
                             </div>
-                            <span className="text-[10px] font-bold text-gray-400">{pollResults?.totalResponses || 0} Responses</span>
+                            <span className="text-[10px] font-bold text-white/40">{pollResults?.totalResponses || 0} Responses</span>
                         </div>
-                        <h3 className="text-sm font-bold text-gray-900 mb-4">{activePoll.question}</h3>
+                        <h3 className="text-sm font-bold text-white mb-4">{activePoll.question}</h3>
                         
                         <div className="space-y-2 mb-6">
                             {activePoll.options.map((opt, idx) => {
@@ -1465,14 +1500,14 @@ export default function SessionPage({ params }: SessionProps) {
                                 const total = pollResults?.totalResponses || 0;
                                 const pct = total > 0 ? Math.round((count / total) * 100) : 0;
                                 return (
-                                    <div key={idx} className="relative h-8 bg-gray-50 rounded-lg overflow-hidden border border-gray-100">
+                                    <div key={idx} className="relative h-8 bg-white/5 rounded-lg overflow-hidden border border-white/10">
                                         <div 
-                                            className="absolute inset-y-0 left-0 bg-purple-100 border-r border-purple-200 transition-all duration-500 ease-out" 
+                                            className="absolute inset-y-0 left-0 bg-purple-500/20 border-r border-purple-500/30 transition-all duration-500 ease-out" 
                                             style={{ width: `${pct}%` }} 
                                         />
                                         <div className="absolute inset-0 px-3 flex items-center justify-between text-[11px] font-medium">
-                                            <span className="text-gray-900 truncate pr-4">{opt}</span>
-                                            <span className="text-purple-600 font-bold">{count} ({pct}%)</span>
+                                            <span className="text-white truncate pr-4">{opt}</span>
+                                            <span className="text-purple-400 font-bold">{count} ({pct}%)</span>
                                         </div>
                                     </div>
                                 );
@@ -1481,7 +1516,7 @@ export default function SessionPage({ params }: SessionProps) {
                         
                         <button
                             onClick={() => socket?.emit('poll:close', { sessionId, userId: user?.id })}
-                            className="w-full py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
+                            className="w-full py-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
                         >
                             Close Poll & Show Results
                         </button>
@@ -1492,13 +1527,13 @@ export default function SessionPage({ params }: SessionProps) {
             {/* STUDENT POLL OVERLAY */}
             {user?.role === 'student' && activePoll && (
                 <div className="fixed inset-0 z-40 bg-purple-900/40 backdrop-blur-lg flex items-center justify-center p-6 pb-24">
-                    <div className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+                    <div className="bg-gray-900 rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/10">
                         <div className="p-8 md:p-10 text-center">
-                            <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <BarChart className="text-purple-600" size={32} />
+                            <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <BarChart className="text-purple-400" size={32} />
                             </div>
-                            <h2 className="text-sm font-black text-purple-600 uppercase tracking-widest mb-2">Quick Check!</h2>
-                            <h3 className="text-2xl font-black text-gray-900 mb-8 leading-tight">{activePoll.question}</h3>
+                            <h2 className="text-sm font-black text-purple-400 uppercase tracking-widest mb-2">Quick Check!</h2>
+                            <h3 className="text-2xl font-black text-white mb-8 leading-tight">{activePoll.question}</h3>
                             
                             {studentSelection === null ? (
                                 <div className="grid grid-cols-1 gap-3">
@@ -1509,10 +1544,10 @@ export default function SessionPage({ params }: SessionProps) {
                                                 setStudentSelection(idx);
                                                 socket?.emit('poll:respond', { sessionId, userId: user.id, optionIndex: idx });
                                             }}
-                                            className="p-5 bg-gray-50 hover:bg-purple-600 hover:text-white border-2 border-gray-100 hover:border-purple-400 rounded-2xl text-left font-bold transition-all transform active:scale-[0.98] group"
+                                            className="p-5 bg-white/5 hover:bg-purple-600 text-white border-2 border-white/10 hover:border-purple-400 rounded-2xl text-left font-bold transition-all transform active:scale-[0.98] group"
                                         >
                                             <div className="flex items-center gap-4">
-                                                <div className="w-8 h-8 rounded-lg bg-white group-hover:bg-purple-500 shadow-sm flex items-center justify-center text-sm font-black text-purple-600 group-hover:text-white transition-colors">
+                                                <div className="w-8 h-8 rounded-lg bg-white/10 group-hover:bg-purple-500 shadow-sm flex items-center justify-center text-sm font-black text-purple-400 group-hover:text-white transition-colors">
                                                     {['A', 'B', 'C', 'D'][idx]}
                                                 </div>
                                                 {opt}
@@ -1522,11 +1557,11 @@ export default function SessionPage({ params }: SessionProps) {
                                 </div>
                             ) : (
                                 <div className="py-10">
-                                    <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <div className="w-12 h-12 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <Smile size={24} />
                                     </div>
-                                    <p className="text-lg font-bold text-gray-900">Answer submitted!</p>
-                                    <p className="text-sm text-gray-500 mt-1">Waiting for the tutor to show results...</p>
+                                    <p className="text-lg font-bold text-white">Answer submitted!</p>
+                                    <p className="text-sm text-white/50 mt-1">Waiting for the tutor to show results...</p>
                                 </div>
                             )}
                         </div>
@@ -1537,13 +1572,13 @@ export default function SessionPage({ params }: SessionProps) {
             {/* FINAL RESULTS POPUP (FOR EVERYONE) */}
             {finalPollResults && (
                 <div className="fixed inset-0 z-100 bg-black/60 backdrop-blur-md flex items-center justify-center p-6">
-                    <div className="bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+                    <div className="bg-gray-900 rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/10">
                         <div className="p-8 text-center">
-                            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <div className="w-16 h-16 bg-green-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
                                 <span className="text-3xl">📊</span>
                             </div>
-                            <h2 className="text-xs font-black text-green-600 uppercase tracking-widest mb-2">Poll Results</h2>
-                            <h3 className="text-xl font-bold text-gray-900 mb-6">{finalPollResults.question}</h3>
+                            <h2 className="text-xs font-black text-green-500 uppercase tracking-widest mb-2">Poll Results</h2>
+                            <h3 className="text-xl font-bold text-white mb-6">{finalPollResults.question}</h3>
                             
                             <div className="space-y-2 text-left">
                                 {finalPollResults.options.map((opt, idx) => {
@@ -1551,22 +1586,23 @@ export default function SessionPage({ params }: SessionProps) {
                                     const total = finalPollResults.totalResponses || 0;
                                     const pct = total > 0 ? Math.round((count / total) * 100) : 0;
                                     return (
-                                        <div key={idx} className="relative h-10 bg-gray-50 rounded-xl overflow-hidden border border-gray-100">
+                                        <div key={idx} className="relative h-10 bg-white/5 rounded-xl overflow-hidden border border-white/10">
                                             <div 
-                                                className="absolute inset-y-0 left-0 bg-green-100/50 transition-all duration-700" 
+                                                className="absolute inset-y-0 left-0 bg-green-500/20 border-r border-green-500/30 transition-all duration-700 ease-out" 
                                                 style={{ width: `${pct}%` }} 
                                             />
                                             <div className="absolute inset-0 px-4 flex items-center justify-between text-xs font-bold">
-                                                <span className="text-gray-700">{opt}</span>
-                                                <span className="text-green-600">{pct}%</span>
+                                                <span className="text-white truncate pr-4">{opt}</span>
+                                                <span className="text-green-400">{count} ({pct}%)</span>
                                             </div>
                                         </div>
                                     );
                                 })}
                             </div>
-                            <p className="text-[10px] font-bold text-gray-400 mt-6 uppercase tracking-widest">
-                                Total Class Responses: {finalPollResults.totalResponses}
-                            </p>
+                            
+                            <div className="mt-8 pt-6 border-t border-white/5">
+                                <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Closed by tutor</p>
+                            </div>
                         </div>
                     </div>
                 </div>
