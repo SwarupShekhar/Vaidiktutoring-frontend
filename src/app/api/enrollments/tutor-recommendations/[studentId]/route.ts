@@ -4,14 +4,13 @@ import api from '@/app/lib/api';
 
 export async function GET(
   req: Request,
-  props: { params: Promise<{ studentId: string }> }
+  { params }: { params: Promise<{ studentId: string }> }
 ) {
   try {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const params = await props.params;
-    const studentId = params.studentId;
+    const { studentId } = await params;
     const response = await api.get(`/enrollments/tutor-recommendations/${studentId}`);
     return NextResponse.json(response.data);
   } catch (error: any) {

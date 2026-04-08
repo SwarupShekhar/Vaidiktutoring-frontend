@@ -308,7 +308,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
             </AnimatePresence>
 
             {/* MAIN CONTENT AREA */}
-            <div className="bg-white dark:bg-slate-900/60 border border-gray-200 dark:border-white/10 rounded-3xl p-8 min-h-[500px] relative overflow-hidden backdrop-blur-2xl shadow-sm">
+            <div className="bg-white dark:bg-slate-900/60 border border-gray-200 dark:border-white/10 rounded-3xl p-8 min-h-[500px] pb-32 xl:pb-48 overflow-visible relative backdrop-blur-2xl shadow-sm">
                 {/* Decorative gradients */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-violet-500/5 rounded-full blur-[100px] pointer-events-none" />
