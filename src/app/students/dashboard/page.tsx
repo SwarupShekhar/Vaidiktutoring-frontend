@@ -26,6 +26,8 @@ import {
   Flame,
   X,
   Trophy,
+  PlayCircle,
+  Video,
 } from 'lucide-react';
 import { differenceInMinutes, format, isToday, isTomorrow, addDays, startOfWeek } from 'date-fns';
 import { api } from '@/app/lib/api';
@@ -365,7 +367,58 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
         </motion.section>
       )}
 
-      {/* Weekly schedule */}
+      {/* Tutor Feedback */}
+      {progressSummary?.recentFeedback && progressSummary.recentFeedback.length > 0 && (
+        <motion.section variants={itemVariants} className="space-y-4">
+          <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <MessageCircle size={20} className="text-blue-500" /> Tutor Feedback
+          </h3>
+          <div className="space-y-3">
+            {progressSummary.recentFeedback.map((fb: any) => (
+              <div key={fb.sessionId} className="bg-surface rounded-2xl p-4 border border-border shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-foreground">{fb.subject}</span>
+                  <span className="text-xs text-text-secondary">
+                    {fb.date ? new Date(fb.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}
+                  </span>
+                </div>
+                <p className="text-sm text-text-secondary leading-relaxed">{fb.note}</p>
+              </div>
+            ))}
+          </div>
+        </motion.section>
+      )}
+
+      {/* Class Recordings */}
+      {progressSummary?.recentRecordings && progressSummary.recentRecordings.length > 0 && (
+        <motion.section variants={itemVariants} className="space-y-4">
+          <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <Video size={20} className="text-purple-500" /> Class Recordings
+          </h3>
+          <div className="space-y-3">
+            {progressSummary.recentRecordings.map((rec: any) => (
+              <div key={rec.sessionId} className="bg-surface rounded-2xl p-4 border border-border shadow-sm flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-semibold text-foreground">{rec.subject}</div>
+                  <div className="text-xs text-text-secondary">
+                    {rec.date ? new Date(rec.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) : 'Date TBD'}
+                  </div>
+                </div>
+                <a
+                  href={`${process.env.NEXT_PUBLIC_API_URL || 'https://k-12-backend.onrender.com'}/sessions/${rec.sessionId}/recordings/${rec.recordingId}/stream`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
+                >
+                  <PlayCircle size={16} /> Watch
+                </a>
+              </div>
+            ))}
+          </div>
+        </motion.section>
+      )}
+
+
       <motion.div variants={itemVariants} ref={scheduleRef}
         className="bg-surface rounded-3xl p-6 border border-border shadow-sm">
         <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">

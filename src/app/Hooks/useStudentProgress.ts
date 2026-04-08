@@ -16,6 +16,19 @@ export interface ProgressSummary {
     subject: string;
     level: 'improving' | 'steady' | 'needs_work';
   }[];
+  recentFeedback?: {
+    sessionId: string;
+    date: string;
+    subject: string;
+    note: string;
+  }[];
+  recentRecordings?: {
+    sessionId: string;
+    date: string;
+    subject: string;
+    recordingId: string;
+    blobName: string;
+  }[];
 }
 
 export function useStudentProgress(studentId?: string) {

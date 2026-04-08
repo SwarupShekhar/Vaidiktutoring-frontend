@@ -161,6 +161,10 @@ export default function SessionPage({ params }: SessionProps) {
         "crown.png", "Diamond.png", "Dinosaur.png", "Flame.png", "Rainbow.png",
         "Rocket.png", "Shining Star.png", "Star.png", "Trophy.png", "Unicorn.png"
     ];
+    // Map normalized key → original filename for rendering sticker images
+    const STICKER_FILE_MAP: Record<string, string> = Object.fromEntries(
+        STICKERS.map(f => [f.replace(/\.png$/i, '').toLowerCase().replace(/\s+/g, ''), f])
+    ); // e.g. { "shiningstar": "Shining Star.png", "crown": "crown.png", ... }
 
     // Viewport Sync & Laser State
     const [isFocusMode, setIsFocusMode] = useState(false);
@@ -2091,7 +2095,7 @@ export default function SessionPage({ params }: SessionProps) {
                     <div className="bg-white/10 backdrop-blur-md rounded-full p-12 lg:p-20 relative animate-sticker-reveal">
                         <div className="absolute inset-0 bg-yellow-400/20 rounded-full blur-[80px] animate-pulse" />
                         <img
-                            src={`/stickers/${incomingSticker.type}`}
+                            src={`/stickers/${STICKER_FILE_MAP[incomingSticker.type] || incomingSticker.type + '.png'}`}
                             alt="Sticker Reward"
                             className="w-48 h-48 lg:w-64 lg:h-64 object-contain relative z-10"
                         />
