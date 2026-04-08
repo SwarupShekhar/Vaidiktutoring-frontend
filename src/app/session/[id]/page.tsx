@@ -13,9 +13,9 @@ import confetti from 'canvas-confetti';
 // @ts-ignore
 import * as pdfjsLib from 'pdfjs-dist';
 import { toast } from 'sonner';
-import { 
-    Library, 
-    FileUp, 
+import {
+    Library,
+    FileUp,
     LogOut,
     Timer,
     Smile,
@@ -31,7 +31,7 @@ import {
 import { MANIPULATIVES_DATA, DICE_FACES } from '../manipulatives-data';
 
 if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 }
 
 interface BookingDetails {
@@ -102,13 +102,13 @@ export default function SessionPage({ params }: SessionProps) {
     // Session HUD State
     const [snapshotExpanded, setSnapshotExpanded] = useState(false);
     const [snapshotHidden, setSnapshotHidden] = useState(false);
-    
+
     // Note Modal State
     const [showNoteModal, setShowNoteModal] = useState(false);
     const [sessionNote, setSessionNote] = useState('');
     const [submittingNote, setSubmittingNote] = useState(false);
     const [showClearConfirm, setShowClearConfirm] = useState(false);
-    
+
     const [socket, setSocket] = useState<Socket | null>(null);
     const sessionStartRef = useRef<number>(Date.now());
     const sessionDurationRef = useRef<number>(60);
@@ -117,7 +117,7 @@ export default function SessionPage({ params }: SessionProps) {
     const [timeRemaining, setTimeRemaining] = useState(((booking as any)?.duration || 60) * 60);
     const [showWrapUp, setShowWrapUp] = useState(false);
     const [reactions, setReactions] = useState<{ id: string; emoji: string; x: number; delay?: number }[]>([]);
-    
+
     // Whiteboard Multi-Slide State
     const [slides, setSlides] = useState<string[]>([]);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
@@ -158,7 +158,7 @@ export default function SessionPage({ params }: SessionProps) {
     const [showStickerPanel, setShowStickerPanel] = useState(false);
     const [incomingSticker, setIncomingSticker] = useState<{ type: string; id: string } | null>(null);
     const STICKERS = [
-        "crown.png", "Diamond.png", "Dinosaur.png", "Flame.png", "Rainbow.png", 
+        "crown.png", "Diamond.png", "Dinosaur.png", "Flame.png", "Rainbow.png",
         "Rocket.png", "Shining Star.png", "Star.png", "Trophy.png", "Unicorn.png"
     ];
 
@@ -300,11 +300,11 @@ export default function SessionPage({ params }: SessionProps) {
         // 4. Listen for stickers
         newSocket.on('sticker:received', (payload: { stickerType: string; studentName: string }) => {
             console.log('[Session] Sticker received:', payload.stickerType);
-            
+
             // Show animation
             const id = Math.random().toString();
             setIncomingSticker({ type: payload.stickerType, id });
-            
+
             if (user?.role === 'student' || user?.role === 'parent') {
                 toast(`⭐ Great job! ${payload.studentName} received a sticker!`, { duration: 4000 });
                 confetti({
@@ -331,7 +331,7 @@ export default function SessionPage({ params }: SessionProps) {
                         zoom: { value: payload.zoom }
                     }
                 });
-                
+
                 // Reset following indicator after some time if no updates
                 const timer = setTimeout(() => setFollowingTutor(false), 2000);
                 return () => clearTimeout(timer);
@@ -346,16 +346,16 @@ export default function SessionPage({ params }: SessionProps) {
     // Timer Logic
     useEffect(() => {
         if (!hasJoined || !booking) return;
-        
+
         const interval = setInterval(() => {
             const startTime = sessionStartRef.current;
             const now = Date.now();
-            
+
             // Derive remaining from dynamic session length
             const durationMs = (sessionDurationRef.current || 60) * 60 * 1000;
             const elapsedMs = now - startTime;
             const remaining = Math.max(0, Math.floor((durationMs - elapsedMs) / 1000));
-            
+
             setTimeRemaining(prev => {
                 if (remaining <= 10 * 60 && prev > 10 * 60) {
                     setShowWrapUp(true);
@@ -377,7 +377,7 @@ export default function SessionPage({ params }: SessionProps) {
     const sendReaction = (emoji: string) => {
         if (!socket) return;
         socket.emit('session.reaction', { sessionId, emoji });
-        
+
         // Spawn 6-8 emojis at random x positions
         const count = 6 + Math.floor(Math.random() * 3);
         const newReactions = Array.from({ length: count }).map(() => ({
@@ -386,7 +386,7 @@ export default function SessionPage({ params }: SessionProps) {
             x: Math.random() * 90 + 5, // 5% to 95% width
             delay: Math.random() * 0.5 // staggered start
         }));
-        
+
         setReactions(prev => [...prev, ...newReactions]);
         setTimeout(() => {
             setReactions(prev => prev.filter(r => !newReactions.find(nr => nr.id === r.id)));
@@ -475,13 +475,13 @@ export default function SessionPage({ params }: SessionProps) {
 
     const importImageToExcalidraw = useCallback(async (dataUrl: string, customFileId?: string) => {
         if (!excalidrawAPI) return;
-        
+
         const res = await fetch(dataUrl);
         const blob = await res.blob();
-        
+
         const fileId = customFileId || Math.random().toString(36).substring(7);
         const mimeType = blob.type;
-        
+
         excalidrawAPI.addFiles([{
             id: fileId,
             dataURL: dataUrl,
@@ -522,8 +522,8 @@ export default function SessionPage({ params }: SessionProps) {
                     roughness: 0,
                     opacity: 100,
                     angle: 0,
-                    x: centerX - targetWidth/2,
-                    y: centerY - targetHeight/2,
+                    x: centerX - targetWidth / 2,
+                    y: centerY - targetHeight / 2,
                     strokeColor: 'transparent',
                     backgroundColor: 'transparent',
                     width: targetWidth,
@@ -567,10 +567,10 @@ export default function SessionPage({ params }: SessionProps) {
         try {
             const appState = excalidrawAPI.getAppState();
             const zoom = typeof appState.zoom === 'number' ? appState.zoom : (appState.zoom?.value ?? 1);
-            
+
             const key = manipulative.id;
             const lastPos = lastInsertionPositions.current[key];
-            
+
             // Calculate center of visible viewport in scene coordinates
             let centerX, centerY;
             if (lastPos) {
@@ -630,7 +630,7 @@ export default function SessionPage({ params }: SessionProps) {
                             type: "text",
                             x: shape.x + (shape.width / 2) - (el.label.length * 4), // Rough centering
                             y: shape.y + (shape.height / 2) - (fontSize / 2),
-                            width: el.label.length * 8, 
+                            width: el.label.length * 8,
                             height: fontSize * 1.2,
                             text: el.label,
                             fontSize,
@@ -737,13 +737,13 @@ export default function SessionPage({ params }: SessionProps) {
     // Give Sticker Logic
     const giveSticker = (stickerType: string) => {
         if (!socket || user?.role !== 'tutor' || !booking?.students?.id) return;
-        
+
         socket.emit('sticker:give', {
             sessionId,
             studentId: booking.students.id,
             stickerType
         });
-        
+
         setShowStickerPanel(false);
         toast.success(`Sticker sent to ${booking.students.first_name}!`);
     };
@@ -757,7 +757,7 @@ export default function SessionPage({ params }: SessionProps) {
         const currentElements = excalidrawAPI.getSceneElements();
         // Filter out existing slide images
         const annotationsOnly = currentElements.filter((el: any) => el.type !== 'image' || !el.fileId?.startsWith('slide_'));
-        
+
         setSlideAnnotations(prev => {
             const next = { ...prev, [slideRef.current]: annotationsOnly };
             annotationsRef.current = next;
@@ -773,15 +773,15 @@ export default function SessionPage({ params }: SessionProps) {
         // 4. Restore annotations for new slide
         const nextAnnotations = annotationsRef.current[index] || [];
         const currentScene = excalidrawAPI.getSceneElements();
-        
-        excalidrawAPI.updateScene({ 
+
+        excalidrawAPI.updateScene({
             elements: [...currentScene, ...nextAnnotations],
             appState: { isLoading: false }
         });
 
         setCurrentSlideIndex(index);
         slideRef.current = index;
-        
+
         if (!skipEmit) {
             socket?.emit('whiteboard.slideChange', { sessionId, index });
         }
@@ -904,7 +904,7 @@ export default function SessionPage({ params }: SessionProps) {
             if (payload.studentId === user?.id || (user?.role === 'student')) {
                 const isNowGranted = !!payload.hasAccess;
                 setHasPenAccess(isNowGranted);
-                
+
                 if (isNowGranted) {
                     toast.success('Pen access granted by tutor');
                     excalidrawAPI?.updateScene({ appState: { viewModeEnabled: false } });
@@ -919,7 +919,7 @@ export default function SessionPage({ params }: SessionProps) {
         const handleConfetti = () => {
             const isYoungStudent = user?.role === 'student' && studentData.grade > 0 && studentData.grade <= 6;
             const isTutor = user?.role === 'tutor';
-            
+
             if (isTutor || isYoungStudent) {
                 const config = {
                     particleCount: 200,
@@ -946,7 +946,7 @@ export default function SessionPage({ params }: SessionProps) {
         // Collaborative Cursor Handling
         const handlePointerUpdate = (payload: any) => {
             if (payload.userId === user?.id) return;
-            
+
             setCollaborators(prev => {
                 const next = new Map(prev);
                 next.set(payload.userId, {
@@ -980,7 +980,7 @@ export default function SessionPage({ params }: SessionProps) {
 
             whiteboardRef.current.isUpdating = true;
             try {
-                excalidrawAPI.updateScene({ 
+                excalidrawAPI.updateScene({
                     elements: remoteElements,
                     commitToHistory: false // Don't bloat undo stack with every stroke update
                 });
@@ -1186,7 +1186,7 @@ export default function SessionPage({ params }: SessionProps) {
                                     <p className="text-sm text-gray-300">{user?.role === 'tutor' ? 'Student' : 'Tutor'}</p>
                                 </div>
                             </div>
-                            <p className="text-lg mb-6">Today at {booking?.start_time ? new Date(booking.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '3:00 PM'} · 60 minutes</p>
+                            <p className="text-lg mb-6">Today at {booking?.start_time ? new Date(booking.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '3:00 PM'} · 60 minutes</p>
                             <div className="border-t border-gray-600 pt-6 mb-6">
                                 <ul className="space-y-3">
                                     {['Whiteboard ready', 'Session timer set', 'Materials loaded'].map((item, index) => (
@@ -1234,23 +1234,23 @@ export default function SessionPage({ params }: SessionProps) {
                                 dockedSidebarBreakpoint: 0,
                             }}
                             libraryReturnUrl={undefined}
-                            onLibraryChange={() => {}}
+                            onLibraryChange={() => { }}
                         />
-                        
+
                         {/* LASER POINTER OVERLAY (Real-time collaborative) */}
                         <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
                             {Array.from(collaborators.entries()).map(([cid, collab]) => {
                                 if (!collab.pointer || !collab.isLaserActive) return null;
-                                
+
                                 const appState = excalidrawAPI?.getAppState();
                                 if (!appState) return null;
-                                
+
                                 const zoom = typeof appState.zoom === 'number' ? appState.zoom : (appState.zoom?.value ?? 1);
                                 const x = collab.pointer.x * zoom + appState.scrollX;
                                 const y = collab.pointer.y * zoom + appState.scrollY;
-                                
+
                                 return (
-                                    <div 
+                                    <div
                                         key={`laser-${cid}`}
                                         className="absolute w-4 h-4 -ml-2 -mt-2 rounded-full bg-red-500 shadow-[0_0_20px_6px_rgba(255,0,0,0.8),0_0_8px_2px_white] transition-all duration-75 ease-out opacity-100 animate-pulse"
                                         style={{ left: x, top: y }}
@@ -1332,13 +1332,12 @@ export default function SessionPage({ params }: SessionProps) {
 
                 {/* Right: timer + reactions + end */}
                 <div className="flex items-center gap-2 ml-auto">
-                    <div className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-white/10 transition-all duration-500 tabular-nums ${
-                        timeRemaining <= 5 * 60
+                    <div className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-white/10 transition-all duration-500 tabular-nums ${timeRemaining <= 5 * 60
                             ? 'bg-red-600/90 text-white animate-pulse'
                             : timeRemaining <= 10 * 60
-                            ? 'bg-amber-500/90 text-white'
-                            : 'bg-white/10 text-white'
-                    }`}>
+                                ? 'bg-amber-500/90 text-white'
+                                : 'bg-white/10 text-white'
+                        }`}>
                         <Timer size={13} />
                         <span className="font-bold text-xs tracking-tight">{formatTime(timeRemaining)}</span>
                     </div>
@@ -1464,9 +1463,8 @@ export default function SessionPage({ params }: SessionProps) {
                                 });
                                 setHasPenAccess(!hasPenAccess);
                             }}
-                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${
-                                hasPenAccess ? 'bg-green-600 border-green-500/50' : 'bg-white/10 hover:bg-white/20 border-white/10'
-                            }`}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${hasPenAccess ? 'bg-green-600 border-green-500/50' : 'bg-white/10 hover:bg-white/20 border-white/10'
+                                }`}
                             title={hasPenAccess ? 'Revoke Pen' : 'Grant Pen'}
                         >
                             <PenTool size={16} />
@@ -1484,9 +1482,8 @@ export default function SessionPage({ params }: SessionProps) {
 
                         <button
                             onClick={() => setIsLaserMode(!isLaserMode)}
-                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${
-                                isLaserMode ? 'bg-red-500 border-red-400 animate-pulse' : 'bg-white/10 hover:bg-white/20 border-white/10'
-                            }`}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${isLaserMode ? 'bg-red-500 border-red-400 animate-pulse' : 'bg-white/10 hover:bg-white/20 border-white/10'
+                                }`}
                             title="Laser Pointer"
                         >
                             <div className={`w-3 h-3 rounded-full ${isLaserMode ? 'bg-white shadow-[0_0_10px_2px_rgba(255,100,100,0.8)]' : 'border-2 border-white/30'}`} />
@@ -1494,9 +1491,8 @@ export default function SessionPage({ params }: SessionProps) {
 
                         <button
                             onClick={() => setIsFocusMode(!isFocusMode)}
-                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${
-                                isFocusMode ? 'bg-blue-600 border-blue-500' : 'bg-white/10 hover:bg-white/20 border-white/10'
-                            }`}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${isFocusMode ? 'bg-blue-600 border-blue-500' : 'bg-white/10 hover:bg-white/20 border-white/10'
+                                }`}
                             title="Focus Mode (Sync Viewport)"
                         >
                             <Share2 size={16} className={isFocusMode ? 'animate-pulse' : ''} />
@@ -1504,9 +1500,8 @@ export default function SessionPage({ params }: SessionProps) {
 
                         <button
                             onClick={() => setShowStickerPanel(!showStickerPanel)}
-                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${
-                                showStickerPanel ? 'bg-orange-500 border-orange-400' : 'bg-white/10 hover:bg-white/20 border-white/10'
-                            }`}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${showStickerPanel ? 'bg-orange-500 border-orange-400' : 'bg-white/10 hover:bg-white/20 border-white/10'
+                                }`}
                             title="Give Sticker"
                         >
                             <Smile size={16} />
@@ -1516,8 +1511,8 @@ export default function SessionPage({ params }: SessionProps) {
                             <div className="absolute right-12 top-0 bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-2xl p-3 shadow-2xl flex flex-wrap gap-2 w-48 animate-in slide-in-from-right-2 duration-200">
                                 <p className="w-full text-[10px] font-black text-white/50 uppercase tracking-widest mb-1 ml-1">Send a Sticker</p>
                                 {STICKERS.map(s => (
-                                    <button 
-                                        key={s} 
+                                    <button
+                                        key={s}
                                         onClick={() => giveSticker(s)}
                                         className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/20 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
                                     >
@@ -1553,7 +1548,7 @@ export default function SessionPage({ params }: SessionProps) {
                         )}
 
                         <div className="w-5 h-px bg-white/10 my-0.5" />
-                        
+
                         <button
                             onClick={() => setShowClearConfirm(true)}
                             className="w-9 h-9 rounded-lg flex items-center justify-center text-white/40 hover:text-red-400 transition-all bg-white/10 hover:bg-red-500/10 border border-white/10"
@@ -1582,11 +1577,10 @@ export default function SessionPage({ params }: SessionProps) {
                         <button
                             key={index}
                             onClick={() => switchSlide(index)}
-                            className={`shrink-0 w-[44px] h-[44px] rounded-md overflow-hidden border-2 transition-all ${
-                                index === currentSlideIndex
+                            className={`shrink-0 w-[44px] h-[44px] rounded-md overflow-hidden border-2 transition-all ${index === currentSlideIndex
                                     ? 'border-white scale-105 shadow-lg shadow-purple-500/30'
                                     : 'border-white/15 hover:border-white/40 opacity-60 hover:opacity-100'
-                            }`}
+                                }`}
                             title={`Slide ${index + 1}`}
                         >
                             <img src={slide} alt={`Slide ${index + 1}`} className="w-full h-full object-cover" />
@@ -1604,18 +1598,18 @@ export default function SessionPage({ params }: SessionProps) {
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="font-bold text-lg text-purple-900 leading-none">Library</h2>
                         <button onClick={() => setShowAssetLibrary(false)} className="text-gray-400 hover:text-gray-600">
-                             <X size={16} />
+                            <X size={16} />
                         </button>
                     </div>
 
                     <div className="flex bg-gray-100 p-1 rounded-xl mb-4 shrink-0">
-                        <button 
+                        <button
                             onClick={() => setLibraryTab('assets')}
                             className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${libraryTab === 'assets' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                         >
                             Assets
                         </button>
-                        <button 
+                        <button
                             onClick={() => setLibraryTab('manipulatives')}
                             className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${libraryTab === 'manipulatives' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                         >
@@ -1628,18 +1622,18 @@ export default function SessionPage({ params }: SessionProps) {
                             <div className="grid grid-cols-1 gap-3">
                                 <div className="flex items-center justify-between mb-1 ml-1 pr-1">
                                     <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Uploaded Assets</p>
-                                    <button 
+                                    <button
                                         onClick={() => (document.getElementById('asset-upload-input') as HTMLInputElement)?.click()}
                                         className="text-[9px] font-black text-purple-600 hover:text-purple-800 uppercase tracking-widest flex items-center gap-1"
                                     >
                                         <FileUp size={10} />
                                         Upload
                                     </button>
-                                    <input 
+                                    <input
                                         id="asset-upload-input"
-                                        type="file" 
-                                        accept="image/*" 
-                                        className="hidden" 
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
                                         onChange={(e) => {
                                             const file = e.target.files?.[0];
                                             if (file) {
@@ -1659,7 +1653,7 @@ export default function SessionPage({ params }: SessionProps) {
                                     />
                                 </div>
                                 {slides.map((url, index) => (
-                                    <div 
+                                    <div
                                         key={index}
                                         className="border rounded-xl cursor-pointer overflow-hidden hover:ring-2 hover:ring-purple-400 transition-all bg-gray-50 flex flex-col group"
                                         onClick={() => importImageToExcalidraw(url)}
@@ -1688,7 +1682,7 @@ export default function SessionPage({ params }: SessionProps) {
                             <div className="space-y-3">
                                 {Object.entries(MANIPULATIVES_DATA).map(([grade, items]) => (
                                     <div key={grade} className="border-b border-gray-100 last:border-0 pb-2">
-                                        <button 
+                                        <button
                                             onClick={() => setExpandedSections(prev => ({ ...prev, [grade]: !prev[grade] }))}
                                             className="w-full flex items-center justify-between py-2 text-left hover:bg-gray-50 rounded-lg px-2 transition-colors"
                                         >
@@ -1697,7 +1691,7 @@ export default function SessionPage({ params }: SessionProps) {
                                             </span>
                                             {expandedSections[grade] ? <ChevronDown size={14} className="text-purple-400" /> : <ChevronRight size={14} className="text-purple-400" />}
                                         </button>
-                                        
+
                                         {expandedSections[grade] && (
                                             <div className="grid grid-cols-2 gap-2 mt-2 px-1">
                                                 {items.map(item => (
@@ -1711,7 +1705,7 @@ export default function SessionPage({ params }: SessionProps) {
                                                             <span className="text-[9px] font-black text-gray-700 text-center leading-tight group-hover:text-purple-600 transition-colors">{item.label}</span>
                                                         </button>
                                                         {item.id.includes('dice') && (
-                                                            <button 
+                                                            <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     const roll = Math.floor(Math.random() * 6) + 1;
@@ -1797,7 +1791,7 @@ export default function SessionPage({ params }: SessionProps) {
                                                 exportPadding: 20
                                             });
                                             snapshotUrl = canvas.toDataURL('image/jpeg', 0.8);
-                                            
+
                                             // Background save snapshot
                                             api.post(`/sessions/${sessionId}/whiteboard-snapshot`, { snapshotUrl }).catch(e => console.error('Snapshot failed', e));
                                         }
@@ -1849,7 +1843,7 @@ export default function SessionPage({ params }: SessionProps) {
                     <div
                         key={r.id}
                         className="absolute bottom-0 text-4xl animate-float-up"
-                        style={{ 
+                        style={{
                             left: `${r.x}%`,
                             fontSize: '64px',
                             animationDelay: `${r.delay || 0}s`
@@ -1871,9 +1865,9 @@ export default function SessionPage({ params }: SessionProps) {
                                     <X size={20} />
                                 </button>
                             </div>
-                            
+
                             <label className="block text-[10px] font-black text-purple-400 uppercase tracking-widest mb-1.5 ml-1">Question (Max 120 chars)</label>
-                            <input 
+                            <input
                                 type="text"
                                 maxLength={120}
                                 value={pollQuestion}
@@ -1887,7 +1881,7 @@ export default function SessionPage({ params }: SessionProps) {
                                 {['A', 'B', 'C', 'D'].map((label, idx) => (
                                     <div key={label} className="relative">
                                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-purple-400/60">{label}</div>
-                                        <input 
+                                        <input
                                             type="text"
                                             value={pollOptions[idx]}
                                             onChange={(e) => {
@@ -1909,9 +1903,9 @@ export default function SessionPage({ params }: SessionProps) {
                                         toast.error("Enter a question and at least 2 options");
                                         return;
                                     }
-                                    socket?.emit('poll:launch', { 
-                                        sessionId, 
-                                        question: pollQuestion, 
+                                    socket?.emit('poll:launch', {
+                                        sessionId,
+                                        question: pollQuestion,
                                         options: validOptions,
                                         userId: user?.id
                                     });
@@ -1940,7 +1934,7 @@ export default function SessionPage({ params }: SessionProps) {
                             <span className="text-[10px] font-bold text-white/40">{pollResults?.totalResponses || 0} Responses</span>
                         </div>
                         <h3 className="text-sm font-bold text-white mb-4">{activePoll.question}</h3>
-                        
+
                         <div className="space-y-2 mb-6">
                             {activePoll.options.map((opt, idx) => {
                                 const count = pollResults?.results[idx] || 0;
@@ -1948,9 +1942,9 @@ export default function SessionPage({ params }: SessionProps) {
                                 const pct = total > 0 ? Math.round((count / total) * 100) : 0;
                                 return (
                                     <div key={idx} className="relative h-8 bg-white/5 rounded-lg overflow-hidden border border-white/10">
-                                        <div 
-                                            className="absolute inset-y-0 left-0 bg-purple-500/20 border-r border-purple-500/30 transition-all duration-500 ease-out" 
-                                            style={{ width: `${pct}%` }} 
+                                        <div
+                                            className="absolute inset-y-0 left-0 bg-purple-500/20 border-r border-purple-500/30 transition-all duration-500 ease-out"
+                                            style={{ width: `${pct}%` }}
                                         />
                                         <div className="absolute inset-0 px-3 flex items-center justify-between text-[11px] font-medium">
                                             <span className="text-white truncate pr-4">{opt}</span>
@@ -1960,7 +1954,7 @@ export default function SessionPage({ params }: SessionProps) {
                                 );
                             })}
                         </div>
-                        
+
                         <button
                             onClick={() => socket?.emit('poll:close', { sessionId, userId: user?.id })}
                             className="w-full py-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-xl text-xs font-black uppercase tracking-widest transition-all"
@@ -1981,7 +1975,7 @@ export default function SessionPage({ params }: SessionProps) {
                             </div>
                             <h2 className="text-sm font-black text-purple-400 uppercase tracking-widest mb-2">Quick Check!</h2>
                             <h3 className="text-2xl font-black text-white mb-8 leading-tight">{activePoll.question}</h3>
-                            
+
                             {studentSelection === null ? (
                                 <div className="grid grid-cols-1 gap-3">
                                     {activePoll.options.map((opt, idx) => (
@@ -2026,7 +2020,7 @@ export default function SessionPage({ params }: SessionProps) {
                             </div>
                             <h2 className="text-xs font-black text-green-500 uppercase tracking-widest mb-2">Poll Results</h2>
                             <h3 className="text-xl font-bold text-white mb-6">{finalPollResults.question}</h3>
-                            
+
                             <div className="space-y-2 text-left">
                                 {finalPollResults.options.map((opt, idx) => {
                                     const count = finalPollResults.results[idx] || 0;
@@ -2034,9 +2028,9 @@ export default function SessionPage({ params }: SessionProps) {
                                     const pct = total > 0 ? Math.round((count / total) * 100) : 0;
                                     return (
                                         <div key={idx} className="relative h-10 bg-white/5 rounded-xl overflow-hidden border border-white/10">
-                                            <div 
-                                                className="absolute inset-y-0 left-0 bg-green-500/20 border-r border-green-500/30 transition-all duration-700 ease-out" 
-                                                style={{ width: `${pct}%` }} 
+                                            <div
+                                                className="absolute inset-y-0 left-0 bg-green-500/20 border-r border-green-500/30 transition-all duration-700 ease-out"
+                                                style={{ width: `${pct}%` }}
                                             />
                                             <div className="absolute inset-0 px-4 flex items-center justify-between text-xs font-bold">
                                                 <span className="text-white truncate pr-4">{opt}</span>
@@ -2046,7 +2040,7 @@ export default function SessionPage({ params }: SessionProps) {
                                     );
                                 })}
                             </div>
-                            
+
                             <div className="mt-8 pt-6 border-t border-white/5">
                                 <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Closed by tutor</p>
                             </div>
@@ -2089,9 +2083,9 @@ export default function SessionPage({ params }: SessionProps) {
                 <div className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center">
                     <div className="bg-white/10 backdrop-blur-md rounded-full p-12 lg:p-20 relative animate-sticker-reveal">
                         <div className="absolute inset-0 bg-yellow-400/20 rounded-full blur-[80px] animate-pulse" />
-                        <img 
-                            src={`/stickers/${incomingSticker.type}`} 
-                            alt="Sticker Reward" 
+                        <img
+                            src={`/stickers/${incomingSticker.type}`}
+                            alt="Sticker Reward"
                             className="w-48 h-48 lg:w-64 lg:h-64 object-contain relative z-10"
                         />
                         <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-center whitespace-nowrap">
@@ -2120,7 +2114,7 @@ export default function SessionPage({ params }: SessionProps) {
             <div className="fixed inset-0 z-40 pointer-events-none overflow-hidden">
                 {Array.from(collaborators.entries()).map(([cid, data]) => {
                     if (!data.isLaserActive || !data.pointer) return null;
-                    
+
                     // Simple coordinate mapping - assumes full screen whiteboard
                     // For more precision, we'd need to use scene coords -> viewport coords
                     // but since Excalidraw fills the container, basic mapping is a good start.
@@ -2130,11 +2124,11 @@ export default function SessionPage({ params }: SessionProps) {
                     const y = (data.pointer.y * zoom) + appState.scrollY;
 
                     return (
-                        <div 
+                        <div
                             key={`laser-${cid}`}
                             className="absolute transition-all duration-75 ease-out"
-                            style={{ 
-                                left: x, 
+                            style={{
+                                left: x,
                                 top: y,
                                 transform: 'translate(-50%, -50%)'
                             }}
@@ -2162,13 +2156,13 @@ export default function SessionPage({ params }: SessionProps) {
                         <h3 className="text-xl font-bold text-white text-center mb-2">Clear Board?</h3>
                         <p className="text-white/60 text-center text-sm mb-8">This will delete everything on the current slide. This action cannot be undone.</p>
                         <div className="grid grid-cols-2 gap-4">
-                            <button 
+                            <button
                                 onClick={() => setShowClearConfirm(false)}
                                 className="py-3 px-6 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition-all"
                             >
                                 Cancel
                             </button>
-                            <button 
+                            <button
                                 onClick={() => {
                                     excalidrawAPI.updateScene({ elements: [] });
                                     socket?.emit('whiteboard.update', { sessionId, update: { elements: [] } });

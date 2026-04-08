@@ -7,6 +7,8 @@ import Link_Next from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
 import StickyCTA from '../components/subjects/StickyCTA';
+import { useCurriculum } from '../context/CurriculumContext';
+import { CURRICULA } from '../config/curricula';
 
 // --- Section 1: HeroPricing ---
 const HeroPricing = () => {
@@ -57,159 +59,125 @@ const HeroPricing = () => {
 const PricingPlans = () => {
     const { user } = useAuthContext();
     const router = useRouter();
-    const [region, setRegion] = useState<'US' | 'UK'>('US');
+    const { activeCurriculum, setCurriculum } = useCurriculum();
 
     const handlePlanClick = (planId: string, regionCode: string) => {
         if (!user) {
-            // Redirect to login with the intended checkout URL
             const checkoutUrl = `/checkout?plan=${planId.toUpperCase()}&region=${regionCode}`;
             router.push(`/login?redirect_url=${encodeURIComponent(checkoutUrl)}`);
         } else {
-            // User is logged in, go to checkout
             router.push(`/checkout?plan=${planId.toUpperCase()}&region=${regionCode}`);
         }
     };
 
-    // Regional pricing configuration
-    const pricingConfig = {
-        US: {
-            currency: '$',
-            name: 'United States (USD) – Core Excellence',
-            target: 'Common Core, NGSS, AP',
-            plans: [
-                {
-                    id: 'foundation',
-                    name: 'Foundation',
-                    frequency: '2 sessions / week',
-                    monthlyPrice: 199,
-                    credits: 8,
-                    features: [
-                        'Tutor OS Access',
-                        'AI Transcript + Summary',
-                        'Confidence Tracking',
-                        'Monthly Recurring Subscription',
-                        'No Lock-in'
-                    ]
-                },
-                {
-                    id: 'mastery',
-                    name: 'Mastery',
-                    frequency: '4 sessions / week',
-                    monthlyPrice: 349,
-                    credits: 16,
-                    features: [
-                        'Tutor OS Access',
-                        'AI Transcript + Summary',
-                        'Confidence Tracking',
-                        'Monthly Recurring Subscription',
-                        'No Lock-in',
-                        'Priority Support'
-                    ]
-                },
-                {
-                    id: 'elite',
-                    name: 'Elite',
-                    frequency: '6 sessions / week',
-                    monthlyPrice: 499,
-                    credits: 24,
-                    features: [
-                        'Tutor OS Access',
-                        'AI Transcript + Summary',
-                        'Confidence Tracking',
-                        'Monthly Recurring Subscription',
-                        'No Lock-in',
-                        'Priority Support',
-                        'Advanced Analytics'
-                    ]
-                }
-            ]
-        },
-        UK: {
+    // Refined pricing configuration mapping
+    const pricingConfig: Record<string, any> = {
+        uk: {
             currency: '£',
-            name: 'United Kingdom (GBP) – GCSE/A-Level Mastery',
+            name: 'United Kingdom – GCSE/A-Level Mastery',
             target: 'KS3, GCSE, A-Level',
             plans: [
-                {
-                    id: 'foundation',
-                    name: 'Foundation',
-                    frequency: '2 sessions / week',
-                    monthlyPrice: 149,
-                    credits: 8,
-                    features: [
-                        'Tutor OS Access',
-                        'AI Transcript + Summary',
-                        'Confidence Tracking',
-                        'Monthly Recurring Subscription',
-                        'No Lock-in'
-                    ]
-                },
-                {
-                    id: 'mastery',
-                    name: 'Mastery',
-                    frequency: '4 sessions / week',
-                    monthlyPrice: 249,
-                    credits: 16,
-                    features: [
-                        'Tutor OS Access',
-                        'AI Transcript + Summary',
-                        'Confidence Tracking',
-                        'Monthly Recurring Subscription',
-                        'No Lock-in',
-                        'Priority Support'
-                    ]
-                },
-                {
-                    id: 'elite',
-                    name: 'Elite',
-                    frequency: '6 sessions / week',
-                    monthlyPrice: 375,
-                    credits: 24,
-                    features: [
-                        'Tutor OS Access',
-                        'AI Transcript + Summary',
-                        'Confidence Tracking',
-                        'Monthly Recurring Subscription',
-                        'No Lock-in',
-                        'Priority Support',
-                        'Advanced Analytics'
-                    ]
-                }
+                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 149, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
+                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 249, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 375, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+            ]
+        },
+        australia: {
+            currency: 'A$',
+            name: 'Australia – NAPLAN/ATAR Mastery',
+            target: 'Year 1–12, NAPLAN, VCE/HSC/ATAR',
+            plans: [
+                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 250, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
+                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 450, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 650, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+            ]
+        },
+        singapore: {
+            currency: 'S$',
+            name: 'Singapore – PSLE/O-Level Mastery',
+            target: 'P1–P6, S1–S5, PSLE, O-Level',
+            plans: [
+                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 280, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
+                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 520, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 750, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+            ]
+        },
+        middleeast: {
+            currency: '$',
+            name: 'UAE / GCC – Global Curriculum Mastery',
+            target: 'IB, IGCSE, British, American',
+            plans: [
+                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 199, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
+                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 349, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 499, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+            ]
+        },
+        southafrica: {
+            currency: 'R',
+            name: 'South Africa – CAPS/IEB Mastery',
+            target: 'Grade R–12, Matric, NSC',
+            plans: [
+                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 1500, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
+                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 2800, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 4200, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
             ]
         }
     };
 
-    const currentConfig = pricingConfig[region];
+    const currentConfig = pricingConfig[activeCurriculum.id] || pricingConfig['uk'];
 
     return (
         <section className="py-24 px-6 relative">
             <div className="max-w-7xl mx-auto">
-                {/* Region Toggle */}
+                {/* Subject Tape - New dynamic row */}
+                <div className="mb-20 flex flex-wrap justify-center gap-2">
+                    {activeCurriculum.subjects.map((sub, i) => (
+                        <span 
+                            key={sub}
+                            className="px-4 py-2 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-xs font-bold text-text-secondary animate-in fade-in slide-in-from-bottom-2"
+                            style={{ animationDelay: `${i * 50}ms` }}
+                        >
+                            {sub}
+                        </span>
+                    ))}
+                    {activeCurriculum.subjectNote && (
+                        <div className="w-full text-center mt-3 text-[10px] uppercase tracking-widest font-bold text-primary opacity-70">
+                            {activeCurriculum.subjectNote}
+                        </div>
+                    )}
+                </div>
+
+                {/* Region Toggle - Now using Global Context */}
                 <div className="flex justify-center mb-16">
-                    <div className="p-1 rounded-2xl bg-white/50 dark:bg-white/5 border border-border dark:border-white/10 backdrop-blur-md flex">
-                        <button
-                            onClick={() => setRegion('US')}
-                            className={`px-8 py-3 rounded-xl font-bold transition-all ${region === 'US' ? 'bg-primary text-white shadow-lg' : 'text-text-secondary hover:text-primary'}`}
-                        >
-                            United States
-                        </button>
-                        <button
-                            onClick={() => setRegion('UK')}
-                            className={`px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${region === 'UK' ? 'bg-primary text-white shadow-lg' : 'text-text-secondary hover:text-primary'}`}
-                        >
-                            United Kingdom
-                        </button>
+                    <div className="p-1.5 rounded-2xl bg-white/50 dark:bg-white/5 border border-border dark:border-white/10 backdrop-blur-md flex flex-wrap justify-center gap-1">
+                        {CURRICULA.map((c) => (
+                            <button
+                                key={c.id}
+                                onClick={() => setCurriculum(c.id)}
+                                className={`px-5 py-2.5 rounded-xl font-bold transition-all text-sm flex items-center gap-2 ${activeCurriculum.id === c.id ? 'bg-primary text-white shadow-lg' : 'text-text-secondary hover:text-primary'}`}
+                            >
+                                <span>{c.flag}</span>
+                                <span className={activeCurriculum.id === c.id ? 'block' : 'hidden md:block'}>{c.country}</span>
+                            </button>
+                        ))}
                     </div>
                 </div>
 
                 {/* Region Header */}
                 <div className="text-center mb-12">
-                    <h2 className="text-2xl font-bold text-deep-navy dark:text-white mb-2">{currentConfig.name}</h2>
-                    <p className="text-text-secondary font-medium">Target: {currentConfig.target}</p>
+                    <h2 className="text-3xl font-extrabold text-deep-navy dark:text-white mb-2">{currentConfig.name}</h2>
+                    <div className="flex flex-wrap justify-center gap-2 mt-4">
+                        {activeCurriculum.exams.map(exam => (
+                            <span key={exam} className="px-3 py-1 rounded-lg bg-sapphire text-white text-[10px] font-black tracking-widest uppercase">
+                                {exam}
+                            </span>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Pricing Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-                    {currentConfig.plans.map((plan, idx) => (
+                    {currentConfig.plans.map((plan: any, idx: number) => (
                         <motion.div
                             key={plan.id}
                             initial={{ opacity: 0, y: 20 }}
@@ -246,7 +214,7 @@ const PricingPlans = () => {
                             </div>
 
                             <ul className="space-y-4 mb-10 flex-1">
-                                {plan.features.map((feat, i) => (
+                                {plan.features.map((feat: string, i: number) => (
                                     <li key={i} className="flex gap-3 text-(--color-text-primary) dark:text-slate-300 text-sm font-medium leading-tight">
                                         <div className="shrink-0 w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-primary">
                                             <Check size={12} strokeWidth={3} />
@@ -258,7 +226,7 @@ const PricingPlans = () => {
 
                             <div className="space-y-3 pt-6 border-t border-border dark:border-white/5">
                                 <button
-                                    onClick={() => handlePlanClick(plan.id, region)}
+                                    onClick={() => handlePlanClick(plan.id, activeCurriculum.id)}
                                     className={`w-full py-4 rounded-xl font-bold text-center transition-all flex items-center justify-center gap-2 ${plan.id === 'mastery' ? 'bg-primary text-white shadow-lg shadow-blue-500/30 hover:bg-sapphire' : 'bg-ice-blue dark:bg-white/5 text-primary hover:bg-powder-blue'}`}
                                 >
                                     Choose Plan

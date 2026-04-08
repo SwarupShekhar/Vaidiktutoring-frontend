@@ -5,6 +5,7 @@ import ProtectedClient from '@/app/components/ProtectedClient';
 import { useAuthContext } from '@/app/context/AuthContext';
 import useStudentDashboard from '@/app/Hooks/useStudentDashboard';
 import { useCreditStatus } from '@/app/Hooks/useCreditStatus';
+import { useStudentProgress, ProgressSummary } from '@/app/Hooks/useStudentProgress';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { StatCard } from '@/app/components/dashboard/StatCard';
@@ -22,11 +23,24 @@ import {
   BookOpen,
   Star,
   ChevronRight,
+  Flame,
+  X,
+  Trophy,
 } from 'lucide-react';
 import { differenceInMinutes, format, isToday, isTomorrow, addDays, startOfWeek } from 'date-fns';
 import { api } from '@/app/lib/api';
 import { EditStudentProfileModal } from '@/app/components/dashboard/EditStudentProfileModal';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
+import confetti from 'canvas-confetti';
+import { toast } from 'sonner';
+
+const BADGES = [
+  { id: 'first_step', label: 'First Step', emoji: '🎯', description: 'Completed your first session' },
+  { id: 'consistent', label: 'Consistent', emoji: '📅', description: 'Attended 4 sessions in a month' },
+  { id: 'quick_learner', label: 'Quick Learner', emoji: '⚡', description: '2 week streak' },
+  { id: 'dedicated', label: 'Dedicated', emoji: '💪', description: '10 sessions completed' },
+  { id: 'star_student', label: 'Star Student', emoji: '⭐', description: '4 week streak' },
+];
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -73,9 +87,51 @@ function useCountdown(target?: string) {
   return display;
 }
 
+/* ─── Achievement Badges ─── */
+function AchievementBadges({ progress }: { progress: ProgressSummary | null }) {
+  if (!progress) return null;
+  
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-xl font-bold text-foreground">My Achievements</h3>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+        {BADGES.map((badge) => {
+          const isEarned = progress.badges?.includes(badge.id);
+          return (
+            <div 
+              key={badge.id}
+              className={`group relative p-4 rounded-2xl border text-center transition-all ${
+                isEarned 
+                  ? 'bg-surface border-green-100 dark:border-green-900/30' 
+                  : 'bg-surface/50 border-dashed border-border opacity-60'
+              }`}
+            >
+              <div className={`text-4xl mb-2 transition-transform duration-300 group-hover:scale-110 ${!isEarned && 'filter grayscale'}`}>
+                {badge.emoji}
+              </div>
+              <div className={`text-xs font-bold ${isEarned ? 'text-foreground' : 'text-text-secondary'}`}>
+                {badge.label}
+              </div>
+              
+              {/* Tooltip */}
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-32 p-2 bg-gray-900 text-white text-[10px] rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                {badge.description}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-gray-900"></div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Enrolled Dashboard ─── */
-function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastSessions, bookings, loading, user }: any) {
+function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastSessions, bookings, loading, user, progressSummary }: any) {
   const scheduleRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
   const nextSession = upcomingSessions[0] ?? null;
   const countdown = useCountdown(nextSession?.start_time ?? nextSession?.requested_start);
 
@@ -95,36 +151,31 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
   });
 
   // Stats
-  const completedCount = pastSessions.length;
-  const hoursThisMonth = useMemo(() => {
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const mins = pastSessions.filter((s: any) => {
-      const start = new Date(s.start_time ?? s.requested_start ?? 0);
-      return start >= monthStart;
-    }).reduce((acc: number, s: any) => {
-      const start = s.start_time ? new Date(s.start_time) : null;
-      const end = s.end_time ? new Date(s.end_time) : null;
-      return start && end ? acc + Math.max(0, differenceInMinutes(end, start)) : acc;
-    }, 0);
-    return (mins / 60).toFixed(1);
-  }, [pastSessions]);
+  const completedCount = progressSummary?.totalSessions || pastSessions.length;
+  const hoursThisMonth = progressSummary?.totalHoursLearned?.toFixed(1) || '0.0';
 
-  // Streak (weeks with at least 1 session)
-  const streak = useMemo(() => {
-    let count = 0;
-    let weekAgo = now;
-    for (let w = 0; w < 12; w++) {
-      const wStart = addDays(weekAgo, -7);
-      const hasSession = pastSessions.some((s: any) => {
-        const d = new Date(s.start_time ?? s.requested_start ?? 0);
-        return d >= wStart && d < weekAgo;
-      });
-      if (!hasSession) break;
-      count++;
-      weekAgo = wStart;
+  // Streak
+  const streak = progressSummary?.streakWeeks || 0;
+
+  // Renewal check
+  const [renewalDismissed, setRenewalDismissed] = useState<string | null>(null);
+  useEffect(() => {
+    const d = localStorage.getItem('renewal_dismissed');
+    if (d) setRenewalDismissed(d);
+  }, []);
+
+  const showRenewal = useMemo(() => {
+    if (!progressSummary) return false;
+    const isLow = progressSummary.packageSessionsRemaining <= Math.ceil(progressSummary.packageSessionsTotal * 0.2);
+    return isLow && renewalDismissed !== `${progressSummary.packageSessionsRemaining}`;
+  }, [progressSummary, renewalDismissed]);
+
+  const handleDismissRenewal = () => {
+    if (progressSummary) {
+        localStorage.setItem('renewal_dismissed', `${progressSummary.packageSessionsRemaining}`);
+        setRenewalDismissed(`${progressSummary.packageSessionsRemaining}`);
     }
-    return count;
-  }, [pastSessions]);
+  };
 
   // Tutor info
   const assignedTutor = enrollment?.assignedTutorId
@@ -167,7 +218,7 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
 
       {/* Next class hero */}
       <motion.div variants={itemVariants}
-        className="bg-gradient-to-br from-violet-600 to-blue-600 rounded-3xl p-6 md:p-8 text-white shadow-xl shadow-violet-500/20 relative overflow-hidden">
+        className="bg-linear-to-br from-violet-600 to-blue-600 rounded-3xl p-6 md:p-8 text-white shadow-xl shadow-violet-500/20 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -197,11 +248,67 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
         </div>
       </motion.div>
 
+      {/* Package Renewal Banner */}
+      {showRenewal && (
+        <motion.div variants={itemVariants} className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/30 rounded-2xl p-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-amber-100 dark:bg-amber-900/40 rounded-lg text-amber-600 dark:text-amber-400">
+              <AlertCircle size={20} />
+            </div>
+            <div>
+              <p className="font-semibold text-amber-900 dark:text-amber-100">
+                You have {progressSummary?.packageSessionsRemaining} sessions remaining in your current package
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={() => router.push('/pricing')} className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all">
+              Renew Package
+            </button>
+            <button onClick={handleDismissRenewal} className="p-1 text-amber-400 hover:text-amber-600">
+              <X size={18} />
+            </button>
+          </div>
+        </motion.div>
+      )}
+
       {/* Stat cards */}
       <motion.section variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard icon={CheckCircle2} label="Sessions Completed" value={`${completedCount}/${enrollment?.sessionsRemaining + completedCount || completedCount}`} color="#10b981" description="in your package" />
         <StatCard icon={Hourglass} label="Hours This Month" value={hoursThisMonth} color="#f59e0b" description="Keep the momentum!" />
-        <StatCard icon={Star} label="Weekly Streak" value={`${streak} week${streak !== 1 ? 's' : ''}`} color="#8b5cf6" description="Consistency is key" />
+        <div className={`bg-surface p-6 rounded-3xl border transition-all duration-500 flex flex-col justify-between shadow-sm ${streak >= 4 ? 'border-amber-400 shadow-amber-100 dark:shadow-none' : 'border-border'}`}>
+          <div className="flex items-center justify-between mb-4">
+            <div className={`p-2 rounded-lg ${streak > 0 ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400' : 'bg-gray-50 dark:bg-gray-700 text-gray-400'}`}>
+              <Flame size={20} fill={streak > 0 ? "currentColor" : "none"} />
+            </div>
+            {streak >= 8 && (
+              <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full uppercase tracking-wider">🏆 On fire!</span>
+            )}
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-foreground">{streak} week{streak !== 1 ? 's' : ''}</div>
+            <div className="text-sm text-text-secondary">{streak > 0 ? 'week streak' : 'Start your streak today'}</div>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Topics this month */}
+      {progressSummary?.topicsThisMonth && progressSummary.topicsThisMonth.length > 0 && (
+        <motion.div variants={itemVariants} className="space-y-3">
+          <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider">Covered this month</h3>
+          <div className="flex flex-wrap gap-2">
+            {progressSummary.topicsThisMonth.map((topic: string, i: number) => (
+              <span key={i} className="px-3 py-1 bg-surface text-foreground rounded-full text-xs font-medium border border-border">
+                {topic}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Achievements */}
+      <motion.section variants={itemVariants}>
+        <AchievementBadges progress={progressSummary} />
       </motion.section>
 
       {/* Weekly schedule */}
@@ -346,9 +453,17 @@ export default function StudentDashboardPage() {
   const router = useRouter();
   const { upcomingSessions, pastSessions, bookings, loading } = useStudentDashboard();
   const { status: creditStatus, loading: creditLoading, refetch: refetchCredits } = useCreditStatus();
+  const { progressSummary, loading: progressLoading, refetch: refetchProgress } = useStudentProgress();
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [studentProfile, setStudentProfile] = useState<any>(null);
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+  const prevBadgesRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    const d = localStorage.getItem('onboarding_dismissed');
+    if (d) setOnboardingDismissed(true);
+  }, []);
 
   // Redirect admin
   useEffect(() => {
@@ -366,6 +481,27 @@ export default function StudentDashboardPage() {
     if (user) fetchProfile();
   }, [user, fetchProfile]);
 
+  useEffect(() => {
+    if (progressSummary?.badges) {
+      const prevBadges = prevBadgesRef.current;
+      const newBadges = progressSummary.badges.filter(b => !prevBadges.includes(b));
+      
+      if (newBadges.length > 0 && prevBadges.length > 0) {
+        newBadges.forEach(badgeId => {
+          const badge = BADGES.find(b => b.id === badgeId);
+          if (badge) {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            toast.success(`New badge unlocked: ${badge.label}`, {
+              description: `${badge.emoji} ${badge.description}`,
+              duration: 5000,
+            });
+          }
+        });
+      }
+      prevBadgesRef.current = progressSummary.badges;
+    }
+  }, [progressSummary?.badges]);
+
   // Fetch enrollment status once student profile loaded
   const { data: enrollment } = useQuery({
     queryKey: ['enrollment-status', studentProfile?.id],
@@ -380,19 +516,30 @@ export default function StudentDashboardPage() {
   const isEnrolled = enrollment?.status === 'enrolled';
 
   const stats = useMemo(() => {
-    const now = new Date();
-    const completed = bookings.filter((b: any) => {
-      const end = b.end_time ? new Date(b.end_time) : b.requested_end ? new Date(b.requested_end) : null;
-      if (!end) return false;
-      return b.status === 'completed' || (end < now && b.status !== 'cancelled' && b.status !== 'declined');
-    });
-    const totalMinutes = completed.reduce((acc: number, b: any) => {
-      const s = b.start_time ? new Date(b.start_time) : b.requested_start ? new Date(b.requested_start) : null;
-      const e = b.end_time ? new Date(b.end_time) : b.requested_end ? new Date(b.requested_end) : null;
-      return s && e ? acc + Math.max(0, differenceInMinutes(e, s)) : acc;
-    }, 0);
-    return { completedCount: completed.length, totalHours: (totalMinutes / 60).toFixed(1), upcomingCount: upcomingSessions.length };
-  }, [bookings, upcomingSessions]);
+    const completedCount = progressSummary?.totalSessions || 0;
+    const totalHours = progressSummary?.totalHoursLearned?.toFixed(1) || '0.0';
+    return { completedCount, totalHours, upcomingCount: upcomingSessions.length };
+  }, [progressSummary, upcomingSessions]);
+
+  const showOnboarding = useMemo(() => {
+    return !onboardingDismissed && 
+           creditStatus?.mode === 'trial_active' && 
+           progressSummary?.totalSessions === 0;
+  }, [onboardingDismissed, creditStatus, progressSummary]);
+
+  const onboardingSteps = useMemo(() => {
+    if (!studentProfile || !progressSummary) return [];
+    const step1 = !!(studentProfile.grade && studentProfile.school);
+    const step2 = upcomingSessions.length > 0 || pastSessions.length > 0;
+    const step3 = progressSummary.totalSessions > 0;
+    return [
+      { id: 1, label: 'Complete your profile', complete: step1 },
+      { id: 2, label: 'Book your first session', complete: step2, link: '/bookings/new' },
+      { id: 3, label: 'Meet your tutor', complete: step3 }
+    ];
+  }, [studentProfile, progressSummary, upcomingSessions, pastSessions]);
+
+  const completedStepsCount = onboardingSteps.filter(s => s.complete).length;
 
   const nextSession = upcomingSessions[0] ?? null;
   const otherUpcoming = upcomingSessions.slice(1);
@@ -409,6 +556,7 @@ export default function StudentDashboardPage() {
           bookings={bookings}
           loading={loading}
           user={user}
+          progressSummary={progressSummary}
         />
         {studentProfile && (
           <EditStudentProfileModal
@@ -427,6 +575,43 @@ export default function StudentDashboardPage() {
     <ProtectedClient roles={['student']}>
       <motion.div variants={containerVariants} initial="hidden" animate="visible"
         className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8 relative">
+
+        {/* Onboarding Card */}
+        {showOnboarding && (
+          <motion.div variants={itemVariants} className="mb-8 bg-surface rounded-3xl shadow-sm border border-blue-100 dark:border-blue-900/30 overflow-hidden relative">
+            <button onClick={() => { localStorage.setItem('onboarding_dismissed', 'true'); setOnboardingDismissed(true); }}
+              className="absolute top-4 right-4 p-1 text-text-secondary hover:text-foreground">
+              <X size={20} />
+            </button>
+            <div className="p-6 sm:p-8">
+              <h2 className="text-2xl font-bold text-foreground mb-2">Welcome to StudyHours 👋 Let's get you started</h2>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div className="h-full bg-primary transition-all duration-500" style={{ width: `${(completedStepsCount / 3) * 100}%` }} />
+                </div>
+                <span className="text-sm font-medium text-text-secondary">{completedStepsCount} of 3 steps complete</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {onboardingSteps.map((step) => (
+                  <div key={step.id} className={`p-4 rounded-2xl border ${step.complete ? 'bg-green-50/50 border-green-100 dark:bg-green-900/10' : 'bg-background border-border'}`}>
+                    <div className="flex items-start justify-between mb-3">
+                      <div className={`p-2 rounded-lg ${step.complete ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'bg-surface text-text-secondary'}`}>
+                        {step.complete ? <CheckCircle2 size={20} /> : <div className="w-5 h-5 flex items-center justify-center font-bold text-xs">{step.id}</div>}
+                      </div>
+                    </div>
+                    <p className="font-semibold text-foreground mb-3">{step.label}</p>
+                    {!step.complete && (
+                      <button onClick={() => { if (step.id === 1) setIsEditProfileOpen(true); else if (step.link) router.push(step.link); }}
+                        className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
+                        Complete Now <ChevronRight size={14} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* TOP COMMAND BAR */}
         <motion.header variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -492,10 +677,25 @@ export default function StudentDashboardPage() {
             <motion.section variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <StatCard icon={CheckCircle2} label="Completed Classes" value={stats.completedCount} color="#10b981" description="Keep it up!" />
               <StatCard icon={Hourglass} label="Learning Hours" value={stats.totalHours} description="Total time spent" color="#f59e0b" />
-              <StatCard icon={Calendar} label="Next Session"
-                value={creditStatus?.mode !== 'trial_active' && creditStatus?.mode !== 'paid' ? '—' : nextSession ? fmtDate(nextSession.start_time).split(',')[0] : 'None'}
-                description={creditStatus?.mode !== 'trial_active' && creditStatus?.mode !== 'paid' ? 'Subscribe to book' : nextSession ? fmtDate(nextSession.start_time).split(',')[1] : 'Book one today'}
-                color="#3b82f6" />
+              <div className={`bg-surface p-6 rounded-3xl border transition-all duration-500 flex flex-col justify-between shadow-sm ${progressSummary?.streakWeeks && progressSummary.streakWeeks >= 4 ? 'border-amber-400 shadow-amber-100 dark:shadow-none' : 'border-border'}`}>
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`p-2 rounded-lg ${progressSummary?.streakWeeks && progressSummary.streakWeeks > 0 ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400' : 'bg-gray-50 dark:bg-gray-700 text-gray-400'}`}>
+                    <Flame size={20} fill={progressSummary?.streakWeeks && progressSummary.streakWeeks > 0 ? "currentColor" : "none"} />
+                  </div>
+                  {progressSummary?.streakWeeks && progressSummary.streakWeeks >= 8 && (
+                    <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full uppercase tracking-wider">🏆 On fire!</span>
+                  )}
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-foreground">{progressSummary?.streakWeeks || 0} week{progressSummary?.streakWeeks !== 1 ? 's' : ''}</div>
+                  <div className="text-sm text-text-secondary">{progressSummary?.streakWeeks && progressSummary.streakWeeks > 0 ? 'week streak' : 'Start your streak today'}</div>
+                </div>
+              </div>
+            </motion.section>
+
+            {/* Achievements */}
+            <motion.section variants={itemVariants}>
+              <AchievementBadges progress={progressSummary} />
             </motion.section>
 
             {/* HERO AREA: NEXT CLASS */}
@@ -581,7 +781,7 @@ export default function StudentDashboardPage() {
                   <div className="absolute bottom-[-20px] right-[-20px] text-8xl opacity-5 pointer-events-none select-none">🎓</div>
                 </div>
 
-                <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
+                <div className="bg-linear-to-br from-indigo-500 to-purple-600 rounded-3xl p-6 text-white shadow-lg overflow-hidden relative">
                   <h3 className="font-extrabold text-lg mb-2 relative z-10">Practice makes perfect!</h3>
                   <p className="text-xs text-white/80 mb-4 relative z-10">Review your past classes to improve your skills faster.</p>
                   <button className="w-full py-2 bg-white/20 hover:bg-white/30 rounded-xl text-xs font-bold transition-all relative z-10">Daily Challenge (Coming Soon)</button>

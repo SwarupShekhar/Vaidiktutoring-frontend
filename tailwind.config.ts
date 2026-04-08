@@ -20,6 +20,9 @@ const config: Config = {
             fontFamily: {
                 luckiest: ['var(--font-luckiest-guy)'],
             },
+            zIndex: {
+                '60': '60',
+            }
         },
     },
     plugins: [

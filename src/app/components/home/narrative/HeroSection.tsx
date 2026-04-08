@@ -6,6 +6,7 @@ import Image from "next/image";
 import BookSessionButton from "../BookSessionButton";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/app/context/AuthContext";
+import { useCurriculum } from "@/app/context/CurriculumContext";
 
 const HERO_IMAGES = [
   "https://res.cloudinary.com/de8vvmpip/image/upload/v1772453122/Gemini_Generated_Image_9j0g679j0g679j0g_sptjdf.png",
@@ -29,6 +30,7 @@ const wordVariants = {
 export default function HeroSection() {
   const router = useRouter();
   const { user } = useAuthContext();
+  const { activeCurriculum } = useCurriculum();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const nextImage = useCallback(() => {
@@ -40,8 +42,7 @@ export default function HeroSection() {
     return () => clearInterval(interval);
   }, [nextImage]);
 
-  const headline =
-    "Your child doesn't need more classes. They need the right kind of attention.";
+  const headline = activeCurriculum.hero;
   const words = headline.split(" ");
 
   const handleBookSession = () => {
@@ -109,9 +110,7 @@ export default function HeroSection() {
               className="mb-8"
             >
               <p className="text-lg md:text-xl text-text-secondary font-medium leading-relaxed max-w-lg">
-                Expert tutors guided by intelligent systems, delivering
-                personalized 1-on-1 sessions aligned with major global
-                curricula.
+                {activeCurriculum.subline}
               </p>
             </motion.div>
 

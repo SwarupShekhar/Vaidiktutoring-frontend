@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, useState, Suspense, useCallback } from "react";
 import Link from "next/link";
 import ProtectedClient from "@/app/components/ProtectedClient";
 import { useAuthContext } from "@/app/context/AuthContext";
@@ -23,9 +23,13 @@ import {
   FileText,
   X,
   Star,
-  Layout
+  Layout,
+  AlertCircle,
+  TrendingDown,
+  Dot
 } from "lucide-react";
-import { useState, Suspense } from "react";
+import { api } from "@/app/lib/api";
+import { ProgressSummary } from "@/app/Hooks/useStudentProgress";
 
 function DashboardContent() {
   const { user } = useAuthContext();
@@ -39,6 +43,30 @@ function DashboardContent() {
     students,
     loadingStudentList,
   } = useParentDashboard();
+
+  const [childSummaries, setChildSummaries] = useState<Record<string, ProgressSummary>>({});
+  const [loadingSummaries, setLoadingSummaries] = useState(true);
+
+  const fetchSummaries = useCallback(async () => {
+    if (!students?.length) return;
+    setLoadingSummaries(true);
+    try {
+      const summaries: Record<string, ProgressSummary> = {};
+      await Promise.all(students.map(async (s: any) => {
+        const res = await api.get(`/students/${s.id}/progress-summary`);
+        summaries[s.id] = res.data;
+      }));
+      setChildSummaries(summaries);
+    } catch (err) {
+      console.error('Failed to fetch child summaries:', err);
+    } finally {
+      setLoadingSummaries(false);
+    }
+  }, [students]);
+
+  useEffect(() => {
+    if (students?.length) fetchSummaries();
+  }, [students, fetchSummaries]);
 
   // DERIVE STATS
   const stats = useMemo(() => {
@@ -206,6 +234,9 @@ function DashboardContent() {
                     const childNext = upcomingSessions.find(
                       (s) => s.students?.id === student.id,
                     );
+                    const summary = childSummaries[student.id];
+                    const isRenewalNeeded = summary && summary.packageSessionsRemaining <= Math.ceil(summary.packageSessionsTotal * 0.2);
+
                     return (
                         <div
                           key={student.id}
@@ -219,9 +250,21 @@ function DashboardContent() {
                               <h4 className="font-bold text-(--color-text-primary) truncate">
                                 {student.first_name} {student.last_name}
                               </h4>
-                              <p className="text-[10px] uppercase font-black text-purple-500 tracking-tighter">
-                                Grade {student.grade}
-                              </p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-[10px] uppercase font-black text-purple-500 tracking-tighter">
+                                    Grade {student.grade}
+                                </p>
+                                {summary && (
+                                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 ${
+                                        summary.attendanceRate >= 90 ? 'bg-green-50 text-green-600' :
+                                        summary.attendanceRate >= 70 ? 'bg-amber-50 text-amber-600' :
+                                        'bg-red-50 text-red-600'
+                                    }`}>
+                                        {summary.attendanceRate >= 90 ? '✓' : summary.attendanceRate >= 70 ? '⚠' : '↓'}
+                                        {summary.attendanceRate}% attendance
+                                    </span>
+                                )}
+                              </div>
                             </div>
                             <button
                               onClick={() => {
@@ -234,6 +277,25 @@ function DashboardContent() {
                               <History size={16} />
                             </button>
                           </div>
+
+                          {/* Renewal Banner */}
+                          {isRenewalNeeded && (
+                            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 rounded-xl p-3 flex flex-col gap-2">
+                                <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200">
+                                    <AlertCircle size={14} />
+                                    <p className="text-[10px] font-bold uppercase tracking-tight">Renewal Needed</p>
+                                </div>
+                                <p className="text-[11px] text-amber-700 dark:text-amber-300">
+                                    {summary.packageSessionsRemaining} sessions remaining in package
+                                </p>
+                                <Link 
+                                    href="/pricing" 
+                                    className="bg-amber-600 hover:bg-amber-700 text-white text-[10px] font-black text-center py-1.5 rounded-lg transition-all"
+                                >
+                                    RENEW PACKAGE
+                                </Link>
+                            </div>
+                          )}
 
                           {/* Last Session Note / Info */}
                           <div className="pt-3 border-t border-white/10 mt-auto">
@@ -457,6 +519,46 @@ function DashboardContent() {
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                {/* Attendance Summary */}
+                {selectedChildId && childSummaries[selectedChildId] && (
+                    <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-4">
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-blue-800 uppercase tracking-tight">Monthly Attendance</span>
+                            <span className="text-sm font-black text-blue-900">{childSummaries[selectedChildId].attendanceRate}% Rate</span>
+                        </div>
+                        <p className="text-[10px] text-blue-600 font-medium mt-1 uppercase tracking-widest">
+                            Attended {childSummaries[selectedChildId].sessionsThisMonth} sessions this month
+                        </p>
+                    </div>
+                )}
+
+                {/* Subject Progress indicators */}
+                {selectedChildId && childSummaries[selectedChildId]?.subjectProgress?.length > 0 && (
+                    <div className="space-y-3 mb-6">
+                        <h3 className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Subject Progress</h3>
+                        <div className="flex flex-wrap gap-2">
+                            {childSummaries[selectedChildId].subjectProgress.map((sp, i) => (
+                                <div key={i} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border ${
+                                    sp.level === 'improving' ? 'bg-green-50 border-green-100 text-green-700' :
+                                    sp.level === 'steady' ? 'bg-amber-50 border-amber-100 text-amber-700' :
+                                    'bg-red-50 border-red-100 text-red-700'
+                                }`}>
+                                    <div className={`w-1.5 h-1.5 rounded-full ${
+                                        sp.level === 'improving' ? 'bg-green-500' :
+                                        sp.level === 'steady' ? 'bg-amber-500' :
+                                        'bg-red-500'
+                                    }`} />
+                                    <span className="text-[10px] font-bold uppercase">{sp.subject}: {
+                                        sp.level === 'improving' ? 'Improving' :
+                                        sp.level === 'steady' ? 'Steady' :
+                                        'Needs attention'
+                                    }</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {childPastSessions[selectedChildId || '']?.length > 0 ? (
                   childPastSessions[selectedChildId || ''].map((booking, idx) => (
                     <div key={booking.id} className="relative pl-8 group">
