@@ -32,11 +32,12 @@ export const metadata: Metadata = {
 };
 
 // Placeholder Search Page
-export default function SearchPage({
+export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: { subject?: string };
+  searchParams: Promise<{ subject?: string }>;
 }) {
+  const resolvedSearchParams = await searchParams;
   return (
     <div className="min-h-screen bg-background text-(--color-text-primary) pt-32 px-4 flex flex-col items-center">
       <div className="max-w-4xl w-full text-center">
@@ -44,7 +45,7 @@ export default function SearchPage({
         <p className="opacity-70 mb-8">
           Showing results for subject ID:{" "}
           <span className="font-mono bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">
-            {searchParams.subject || "All"}
+            {resolvedSearchParams.subject || "All"}
           </span>
         </p>
 
