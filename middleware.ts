@@ -47,20 +47,19 @@ export default clerkMiddleware(async (auth, req) => {
         const authObject = await auth();
         const { userId, sessionClaims, redirectToSignIn } = authObject;
 
-        // Allow public routes without authentication
-        if (isPublicRoute(req)) {
-            if (userId) {
-                const path = req.nextUrl.pathname;
-                const marketingPaths = ['/', '/about', '/methodology', '/pricing', '/blog', '/blogs', '/careers', '/contact', '/home', '/login', '/signup'];
-                    const isMarketingPath = marketingPaths.some(p => p === path || path.startsWith(p + '/'));
+        // Redirect authenticated users to their specific dashboards if they hit marketing pages or /dashboard
+        if (userId) {
+            const path = req.nextUrl.pathname;
+            const marketingPaths = ['/', '/about', '/methodology', '/pricing', '/blog', '/blogs', '/careers', '/contact', '/home', '/login', '/signup'];
+            const isMarketingPath = marketingPaths.some(p => p === path || path.startsWith(p + '/'));
+            const isDashboardRoot = path === '/dashboard' || path === '/dashboard/';
 
-                    if (isMarketingPath) {
-                    const role = (sessionClaims?.publicMetadata as any)?.role || (sessionClaims?.metadata as any)?.role;
+            if (isMarketingPath || isDashboardRoot) {
+                const role = (sessionClaims?.publicMetadata as any)?.role || (sessionClaims?.metadata as any)?.role;
 
-                    // No role yet → mid-onboarding, allow through
-                    if (!role) return NextResponse.next();
-
-                    let dashboardPath = '/dashboard';
+                // If we have a role, redirect to the correct dashboard
+                if (role) {
+                    let dashboardPath = '/dashboard'; // Fallback
                     if (role === 'admin') dashboardPath = '/admin/dashboard';
                     else if (role === 'tutor') dashboardPath = '/tutor/dashboard';
                     else if (role === 'student') dashboardPath = '/students/dashboard';
@@ -69,6 +68,10 @@ export default clerkMiddleware(async (auth, req) => {
                     return NextResponse.redirect(new URL(dashboardPath, req.url));
                 }
             }
+        }
+
+        // Allow public routes without authentication
+        if (isPublicRoute(req)) {
             return NextResponse.next();
         }
         

@@ -13,7 +13,7 @@ function LoginContent() {
   const { resolvedTheme } = useTheme();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get('redirect_url') || '/';
+  const redirectUrl = searchParams.get('redirect_url') || '/dashboard';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
