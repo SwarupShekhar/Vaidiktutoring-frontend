@@ -80,6 +80,28 @@ export default function NewBookingPage() {
                     </div>
                 )}
 
+                {user && user.phone_verified === false && (
+                    <div className="mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <span className="text-2xl">📱</span>
+                            <div>
+                                <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                                    Add your phone number
+                                </p>
+                                <p className="text-xs text-amber-700 dark:text-amber-400">
+                                    Verify your number for session reminders and account security.
+                                </p>
+                            </div>
+                        </div>
+                        <a
+                            href="/verify-phone"
+                            className="shrink-0 px-4 py-2 rounded-xl bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition-colors"
+                        >
+                            Verify now →
+                        </a>
+                    </div>
+                )}
+
                 <BookingWizard students={students} isStudentsLoading={isLoading} />
             </div>
         </ProtectedClient>

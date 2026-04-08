@@ -10,6 +10,7 @@ const isProtectedRoute = createRouteMatcher([
     '/profile(.*)',
     '/settings(.*)',
     '/session(.*)',
+    '/verify-phone(.*)',
 ]);
 
 const isPublicRoute = createRouteMatcher([
@@ -84,7 +85,29 @@ export default clerkMiddleware(async (auth, req) => {
                 return redirectToSignIn({ returnBackUrl: req.url });
             }
         }
-        
+
+        // Phone verification gate — only fires for accounts where phone_verified was explicitly set to false
+        // (new accounts created after this feature shipped). Existing accounts have undefined → skipped.
+        if (userId) {
+            const publicMeta = (sessionClaims?.publicMetadata as any) ?? {};
+            const role = publicMeta.role as string | undefined;
+            const phoneVerified = publicMeta.phone_verified;
+            const pathname = req.nextUrl.pathname;
+
+            const needsPhoneGate =
+                phoneVerified === false &&
+                (role === 'parent' || role === 'student') &&
+                !pathname.startsWith('/verify-phone') &&
+                !pathname.startsWith('/api/') &&
+                !pathname.startsWith('/onboarding') &&
+                pathname !== '/login' &&
+                pathname !== '/signup';
+
+            if (needsPhoneGate) {
+                return NextResponse.redirect(new URL('/verify-phone', req.url));
+            }
+        }
+
         return NextResponse.next();
     } catch (error) {
         console.error("Middleware Exception:", error);
