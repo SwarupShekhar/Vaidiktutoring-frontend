@@ -20,6 +20,8 @@ import {
   AlertCircle,
   GraduationCap,
   MessageCircle,
+  MessageSquare,
+  Quote,
   BookOpen,
   Star,
   ChevronRight,
@@ -27,6 +29,7 @@ import {
   X,
   Trophy,
   PlayCircle,
+  Play,
   Video,
 } from 'lucide-react';
 import { differenceInMinutes, format, isToday, isTomorrow, addDays, startOfWeek } from 'date-fns';
@@ -804,6 +807,108 @@ export default function StudentDashboardPage() {
             <motion.section variants={itemVariants}>
               <AchievementBadges progress={progressSummary} />
             </motion.section>
+
+            {/* Tutor Stickers — given during live sessions */}
+            {progressSummary?.stickers && progressSummary.stickers.length > 0 && (
+              <motion.section variants={itemVariants} className="space-y-4">
+                <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+                  <Star size={20} className="text-yellow-500" /> Tutor Stickers
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {(() => {
+                    const counts: Record<string, number> = {};
+                    progressSummary.stickers.forEach((s: string) => { counts[s] = (counts[s] || 0) + 1; });
+                    
+                    const STICKER_MAP: Record<string, { emoji: string; label: string }> = {
+                      crown: { emoji: '👑', label: 'Crown' },
+                      diamond: { emoji: '💎', label: 'Diamond' },
+                      dinosaur: { emoji: '🦕', label: 'Dino' },
+                      flame: { emoji: '🔥', label: 'Flame' },
+                      rainbow: { emoji: '🌈', label: 'Rainbow' },
+                      rocket: { emoji: '🚀', label: 'Rocket' },
+                      shiningstar: { emoji: '🌟', label: 'Shining Star' },
+                      star: { emoji: '⭐', label: 'Star' },
+                      trophy: { emoji: '🏆', label: 'Trophy' },
+                      unicorn: { emoji: '🦄', label: 'Unicorn' },
+                      heart: { emoji: '❤️', label: 'Heart' },
+                      fire: { emoji: '🔥', label: 'Fire' },
+                      brain: { emoji: '🧠', label: 'Genius' },
+                      clap: { emoji: '👏', label: 'Bravo' },
+                      sparkle: { emoji: '✨', label: 'Sparkle' },
+                      thumbsup: { emoji: '👍', label: 'Thumbs Up' },
+                      lightbulb: { emoji: '💡', label: 'Bright Idea' },
+                      100: { emoji: '💯', label: 'Perfect' },
+                    };
+
+                    return Object.entries(counts).map(([type, count]) => {
+                      const info = STICKER_MAP[type] || { emoji: '🏅', label: type };
+                      return (
+                        <div key={type} className="group relative flex flex-col items-center p-3 rounded-2xl bg-surface border border-yellow-100 dark:border-yellow-900/30 hover:shadow-md transition-all min-w-[72px]">
+                          <span className="text-3xl group-hover:scale-125 transition-transform">{info.emoji}</span>
+                          <span className="text-[10px] font-bold text-foreground mt-1">{info.label}</span>
+                          {count > 1 && (
+                            <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-yellow-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">
+                              ×{count}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              </motion.section>
+            )}
+
+            {/* Tutor Feedback */}
+            {progressSummary?.recentFeedback && progressSummary.recentFeedback.length > 0 && (
+              <motion.section variants={itemVariants} className="space-y-4">
+                <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+                  <MessageSquare size={20} className="text-blue-500" /> Tutor Feedback
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {progressSummary.recentFeedback.map((f, i) => (
+                    <div key={i} className="p-5 rounded-3xl bg-surface border border-border shadow-sm group hover:border-blue-200 transition-all">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">{f.subject}</p>
+                          <p className="text-[10px] text-text-secondary">{fmtDate(f.date)}</p>
+                        </div>
+                        <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-500"><Quote size={14} /></div>
+                      </div>
+                      <p className="text-sm text-foreground italic leading-relaxed line-clamp-3 group-hover:line-clamp-none transition-all">"{f.note}"</p>
+                    </div>
+                  ))}
+                </div>
+              </motion.section>
+            )}
+
+            {/* Class Recordings */}
+            {progressSummary?.recentRecordings && progressSummary.recentRecordings.length > 0 && (
+              <motion.section variants={itemVariants} className="space-y-4">
+                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                  <PlayCircle size={20} className="text-red-500" /> Class Recordings
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {progressSummary.recentRecordings.map((r, i) => (
+                    <div key={i} className="group p-5 rounded-3xl bg-surface border border-border shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-500 flex items-center justify-center">
+                          <Video size={20} />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-bold text-foreground line-clamp-1">{r.subject}</h4>
+                          <p className="text-[10px] text-text-secondary uppercase">{fmtDate(r.date)}</p>
+                        </div>
+                      </div>
+                      <a href={`/recordings/${r.sessionId}`} target="_blank" rel="noopener noreferrer"
+                        className="w-full py-2.5 bg-background hover:bg-red-500 hover:text-white border border-border hover:border-red-500 rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center gap-2">
+                        <Play size={14} /> Watch Lesson
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </motion.section>
+            )}
 
             {/* HERO AREA: NEXT CLASS */}
             <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-8">

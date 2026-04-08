@@ -25,9 +25,6 @@
 
 # documents
 *.md
-!README.md
-!CONTRIBUTING.md
-!CHANGELOG.md
 
 # misc
 .DS_Store
