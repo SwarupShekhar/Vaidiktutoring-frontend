@@ -40,11 +40,11 @@ import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
 
 const BADGES = [
-  { id: 'first_step', label: 'First Step', emoji: '🎯', description: 'Completed your first session' },
-  { id: 'consistent', label: 'Consistent', emoji: '📅', description: 'Attended 4 sessions in a month' },
-  { id: 'quick_learner', label: 'Quick Learner', emoji: '⚡', description: '2 week streak' },
-  { id: 'dedicated', label: 'Dedicated', emoji: '💪', description: '10 sessions completed' },
-  { id: 'star_student', label: 'Star Student', emoji: '⭐', description: '4 week streak' },
+  { id: 'first_step', label: 'First Step', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775649916/goal_v94vs6.mp4', description: 'Completed your first session' },
+  { id: 'consistent', label: 'Consistent', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775649812/consistency_lx5v5n.mp4', description: 'Attended 4 sessions in a month' },
+  { id: 'quick_learner', label: 'Quick Learner', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775649979/reading_zyvlll.mp4', description: '2 week streak' },
+  { id: 'dedicated', label: 'Dedicated', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775650132/resilience_kurkwb.mp4', description: '10 sessions completed' },
+  { id: 'star_student', label: 'Star Student', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775650214/student_hahzeg.mp4', description: '4 week streak' },
 ];
 
 const containerVariants: Variants = {
@@ -113,8 +113,15 @@ function AchievementBadges({ progress }: { progress: ProgressSummary | null }) {
                   : 'bg-surface/50 border-dashed border-border opacity-60'
               }`}
             >
-              <div className={`text-4xl mb-2 transition-transform duration-300 group-hover:scale-110 ${!isEarned && 'filter grayscale'}`}>
-                {badge.emoji}
+              <div className={`w-16 h-16 mx-auto mb-2 transition-transform duration-300 group-hover:scale-110 flex items-center justify-center overflow-hidden rounded-full ${!isEarned && 'filter grayscale opacity-30 blur-[1px]'}`}>
+                <video 
+                  src={badge.videoUrl} 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className={`text-xs font-bold ${isEarned ? 'text-foreground' : 'text-text-secondary'}`}>
                 {badge.label}
@@ -602,7 +609,7 @@ export default function StudentDashboardPage() {
           if (badge) {
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             toast.success(`New badge unlocked: ${badge.label}`, {
-              description: `${badge.emoji} ${badge.description}`,
+              description: `🏅 ${badge.description}`,
               duration: 5000,
             });
           }
