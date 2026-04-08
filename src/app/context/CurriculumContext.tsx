@@ -35,7 +35,8 @@ export function CurriculumProvider({ children }: { children: React.ReactNode }) 
         const code = data.country_code;
 
         let detectedId = DEFAULT_CURRICULUM;
-        if (code === 'AU') detectedId = 'australia';
+        if (code === 'GB') detectedId = 'uk';
+        else if (code === 'AU') detectedId = 'australia';
         else if (code === 'SG') detectedId = 'singapore';
         else if (['AE', 'SA', 'QA', 'KW', 'BH', 'OM'].includes(code)) detectedId = 'middleeast';
         else if (code === 'ZA') detectedId = 'southafrica';

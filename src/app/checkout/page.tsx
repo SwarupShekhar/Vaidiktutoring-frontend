@@ -22,6 +22,7 @@ const CheckoutContent = () => {
     const [paymentState, setPaymentState] = useState<PaymentState>('initial');
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [orderDetails, setOrderDetails] = useState<any>(null);
+    const [enrollingStudentId, setEnrollingStudentId] = useState<string | null>(null);
 
     // Redirect to login if not authenticated
     useEffect(() => {
@@ -47,11 +48,15 @@ const CheckoutContent = () => {
     useEffect(() => {
         if (paymentState === 'success') {
             const timer = setTimeout(() => {
-                router.push('/students/dashboard?payment=success');
+                if (enrollingStudentId) {
+                    router.push(`/enroll/${enrollingStudentId}`);
+                } else {
+                    router.push('/students/dashboard?payment=success');
+                }
             }, 2000);
             return () => clearTimeout(timer);
         }
-    }, [paymentState, router]);
+    }, [paymentState, router, enrollingStudentId]);
 
     const handlePayment = async () => {
         setPaymentState('loading');
@@ -101,6 +106,9 @@ const CheckoutContent = () => {
                         });
 
                         if (verifyResponse.data.success) {
+                            if (verifyResponse.data.studentId) {
+                                setEnrollingStudentId(verifyResponse.data.studentId);
+                            }
                             setPaymentState('success');
                         } else {
                             throw new Error('Payment verification failed');

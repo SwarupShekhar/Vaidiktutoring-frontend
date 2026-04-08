@@ -1,5 +1,14 @@
 export const CURRICULA = [
   {
+    id: 'global', flag: '🌍', country: 'Global / Other',
+    hero: 'World-class 1-on-1 tutoring for K-12 students',
+    subline: 'Expert-guided personalized attention for IB, IGCSE, and national curricula worldwide.',
+    gradeLabel: 'Grade', gradeRange: 'KG–Grade 12',
+    exams: ['IB', 'IGCSE', 'A-Levels', 'SAT', 'AP'],
+    subjects: ['Mathematics', 'English', 'Science', 'Biology', 'Chemistry', 'Physics', 'Languages', 'Humanities'],
+    subjectNote: 'We adapt to any international or national syllabus'
+  },
+  {
     id: 'uk', flag: '🇬🇧', country: 'United Kingdom',
     hero: 'Expert tutoring aligned to the UK National Curriculum',
     subline: 'GCSE and A-Level specialists for Years 1–13',
@@ -45,4 +54,4 @@ export const CURRICULA = [
     subjectNote: 'Aligned to the CAPS curriculum'
   }
 ]
-export const DEFAULT_CURRICULUM = 'uk'
+export const DEFAULT_CURRICULUM = 'global'

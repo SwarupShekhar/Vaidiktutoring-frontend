@@ -43,7 +43,7 @@ function GlassSelect({ label, value, options, onChange, placeholder, icon }: Gla
             >
                 <div className="flex items-center gap-3">
                     {icon && <span className="opacity-50">{icon}</span>}
-                    <span className={selected ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}>
+                    <span className={selected ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'}>
                         {selected?.label || placeholder}
                     </span>
                 </div>
@@ -72,7 +72,7 @@ function GlassSelect({ label, value, options, onChange, placeholder, icon }: Gla
                                     }}
                                     className={`
                                         w-full text-left px-4 py-3 text-sm transition-colors flex items-center justify-between
-                                        ${value === opt.id ? 'bg-blue-100 dark:bg-blue-600/20 text-blue-700 dark:text-blue-200' : 'hover:bg-gray-100 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300'}
+                                        ${value === opt.id ? 'bg-blue-100 dark:bg-blue-600/30 text-blue-700 dark:text-blue-200' : 'hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300'}
                                     `}
                                 >
                                     {opt.label}
@@ -308,7 +308,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
             </AnimatePresence>
 
             {/* MAIN CONTENT AREA */}
-            <div className="bg-white dark:bg-glass border border-gray-200 dark:border-white/10 rounded-3xl p-8 min-h-[500px] relative overflow-hidden backdrop-blur-2xl shadow-sm">
+            <div className="bg-white dark:bg-slate-900/60 border border-gray-200 dark:border-white/10 rounded-3xl p-8 min-h-[500px] relative overflow-hidden backdrop-blur-2xl shadow-sm">
                 {/* Decorative gradients */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-violet-500/5 rounded-full blur-[100px] pointer-events-none" />
