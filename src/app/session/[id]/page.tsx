@@ -462,6 +462,8 @@ export default function SessionPage({ params }: SessionProps) {
     // Pointer Updates
     const onPointerUpdate = useCallback((payload: any) => {
         if (!socket || !sessionId) return;
+        // Guard: only emit if pointer has valid coordinates
+        if (!payload.pointer || typeof payload.pointer.x !== 'number') return;
         socket.emit('whiteboard.pointerUpdate', {
             sessionId,
             userId: user?.id,
@@ -471,7 +473,7 @@ export default function SessionPage({ params }: SessionProps) {
             selectedElementIds: payload.selectedElementIds,
             isLaserActive: isLaserMode && user?.role === 'tutor'
         });
-    }, [socket, sessionId, user?.id, user?.first_name]);
+    }, [socket, sessionId, user?.id, user?.first_name, isLaserMode, user?.role]);
 
     const importImageToExcalidraw = useCallback(async (dataUrl: string, customFileId?: string) => {
         if (!excalidrawAPI) return;
@@ -738,10 +740,13 @@ export default function SessionPage({ params }: SessionProps) {
     const giveSticker = (stickerType: string) => {
         if (!socket || user?.role !== 'tutor' || !booking?.students?.id) return;
 
+        // Normalize filename → key (e.g. "Shining Star.png" → "shiningstar")
+        const normalized = stickerType.replace(/\.png$/i, '').toLowerCase().replace(/\s+/g, '');
+
         socket.emit('sticker:give', {
             sessionId,
             studentId: booking.students.id,
-            stickerType
+            stickerType: normalized
         });
 
         setShowStickerPanel(false);
@@ -946,6 +951,8 @@ export default function SessionPage({ params }: SessionProps) {
         // Collaborative Cursor Handling
         const handlePointerUpdate = (payload: any) => {
             if (payload.userId === user?.id) return;
+            // Guard against missing pointer data — prevents "Cannot read 'x' of undefined"
+            if (!payload.pointer || typeof payload.pointer.x !== 'number') return;
 
             setCollaborators(prev => {
                 const next = new Map(prev);
@@ -957,12 +964,12 @@ export default function SessionPage({ params }: SessionProps) {
                     isLaserActive: payload.isLaserActive,
                     color: payload.isLaserActive ? "#ef4444" : undefined
                 });
+                // Use the freshly-built Map — not the stale closure value
+                if (excalidrawAPI) {
+                    excalidrawAPI.updateScene({ collaborators: next });
+                }
                 return next;
             });
-
-            if (excalidrawAPI) {
-                excalidrawAPI.updateScene({ collaborators: collaborators });
-            }
         };
 
         // Sync Slide Navigation — use slideRef.current to avoid stale closure
@@ -974,13 +981,13 @@ export default function SessionPage({ params }: SessionProps) {
 
         // Optimized handler for real-time element sync
         const handleReceiveUpdate = (data: any) => {
-            if (whiteboardRef.current.isUpdating) return;
+            if (!excalidrawAPIRef.current || whiteboardRef.current.isUpdating) return;
             const remoteElements = Array.isArray(data) ? data : (data.elements || []);
             if (!remoteElements || remoteElements.length === 0) return; // Prevent accidental clearing
 
             whiteboardRef.current.isUpdating = true;
             try {
-                excalidrawAPI.updateScene({
+                excalidrawAPIRef.current.updateScene({
                     elements: remoteElements,
                     commitToHistory: false // Don't bloat undo stack with every stroke update
                 });

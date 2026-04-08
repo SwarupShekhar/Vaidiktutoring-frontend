@@ -3,6 +3,7 @@ import { useAuthContext } from '@/app/context/AuthContext';
 import { Socket } from 'socket.io-client';
 import { useParams } from 'next/navigation';
 import api from '@/app/lib/api';
+import { toast } from 'sonner';
 import ChatLoader from './ChatLoader';
 
 type Message = {
@@ -32,6 +33,14 @@ export default function SessionChat({ sessionId: propSessionId, socket }: Sessio
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const [hasInteracted, setHasInteracted] = useState(false);
     const [isConnected, setIsConnected] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const isOpenRef = useRef(false);
+
+    // Keep ref in sync with state so the socket handler reads latest value
+    useEffect(() => {
+        isOpenRef.current = isOpen;
+        if (isOpen) setUnreadCount(0);
+    }, [isOpen]);
 
     // Sound Effect
     const notificationSound = useRef<HTMLAudioElement | null>(null);
@@ -73,6 +82,11 @@ export default function SessionChat({ sessionId: propSessionId, socket }: Sessio
                     if (prev.some(m => m.id === msg.id)) return prev;
                     return [...prev, msg];
                 });
+
+                // Increment unread count if chat is closed
+                if (!isOpenRef.current) {
+                    setUnreadCount(prev => prev + 1);
+                }
 
                 playNotification();
             }
@@ -147,7 +161,7 @@ export default function SessionChat({ sessionId: propSessionId, socket }: Sessio
             }
         } catch (error: any) {
             console.error('[Chat] Failed to send message:', error.response?.data || error.message || error);
-            alert(`Failed to send: ${error.response?.data?.message || 'Unknown error'}`);
+            toast.error(`Failed to send: ${error.response?.data?.message || 'Unknown error'}`);
         }
     };
 
@@ -244,9 +258,14 @@ export default function SessionChat({ sessionId: propSessionId, socket }: Sessio
                 {/* LOADER TRIGGER */}
                 <div
                     onClick={toggleChat}
-                    className="pointer-events-auto cursor-pointer hover:scale-105 transition-transform"
+                    className={`pointer-events-auto cursor-pointer hover:scale-105 transition-transform relative ${unreadCount > 0 ? 'animate-bounce' : ''}`}
                 >
                     <ChatLoader />
+                    {unreadCount > 0 && (
+                        <div className="absolute -top-1 -right-1 min-w-[22px] h-[22px] px-1.5 bg-red-500 text-white text-[11px] font-black rounded-full flex items-center justify-center ring-2 ring-white shadow-lg shadow-red-500/40 animate-pulse">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                        </div>
+                    )}
                 </div>
             </div>
         </>

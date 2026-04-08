@@ -10,6 +10,7 @@ export interface ProgressSummary {
   packageSessionsRemaining: number;
   packageSessionsTotal: number;
   badges: string[];
+  stickers: string[];
   topicsThisMonth: string[];
   subjectProgress: {
     subject: string;

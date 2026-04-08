@@ -311,6 +311,60 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
         <AchievementBadges progress={progressSummary} />
       </motion.section>
 
+      {/* Tutor Stickers — given during live sessions */}
+      {progressSummary?.stickers && progressSummary.stickers.length > 0 && (
+        <motion.section variants={itemVariants} className="space-y-4">
+          <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <Star size={20} className="text-yellow-500" /> Tutor Stickers
+          </h3>
+          <div className="flex flex-wrap gap-3">
+            {(() => {
+              // Aggregate sticker counts
+              const counts: Record<string, number> = {};
+              progressSummary.stickers.forEach((s: string) => { counts[s] = (counts[s] || 0) + 1; });
+              
+              const STICKER_MAP: Record<string, { emoji: string; label: string }> = {
+                // Session stickers (normalized: lowercase, no spaces, no extension)
+                crown: { emoji: '👑', label: 'Crown' },
+                diamond: { emoji: '💎', label: 'Diamond' },
+                dinosaur: { emoji: '🦕', label: 'Dino' },
+                flame: { emoji: '🔥', label: 'Flame' },
+                rainbow: { emoji: '🌈', label: 'Rainbow' },
+                rocket: { emoji: '🚀', label: 'Rocket' },
+                shiningstar: { emoji: '🌟', label: 'Shining Star' },
+                star: { emoji: '⭐', label: 'Star' },
+                trophy: { emoji: '🏆', label: 'Trophy' },
+                unicorn: { emoji: '🦄', label: 'Unicorn' },
+                // Legacy keys (in case older records exist)
+                heart: { emoji: '❤️', label: 'Heart' },
+                fire: { emoji: '🔥', label: 'Fire' },
+                brain: { emoji: '🧠', label: 'Genius' },
+                clap: { emoji: '👏', label: 'Bravo' },
+                sparkle: { emoji: '✨', label: 'Sparkle' },
+                thumbsup: { emoji: '👍', label: 'Thumbs Up' },
+                lightbulb: { emoji: '💡', label: 'Bright Idea' },
+                100: { emoji: '💯', label: 'Perfect' },
+              };
+
+              return Object.entries(counts).map(([type, count]) => {
+                const info = STICKER_MAP[type] || { emoji: '🏅', label: type };
+                return (
+                  <div key={type} className="group relative flex flex-col items-center p-3 rounded-2xl bg-surface border border-yellow-100 dark:border-yellow-900/30 hover:shadow-md transition-all min-w-[72px]">
+                    <span className="text-3xl group-hover:scale-125 transition-transform">{info.emoji}</span>
+                    <span className="text-[10px] font-bold text-foreground mt-1">{info.label}</span>
+                    {count > 1 && (
+                      <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-yellow-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">
+                        ×{count}
+                      </span>
+                    )}
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </motion.section>
+      )}
+
       {/* Weekly schedule */}
       <motion.div variants={itemVariants} ref={scheduleRef}
         className="bg-surface rounded-3xl p-6 border border-border shadow-sm">
