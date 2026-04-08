@@ -34,7 +34,7 @@ export async function login(email: string, password: string): Promise<LoginResp>
   try {
     const res = await api.post<LoginResp>('/auth/login', { email, password });
     if (res.data?.token) {
-      localStorage.setItem('K12_TOKEN', res.data.token);
+      localStorage.setItem('auth_token', res.data.token);
     }
     return res.data;
   } catch (error: any) {
@@ -49,14 +49,14 @@ export async function login(email: string, password: string): Promise<LoginResp>
 }
 
 export function logout() {
-  localStorage.removeItem('K12_TOKEN');
+  localStorage.removeItem('auth_token');
   // redirect client-side
   if (typeof window !== 'undefined') window.location.href = '/login';
 }
 
 export function getToken() {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('K12_TOKEN');
+  return localStorage.getItem('auth_token');
 }
 
 export async function verifyEmail(token: string) {

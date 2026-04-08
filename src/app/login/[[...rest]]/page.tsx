@@ -25,9 +25,13 @@ function LoginContent() {
     setLoading(true);
     setError(null);
     try {
-      await login(email, password);
-      // Redirect to the intended URL after successful login
-      router.push(redirectUrl);
+      // If redirectUrl is just the generic /dashboard, let AuthContext handle the role-based redirect
+      const isDefaultRedirect = redirectUrl === '/dashboard';
+      await login(email, password, isDefaultRedirect);
+      
+      if (!isDefaultRedirect) {
+        router.push(redirectUrl);
+      }
     } catch (err: any) {
       setError(err.message || 'Invalid credentials');
     } finally {

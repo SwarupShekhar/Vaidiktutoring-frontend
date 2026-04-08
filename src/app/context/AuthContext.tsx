@@ -49,6 +49,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (savedToken) {
         setToken(savedToken);
         setAuthToken(savedToken);
+        // Ensure API always has a way to get the token even if defaults are lost
+        setTokenGetter(async () => localStorage.getItem('auth_token'));
+        
         try {
           const u = await authLib.getMe();
           setBackendUser(u);
@@ -137,7 +140,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setBackendUser(u);
 
       localStorage.setItem('auth_token', newToken); // Persist for session
+      setTokenGetter(async () => localStorage.getItem('auth_token')); // Register getter
+      
       document.cookie = `manual_auth_token=${newToken}; path=/; max-age=604800; SameSite=Lax`; // 1 week
+      document.cookie = `user_role=${u.role || 'student'}; path=/; max-age=604800; SameSite=Lax`;
 
       if (u.force_password_change) {
         router.push('/change-password');
@@ -145,11 +151,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (shouldRedirect) {
-        if (u.role === 'admin') router.push('/admin/dashboard');
-        else if (u.role === 'tutor') router.push('/tutor/dashboard');
-        else if (u.role === 'parent') router.push('/parent/dashboard');
-        else if (u.role === 'student') router.push('/students/dashboard');
-        else router.push('/');
+        // Use specifically typed dashboard paths
+        const rolePaths: Record<string, string> = {
+          admin: '/admin/dashboard',
+          tutor: '/tutor/dashboard',
+          parent: '/parent/dashboard',
+          student: '/students/dashboard'
+        };
+        const target = rolePaths[u.role || ''] || '/';
+        router.push(target);
       }
     } catch (err: any) {
       console.error('Login failed:', err);

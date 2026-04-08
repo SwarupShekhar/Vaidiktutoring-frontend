@@ -1,31 +1,36 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
+import { useAuthContext } from '../context/AuthContext';
 
 export function useTutorDashboard() {
+    const { user, loading: authLoading } = useAuthContext();
+    const isReady = !!user && !authLoading;
+
     // Fetch tutor's assigned bookings
     const { data: bookings, isLoading: loadingBookings, error: bookingsError, refetch: refetchBookings } = useQuery({
-        queryKey: ['tutor-bookings'],
+        queryKey: ['tutor-bookings', user?.id],
         queryFn: async () => {
             const res = await api.get('/tutor/bookings');
             return Array.isArray(res.data) ? res.data : [];
         },
+        enabled: isReady,
         refetchInterval: 5000, // Sync every 5 seconds
     });
 
     // Fetch REAL-TIME Stats from backend
     const { data: backendStats, isLoading: loadingStats } = useQuery({
-        queryKey: ['tutor-stats'],
+        queryKey: ['tutor-stats', user?.id],
         queryFn: async () => {
             const res = await api.get('/tutor/stats');
             return res.data;
         },
+        enabled: isReady,
         refetchInterval: 5000,
     });
 
     // Fetch AVAILABLE (unclaimed) bookings matching tutor's subjects
     const { data: availableJobs, isLoading: loadingAvailable } = useQuery({
-        queryKey: ['tutor-available-jobs'],
+        queryKey: ['tutor-available-jobs', user?.id],
         queryFn: async () => {
             try {
                 const res = await api.get('/bookings/available');
@@ -35,6 +40,7 @@ export function useTutorDashboard() {
                 return [];
             }
         },
+        enabled: isReady,
         refetchInterval: 10000, // Poll every 10 seconds for new jobs
     });
 

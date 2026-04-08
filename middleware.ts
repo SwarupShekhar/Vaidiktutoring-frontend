@@ -81,7 +81,25 @@ export default clerkMiddleware(async (auth, req) => {
                 // Check if user has a manual auth token (Direct Access login for tutors/admins)
                 const cookieHeader = req.headers.get('cookie') || '';
                 if (cookieHeader.includes('manual_auth_token=')) {
-                    // Manual token found — let the request through, page-level auth handles validation
+                    // Manual token found — check if they're landing on the generic /dashboard
+                    const path = req.nextUrl.pathname;
+                    if (path === '/dashboard' || path === '/dashboard/') {
+                        // Extract role from cookie if possible
+                        const roleMatch = cookieHeader.match(/user_role=([^;]+)/);
+                        const role = roleMatch ? roleMatch[1] : null;
+
+                        if (role) {
+                            let dashboardPath = '/dashboard';
+                            if (role === 'admin') dashboardPath = '/admin/dashboard';
+                            else if (role === 'tutor') dashboardPath = '/tutor/dashboard';
+                            else if (role === 'student') dashboardPath = '/students/dashboard';
+                            else if (role === 'parent') dashboardPath = '/parent/dashboard';
+                            
+                            if (dashboardPath !== '/dashboard') {
+                                return NextResponse.redirect(new URL(dashboardPath, req.url));
+                            }
+                        }
+                    }
                     return NextResponse.next();
                 }
                 // No Clerk session AND no manual token — redirect to login
