@@ -113,15 +113,17 @@ function AchievementBadges({ progress }: { progress: ProgressSummary | null }) {
                   : 'bg-surface/50 border-dashed border-border opacity-60'
               }`}
             >
-              <div className={`w-16 h-16 mx-auto mb-2 transition-transform duration-300 group-hover:scale-110 flex items-center justify-center overflow-hidden rounded-full ${!isEarned && 'filter grayscale opacity-30 blur-[1px]'}`}>
+              <div className={`w-20 h-20 mx-auto mb-3 transition-all duration-500 group-hover:scale-125 flex items-center justify-center overflow-hidden rounded-full ${!isEarned ? 'filter grayscale opacity-40 contrast-75' : 'bg-green-50/50 dark:bg-green-900/10'}`}>
                 <video 
-                  src={badge.videoUrl} 
                   autoPlay 
                   loop 
                   muted 
                   playsInline 
-                  className="w-full h-full object-cover"
-                />
+                  preload="auto"
+                  className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal"
+                >
+                  <source src={badge.videoUrl} type="video/mp4" />
+                </video>
               </div>
               <div className={`text-xs font-bold ${isEarned ? 'text-foreground' : 'text-text-secondary'}`}>
                 {badge.label}
