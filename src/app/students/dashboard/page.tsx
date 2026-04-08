@@ -40,11 +40,11 @@ import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
 
 const BADGES = [
-  { id: 'first_step', label: 'First Step', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775649916/goal_v94vs6.mp4', description: 'Completed your first session' },
-  { id: 'consistent', label: 'Consistent', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775649812/consistency_lx5v5n.mp4', description: 'Attended 4 sessions in a month' },
-  { id: 'quick_learner', label: 'Quick Learner', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775649979/reading_zyvlll.mp4', description: '2 week streak' },
-  { id: 'dedicated', label: 'Dedicated', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775650132/resilience_kurkwb.mp4', description: '10 sessions completed' },
-  { id: 'star_student', label: 'Star Student', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775650214/student_hahzeg.mp4', description: '4 week streak' },
+  { id: 'first_step', label: 'First Step', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775649916/goal_v94vs6.gif', description: 'Completed your first session' },
+  { id: 'consistent', label: 'Consistent', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775649812/consistency_lx5v5n.gif', description: 'Attended 4 sessions in a month' },
+  { id: 'quick_learner', label: 'Quick Learner', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775649979/reading_zyvlll.gif', description: '2 week streak' },
+  { id: 'dedicated', label: 'Dedicated', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775650132/resilience_kurkwb.gif', description: '10 sessions completed' },
+  { id: 'star_student', label: 'Star Student', videoUrl: 'https://res.cloudinary.com/de8vvmpip/video/upload/v1775650214/student_hahzeg.gif', description: '4 week streak' },
 ];
 
 const containerVariants: Variants = {
@@ -113,17 +113,12 @@ function AchievementBadges({ progress }: { progress: ProgressSummary | null }) {
                   : 'bg-surface/50 border-dashed border-border opacity-60'
               }`}
             >
-              <div className={`w-20 h-20 mx-auto mb-3 transition-all duration-500 group-hover:scale-125 flex items-center justify-center overflow-hidden rounded-full ${!isEarned ? 'filter grayscale opacity-40 contrast-75' : 'bg-green-50/50 dark:bg-green-900/10'}`}>
-                <video 
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline 
-                  preload="auto"
-                  className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal"
-                >
-                  <source src={badge.videoUrl} type="video/mp4" />
-                </video>
+              <div className={`w-20 h-20 mx-auto mb-3 transition-all duration-500 group-hover:scale-125 flex items-center justify-center overflow-hidden ${!isEarned ? 'filter grayscale opacity-40' : 'opacity-100'}`}>
+                <img 
+                  src={badge.videoUrl} 
+                  alt={badge.label}
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div className={`text-xs font-bold ${isEarned ? 'text-foreground' : 'text-text-secondary'}`}>
                 {badge.label}
