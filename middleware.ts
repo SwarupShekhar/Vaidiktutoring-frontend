@@ -56,14 +56,17 @@ export default clerkMiddleware(async (auth, req) => {
 
             if (isMarketingPath || isDashboardRoot) {
                 const role = (sessionClaims?.publicMetadata as any)?.role || (sessionClaims?.metadata as any)?.role;
+                
+                // Default to student if role is not yet populated by webhook
+                const safeRole = role || 'student';
 
                 // If we have a role, redirect to the correct dashboard
-                if (role) {
+                if (safeRole) {
                     let dashboardPath = '/dashboard'; // Fallback
-                    if (role === 'admin') dashboardPath = '/admin/dashboard';
-                    else if (role === 'tutor') dashboardPath = '/tutor/dashboard';
-                    else if (role === 'student') dashboardPath = '/students/dashboard';
-                    else if (role === 'parent') dashboardPath = '/parent/dashboard';
+                    if (safeRole === 'admin') dashboardPath = '/admin/dashboard';
+                    else if (safeRole === 'tutor') dashboardPath = '/tutor/dashboard';
+                    else if (safeRole === 'student') dashboardPath = '/students/dashboard';
+                    else if (safeRole === 'parent') dashboardPath = '/parent/dashboard';
 
                     return NextResponse.redirect(new URL(dashboardPath, req.url));
                 }
