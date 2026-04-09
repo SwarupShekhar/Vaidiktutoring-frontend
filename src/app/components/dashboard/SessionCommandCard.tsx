@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Clock, Calendar, Video, ArrowRight, User, BookOpen } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { formatDistanceToNow, isWithinInterval, subMinutes } from 'date-fns';
 import { motion } from 'framer-motion';
+import { SupportModal } from './SupportModal';
 
 interface SessionCommandCardProps {
     session: any; // Ideally normalized booking/session type
@@ -13,6 +14,8 @@ interface SessionCommandCardProps {
 
 export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps) => {
     const router = useRouter();
+    const [showSupport, setShowSupport] = useState(false);
+
 
     if (loading) {
         return (
@@ -126,6 +129,7 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
                     )}
                     
                     <button 
+                        onClick={() => setShowSupport(true)}
                         className="flex-1 py-4 bg-background text-text-secondary rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-border transition-all border border-border"
                     >
                         <User size={16} />
@@ -133,6 +137,13 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
                     </button>
                 </div>
             </div>
+
+            <SupportModal 
+                isOpen={showSupport} 
+                onClose={() => setShowSupport(false)} 
+                context={{ session_id: session?.id, subject: subjectName }}
+            />
         </motion.div>
+
     );
 };

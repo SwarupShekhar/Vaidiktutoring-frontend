@@ -78,19 +78,37 @@ export default function SessionPage({ params }: SessionProps) {
     const [videoLoading, setVideoLoading] = useState(false);
     const [booking, setBooking] = useState<BookingDetails | null>(null);
 
+
     // Attendance State
     const [showAttendance, setShowAttendance] = useState(false);
-    // Mock Session Roster (In real app, comes from booking/program)
-    const sessionRoster = [
-        { id: 's1', name: 'Alice Walker' },
-        { id: 's2', name: 'Bob Smith' },
-        { id: 's3', name: 'Charlie Dave' }
-    ];
+    
+    // Dynamic Session Roster from booking details
+    const sessionRoster = booking?.students ? [
+        { 
+            id: (booking.students as any).id, 
+            name: `${(booking.students as any).first_name} ${(booking.students as any).last_name || ''}`.trim() 
+        }
+    ] : [];
 
-    const saveAttendance = (records: any) => {
-        // api.post(`/sessions/${sessionId}/attendance`, records);
-        toast.success('Attendance saved!');
+    const saveAttendance = async (records: Record<string, 'present' | 'absent' | 'late'>) => {
+        try {
+            // Iterate over the records and save attendance for each student
+            const promises = Object.entries(records).map(([studentId, status]) => {
+                return api.post(`/sessions/${sessionId}/attendance`, {
+                    studentId,
+                    present: status === 'present' || status === 'late',
+                    // Optional: we can add more logic here for 'late' if the backend supports it
+                });
+            });
+
+            await Promise.all(promises);
+            toast.success('Attendance records updated successfully!');
+        } catch (err) {
+            console.error('Failed to save attendance:', err);
+            toast.error('Failed to save attendance records.');
+        }
     };
+
 
     // Video Card State
     const [position, setPosition] = useState({ x: 8, y: 280 });
