@@ -1,15 +1,19 @@
 'use server';
 
+import { headers } from 'next/headers';
+
 /**
  * Detects the visitor's country code using ip-api.com on the server side.
- * This prevents Googlebot from discovering the URL in the client-side bundle,
- * which fixes the "Blocked by robots.txt" error in Search Console.
  */
 export async function getDetectedCountryCode(): Promise<string | null> {
   try {
-    const res = await fetch('https://ip-api.com/json/?fields=countryCode', {
-      next: { revalidate: 3600 } // Cache for 1 hour to stay under rate limits
-    });
+    const headersList = await headers();
+    const forwarded = headersList.get('x-forwarded-for');
+    const ip = forwarded ? forwarded.split(',')[0] : '';
+
+    // Query specifically for the client's IP, not the server's IP
+    const url = `http://ip-api.com/json/${ip}?fields=countryCode`;
+    const res = await fetch(url, { cache: 'no-store' });
     
     if (!res.ok) return null;
     

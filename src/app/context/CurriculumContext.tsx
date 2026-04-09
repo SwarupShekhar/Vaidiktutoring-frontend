@@ -45,10 +45,8 @@ export function CurriculumProvider({ children }: { children: React.ReactNode }) 
         const curriculum = CURRICULA.find(c => c.id === detectedId);
         if (curriculum) {
           setActiveCurriculumState(curriculum);
-          // Auto-save detection if user hasn't explicitly set? Or keep it temporary until interaction?
-          // User said "On first visit with no localStorage value..." but also "setCurriculum saves to localStorage immediately"
-          // I will save the detection to localStorage to avoid repeated hits to the geo-api
-          localStorage.setItem('sh_curriculum', detectedId);
+          // Don't auto-save detection to localStorage to allow for dynamic VPN switching.
+          // We only save when the user explicitly calls setCurriculum.
         }
       } catch (e) {
         console.warn('Country detection failed, falling back to default.');
