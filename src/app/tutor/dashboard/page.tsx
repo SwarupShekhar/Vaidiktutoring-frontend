@@ -22,6 +22,7 @@ import {
   Video,
   PenTool
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function TutorDashboardPage() {
   const { user } = useAuthContext();
@@ -253,9 +254,12 @@ export default function TutorDashboardPage() {
                     <Calendar className="text-blue-500" />
                     Upcoming Roadmaps
                   </h2>
-                  <Link href="/tutor/schedule" className="text-xs font-black text-purple-600 uppercase tracking-widest hover:underline">
+                  <button 
+                    onClick={() => toast.info('Full Calendar view is currently in development.')}
+                    className="text-xs font-black text-purple-600 uppercase tracking-widest hover:underline cursor-pointer"
+                  >
                     View Full Calendar →
-                  </Link>
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -296,20 +300,20 @@ export default function TutorDashboardPage() {
                 </h3>
                 <div className="flex flex-col items-center py-6">
                   <div className="text-7xl font-black text-slate-900 dark:text-white mb-3 tracking-tighter">
-                    {stats.quality.isInitial ? '0.0' : stats.quality.rating.toFixed(2)}
+                    {stats.quality.isInitial ? 'NEW' : stats.quality.rating.toFixed(1)}
                   </div>
                   <div className="flex gap-2 text-yellow-500 mb-6">
                     {[1, 2, 3, 4, 5].map(i => (
                       <Star
                         key={i}
-                        fill={i <= Math.round(stats.quality.rating) && !stats.quality.isInitial ? "currentColor" : "none"}
-                        className={i <= Math.round(stats.quality.rating) && !stats.quality.isInitial ? "text-yellow-500" : "text-slate-300 dark:text-slate-700"}
+                        fill={(i <= Math.round(stats.quality.rating) && !stats.quality.isInitial) ? "currentColor" : "none"}
+                        className={(i <= Math.round(stats.quality.rating) && !stats.quality.isInitial) ? "text-yellow-500" : "text-slate-300 dark:text-slate-700"}
                         size={24}
                       />
                     ))}
                   </div>
                   <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 text-center uppercase tracking-[0.2em]">
-                    {stats.quality.isInitial ? 'Awaiting First Session Review' : `Verified feedback from ${stats.quality.reviewsCount} sessions`}
+                    {stats.quality.isInitial ? 'Awaiting First Student Feedback' : `Verified feedback from ${stats.quality.reviewsCount} sessions`}
                   </p>
                 </div>
                 <div className="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 space-y-5">
@@ -362,7 +366,10 @@ export default function TutorDashboardPage() {
               <section className="bg-linear-to-br from-slate-900 to-black dark:from-slate-800 dark:to-slate-900 border border-white/10 rounded-[3rem] p-10 shadow-2xl">
                 <h3 className="text-xl font-black text-white mb-8">Service Modules</h3>
                 <div className="grid grid-cols-1 gap-5">
-                  <button className="flex items-center gap-6 p-6 rounded-4xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative">
+                  <button 
+                    onClick={() => toast.info('Curriculum Vault is being populated. Access will be granted shortly.')}
+                    className="flex items-center gap-6 p-6 rounded-4xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative"
+                  >
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-150 transition-transform">
                       <BookOpen size={80} />
                     </div>
@@ -374,7 +381,10 @@ export default function TutorDashboardPage() {
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Asset Repository</p>
                     </div>
                   </button>
-                  <Link href="/tutor/schedule" className="flex items-center gap-6 p-6 rounded-4xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative">
+                  <button 
+                    onClick={() => toast.info('Availability Sync (Shift Intelligence) is coming soon!')}
+                    className="flex items-center gap-6 p-6 rounded-4xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative"
+                  >
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-150 transition-transform">
                       <Calendar size={80} />
                     </div>
@@ -385,7 +395,7 @@ export default function TutorDashboardPage() {
                       <p className="text-lg font-black text-white">Availability Sync</p>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Shift Intelligence</p>
                     </div>
-                  </Link>
+                  </button>
                   <Link href="/admin/blogs/new" className="flex items-center gap-6 p-6 rounded-4xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-150 transition-transform">
                       <PenTool size={80} />
