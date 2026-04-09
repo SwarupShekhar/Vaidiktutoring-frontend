@@ -9,6 +9,8 @@ interface Tutor {
   email: string;
   subjects?: string[] | string; // Handle both array or string format
   status?: string;
+  avgRating?: number | null;
+  totalRatings?: number;
 }
 
 interface TutorListModalProps {
@@ -159,6 +161,9 @@ export default function TutorListModal({
                   <th className="p-4 text-xs font-bold text-gray-500 uppercase">
                     Status
                   </th>
+                  <th className="p-4 text-xs font-bold text-gray-500 uppercase">
+                    Rating
+                  </th>
                   <th className="p-4 text-xs font-bold text-gray-500 uppercase text-right">
                     Action
                   </th>
@@ -192,6 +197,17 @@ export default function TutorListModal({
                       >
                         {tutor.status === "suspended" ? "SUSPENDED" : "ACTIVE"}
                       </span>
+                    </td>
+                    <td className="p-4 text-gray-600 dark:text-gray-400 text-sm">
+                      {tutor.avgRating != null ? (
+                        <span className="flex items-center gap-1">
+                          <span className="text-amber-400">★</span>
+                          <span className="font-semibold">{tutor.avgRating}</span>
+                          <span className="text-xs text-gray-400">({tutor.totalRatings})</span>
+                        </span>
+                      ) : (
+                        <span className="text-gray-400 text-xs">No ratings</span>
+                      )}
                     </td>
                     <td className="p-4 text-right space-x-2">
                       <button

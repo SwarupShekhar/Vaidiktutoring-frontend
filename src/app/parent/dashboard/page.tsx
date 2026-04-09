@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { api } from "@/app/lib/api";
 import { ProgressSummary } from "@/app/Hooks/useStudentProgress";
+import RatingModal from "@/app/components/RatingModal";
 
 function DashboardContent() {
   const { user } = useAuthContext();
@@ -68,6 +69,21 @@ function DashboardContent() {
   useEffect(() => {
     if (students?.length) fetchSummaries();
   }, [students, fetchSummaries]);
+
+  const [pendingRatings, setPendingRatings] = useState<any[]>([]);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+
+  useEffect(() => {
+    api.get('/ratings/pending')
+      .then((res) => {
+        const data = Array.isArray(res.data) ? res.data : [];
+        if (data.length > 0) {
+          setPendingRatings(data);
+          setShowRatingModal(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // DERIVE STATS
   const stats = useMemo(() => {
@@ -502,6 +518,13 @@ function DashboardContent() {
             </div>
           </aside>
         </div>
+
+        {showRatingModal && pendingRatings.length > 0 && (
+          <RatingModal
+            pending={pendingRatings}
+            onDone={() => setShowRatingModal(false)}
+          />
+        )}
 
         {/* SESSION HISTORY MODAL */}
         {showHistoryModal && (

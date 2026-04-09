@@ -36,6 +36,7 @@ import {
 import { differenceInMinutes, format, isToday, isTomorrow, addDays, startOfWeek } from 'date-fns';
 import { api } from '@/app/lib/api';
 import { EditStudentProfileModal } from '@/app/components/dashboard/EditStudentProfileModal';
+import RatingModal from '@/app/components/RatingModal';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
@@ -574,6 +575,20 @@ export default function StudentDashboardPage() {
   const [studentProfile, setStudentProfile] = useState<any>(null);
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
   const prevBadgesRef = useRef<string[]>([]);
+  const [pendingRatings, setPendingRatings] = useState<any[]>([]);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+
+  useEffect(() => {
+    api.get('/ratings/pending')
+      .then((res) => {
+        const data = Array.isArray(res.data) ? res.data : [];
+        if (data.length > 0) {
+          setPendingRatings(data);
+          setShowRatingModal(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const d = localStorage.getItem('onboarding_dismissed');
@@ -1032,6 +1047,12 @@ export default function StudentDashboardPage() {
           onClose={() => setIsEditProfileOpen(false)}
           student={studentProfile}
           onUpdate={fetchProfile}
+        />
+      )}
+      {showRatingModal && pendingRatings.length > 0 && (
+        <RatingModal
+          pending={pendingRatings}
+          onDone={() => setShowRatingModal(false)}
         />
       )}
       </ErrorBoundary>
