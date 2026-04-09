@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { X, Send, LifeBuoy, CheckCircle2 } from 'lucide-react';
-import { api } from '@/lib/api';
-import { toast } from 'react-hot-toast';
+import { api } from '@/app/lib/api';
+import { toast } from 'sonner';
 
 interface SupportModalProps {
     isOpen: boolean;
