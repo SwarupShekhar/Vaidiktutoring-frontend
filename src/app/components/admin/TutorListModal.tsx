@@ -79,6 +79,17 @@ export default function TutorListModal({
     }
   };
 
+  const handleResetPassword = async (tutor: Tutor) => {
+    if (!confirm(`Reset password for ${tutor.first_name} ${tutor.last_name}? A temporary password will be emailed to them.`)) return;
+    try {
+      await api.post(`/admin/tutors/${tutor.id}/reset-password`);
+      alert(`Password reset. Temporary password emailed to ${tutor.email}.`);
+    } catch (error) {
+      console.error('Failed to reset password', error);
+      alert('Failed to reset password.');
+    }
+  };
+
   const handleToggleStatus = async (tutor: Tutor) => {
     const isSuspended = tutor.status === "suspended";
     const newStatus = isSuspended ? "active" : "suspended";
@@ -192,6 +203,12 @@ export default function TutorListModal({
                         }`}
                       >
                         {tutor.status === "suspended" ? "ACTIVATE" : "SUSPEND"}
+                      </button>
+                      <button
+                        onClick={() => handleResetPassword(tutor)}
+                        className="text-blue-500 hover:text-blue-700 font-bold text-xs px-2 py-1 rounded bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                      >
+                        RESET PWD
                       </button>
                       <button
                         onClick={() => handleDelete(tutor.id)}
