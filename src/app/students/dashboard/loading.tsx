@@ -1,7 +1,13 @@
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-gray-50 p-6 animate-pulse">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div 
+      className="min-h-screen bg-gray-50 p-6 animate-pulse" 
+      role="status" 
+      aria-live="polite" 
+      aria-busy="true"
+    >
+      <span className="sr-only">Loading dashboard…</span>
+      <div className="max-w-7xl mx-auto space-y-6" aria-hidden="true">
         {/* Header */}
         <div className="h-8 w-64 bg-gray-200 rounded" />
         {/* Stat cards */}
