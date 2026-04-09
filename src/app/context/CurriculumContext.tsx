@@ -29,6 +29,12 @@ export function CurriculumProvider({ children }: { children: React.ReactNode }) 
 
     // Attempt geo-detection if no preference saved
     const detectCountry = async () => {
+      // Skip geo-detection for bots to avoid blocked resource warnings in Search Console
+      const isBot = /bot|googlebot|crawler|spider|robot|crawling/i.test(
+        navigator.userAgent
+      );
+      if (isBot) return;
+
       try {
         const res = await fetch('https://ip-api.com/json/?fields=countryCode');
         const data = await res.json();
