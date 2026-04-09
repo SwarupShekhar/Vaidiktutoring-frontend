@@ -2,6 +2,7 @@
 
 import React, { useMemo, useEffect, useState, useRef } from 'react';
 import ProtectedClient from '@/app/components/ProtectedClient';
+import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { useAuthContext } from '@/app/context/AuthContext';
 import useStudentDashboard from '@/app/Hooks/useStudentDashboard';
 import { useCreditStatus } from '@/app/Hooks/useCreditStatus';
@@ -687,6 +688,7 @@ export default function StudentDashboardPage() {
   // Trial / exhausted dashboard
   return (
     <ProtectedClient roles={['student']}>
+      <ErrorBoundary>
       <motion.div variants={containerVariants} initial="hidden" animate="visible"
         className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8 relative">
 
@@ -1032,6 +1034,7 @@ export default function StudentDashboardPage() {
           onUpdate={fetchProfile}
         />
       )}
+      </ErrorBoundary>
     </ProtectedClient>
   );
 }

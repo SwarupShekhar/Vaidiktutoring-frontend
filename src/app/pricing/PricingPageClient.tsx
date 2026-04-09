@@ -72,6 +72,16 @@ const PricingPlans = () => {
 
     // Refined pricing configuration mapping
     const pricingConfig: Record<string, any> = {
+        global: {
+            currency: '$',
+            name: 'Global – International Curriculum Mastery',
+            target: 'IB, IGCSE, A-Levels, SAT, AP',
+            plans: [
+                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 149, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
+                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 249, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 375, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+            ]
+        },
         uk: {
             currency: '£',
             name: 'United Kingdom – GCSE/A-Level Mastery',
@@ -250,13 +260,14 @@ const PricingPlans = () => {
 // --- Section 3: ValueComparison ---
 const ValueComparison = () => {
     const features = [
-        { name: 'Free Assessment', foundations: true, core: true, advanced: true },
-        { name: 'Personalized Plan', foundations: true, core: true, advanced: true },
-        { name: 'Live Sessions', foundations: '1–2/wk', core: '2–3/wk', advanced: '3–5/wk' },
-        { name: 'Progress Dashboard', foundations: 'Basic', core: 'Detailed', advanced: 'Advanced' },
-        { name: 'Parent Updates', foundations: 'Monthly', core: 'Bi-weekly', advanced: 'Weekly' },
-        { name: 'Mastery Roadmap', foundations: false, core: true, advanced: true },
-        { name: 'Curriculum Alignment', foundations: 'Standard', core: 'Matched', advanced: 'Custom' }
+        { name: 'Free Assessment', foundation: true, mastery: true, elite: true },
+        { name: 'Personalized Plan', foundation: true, mastery: true, elite: true },
+        { name: 'Live Sessions', foundation: '2/wk', mastery: '4/wk', elite: '6/wk' },
+        { name: 'Progress Dashboard', foundation: 'Basic', mastery: 'Detailed', elite: 'Advanced' },
+        { name: 'Parent Updates', foundation: 'Monthly', mastery: 'Bi-weekly', elite: 'Weekly' },
+        { name: 'Priority Support', foundation: false, mastery: true, elite: true },
+        { name: 'Advanced Analytics', foundation: false, mastery: false, elite: true },
+        { name: 'Curriculum Alignment', foundation: 'Standard', mastery: 'Matched', elite: 'Custom' }
     ];
 
     return (
@@ -272,9 +283,9 @@ const ValueComparison = () => {
                         <thead>
                             <tr className="bg-ice-blue dark:bg-white/5 border-b border-border dark:border-white/10">
                                 <th className="p-6 font-bold text-deep-navy dark:text-white">Feature</th>
-                                <th className="p-6 font-bold text-deep-navy dark:text-white text-center">Foundations</th>
-                                <th className="p-6 font-bold text-primary text-center bg-blue-50/30 dark:bg-blue-900/10">Core Mastery</th>
-                                <th className="p-6 font-bold text-deep-navy dark:text-white text-center">Advanced Growth</th>
+                                <th className="p-6 font-bold text-deep-navy dark:text-white text-center">Foundation</th>
+                                <th className="p-6 font-bold text-primary text-center bg-blue-50/30 dark:bg-blue-900/10">Mastery</th>
+                                <th className="p-6 font-bold text-deep-navy dark:text-white text-center">Elite</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border dark:divide-white/5">
@@ -282,13 +293,13 @@ const ValueComparison = () => {
                                 <tr key={idx} className="hover:bg-white/50 dark:hover:bg-white/2 transition-colors">
                                     <td className="p-6 font-bold text-sm text-(--color-text-primary) dark:text-slate-300">{feat.name}</td>
                                     <td className="p-6 text-center text-sm font-medium">
-                                        {typeof feat.foundations === 'boolean' ? (feat.foundations ? <Check size={18} className="mx-auto text-green-500" /> : '-') : feat.foundations}
+                                        {typeof feat.foundation === 'boolean' ? (feat.foundation ? <Check size={18} className="mx-auto text-green-500" /> : '-') : feat.foundation}
                                     </td>
                                     <td className="p-6 text-center text-sm font-bold bg-blue-50/10 dark:bg-blue-900/5 text-primary">
-                                        {typeof feat.core === 'boolean' ? (feat.core ? <Check size={18} className="mx-auto text-green-500" /> : '-') : feat.core}
+                                        {typeof feat.mastery === 'boolean' ? (feat.mastery ? <Check size={18} className="mx-auto text-green-500" /> : '-') : feat.mastery}
                                     </td>
                                     <td className="p-6 text-center text-sm font-medium">
-                                        {typeof feat.advanced === 'boolean' ? (feat.advanced ? <Check size={18} className="mx-auto text-green-500" /> : '-') : feat.advanced}
+                                        {typeof feat.elite === 'boolean' ? (feat.elite ? <Check size={18} className="mx-auto text-green-500" /> : '-') : feat.elite}
                                     </td>
                                 </tr>
                             ))}

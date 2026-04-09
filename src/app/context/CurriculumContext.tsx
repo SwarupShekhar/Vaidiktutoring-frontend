@@ -30,9 +30,9 @@ export function CurriculumProvider({ children }: { children: React.ReactNode }) 
     // Attempt geo-detection if no preference saved
     const detectCountry = async () => {
       try {
-        const res = await fetch('https://ipapi.co/json/');
+        const res = await fetch('https://ip-api.com/json/?fields=countryCode');
         const data = await res.json();
-        const code = data.country_code;
+        const code = data.countryCode;
 
         let detectedId = DEFAULT_CURRICULUM;
         if (code === 'GB') detectedId = 'uk';

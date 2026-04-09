@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://studyhours.com/search",
   },
+  robots: {
+    index: false,
+    follow: true,
+  },
   openGraph: {
     title: "Find a Tutor | StudyHours",
     description:

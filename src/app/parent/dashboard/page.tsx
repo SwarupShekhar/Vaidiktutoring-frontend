@@ -3,6 +3,7 @@
 import React, { useMemo, useEffect, useState, Suspense, useCallback } from "react";
 import Link from "next/link";
 import ProtectedClient from "@/app/components/ProtectedClient";
+import { ErrorBoundary } from "@/app/components/ErrorBoundary";
 import { useAuthContext } from "@/app/context/AuthContext";
 import { useParentDashboard } from "@/app/Hooks/useParentDashboard";
 import { useSearchParams } from "next/navigation";
@@ -164,6 +165,7 @@ function DashboardContent() {
             value={studentCount}
             color="#8b5cf6"
             description="Your children"
+            loading={loadingStudents}
           />
           <StatCard
             icon={CheckCircle2}
@@ -171,6 +173,7 @@ function DashboardContent() {
             value={stats.totalCompleted}
             description="Completed so far"
             color="#10b981"
+            loading={loadingSessions}
           />
           <StatCard
             icon={Calendar}
@@ -178,6 +181,7 @@ function DashboardContent() {
             value={stats.upcomingCount}
             description="Scheduled sessions"
             color="#3b82f6"
+            loading={loadingSessions}
           />
           <StatCard
             icon={TrendingUp}
@@ -187,6 +191,7 @@ function DashboardContent() {
               growth >= 0 ? `+${growth}% from last month` : `${growth}% from last month`
             }
             color={growth >= 0 ? "#10b981" : "#ef4444"}
+            loading={loadingSessions}
           />
         </section>
 
@@ -676,13 +681,15 @@ function DashboardContent() {
 export default function ParentDashboardPage() {
   return (
     <ProtectedClient roles={["parent"]}>
-      <Suspense fallback={
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
-        </div>
-      }>
-        <DashboardContent />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+          </div>
+        }>
+          <DashboardContent />
+        </Suspense>
+      </ErrorBoundary>
     </ProtectedClient>
   );
 }

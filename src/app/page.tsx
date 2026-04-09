@@ -47,9 +47,7 @@ export default function Home() {
       "@type": "PostalAddress",
       addressCountry: "Global",
     },
-    sameAs: [
-      // Add social media links if available
-    ],
+    sameAs: [],
   };
 
   const websiteSchema = {

@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import ProtectedClient from '@/app/components/ProtectedClient';
+import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { useTutorDashboard } from '@/app/Hooks/useTutorDashboard';
 import { StatCard } from '@/app/components/dashboard/StatCard';
@@ -28,6 +29,7 @@ export default function TutorDashboardPage() {
 
   return (
     <ProtectedClient roles={['tutor']}>
+      <ErrorBoundary>
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
         <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
 
@@ -408,6 +410,7 @@ export default function TutorDashboardPage() {
 
         </div>
       </div>
+      </ErrorBoundary>
     </ProtectedClient>
   );
 }
