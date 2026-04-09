@@ -14,6 +14,10 @@ import confetti from 'canvas-confetti';
 import * as pdfjsLib from 'pdfjs-dist';
 import { toast } from 'sonner';
 import {
+    Video,
+    VideoOff,
+    Mic,
+    ClipboardList,
     Library,
     FileUp,
     LogOut,
@@ -1168,9 +1172,9 @@ export default function SessionPage({ params }: SessionProps) {
                         <div className="w-full md:w-3/5">
                             <div className="relative w-full h-96 md:h-full rounded-2xl overflow-hidden bg-black/60 border border-purple-500/30">
                                 {cameraError ? (
-                                    <div className="flex flex-col items-center justify-center h-full text-white">
-                                        <div className="text-6xl mb-4">📷</div>
-                                        <p>Camera is off — you can turn it on after joining</p>
+                                    <div className="flex flex-col items-center justify-center h-full text-white/40">
+                                        <VideoOff size={64} strokeWidth={1.5} className="mb-4 opacity-20" />
+                                        <p className="text-sm font-medium">Camera is off — you can turn it on after joining</p>
                                     </div>
                                 ) : (
                                     <video ref={videoRef} autoPlay muted className="w-full h-full object-cover" />
@@ -1179,8 +1183,12 @@ export default function SessionPage({ params }: SessionProps) {
                                     {user?.first_name || 'You'}
                                 </div>
                                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-                                    <button className="w-10 h-10 bg-black/60 rounded-full flex items-center justify-center text-white">📹</button>
-                                    <button className="w-10 h-10 bg-black/60 rounded-full flex items-center justify-center text-white">🎤</button>
+                                    <button className="w-10 h-10 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-colors">
+                                        <Video size={18} />
+                                    </button>
+                                    <button className="w-10 h-10 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-colors">
+                                        <Mic size={18} />
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -1210,6 +1218,17 @@ export default function SessionPage({ params }: SessionProps) {
                                     ))}
                                 </ul>
                             </div>
+                            {user?.role === 'tutor' && (
+                                <div className="mb-5 flex items-start gap-3 bg-amber-500/15 border border-amber-400/30 rounded-xl p-4">
+                                    <Video className="text-amber-400 shrink-0 mt-0.5" size={18} />
+                                    <div>
+                                        <p className="text-amber-300 font-semibold text-sm">Enable screen share to record this session</p>
+                                        <p className="text-amber-200/70 text-xs mt-1">
+                                            After joining, click <strong>Share Screen</strong> in Daily.co and share <strong>this browser tab</strong>. This captures both the video call and the whiteboard so students can review the session later.
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
                             <button
                                 onClick={() => setHasJoined(true)}
                                 disabled={videoLoading}
@@ -1353,32 +1372,36 @@ export default function SessionPage({ params }: SessionProps) {
                         <span className="font-bold text-xs tracking-tight">{formatTime(timeRemaining)}</span>
                     </div>
 
-                    <div className="flex gap-0.5 bg-white/8 rounded-lg p-0.5 border border-white/8">
+                    <div className="flex gap-1 bg-white/5 backdrop-blur-md rounded-xl p-1 border border-white/10 shadow-inner">
                         {['👍', '🎉', '💡', '❓'].map(emoji => (
                             <button
                                 key={emoji}
                                 onClick={() => sendReaction(emoji)}
-                                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white/20 transition-all text-base active:scale-90"
+                                className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-white/10 hover:scale-125 hover:-translate-y-1 transition-all duration-200 text-lg active:scale-95 group relative"
                             >
-                                {emoji}
+                                <span className="drop-shadow-sm">{emoji}</span>
+                                <div className="absolute -top-1 -right-1 w-2 h-2 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity blur-[2px]" />
                             </button>
                         ))}
                         <button
                             onClick={() => socket?.emit('whiteboard.triggerConfetti', { sessionId })}
-                            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-pink-500 text-white transition-all"
+                            className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-pink-500/20 hover:scale-125 hover:-translate-y-1 text-pink-400 transition-all duration-200 group"
                             title="Confetti"
                         >
-                            <Smile size={15} />
+                            <Smile size={18} className="group-hover:animate-bounce" />
                         </button>
                     </div>
 
                     {user?.role === 'tutor' && (
                         <button
                             onClick={() => setShowAttendance(!showAttendance)}
-                            className="px-2.5 py-1.5 rounded-lg text-xs font-bold border border-white/10 bg-white/10 hover:bg-white/20 text-white transition-all"
+                            className={`px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all flex items-center gap-1.5 ${
+                                showAttendance ? 'bg-purple-600 border-purple-500 text-white' : 'border-white/10 bg-white/10 hover:bg-white/20 text-white/70'
+                            }`}
                             title="Attendance"
                         >
-                            📝
+                            <ClipboardList size={14} />
+                            <span className="hidden lg:inline">Attendance</span>
                         </button>
                     )}
 
