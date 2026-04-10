@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Send, LifeBuoy, CheckCircle2 } from 'lucide-react';
 import { api } from '@/app/lib/api';
 import { toast } from 'sonner';
@@ -15,6 +16,11 @@ export const SupportModal = ({ isOpen, onClose, context }: SupportModalProps) =>
     const [message, setMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,9 +43,9 @@ export const SupportModal = ({ isOpen, onClose, context }: SupportModalProps) =>
         }
     };
 
-    if (!isOpen) return null;
+    if (!isOpen || !mounted) return null;
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <div className="bg-surface w-full max-w-lg rounded-[2.5rem] shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
                 <div className="p-8">
@@ -105,5 +111,5 @@ export const SupportModal = ({ isOpen, onClose, context }: SupportModalProps) =>
                 </div>
             </div>
         </div>
-    );
+    , document.body);
 };

@@ -1,17 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import StudentListModal from '@/app/components/admin/StudentListModal';
 import TutorAllocationModal from '@/app/components/admin/TutorAllocationModal';
 import TutorListModal from '@/app/components/admin/TutorListModal';
 import AdminSessionSummaryModal from '@/app/components/admin/AdminSessionSummaryModal';
+import SupportTicketsSection from '@/app/components/admin/SupportTicketsSection';
 import { useAuthContext } from '@/app/context/AuthContext';
 import Link from 'next/link';
 import api from '@/app/lib/api';
 import BookingsTableSection from '@/app/components/admin/BookingsTableSection';
 import BlogManagementSection from '@/app/components/admin/BlogManagementSection';
 import { StatCard } from '@/app/components/dashboard/StatCard';
+import { toast } from 'sonner';
 import {
     Users,
     GraduationCap,
@@ -22,7 +24,8 @@ import {
     PenTool,
     Activity,
     ShieldCheck,
-    ChevronRight
+    ChevronRight,
+    LifeBuoy,
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -37,6 +40,38 @@ export default function AdminDashboardPage() {
     const [selectedBooking, setSelectedBooking] = useState<any>(null);
     const [summarySessionId, setSummarySessionId] = useState<string | null>(null);
     const [showSummary, setShowSummary] = useState(false);
+    const [newTicketCount, setNewTicketCount] = useState(0);
+    const socketRef = useRef<any>(null);
+
+    // Join admin WebSocket room for real-time support ticket alerts
+    useEffect(() => {
+        let socket: any;
+        const connectSocket = async () => {
+            try {
+                const { io } = await import('socket.io-client');
+                const token = document.cookie.match(/manual_auth_token=([^;]+)/)?.[1] || '';
+                socket = io(process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3001', {
+                    auth: { token },
+                    transports: ['websocket'],
+                });
+                socketRef.current = socket;
+                socket.emit('join_admin_room', { role: 'admin' });
+                socket.on('support:new_ticket', (data: { userName: string; message: string }) => {
+                    setNewTicketCount(c => c + 1);
+                    window.dispatchEvent(new CustomEvent('support:new_ticket'));
+                    toast(`New help request from ${data.userName}`, {
+                        description: data.message.slice(0, 80) + (data.message.length > 80 ? '…' : ''),
+                        icon: '🆘',
+                        duration: 8000,
+                    });
+                });
+            } catch {
+                // Socket not critical — admin can still see tickets by refreshing
+            }
+        };
+        connectSocket();
+        return () => { socket?.disconnect(); };
+    }, []);
 
     React.useEffect(() => {
         const fetchStats = async () => {
@@ -210,6 +245,18 @@ export default function AdminDashboardPage() {
                         {/* BOOKINGS TABLE SECTION */}
                         <div className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm">
                             <BookingsTableSection />
+                        </div>
+
+                        {/* SUPPORT TICKETS SECTION */}
+                        <div className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm" id="support-section">
+                            <div className="flex items-center gap-2 mb-4">
+                                {newTicketCount > 0 && (
+                                    <span className="px-2.5 py-1 bg-red-500 text-white text-xs font-black rounded-full animate-bounce">
+                                        {newTicketCount} new
+                                    </span>
+                                )}
+                            </div>
+                            <SupportTicketsSection />
                         </div>
                     </div>
 
