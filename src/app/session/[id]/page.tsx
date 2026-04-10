@@ -13,6 +13,7 @@ import confetti from 'canvas-confetti';
 // @ts-ignore
 import * as pdfjsLib from 'pdfjs-dist';
 import { toast } from 'sonner';
+import jsPDF from 'jspdf';
 import {
     Video,
     VideoOff,
@@ -30,7 +31,8 @@ import {
     PenTool,
     BarChart,
     X,
-    Trash2
+    Trash2,
+    FileText
 } from 'lucide-react';
 import { MANIPULATIVES_DATA, DICE_FACES } from '../manipulatives-data';
 
@@ -205,6 +207,8 @@ export default function SessionPage({ params }: SessionProps) {
     const slideRef = useRef(0);
     const annotationsRef = useRef<Record<number, any[]>>({});
     const [showLibraryTip, setShowLibraryTip] = useState(false);
+    const [isToolbarCollapsed, setIsToolbarCollapsed] = useState(false);
+    const [isExporting, setIsExporting] = useState(false);
 
     // Pre-join Effects
     useEffect(() => {
@@ -346,15 +350,26 @@ export default function SessionPage({ params }: SessionProps) {
             }, 3000);
         });
 
-        // 5. Listen for Viewport Sync
-        newSocket.on('viewport:update', (payload: { scrollX: number; scrollY: number; zoom: number }) => {
+        // 5. Listen for Normalized Viewport Sync
+        newSocket.on('viewport:update', (payload: { centerX: number; centerY: number; zoom: number }) => {
             if (user?.role !== 'tutor') {
+                const api = excalidrawAPIRef.current;
+                if (!api) return;
+
                 setFollowingTutor(true);
-                excalidrawAPIRef.current?.updateScene({
+                
+                const appState = api.getAppState();
+                const zoom = payload.zoom;
+                
+                // Calculate scrollX/Y needed to put the payload.centerX/Y at the center of this user's viewport
+                const scrollX = appState.width / 2 - payload.centerX * zoom;
+                const scrollY = appState.height / 2 - payload.centerY * zoom;
+
+                api.updateScene({
                     appState: {
-                        scrollX: payload.scrollX,
-                        scrollY: payload.scrollY,
-                        zoom: { value: payload.zoom }
+                        scrollX,
+                        scrollY,
+                        zoom: { value: zoom }
                     }
                 });
 
@@ -749,11 +764,17 @@ export default function SessionPage({ params }: SessionProps) {
             if (!api) return;
 
             const appState = api.getAppState();
+            const zoom = appState.zoom.value;
+            
+            // Calculate center of current viewport in scene coordinates
+            const centerX = (appState.width / 2 - appState.scrollX) / zoom;
+            const centerY = (appState.height / 2 - appState.scrollY) / zoom;
+
             socket.emit('viewport:sync', {
                 sessionId,
-                scrollX: appState.scrollX,
-                scrollY: appState.scrollY,
-                zoom: appState.zoom.value
+                centerX,
+                centerY,
+                zoom
             });
         }, 1000); // Sync every second while active
 
@@ -1262,7 +1283,7 @@ export default function SessionPage({ params }: SessionProps) {
             )}
 
             {/* 1. BASE LAYER: EXCALIDRAW WHITEBOARD (offset below HUD bar) */}
-            <div className={`absolute top-[52px] left-0 right-0 bottom-0 z-0 ${user?.role === 'student' || user?.role === 'parent' ? (hasPenAccess ? '' : 'pointer-events-none') : ''}`}>
+            <div className={`absolute top-[52px] left-0 right-0 bottom-0 z-0 whiteboard-container ${isToolbarCollapsed ? "whiteboard-collapsed" : ""} ${user?.role === 'student' || user?.role === 'parent' ? (hasPenAccess ? '' : 'pointer-events-none') : ''}`}>
                 {ExcalidrawComp ? (
                     <>
                         <ExcalidrawComp
@@ -1284,6 +1305,17 @@ export default function SessionPage({ params }: SessionProps) {
                             libraryReturnUrl={undefined}
                             onLibraryChange={() => { }}
                         />
+
+                        {/* Toolkit Collapse Toggle (Tutor Only) */}
+                        {user?.role === 'tutor' && (
+                            <button
+                                onClick={() => setIsToolbarCollapsed(!isToolbarCollapsed)}
+                                className={`absolute left-2 top-12 z-60 w-6 h-12 flex items-center justify-center bg-gray-900 border border-white/10 rounded-full text-white/40 hover:text-white transition-all shadow-xl ${isToolbarCollapsed ? 'opacity-100' : 'opacity-20 hover:opacity-100'}`}
+                                title={isToolbarCollapsed ? "Expand Tools" : "Collapse Tools"}
+                            >
+                                {isToolbarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+                            </button>
+                        )}
 
                         {/* LASER POINTER OVERLAY (Real-time collaborative) */}
                         <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
@@ -1409,6 +1441,78 @@ export default function SessionPage({ params }: SessionProps) {
                             <Smile size={18} className="group-hover:animate-bounce" />
                         </button>
                     </div>
+
+                    {user?.role === 'tutor' && (
+                        <button
+                            onClick={async () => {
+                                if (isExporting) return;
+                                setIsExporting(true);
+                                try {
+                                    const { exportToCanvas } = await import('@excalidraw/excalidraw');
+                                    const pdf = new jsPDF({
+                                        orientation: 'landscape',
+                                        unit: 'px',
+                                        format: [800, 600] // Matching whiteboard aspect ratio
+                                    });
+
+                                    // Store current state to restore later
+                                    const originalSlide = currentSlideIndex;
+                                    
+                                    toast.info("Generating session PDF... please don't switch slides.");
+
+                                    for (let i = 0; i < slides.length; i++) {
+                                        if (i > 0) pdf.addPage([800, 600], 'landscape');
+                                        
+                                        // 1. Temporarily switch slide and wait for render
+                                        setCurrentSlideIndex(i);
+                                        await new Promise(r => setTimeout(r, 800)); // Wait for render
+
+                                        // 2. Export current view
+                                        const canvas = await exportToCanvas({
+                                            elements: excalidrawAPIRef.current.getSceneElements(),
+                                            appState: {
+                                                ...excalidrawAPIRef.current.getAppState(),
+                                                exportBackground: false,
+                                                viewBackgroundColor: '#ffffff',
+                                            },
+                                            files: excalidrawAPIRef.current.getFiles(),
+                                            exportPadding: 10,
+                                        });
+
+                                        const imgData = canvas.toDataURL('image/jpeg', 0.85);
+                                        pdf.addImage(imgData, 'JPEG', 0, 0, 800, 600);
+                                    }
+
+                                    // Restore original slide
+                                    setCurrentSlideIndex(originalSlide);
+
+                                    // 3. Convert to blob and upload
+                                    const pdfBlob = pdf.output('blob');
+                                    const formData = new FormData();
+                                    formData.append('file', pdfBlob, `Session_${sessionId}_Annotations.pdf`);
+                                    
+                                    await api.post(`/sessions/${sessionId}/shared-pdf`, formData, {
+                                        headers: { 'Content-Type': 'multipart/form-data' }
+                                    });
+
+                                    toast.success("PDF Shared with student!");
+                                } catch (e) {
+                                    console.error("PDF Export failed", e);
+                                    toast.error("Failed to generate PDF. Try taking a single snapshot instead.");
+                                } finally {
+                                    setIsExporting(false);
+                                }
+                            }}
+                            disabled={isExporting}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all flex items-center gap-1.5 ${
+                                isExporting ? 'bg-orange-600 border-orange-500 text-white animate-pulse' : 'bg-green-600/20 border-green-500/30 text-green-400 hover:bg-green-600 hover:text-white'
+                            }`}
+                            title="Save & Share all slides as PDF"
+                        >
+                            {isExporting ? <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <FileText size={14} />}
+                            {isExporting ? 'Exporting...' : 'Save & Share PDF'}
+                        </button>
+                    )}
 
                     {user?.role === 'tutor' && (
                         <button
@@ -2127,6 +2231,30 @@ export default function SessionPage({ params }: SessionProps) {
                 }
                 .animate-sticker-reveal {
                     animation: sticker-reveal 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                }
+
+                /* Collapsable Toolkit Styles */
+                .whiteboard-collapsed .excalidraw .App-menu_top {
+                    opacity: 0.1;
+                    pointer-events: none;
+                    transform: translateX(-100px);
+                    transition: all 0.3s ease;
+                }
+                .whiteboard-collapsed .excalidraw .App-menu_top:hover {
+                    opacity: 1;
+                    pointer-events: auto;
+                    transform: translateX(0);
+                }
+                .whiteboard-collapsed .excalidraw .island {
+                    opacity: 0.1;
+                    pointer-events: none;
+                    transform: translateX(-100px);
+                    transition: all 0.3s ease;
+                }
+                .whiteboard-collapsed .excalidraw .island:hover {
+                    opacity: 1;
+                    pointer-events: auto;
+                    transform: translateX(0);
                 }
             `}</style>
 
