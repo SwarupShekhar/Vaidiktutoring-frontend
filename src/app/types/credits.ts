@@ -3,6 +3,7 @@ export type CreditMode =
   | 'trial_exhausted'
   | 'trial_expired'
   | 'paid'
+  | 'learning'
   | 'no_access';
 
 export type SubscriptionPlan = 'foundation' | 'mastery' | 'elite' | null;

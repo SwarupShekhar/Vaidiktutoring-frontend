@@ -782,7 +782,7 @@ export default function StudentDashboardPage() {
           </div>
         </motion.header>
 
-        {/* Trial exhausted upgrade banner */}
+        {/* Trial exhausted / expired upgrade banner */}
         {(creditStatus?.mode === 'trial_exhausted' || creditStatus?.mode === 'trial_expired') && (
           <motion.div variants={itemVariants}
             className="rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
@@ -793,6 +793,21 @@ export default function StudentDashboardPage() {
             <button onClick={() => router.push('/pricing')}
               className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-sm transition-all whitespace-nowrap">
               View Packages
+            </button>
+          </motion.div>
+        )}
+
+        {/* Learning mode — out of credits banner */}
+        {creditStatus?.mode === 'learning' && (creditStatus?.creditsRemaining ?? 0) === 0 && (
+          <motion.div variants={itemVariants}
+            className="rounded-2xl bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex-1">
+              <p className="font-bold text-violet-800 dark:text-violet-300">You're out of sessions for this month</p>
+              <p className="text-xs text-violet-600 dark:text-violet-400 mt-1">Your current package credits are used up. Renew or upgrade to keep learning.</p>
+            </div>
+            <button onClick={() => router.push('/pricing')}
+              className="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-sm transition-all whitespace-nowrap">
+              Renew / Upgrade
             </button>
           </motion.div>
         )}
