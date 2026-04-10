@@ -15,6 +15,7 @@ import {
   Crown,
   Loader2,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { api } from "@/app/lib/api";
 import type { CreditStatus, PlanInfo } from "@/app/types/credits";
 import { PLANS } from "@/app/types/credits";
@@ -30,24 +31,15 @@ export function UpgradeNudge({
   pastSessions,
   onSubscribed,
 }: UpgradeNudgeProps) {
+  const router = useRouter();
   const [subscribing, setSubscribing] = useState<string | null>(null);
   const [successPlan, setSuccessPlan] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubscribe = async (planKey: string) => {
-    setSubscribing(planKey);
-    setError(null);
-
-    try {
-      await api.post("/credits/subscribe", { plan: planKey });
-      setSuccessPlan(planKey);
-    } catch (err: any) {
-      setError(
-        err?.response?.data?.message ||
-          "Failed to subscribe. Please try again.",
-      );
-      setSubscribing(null);
-    }
+    // Redirect to checkout with the selected plan
+    // We default to US region for the nudge, but pricing page would be better for selection
+    router.push(`/checkout?plan=${planKey.toUpperCase()}&region=US`);
   };
 
   React.useEffect(() => {

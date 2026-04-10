@@ -50,7 +50,7 @@ export default clerkMiddleware(async (auth, req) => {
         // Redirect authenticated users to their specific dashboards if they hit marketing pages or /dashboard
         if (userId) {
             const path = req.nextUrl.pathname;
-            const marketingPaths = ['/', '/about', '/methodology', '/pricing', '/blog', '/blogs', '/careers', '/contact', '/home', '/login', '/signup'];
+            const marketingPaths = ['/', '/about', '/methodology', '/blog', '/blogs', '/careers', '/contact', '/home', '/login', '/signup'];
             const isMarketingPath = marketingPaths.some(p => p === path || path.startsWith(p + '/'));
             const isDashboardRoot = path === '/dashboard' || path === '/dashboard/';
 
