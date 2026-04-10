@@ -1,5 +1,6 @@
 import NarrativeHome from "@/app/components/home/narrative/NarrativeHome";
 import { Metadata } from "next";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Online Tutoring for Kids | 1-on-1 Learning | StudyHours",
@@ -65,11 +66,13 @@ export default function Home() {
 
   return (
     <>
-      <script
+      <Script
+        id="org-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
-      <script
+      <Script
+        id="website-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />

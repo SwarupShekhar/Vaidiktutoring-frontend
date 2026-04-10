@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import {
   ArrowRight,
   ShieldCheck,
@@ -130,19 +131,23 @@ export default function IBTutorsPage() {
 
   return (
     <main className="min-h-screen bg-background transition-colors duration-500 relative">
-      <script
+      <Script
+        id="ib-subject-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(subjectSchema) }}
       />
-      <script
+      <Script
+        id="ib-faq-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <script
+      <Script
+        id="ib-breadcrumb-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <script
+      <Script
+        id="ib-rating-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ratingSchema) }}
       />

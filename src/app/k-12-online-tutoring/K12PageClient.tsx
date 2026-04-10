@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import {
   ArrowRight,
   ShieldCheck,
@@ -107,15 +108,18 @@ export default function K12OnlineTutoringPage() {
 
   return (
     <main className="min-h-screen bg-background transition-colors duration-500 relative">
-      <script
+      <Script
+        id="k12-breadcrumb-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <script
+      <Script
+        id="k12-rating-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ratingSchema) }}
       />
-      <script
+      <Script
+        id="k12-faq-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
