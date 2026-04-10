@@ -414,9 +414,7 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
                   </div>
                 </div>
                 <a
-                  href={`${process.env.NEXT_PUBLIC_API_URL || 'https://k-12-backend.onrender.com'}/sessions/${rec.sessionId}/recordings/${rec.recordingId}/stream`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={`/students/recordings/${rec.sessionId}`}
                   className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
                 >
                   <PlayCircle size={16} /> Watch
@@ -880,6 +878,60 @@ export default function StudentDashboardPage() {
               </motion.section>
             )}
 
+            {/* Quick Access: Recordings, Whiteboard Snapshots, Notes */}
+            <motion.section variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Recordings */}
+              <a
+                href="/students/recordings"
+                className="group p-5 rounded-3xl bg-surface border border-border shadow-sm hover:shadow-md hover:border-purple-300 transition-all flex flex-col gap-3"
+              >
+                <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center">
+                  <Video size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-foreground group-hover:text-purple-600 transition-colors">Class Recordings</h3>
+                  <p className="text-xs text-text-secondary mt-0.5">Watch your past sessions</p>
+                </div>
+                <div className="mt-auto flex items-center gap-1 text-xs font-semibold text-purple-600">
+                  <PlayCircle size={14} /> View all recordings
+                </div>
+              </a>
+
+              {/* Whiteboard Snapshots */}
+              <a
+                href="/students/recordings"
+                className="group p-5 rounded-3xl bg-surface border border-border shadow-sm hover:shadow-md hover:border-blue-300 transition-all flex flex-col gap-3"
+              >
+                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center">
+                  <BookOpen size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-foreground group-hover:text-blue-600 transition-colors">Whiteboard Snapshots</h3>
+                  <p className="text-xs text-text-secondary mt-0.5">Review whiteboard notes from sessions</p>
+                </div>
+                <div className="mt-auto flex items-center gap-1 text-xs font-semibold text-blue-600">
+                  <ChevronRight size={14} /> View snapshots
+                </div>
+              </a>
+
+              {/* Shared Notes */}
+              <a
+                href="/students/notes"
+                className="group p-5 rounded-3xl bg-surface border border-border shadow-sm hover:shadow-md hover:border-green-300 transition-all flex flex-col gap-3"
+              >
+                <div className="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/30 text-green-600 flex items-center justify-center">
+                  <MessageCircle size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-foreground group-hover:text-green-600 transition-colors">Shared Notes</h3>
+                  <p className="text-xs text-text-secondary mt-0.5">PDFs and after-class notes from your tutor</p>
+                </div>
+                <div className="mt-auto flex items-center gap-1 text-xs font-semibold text-green-600">
+                  <ChevronRight size={14} /> View notes
+                </div>
+              </a>
+            </motion.section>
+
             {/* Tutor Feedback */}
             {progressSummary?.recentFeedback && progressSummary.recentFeedback.length > 0 && (
               <motion.section variants={itemVariants} className="space-y-4">
@@ -921,7 +973,7 @@ export default function StudentDashboardPage() {
                           <p className="text-[10px] text-text-secondary uppercase">{fmtDate(r.date)}</p>
                         </div>
                       </div>
-                      <a href={`/recordings/${r.sessionId}`} target="_blank" rel="noopener noreferrer"
+                      <a href={`/students/recordings/${r.sessionId}`}
                         className="w-full py-2.5 bg-background hover:bg-red-500 hover:text-white border border-border hover:border-red-500 rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center gap-2">
                         <Play size={14} /> Watch Lesson
                       </a>

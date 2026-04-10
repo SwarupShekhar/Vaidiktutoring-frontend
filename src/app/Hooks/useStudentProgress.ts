@@ -26,8 +26,9 @@ export interface ProgressSummary {
     sessionId: string;
     date: string;
     subject: string;
-    recordingId: string;
-    blobName: string;
+    recordingId: string | null;
+    blobName: string | null;
+    hasWhiteboardSnapshot: boolean;
   }[];
 }
 
