@@ -13,6 +13,7 @@ import { StatCard } from '@/app/components/dashboard/StatCard';
 import { SessionCommandCard } from '@/app/components/dashboard/SessionCommandCard';
 import { TrialBanner } from '@/app/components/dashboard/TrialBanner';
 import { UpgradeNudge } from '@/app/components/dashboard/UpgradeNudge';
+import { LearningModeWizard } from '@/app/components/dashboard/LearningModeWizard';
 import {
   CheckCircle2,
   Hourglass,
@@ -572,6 +573,7 @@ export default function StudentDashboardPage() {
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [studentProfile, setStudentProfile] = useState<any>(null);
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+  const [showLearningWizard, setShowLearningWizard] = useState(false);
   const prevBadgesRef = useRef<string[]>([]);
   const [pendingRatings, setPendingRatings] = useState<any[]>([]);
   const [showRatingModal, setShowRatingModal] = useState(false);
@@ -799,7 +801,11 @@ export default function StudentDashboardPage() {
         {creditStatus?.mode === 'trial_active' && <TrialBanner status={creditStatus} />}
 
         {(creditStatus?.mode === 'trial_exhausted' || creditStatus?.mode === 'trial_expired') ? (
-          <UpgradeNudge status={creditStatus} pastSessions={pastSessions} onSubscribed={refetchCredits} />
+          <UpgradeNudge
+            status={creditStatus}
+            pastSessions={pastSessions}
+            onSubscribed={() => { refetchCredits(); setShowLearningWizard(true); }}
+          />
         ) : (
           <>
             {/* STATS OVERVIEW */}
@@ -1105,6 +1111,15 @@ export default function StudentDashboardPage() {
         <RatingModal
           pending={pendingRatings}
           onDone={() => setShowRatingModal(false)}
+        />
+      )}
+      {showLearningWizard && studentProfile && (
+        <LearningModeWizard
+          studentId={studentProfile.id}
+          programId={studentProfile.program_id || ''}
+          packageId={studentProfile.package_id || ''}
+          curriculumId={studentProfile.curriculum_preference}
+          onComplete={() => setShowLearningWizard(false)}
         />
       )}
       </ErrorBoundary>
