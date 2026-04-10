@@ -138,19 +138,19 @@ const CheckoutContent = () => {
         // Map plan names and regions to package IDs
         const packageIds: Record<string, Record<string, string>> = {
             'FOUNDATION': { 
-                US: 'us-foundation-package-id', 
-                UK: 'uk-foundation-package-id' 
+                US: 'da36d75d-8e6d-4786-9a25-9de7890f5d5e', 
+                UK: 'f47385ef-963d-4299-bb6e-2f54297a73e3' 
             },
             'MASTERY': { 
-                US: 'us-mastery-package-id', 
-                UK: 'uk-mastery-package-id' 
+                US: '8d89045b-3814-4632-95f7-873b8852e690', 
+                UK: '76fb2bd0-96f3-47ad-9a00-50284b7f4337' 
             },
             'ELITE': { 
-                US: 'us-elite-package-id', 
-                UK: 'uk-elite-package-id' 
+                US: '5952f418-477c-4749-8086-5389476b7bd1', 
+                UK: '6f48a101-3820-4180-8b1e-25ba3194a0d9' 
             }
         };
-        return packageIds[planName]?.[regionCode] || 'us-foundation-package-id';
+        return packageIds[planName]?.[regionCode] || 'da36d75d-8e6d-4786-9a25-9de7890f5d5e';
     };
 
     // Regional pricing configuration
