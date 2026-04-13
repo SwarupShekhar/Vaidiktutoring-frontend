@@ -7,6 +7,7 @@ import {
   Type, Tag, Folder, Clock, FileText, Search, AlertCircle, Calendar, Image as ImageIcon, Sparkles, Trash2
 } from 'lucide-react';
 import ImageUpload from './ImageUpload';
+import { toast } from 'sonner';
 import { blogsApi } from '@/app/lib/blogs';
 
 interface BlogSidebarProps {
@@ -225,10 +226,35 @@ export default function BlogSidebar({
               </div>
               <input 
                 type="text"
-                placeholder="Search blogs to link..."
+                placeholder="Search or paste blog link..."
                 value={searchQuery}
                 onFocus={fetchAllBlogs}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setSearchQuery(val);
+                  
+                  // Link Detection Logic
+                  if (val.includes('/blogs/')) {
+                    const slug = val.split('/blogs/')[1]?.split('?')[0]?.split('#')[0];
+                    if (slug) {
+                      const matched = allBlogs.find(b => b.slug === slug || b.id === slug);
+                      if (matched && !relatedBlogIds.includes(matched.id)) {
+                        onRelatedBlogIdsChange([...relatedBlogIds, matched.id]);
+                        setSearchQuery('');
+                        toast.success(`Detected & Linked: ${matched.title}`);
+                      }
+                    }
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && filteredSearch.length > 0) {
+                    e.preventDefault();
+                    const topResult = filteredSearch[0];
+                    onRelatedBlogIdsChange([...relatedBlogIds, topResult.id]);
+                    setSearchQuery('');
+                    toast.success(`Linked: ${topResult.title}`);
+                  }
+                }}
                 className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/50 dark:bg-black/30 border border-white/20 dark:border-white/10 text-xs focus:ring-2 focus:ring-primary outline-none"
               />
               

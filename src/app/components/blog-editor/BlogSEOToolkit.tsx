@@ -57,12 +57,18 @@ export default function BlogSEOToolkit({
     const averageSyllablesPerWord = totalSyllables / (wordCount || 1);
     const readingEase = 206.835 - 1.015 * averageWordsPerSentence - 84.6 * averageSyllablesPerWord;
 
-    // Keyword Density
+    // Multi-Keyword Density Logic
+    const keywords = targetKeyword.split(',').map(k => k.trim()).filter(k => k.length > 0);
     let keywordDensity = 0;
-    if (targetKeyword.trim()) {
-      const regex = new RegExp(`\\b${targetKeyword.trim()}\\b`, 'gi');
-      const matches = plainText.match(regex);
-      keywordDensity = matches ? (matches.length / (wordCount || 1)) * 100 : 0;
+    
+    if (keywords.length > 0) {
+      let totalMatches = 0;
+      keywords.forEach(k => {
+        const regex = new RegExp(`\\b${k}\\b`, 'gi');
+        const matches = plainText.match(regex);
+        totalMatches += matches ? matches.length : 0;
+      });
+      keywordDensity = (totalMatches / (wordCount || 1)) * 100;
     }
 
     // Heading Analysis
@@ -78,7 +84,7 @@ export default function BlogSEOToolkit({
     const mdH5s = (content.match(/(?:^|\n)#####\s+.+/g) || []).length;
     const mdH6s = (content.match(/(?:^|\n)######\s+.+/g) || []).length;
 
-    const h1s = mdH1s + doc.querySelectorAll('h1').length;
+    const h1s = (title ? 1 : 0) + mdH1s + doc.querySelectorAll('h1').length;
     const h2s = mdH2s + doc.querySelectorAll('h2').length;
     const h3s = mdH3s + doc.querySelectorAll('h3').length;
     const h4s = mdH4s + doc.querySelectorAll('h4').length;
@@ -231,7 +237,7 @@ export default function BlogSEOToolkit({
               type="text"
               value={targetKeyword}
               onChange={(e) => setTargetKeyword(e.target.value)}
-              placeholder="e.g. Study Tips"
+              placeholder="e.g. Study Tips, Education, Math"
               className="w-full pl-8 pr-3 py-2 rounded-xl bg-black/20 border border-white/10 text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
             />
             <Hash size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-secondary" />

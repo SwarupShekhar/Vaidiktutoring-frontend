@@ -14,16 +14,10 @@ export default function BlogsPage({ initialBlogs = [] }: { initialBlogs?: BlogPo
 
     useEffect(() => {
         const fetchBlogs = async () => {
-            // Skip if we already fetched this category
-            if (fetchedCategory === category) {
-                return;
-            }
-
             setLoading(true);
             try {
                 const res = await blogsApi.getAll(1, 100, category);
                 setBlogs(res.data);
-                setFetchedCategory(category);
                 setError('');
             } catch (err) {
                 console.error(err);
@@ -34,7 +28,7 @@ export default function BlogsPage({ initialBlogs = [] }: { initialBlogs?: BlogPo
         };
 
         fetchBlogs();
-    }, [category, fetchedCategory]);
+    }, [category]);
 
     const categories = ['All', 'Math', 'Science', 'Study Tips', 'College Prep'];
 
