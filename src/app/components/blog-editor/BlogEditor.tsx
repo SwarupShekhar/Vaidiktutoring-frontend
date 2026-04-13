@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Bold, Italic, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, List, Link as LinkIcon,
-  Image as ImageIcon, Eye, Edit3, CheckCircle, XCircle, Trash2, Search, Globe, FileText, Wand2, Sparkles, AlertCircle
+  Image as ImageIcon, Eye, Edit3, CheckCircle, XCircle, Trash2, Search, Globe, FileText, Wand2, Sparkles, AlertCircle, ChevronRight, ChevronDown
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { blogsApi } from '@/app/lib/blogs';
@@ -110,12 +110,11 @@ function processPreviewHtml(html: string): string {
     // Convert markdown image syntax that survived: ![alt](url) → <img>
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="rounded-2xl border border-white/10 shadow-2xl mx-auto block max-w-full my-10">')
     // Style headings
-    .replace(/<h1>/g, '<h1 class="text-3xl font-black mt-12 mb-6">')
-    .replace(/<h2>/g, '<h2 class="text-2xl font-bold mt-10 mb-5">')
-    .replace(/<h3>/g, '<h3 class="text-xl font-bold mt-8 mb-4">')
-    .replace(/<h4>/g, '<h4 class="text-lg font-bold mt-6 mb-3">')
-    .replace(/<h5>/g, '<h5 class="text-base font-bold mt-4 mb-2">')
-    .replace(/<h6>/g, '<h6 class="text-sm font-bold mt-3 mb-2">');
+    .replace(/<h1>/g, '<h1 class="text-3xl font-black mt-16 mb-8 tracking-tighter">')
+    .replace(/<h2>/g, '<h2 class="text-2xl font-black mt-12 mb-6 tracking-tighter">')
+    .replace(/<h3>/g, '<h3 class="text-xl font-black mt-10 mb-5 tracking-tight">')
+    .replace(/<h4>/g, '<h4 class="text-lg font-black mt-8 mb-4">')
+    .replace(/<blockquote>/g, '<blockquote class="border-l-4 border-primary bg-primary/5 py-8 px-10 rounded-3xl italic my-16 font-serif">');
   return processed;
 }
 
@@ -914,62 +913,64 @@ export default function BlogEditor({
                       {title || 'Untitled Blog Post'}
                     </h1>
 
-                    <div className="space-y-6">
-                      <div className="flex flex-col items-center gap-3">
-                        <p className="font-bold text-gray-600 dark:text-gray-400 text-sm">
-                          By <span className="text-primary font-black uppercase tracking-tight">{authorName}</span>
-                          <span className="mx-2 opacity-30">•</span>
-                          <span className="uppercase tracking-widest text-[10px] font-black">{new Date().toLocaleDateString()}</span>
+                    <div className="space-y-8">
+                      <div className="flex flex-col items-center gap-4">
+                        <p className="font-bold text-gray-500 dark:text-gray-400 text-sm">
+                          By <span className="text-primary font-black uppercase tracking-tight">StudyHours Editorial</span>
+                          <span className="mx-3 opacity-20">•</span>
+                          <span className="uppercase tracking-[0.2em] text-[10px] font-black">{new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                         </p>
                         
-                        <div className="flex flex-wrap items-center justify-center gap-2">
-                          <span className="px-4 py-1.5 rounded-full border-2 border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">
-                            {category || 'Uncategorized'}
+                        <div className="flex flex-wrap items-center justify-center gap-3">
+                          <span className="px-5 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-[0.25em]">
+                            {category || 'Education'}
                           </span>
                         </div>
                       </div>
 
-                      <p className="text-xl md:text-2xl text-gray-400 dark:text-gray-500 leading-relaxed font-serif italic max-w-3xl mx-auto border-t border-gray-100 dark:border-white/10 pt-8">
+                      <p className="text-xl md:text-2xl text-gray-400 dark:text-gray-500 leading-relaxed font-serif italic max-w-3xl mx-auto border-t border-gray-100 dark:border-white/10 pt-10">
                         {excerpt || 'Add an excerpt to show a subheadline in the preview...'}
                       </p>
                     </div>
                   </div>
 
                   {/* 21:9 HERO IMAGE PREVIEW */}
-                  <div className="mt-24 relative aspect-21/9 rounded-[3rem] overflow-hidden shadow-2xl border border-white/10 group bg-white/5">
+                  <div className="mt-28 relative aspect-21/9 rounded-[4rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.15)] group bg-white/5 border border-white/10">
                     {imageUrl ? (
                       <img src={imageUrl} alt={imageAlt || title} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-1000" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-text-secondary text-xs font-bold uppercase tracking-tighter italic bg-gray-100 dark:bg-gray-800">
-                        No Cover Image Selected
+                      <div className="w-full h-full flex items-center justify-center text-gray-300 text-[10px] font-black uppercase tracking-widest italic bg-gray-50 dark:bg-gray-800/50">
+                        Academic Resource Placeholder
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* TWO-COLUMN PREVIEW LAYOUT */}
-                <div className="max-w-[1240px] mx-auto px-8 mt-12 grid grid-cols-1 lg:grid-cols-[1fr_380px] lg:gap-16 items-start">
+                {/* THREE-COLUMN PREVIEW LAYOUT */}
+                <div className="max-w-[1500px] mx-auto px-8 mt-24 lg:grid lg:grid-cols-[280px_1fr_400px] lg:gap-20 items-start">
                   
-                  {/* Left Column: Content */}
-                  <div className="w-full pb-24">
-                    {/* Mock Quote Box */}
-                    <div className="mb-12">
-                      <div className="bg-blue-50/50 dark:bg-blue-900/10 border-l-4 border-blue-500 p-8 rounded-r-xl">
-                        <p className="text-lg text-blue-900 dark:text-blue-200 italic font-medium">
-                          &ldquo;Education is not the filling of a pail, but the lighting of a fire.&rdquo;
-                        </p>
-                      </div>
+                  {/* Left Column: TOC Mockup */}
+                  <aside className="hidden lg:block space-y-10 opacity-30 pointer-events-none sticky top-12 self-start pb-10">
+                    <div className="flex items-center gap-2 font-black text-gray-400 uppercase tracking-[0.3em] text-[9px]">
+                        <List size={14} className="text-gray-400" />
+                        Index
                     </div>
+                    <div className="space-y-4">
+                      <div className="h-4 w-32 bg-gray-100 dark:bg-white/5 rounded" />
+                      <div className="h-4 w-40 bg-gray-100 dark:bg-white/5 rounded" />
+                      <div className="h-4 w-24 bg-gray-100 dark:bg-white/5 rounded" />
+                    </div>
+                  </aside>
 
+                  {/* Center Column: Content */}
+                  <div className="w-full pb-24">
                     <div className="prose prose-lg md:prose-xl prose-gray dark:prose-invert max-w-none 
-                      prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white prose-headings:tracking-tight 
-                      prose-p:text-[1.2rem] prose-p:leading-[2rem] prose-p:text-[#242424] dark:prose-p:text-gray-300
-                      prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
-                      prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-black
-                      prose-img:rounded-xl prose-img:shadow-lg prose-img:my-8
-                      prose-blockquote:border-l-4 prose-blockquote:border-gray-900 dark:prose-blockquote:border-white prose-blockquote:bg-gray-50 dark:prose-blockquote:bg-white/5 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:not-italic
-                      prose-li:text-[1.125rem] prose-li:text-gray-700 dark:prose-li:text-gray-300
-                      first-letter:text-5xl first-letter:font-bold first-letter:text-gray-900 dark:first-letter:text-white first-letter:float-left first-letter:mr-3 first-letter:mt-[-4px]">
+                      prose-headings:font-black prose-headings:text-gray-900 dark:prose-headings:text-white prose-headings:tracking-tighter 
+                      prose-p:text-[1.125rem] prose-p:leading-[2.1] prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:mb-10
+                      prose-a:text-primary prose-a:font-bold prose-a:underline-offset-4
+                      prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-8 prose-blockquote:px-10 prose-blockquote:rounded-3xl prose-blockquote:not-italic prose-blockquote:my-16
+                      prose-li:text-[1.125rem] prose-li:leading-[2] prose-li:mb-4
+                      first-letter:text-6xl first-letter:font-black first-letter:text-primary first-letter:mr-4 first-letter:mt-2 first-letter:float-left">
                       {isRawMode ? (
                         <ReactMarkdown 
                           remarkPlugins={[remarkGfm, remarkBreaks]}
@@ -992,7 +993,7 @@ export default function BlogEditor({
                             a: (props) => <a className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-medium transition-colors" {...props} />,
                             ul: (props) => <ul className="list-disc list-outside ml-6 mb-6 space-y-2 text-lg text-gray-800 dark:text-gray-300" {...props} />,
                             ol: (props) => <ol className="list-decimal list-outside ml-6 mb-6 space-y-2 text-lg text-gray-800 dark:text-gray-300" {...props} />,
-                            blockquote: (props) => <blockquote className="border-l-4 border-blue-600 pl-6 py-2 italic my-8 bg-blue-50 dark:bg-blue-900/10 text-xl text-gray-900 dark:text-gray-100 font-serif leading-relaxed rounded-r-lg" {...props} />,
+                            blockquote: (props) => <blockquote className="border-l-4 border-primary pl-6 py-2 italic my-8 bg-primary/5 text-xl text-gray-900 dark:text-gray-100 font-serif leading-relaxed rounded-r-lg" {...props} />,
                           }}
                         >
                           {content || '*Start writing to see the preview...*'}
@@ -1009,20 +1010,49 @@ export default function BlogEditor({
                     </div>
                   </div>
 
-                  {/* Right Column: Sticky Sidebar Mock */}
-                  <aside className="hidden lg:block space-y-8 sticky top-6 self-start opacity-70 cursor-not-allowed">
-                    <div className="bg-primary rounded-3xl p-6 text-white shadow-xl">
-                      <div className="w-full aspect-square rounded-2xl overflow-hidden mb-4 border-2 border-white/20 bg-white/10" />
-                      <span className="text-[10px] font-black uppercase tracking-widest opacity-80">SIDEBAR PREVIEW</span>
-                      <h3 className="text-lg font-black mt-1 leading-tight">Conversion CTA Sidebar</h3>
-                      <p className="text-white/80 text-xs mt-2">This sidebar stays sticky as readers scroll through your article on the live site.</p>
+                  {/* Right Column: Sticky Sidebar Premium Mock */}
+                  <aside className="hidden lg:block space-y-12 sticky top-12 self-start opacity-70 cursor-not-allowed pb-20">
+                    <div className="relative group overflow-hidden rounded-[3rem] bg-[#0F1115] p-8 text-white shadow-[0_40px_80px_-20px_rgba(0,0,0,0.4)] border border-white/5">
+                        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-primary/20 rounded-full blur-[100px]" />
+                        
+                        <div className="relative z-10 space-y-8">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                                <Sparkles size={12} className="text-primary" />
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Insight Premium</span>
+                            </div>
+                            
+                            <div className="space-y-3">
+                                <h3 className="text-3xl font-black leading-[1.1] tracking-tighter">Master the Curriculum.</h3>
+                                <p className="text-gray-400 text-sm font-medium leading-relaxed">Expert 1-on-1 guidance for IB & IGCSE tailored to your goals.</p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-center gap-2 w-full py-5 bg-primary text-white font-black text-sm rounded-2xl shadow-xl shadow-primary/20">
+                                    Start Free Session <ChevronRight size={16} />
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-white/5 flex items-center justify-between text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                <span>Global Faculty</span>
+                                <span className="w-1 h-1 rounded-full bg-white/20" />
+                                <span>24/7 Peer Support</span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="bg-gray-100 dark:bg-white/5 rounded-3xl p-6 border border-gray-100 dark:border-white/10">
-                      <div className="h-4 w-32 bg-gray-200 dark:bg-white/10 rounded mb-4" />
-                      <div className="space-y-4">
-                        <div className="h-12 w-full bg-gray-200 dark:bg-white/10 rounded-xl" />
-                        <div className="h-12 w-full bg-gray-200 dark:bg-white/10 rounded-xl" />
-                      </div>
+
+                    <div className="bg-white dark:bg-white/20 rounded-[3rem] p-8 border border-gray-100 dark:border-white/5 opacity-50">
+                        <h3 className="text-[10px] font-black text-gray-900 dark:text-white mb-10 uppercase tracking-[0.3em] flex items-center gap-3">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Compendium
+                        </h3>
+                        <div className="space-y-10">
+                          <div className="flex gap-4 items-center">
+                            <div className="w-16 h-16 shrink-0 rounded-2xl bg-gray-100 dark:bg-white/5" />
+                            <div className="space-y-2">
+                              <div className="h-3 w-16 bg-gray-100 dark:bg-white/5 rounded" />
+                              <div className="h-4 w-32 bg-gray-100 dark:bg-white/5 rounded" />
+                            </div>
+                          </div>
+                        </div>
                     </div>
                   </aside>
                 </div>

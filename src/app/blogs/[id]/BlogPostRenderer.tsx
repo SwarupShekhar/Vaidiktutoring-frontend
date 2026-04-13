@@ -10,6 +10,7 @@ import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
 import { List, ChevronRight, Sparkles, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Breadcrumbs from '@/app/components/Breadcrumbs';
 import { blogsApi } from '@/app/lib/blogs';
 
@@ -223,8 +224,8 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
                         datePublished: blog.publishedAt || blog.createdAt,
                         dateModified: blog.publishedAt || blog.createdAt,
                         author: {
-                            '@type': 'Person',
-                            name: `${blog.author?.first_name ?? ''} ${blog.author?.last_name ?? ''}`.trim(),
+                            '@type': 'Organization',
+                            name: 'StudyHours Editorial',
                         },
                         publisher: {
                             '@type': 'Organization',
@@ -240,98 +241,104 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
             />
 
             {/* HERO SECTION - Centered Header */}
-            <header className="max-w-[1240px] mx-auto px-6 pt-24 pb-12 text-center">
-                <div className="mb-12 flex justify-center opacity-50">
+            <header className="max-w-[1300px] mx-auto px-6 pt-32 pb-16 text-center">
+                <div className="mb-16 flex justify-center opacity-40">
                     <Breadcrumbs customLabels={{ [blog.slug]: blog.title }} />
                 </div>
                 
-                <div className="max-w-5xl mx-auto space-y-10">
-                    <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-gray-900 dark:text-white leading-[1.05] tracking-tighter">
+                <div className="max-w-5xl mx-auto space-y-12">
+                    <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-gray-900 dark:text-white leading-[1.02] tracking-tighter">
                         {blog.title}
                     </h1>
 
-                    <div className="space-y-6">
-                        <div className="flex flex-col items-center gap-3">
-                            <p className="font-bold text-gray-600 dark:text-gray-400 text-sm">
-                                By <span className="text-primary font-black uppercase tracking-tight hover:underline cursor-pointer">{blog.author?.first_name} {blog.author?.last_name}</span>
-                                <span className="mx-2 opacity-30">•</span>
-                                <span className="uppercase tracking-widest text-[10px] font-black">{blog.createdAt && format(new Date(blog.createdAt), 'MMMM d, yyyy')}</span>
-                                <span className="mx-2 opacity-30">•</span>
-                                <span className="uppercase tracking-widest text-[10px] font-black">{readingTime} min read</span>
+                    <div className="space-y-8">
+                        <div className="flex flex-col items-center gap-4">
+                            <p className="font-bold text-gray-500 dark:text-gray-400 text-sm">
+                                By <span className="text-primary font-black uppercase tracking-tight hover:underline cursor-pointer">StudyHours Editorial</span>
+                                <span className="mx-3 opacity-20">•</span>
+                                <span className="uppercase tracking-[0.2em] text-[10px] font-black">{blog.createdAt && format(new Date(blog.createdAt), 'MMMM d, yyyy')}</span>
+                                <span className="mx-3 opacity-20">•</span>
+                                <span className="uppercase tracking-[0.2em] text-[10px] font-black">{readingTime} min read</span>
                             </p>
                             
-                            <div className="flex flex-wrap items-center justify-center gap-2">
-                                <span className="px-4 py-1.5 rounded-full border-2 border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">
-                                    {blog.category || 'Opinion'}
+                            <div className="flex flex-wrap items-center justify-center gap-3">
+                                <span className="px-5 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary text-[10px] font-black uppercase tracking-[0.25em]">
+                                    {blog.category || 'Education'}
                                 </span>
                                 {blog.tags && blog.tags.map((tag: string) => (
-                                    <span key={tag} className="px-4 py-1.5 rounded-full border-2 border-gray-100 dark:border-white/10 text-gray-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                                    <span key={tag} className="px-5 py-2 rounded-full border border-gray-100 dark:border-white/5 text-gray-400 text-[10px] font-black uppercase tracking-[0.2em]">
                                         {tag}
                                     </span>
                                 ))}
                             </div>
                         </div>
 
-                        <p className="text-xl md:text-2xl text-gray-400 dark:text-gray-500 leading-relaxed font-serif italic max-w-3xl mx-auto border-t border-gray-100 dark:border-white/10 pt-8">
+                        <p className="text-xl md:text-2xl text-gray-400 dark:text-gray-500 leading-relaxed font-serif italic max-w-3xl mx-auto border-t border-gray-100 dark:border-white/10 pt-10">
                             {blog.excerpt}
                         </p>
                     </div>
                 </div>
 
-                {/* FEATURE IMAGE - Full Width with significant top spacing */}
-                <div className="mt-24 relative aspect-21/9 rounded-[3rem] overflow-hidden shadow-2xl bg-gray-50 dark:bg-gray-800 group ring-1 ring-black/5">
+                {/* FEATURE IMAGE - Cinematic Full Width */}
+                <div className="mt-28 relative aspect-21/9 rounded-[4rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.15)] group">
                     {imgSrc ? (
                         <Image
                             src={imgSrc}
                             alt={blog.title}
                             fill
-                            className="object-cover group-hover:scale-[1.02] transition-transform duration-1000"
+                            className="object-cover group-hover:scale-105 transition-transform duration-2000 ease-out"
                             priority
                             sizes="100vw"
                             onError={() => setImgSrc('/images/blog-placeholder.png')}
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400 font-bold">
-                            Loading Image...
+                        <div className="w-full h-full flex items-center justify-center bg-gray-50 text-gray-300 font-bold uppercase tracking-widest text-xs">
+                            Academic Resource
                         </div>
                     )}
                 </div>
             </header>
 
             {/* THREE-COLUMN LAYOUT (TOC | Article | Sidebar) */}
-            <div className="max-w-[1440px] mx-auto px-6 mt-16 lg:grid lg:grid-cols-[260px_1fr_380px] lg:gap-16 items-start relative">
+            <div className="max-w-[1500px] mx-auto px-6 mt-24 lg:grid lg:grid-cols-[280px_1fr_400px] lg:gap-20 items-start relative">
                 
                 {/* Left Column: Sticky Table of Contents */}
-                <aside className="hidden lg:block sticky top-8 self-start">
+                <aside className="hidden lg:block sticky top-12 self-start pt-4">
                     {headings.length > 0 && (
-                        <div className="space-y-8 pr-4">
-                            <div className="flex items-center gap-2 font-black text-gray-900 dark:text-white mb-6 uppercase tracking-[0.2em] text-[10px]">
+                        <div className="space-y-10 pr-6 border-r border-gray-50 dark:border-white/5">
+                            <div className="flex items-center gap-2 font-black text-gray-900 dark:text-white uppercase tracking-[0.3em] text-[9px]">
                                 <List size={14} className="text-primary" />
-                                On this page
+                                Index
                             </div>
-                            <nav className="flex flex-col gap-1 border-l border-gray-100 dark:border-white/5">
+                            <nav className="flex flex-col gap-2">
                                 {headings.map((heading, i) => (
                                     <a
                                         key={i}
                                         href={`#${heading.id}`}
                                         className={`
-                                            text-sm py-2 pl-4 border-l-2 transition-all duration-300
-                                            ${heading.level === 3 ? 'ml-4 text-xs' : 'font-bold'}
+                                            text-sm py-2 group transition-all duration-300 relative
+                                            ${heading.level === 3 ? 'pl-8 text-xs border-l border-gray-100 dark:border-white/5' : 'font-bold pl-2'}
                                             ${activeHeading === heading.id
-                                                ? 'border-primary text-primary'
-                                                : 'border-transparent text-gray-400 hover:text-primary hover:border-primary/30'
+                                                ? 'text-primary'
+                                                : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'
                                             }
                                         `}
                                     >
+                                        {activeHeading === heading.id && heading.level !== 3 && (
+                                            <motion.div 
+                                                layoutId="active-toc"
+                                                className="absolute left-[-2px] w-1 h-5 bg-primary rounded-full"
+                                            />
+                                        )}
                                         {heading.text}
                                     </a>
                                 ))}
                             </nav>
                             
-                            <div className="pt-8 border-t border-gray-100 dark:border-white/5 space-y-4">
-                                <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Help & Support</div>
-                                <Link href="/bookings/new" className="block text-sm font-bold text-gray-900 dark:text-gray-100 hover:text-primary transition-colors">
-                                    Book Free Trial →
+                            <div className="pt-10 space-y-5">
+                                <div className="text-[9px] font-black text-gray-300 uppercase tracking-[0.3em]">Support Hub</div>
+                                <Link href="/bookings/new" className="group flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-gray-100 italic">
+                                    Book Free Trial <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
                                 </Link>
                             </div>
                         </div>
@@ -340,129 +347,127 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
 
                 {/* Center Column: Article Content */}
                 <article className="w-full">
-                    {/* Floating Breadcrumbs above content on mobile */}
-                    <div className="lg:hidden mb-12">
-                        <Breadcrumbs customLabels={{ [blog.slug]: blog.title }} />
-                    </div>
-
                     {/* Mobile TOC */}
                     {headings.length > 0 && (
-                        <div className="lg:hidden mb-10 border border-gray-100 dark:border-white/10 rounded-2xl overflow-hidden">
+                        <div className="lg:hidden mb-16 border border-gray-100 dark:border-white/10 rounded-3xl overflow-hidden shadow-sm">
                             <button
                                 onClick={() => setTocOpen(prev => !prev)}
-                                className="w-full flex items-center justify-between px-5 py-4 text-sm font-black text-gray-700 dark:text-white uppercase tracking-widest bg-gray-50 dark:bg-white/5"
+                                className="w-full flex items-center justify-between px-6 py-5 text-sm font-black text-gray-800 dark:text-white uppercase tracking-widest bg-gray-50 dark:bg-white/5"
                             >
-                                <span className="flex items-center gap-2"><List size={14} className="text-primary" /> On this page</span>
-                                <ChevronDown size={16} className={`transition-transform duration-300 ${tocOpen ? 'rotate-180' : ''}`} />
+                                <span className="flex items-center gap-3"><List size={16} className="text-primary" /> Index</span>
+                                <ChevronDown size={18} className={`transition-transform duration-500 ${tocOpen ? 'rotate-180' : ''}`} />
                             </button>
-                            {tocOpen && (
-                                <nav className="flex flex-col gap-1 px-5 py-4 bg-white dark:bg-black/20 border-t border-gray-100 dark:border-white/10">
-                                    {headings.map((heading, i) => (
-                                        <a
-                                            key={i}
-                                            href={`#${heading.id}`}
-                                            onClick={() => setTocOpen(false)}
-                                            className={`
-                                                text-sm py-1.5 transition-colors
-                                                ${heading.level === 3 ? 'ml-4 text-xs text-gray-400' : 'font-bold text-gray-700 dark:text-gray-300'}
-                                                hover:text-primary
-                                            `}
-                                        >
-                                            {heading.text}
-                                        </a>
-                                    ))}
-                                </nav>
-                            )}
+                            <AnimatePresence>
+                                {tocOpen && (
+                                    <motion.nav 
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        className="flex flex-col gap-2 px-6 py-5 bg-white dark:bg-[#0A0A0B] border-t border-gray-100 dark:border-white/10"
+                                    >
+                                        {headings.map((heading, i) => (
+                                            <a
+                                                key={i}
+                                                href={`#${heading.id}`}
+                                                onClick={() => setTocOpen(false)}
+                                                className={`
+                                                    py-2 transition-colors
+                                                    ${heading.level === 3 ? 'pl-6 text-xs text-gray-400' : 'font-bold text-sm text-gray-700 dark:text-gray-200'}
+                                                    hover:text-primary
+                                                `}
+                                            >
+                                                {heading.text}
+                                            </a>
+                                        ))}
+                                    </motion.nav>
+                                )}
+                            </AnimatePresence>
                         </div>
                     )}
 
                     <div className="prose prose-lg md:prose-xl prose-gray dark:prose-invert w-full max-w-none
-                        prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white prose-headings:tracking-tight 
-                        prose-p:text-[1.2rem] prose-p:leading-[2rem] prose-p:text-[#242424] dark:prose-p:text-gray-300
-                        prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
-                        prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-black
-                        prose-img:rounded-xl prose-img:shadow-lg prose-img:my-8
-                        prose-blockquote:border-l-4 prose-blockquote:border-gray-900 dark:prose-blockquote:border-white prose-blockquote:bg-gray-50 dark:prose-blockquote:bg-white/5 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:not-italic
-                        prose-li:text-[1.125rem] prose-li:text-gray-700 dark:prose-li:text-gray-300
-                        first-letter:text-5xl first-letter:font-bold first-letter:text-gray-900 dark:first-letter:text-white first-letter:float-left first-letter:mr-3 first-letter:mt-[-4px]">
+                        prose-headings:font-black prose-headings:text-gray-900 dark:prose-headings:text-white prose-headings:tracking-tighter 
+                        prose-p:text-[1.125rem] prose-p:leading-[2.1] prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:mb-10
+                        prose-a:text-primary prose-a:font-bold prose-a:underline-offset-4
+                        prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-8 prose-blockquote:px-10 prose-blockquote:rounded-3xl prose-blockquote:not-italic prose-blockquote:my-16
+                        prose-li:text-[1.125rem] prose-li:leading-[2] prose-li:mb-4
+                        first-letter:text-6xl first-letter:font-black first-letter:text-primary first-letter:mr-4 first-letter:mt-2 first-letter:float-left">
                         {renderContent()}
                     </div>
 
-                    {/* Author Bio Card */}
-                    <div className="mt-16 pt-10 border-t border-gray-100 dark:border-white/10 flex items-start gap-5">
-                        <div className="w-16 h-16 shrink-0 rounded-2xl bg-linear-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
-                            <span className="text-2xl font-black text-primary">
-                                {blog.author?.first_name?.[0]}{blog.author?.last_name?.[0]}
+                    {/* Author Footer */}
+                    <div className="mt-24 pt-12 border-t border-gray-100 dark:border-white/10 text-center space-y-4">
+                        <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full border border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/5">
+                            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                            <span className="text-[10px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-[0.3em]">
+                                Verified Curriculum Resource
                             </span>
                         </div>
-                        <div className="space-y-1">
-                            <p className="font-black text-gray-900 dark:text-white text-base">
-                                {blog.author?.first_name} {blog.author?.last_name}
-                            </p>
-                            <p className="text-[10px] font-black text-primary uppercase tracking-widest">
-                                Expert Tutor · StudyHours
-                            </p>
-                            {blog.author?.bio && (
-                                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mt-2 max-w-md">
-                                    {blog.author.bio}
-                                </p>
-                            )}
-                        </div>
+                        <p className="text-sm text-gray-400 italic">Published by StudyHours Global Editorial Board</p>
                     </div>
                 </article>
 
                 {/* Right Column: Sticky Sidebar (CTA & Related) */}
-                <aside className="mt-16 lg:mt-0 space-y-10 sticky top-8 self-start">
-                    {/* Card 1: Sidebar CTA */}
-                    <div className="bg-primary rounded-[2.5rem] p-8 text-white shadow-2xl shadow-primary/20 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 -mr-12 -mt-12 w-48 h-48 bg-white/10 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-700" />
-                        <div className="relative z-10 space-y-6">
-                            <div className="w-full aspect-square rounded-3xl overflow-hidden shadow-2xl border-4 border-white/20 relative">
-                                <Image
-                                    src="https://res.cloudinary.com/de8vvmpip/image/upload/v1772453122/Gemini_Generated_Image_9j0g679j0g679j0g_sptjdf.png"
-                                    alt="Expert Tutoring"
-                                    fill
-                                    className="object-cover group-hover:scale-110 transition-transform duration-1000"
-                                />
+                <aside className="mt-24 lg:mt-0 space-y-12 sticky top-12 self-start">
+                    {/* Card 1: Sidebar CTA - High Performance Mastery */}
+                    <div className="relative group overflow-hidden rounded-[3rem] bg-[#0F1115] p-8 text-white shadow-[0_40px_80px_-20px_rgba(0,0,0,0.4)] border border-white/5">
+                        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-primary/20 rounded-full blur-[100px] group-hover:bg-primary/30 transition-all duration-1000" />
+                        
+                        <div className="relative z-10 space-y-8">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                                <Sparkles size={12} className="text-primary" />
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400">Premium Tutoring</span>
                             </div>
-                            <div className="space-y-2">
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">1-on-1 Help</span>
-                                <h3 className="text-2xl font-black leading-tight">Struggling with this concept?</h3>
-                                <p className="text-white/80 text-sm font-medium leading-relaxed">Our expert tutors simplify complex topics for IB, IGCSE & A-Levels.</p>
+                            
+                            <div className="space-y-3">
+                                <h3 className="text-3xl font-black leading-[1.1] tracking-tighter">Master the Curriculum.</h3>
+                                <p className="text-gray-400 text-sm font-medium leading-relaxed">Expert 1-on-1 guidance for IB, IGCSE & A-Levels tailored to your goals.</p>
                             </div>
-                            <Link 
-                                href="/bookings/new"
-                                className="block w-full py-4 bg-white text-primary font-black text-center rounded-2xl hover:scale-[1.02] transition-all shadow-xl active:scale-95"
-                            >
-                                Book Free Session
-                            </Link>
+
+                            <div className="space-y-4">
+                                <Link 
+                                    href="/bookings/new"
+                                    className="flex items-center justify-center gap-2 w-full py-5 bg-primary hover:bg-primary/90 text-white font-black text-sm rounded-2xl transition-all shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]"
+                                >
+                                    Start Free Session <ChevronRight size={16} />
+                                </Link>
+                                <p className="text-center text-[10px] text-gray-500 font-bold uppercase tracking-widest">No Credit Card Required</p>
+                            </div>
+
+                            <div className="pt-6 border-t border-white/5 flex items-center justify-between text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                <span>Global Faculty</span>
+                                <span className="w-1 h-1 rounded-full bg-white/20" />
+                                <span>24/7 Support</span>
+                            </div>
                         </div>
                     </div>
 
                     {/* Card 2: Related Posts List */}
                     {relatedPosts.length > 0 && (
-                        <div className="bg-gray-50 dark:bg-white/2 rounded-[2.5rem] p-8 border border-gray-100 dark:border-white/5">
-                            <h3 className="text-sm font-black text-gray-900 dark:text-white mb-8 uppercase tracking-[0.2em] flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-primary" /> More to Read
+                        <div className="bg-white dark:bg-white/2 rounded-[3rem] p-8 border border-gray-100 dark:border-white/5 shadow-sm">
+                            <h3 className="text-[10px] font-black text-gray-900 dark:text-white mb-10 uppercase tracking-[0.3em] flex items-center gap-3">
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Compendium
                             </h3>
-                            <div className="space-y-8">
+                            <div className="space-y-10">
                                 {relatedPosts.slice(0, 3).map((post) => (
-                                    <Link key={post.id} href={`/blogs/${post.slug || post.id}`} className="group flex gap-4 items-start">
-                                        <div className="w-20 h-20 shrink-0 rounded-2xl overflow-hidden bg-white dark:bg-gray-800 relative shadow-sm border border-gray-100 dark:border-white/5">
-                                            <Image
-                                                src={post.imageUrl || '/images/blog-placeholder.png'}
-                                                alt={post.title}
-                                                fill
-                                                className="object-cover group-hover:scale-110 transition-transform duration-500"
-                                            />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <h4 className="text-sm font-bold text-gray-900 dark:text-white leading-snug line-clamp-2 group-hover:text-primary transition-colors">
-                                                {post.title}
-                                            </h4>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                                {post.category || 'Education'}
-                                            </p>
+                                    <Link key={post.id} href={`/blogs/${post.slug || post.id}`} className="group space-y-3 block">
+                                        <div className="flex gap-4 items-center">
+                                            <div className="w-16 h-16 shrink-0 rounded-2xl overflow-hidden bg-gray-50 dark:bg-[#15171C] relative border border-gray-100 dark:border-white/5">
+                                                <Image
+                                                    src={post.imageUrl || '/images/blog-placeholder.png'}
+                                                    alt={post.title}
+                                                    fill
+                                                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-primary">
+                                                    {post.category || 'Opinion'}
+                                                </p>
+                                                <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 leading-[1.3] line-clamp-2 group-hover:text-primary transition-colors">
+                                                    {post.title}
+                                                </h4>
+                                            </div>
                                         </div>
                                     </Link>
                                 ))}
@@ -471,18 +476,18 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
                     )}
                     
                     {/* Share */}
-                    <div className="px-6 space-y-4">
-                        <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Share Insight</div>
-                        <div className="flex gap-3 flex-wrap">
+                    <div className="px-8 pt-8 border-t border-gray-50 dark:border-white/5 flex items-center justify-between">
+                        <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Social Export</div>
+                        <div className="flex gap-6">
                             <button
                                 onClick={() => {
                                     const url = encodeURIComponent(window.location.href);
                                     const text = encodeURIComponent(blog.title);
                                     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&title=${text}`, '_blank', 'noopener,noreferrer');
                                 }}
-                                className="text-xs font-bold text-gray-500 hover:text-primary transition-colors uppercase tracking-widest"
+                                className="text-[10px] font-black text-gray-500 hover:text-primary transition-colors uppercase tracking-[0.2em]"
                             >
-                                LinkedIn
+                                LI
                             </button>
                             <button
                                 onClick={() => {
@@ -490,20 +495,9 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
                                     const text = encodeURIComponent(blog.title);
                                     window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'noopener,noreferrer');
                                 }}
-                                className="text-xs font-bold text-gray-500 hover:text-primary transition-colors uppercase tracking-widest"
+                                className="text-[10px] font-black text-gray-500 hover:text-primary transition-colors uppercase tracking-[0.2em]"
                             >
-                                Twitter
-                            </button>
-                            <button
-                                onClick={() => {
-                                    navigator.clipboard.writeText(window.location.href).then(() => {
-                                        setCopied(true);
-                                        setTimeout(() => setCopied(false), 2000);
-                                    });
-                                }}
-                                className="text-xs font-bold text-gray-500 hover:text-primary transition-colors uppercase tracking-widest"
-                            >
-                                {copied ? 'Copied!' : 'Copy Link'}
+                                TW
                             </button>
                         </div>
                     </div>
