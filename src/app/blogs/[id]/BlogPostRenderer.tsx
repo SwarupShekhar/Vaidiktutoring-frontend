@@ -306,7 +306,6 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
                             <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-500 hover:text-white transition-all">X</button>
                             <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-700 hover:text-white transition-all">in</button>
                         </div>
-                    </div>
 
                     <div className="mt-12 pt-8 border-t border-gray-100">
                         <div className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-4 flex items-center gap-2">
