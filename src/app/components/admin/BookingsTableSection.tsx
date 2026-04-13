@@ -127,7 +127,7 @@ export default function BookingsTableSection() {
                             ))
                         ) : (() => {
                             const filteredBookings = filter === 'pending' 
-                                ? bookings.filter(b => !b.tutor) 
+                                ? bookings.filter(b => !b.tutor && ['requested', 'pending', 'open'].includes(b.status.toLowerCase())) 
                                 : bookings;
 
                             if (filteredBookings.length === 0) {
