@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Cookie Policy | StudyHours",
@@ -26,7 +27,7 @@ export default function CookiesPage() {
                 <h1 className="text-4xl md:text-5xl font-black tracking-tight uppercase text-deep-navy dark:text-white">
                     Cookie Policy
                 </h1>
-                <p className="text-lg opacity-60 italic">Last Updated: April 13, 2026</p>
+                <p className="text-lg text-gray-500 italic">Last Updated: April 13, 2026</p>
             </div>
             
             <hr className="border-gray-200 dark:border-gray-800" />
@@ -35,7 +36,7 @@ export default function CookiesPage() {
                     <section className="space-y-4">
                         <h2 className="text-2xl font-bold uppercase tracking-tight text-sapphire">1. Introduction</h2>
                         <p className="leading-relaxed">
-                            This Cookie Policy explains how StudyHours uses cookies and similar technologies to provides, improve, and protect our platform. This policy should be read alongside our <a href="/legal/privacy" className="text-blue-600 hover:underline">Privacy Policy</a>. By continuing to use StudyHours after being shown our cookie consent banner, you agree to our use of cookies as described in this policy.
+                            This Cookie Policy explains how StudyHours uses cookies and similar technologies to provide, improve, and protect our platform. This policy should be read alongside our <Link href="/legal/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>. By continuing to use StudyHours after being shown our cookie consent banner, you agree to our use of cookies as described in this policy.
                         </p>
                     </section>
 

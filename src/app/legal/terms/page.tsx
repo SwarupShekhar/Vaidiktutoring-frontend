@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Terms of Service | StudyHours",
@@ -26,7 +27,7 @@ export default function TermsPage() {
                 <h1 className="text-4xl md:text-5xl font-black tracking-tight uppercase text-deep-navy dark:text-white">
                     Terms of Service
                 </h1>
-                <p className="text-lg opacity-60 italic">Last updated: April 13, 2026</p>
+                <p className="text-lg text-gray-500 italic">Last updated: April 13, 2026</p>
             </div>
             
             <hr className="border-gray-200 dark:border-gray-800" />
@@ -134,8 +135,8 @@ export default function TermsPage() {
 
                     <section className="space-y-4">
                         <h2 className="text-2xl font-bold uppercase tracking-tight text-sapphire">10. Privacy and Data</h2>
-                        <p className="leading-relaxed">
-                            Your use of the Platform is also governed by our <a href="/legal/privacy" className="text-blue-600 hover:underline">Privacy Policy</a>, <a href="/legal/cookies" className="text-blue-600 hover:underline">Cookie Policy</a>, and <a href="/legal/refunds" className="text-blue-600 hover:underline">Refund Policy</a>. By agreeing to these Terms, you also acknowledge and agree to the collection and use of your data as described in those policies.
+                         <p className="leading-relaxed">
+                            Your use of the Platform is also governed by our <Link href="/legal/privacy" className="text-blue-600 dark:text-blue-400 hover:underline">Privacy Policy</Link>, <Link href="/legal/cookies" className="text-blue-600 dark:text-blue-400 hover:underline">Cookie Policy</Link>, and <Link href="/legal/refunds" className="text-blue-600 dark:text-blue-400 hover:underline">Refund Policy</Link>. By agreeing to these Terms, you also acknowledge and agree to the collection and use of your data as described in those policies.
                         </p>
                     </section>
 
@@ -150,7 +151,7 @@ export default function TermsPage() {
                         <h2 className="text-2xl font-bold uppercase tracking-tight text-sapphire">12. Disclaimers and Limitation of Liability</h2>
                         <ul className="list-disc pl-6 space-y-2">
                             <li><strong>"As Is":</strong> The Platform is provided on an "as is" and "as available" basis without any warranties of any kind.</li>
-                            <li><strong>No Warranty:</strong> we do not warrant that the Platform will be uninterrupted, secure, or free from viruses or errors.</li>
+                            <li><strong>No Warranty:</strong> We do not warrant that the Platform will be uninterrupted, secure, or free from viruses or errors.</li>
                             <li><strong>Conduct:</strong> StudyHours is not liable for the individual conduct or content provided by tutors or students during sessions.</li>
                             <li><strong>Liability Cap:</strong> To the maximum extent permitted by law, StudyHours' total liability shall not exceed the total amount paid by the user in the six (6) months preceding the claim.</li>
                             <li><strong>Jurisdiction:</strong> Some jurisdictions do not allow the exclusion or limitation of certain liabilities; in such cases, our liability will be limited to the greatest extent permitted by law.</li>
@@ -183,8 +184,8 @@ export default function TermsPage() {
 
                     <section className="space-y-4 pt-8 border-t border-gray-100 dark:border-gray-900 text-center">
                         <h2 className="text-2xl font-bold uppercase tracking-tight text-sapphire">16. Contact</h2>
-                        <p className="text-sm opacity-60">For legal inquiries, please contact <strong>legal@studyhours.com</strong>.</p>
-                        <p className="text-sm opacity-60">For general support and account help, please contact <strong>support@studyhours.com</strong>.</p>
+                        <p className="text-sm text-gray-500">For legal inquiries, please contact <strong>legal@studyhours.com</strong>.</p>
+                        <p className="text-sm text-gray-500">For general support and account help, please contact <strong>support@studyhours.com</strong>.</p>
                     </section>
                 </div>
         </div>

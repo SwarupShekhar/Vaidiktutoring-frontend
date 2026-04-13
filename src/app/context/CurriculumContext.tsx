@@ -18,13 +18,17 @@ export function CurriculumProvider({ children }: { children: React.ReactNode }) 
   );
 
   useEffect(() => {
-    const saved = localStorage.getItem('sh_curriculum');
-    if (saved) {
-      const curriculum = CURRICULA.find(c => c.id === saved);
-      if (curriculum) {
-        setActiveCurriculumState(curriculum);
-        return;
+    try {
+      const saved = localStorage.getItem('sh_curriculum');
+      if (saved) {
+        const curriculum = CURRICULA.find(c => c.id === saved);
+        if (curriculum) {
+          setActiveCurriculumState(curriculum);
+          return;
+        }
       }
+    } catch (e) {
+      console.warn('LocalStorage access failed in CurriculumContext:', e);
     }
 
     // Attempt geo-detection if no preference saved
@@ -60,7 +64,11 @@ export function CurriculumProvider({ children }: { children: React.ReactNode }) 
     const curriculum = CURRICULA.find(c => c.id === id);
     if (curriculum) {
       setActiveCurriculumState(curriculum);
-      localStorage.setItem('sh_curriculum', id);
+      try {
+        localStorage.setItem('sh_curriculum', id);
+      } catch (e) {
+        console.warn('Failed to save curriculum to localStorage:', e);
+      }
     }
   };
 

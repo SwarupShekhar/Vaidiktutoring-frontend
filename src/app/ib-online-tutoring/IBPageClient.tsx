@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import Script from "next/script";
 import {
   ArrowRight,
   ShieldCheck,
@@ -59,98 +58,8 @@ export default function IBTutorsPage() {
     },
   ];
 
-  const subjectSchema = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Language & Literature (Group 1)",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Language Acquisition (Group 2)",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: "Individuals & Societies (Group 3)",
-      },
-      { "@type": "ListItem", position: 4, name: "Sciences (Group 4)" },
-      { "@type": "ListItem", position: 5, name: "Mathematics (Group 5)" },
-      { "@type": "ListItem", position: 6, name: "The Arts (Group 6)" },
-    ],
-  };
-
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: ibFaqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.q,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.a,
-      },
-    })),
-  };
-
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://studyhours.com",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Subjects",
-        item: "https://studyhours.com/subjects",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: "IB Tutoring",
-        item: "https://studyhours.com/ib-online-tutoring",
-      },
-    ],
-  };
-
-  const ratingSchema = {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    name: "IB Online Tutoring — Premium IB Diploma Tuition",
-    image: "https://studyhours.com/hero_calm_education.png",
-  };
-
   return (
-    <main className="min-h-screen bg-background transition-colors duration-500 relative">
-      <Script
-        id="ib-subject-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(subjectSchema) }}
-      />
-      <Script
-        id="ib-faq-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-      <Script
-        id="ib-breadcrumb-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <Script
-        id="ib-rating-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ratingSchema) }}
-      />
+    <main className="min-h-screen bg-background transition-colors duration-500 relative selection:bg-sapphire/20 selection:text-sapphire">
       <StickyCTA />
 
       {/* ============================================

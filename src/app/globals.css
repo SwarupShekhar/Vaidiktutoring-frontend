@@ -5,7 +5,7 @@
   /* Core Variables */
   --color-primary: #4C70F5;
   --color-secondary: #FFC300;
-  --color-background: #F5F8FF;
+  --color-background-base: #F5F8FF;
   --color-surface: #FFFFFF;
   --color-text-primary: #2C3E50;
   --color-text-secondary: #7F8C8D;
@@ -18,14 +18,14 @@
   --color-deep-navy: #000926;
 
   /* NextJS defaults mapped to theme */
-  --background: var(--color-background);
+  --background: var(--color-background-base);
   --foreground: var(--color-text-primary);
 }
 
 .dark {
   --color-primary: #7699FF;
   --color-secondary: #FFD740;
-  --color-background: #0D1117;
+  --color-background-base: #0D1117;
   --color-surface: #161B22;
   --color-text-primary: #EAEAEA;
   --color-text-secondary: #B0B0B0;
@@ -41,7 +41,7 @@
   --color-deep-navy: #00071a;
   /* Keep deep for background contrast */
 
-  --background: var(--color-background);
+  --background: var(--color-background-base);
   --foreground: var(--color-text-primary);
 }
 
@@ -67,8 +67,8 @@
 }
 
 body {
-  background: var(--color-background);
-  color: var(--color-text-primary);
+  background: var(--background);
+  color: var(--foreground);
   font-family: 'Inter', 'Roboto', sans-serif;
   overflow-x: hidden;
   /* fallback */

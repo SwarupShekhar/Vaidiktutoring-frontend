@@ -32,7 +32,6 @@ import ParentTestimonials from "../components/subjects/ParentTestimonials";
 import StickyCTA from "../components/subjects/StickyCTA";
 import SubjectFAQ, { FAQItemType } from "../components/subjects/SubjectFAQ";
 import Counter from "../components/ui/Counter";
-import Script from "next/script";
 
 export default function ALevelTutoringPage() {
   const { user } = useAuthContext();
@@ -56,84 +55,9 @@ export default function ALevelTutoringPage() {
     },
   ];
 
-  const subjectSchema = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": "Core Subjects" },
-      { "@type": "ListItem", "position": 2, "name": "Humanities & Social Sciences" },
-      { "@type": "ListItem", "position": 3, "name": "Practical Subjects" },
-      { "@type": "ListItem", "position": 4, "name": "Languages" }
-    ]
-  };
-
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": aLevelFaqs.map(faq => ({
-      "@type": "Question",
-      "name": faq.q,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.a
-      }
-    }))
-  };
-
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://studyhours.com",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Subjects",
-        item: "https://studyhours.com/subjects",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: "A-Level Tutoring",
-        item: "https://studyhours.com/a-level-online-tutoring",
-      },
-    ],
-  };
-
-  const ratingSchema = {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    name: "Expert A-Level Tutors Online — Private A-Level Tuition",
-    "image": "https://studyhours.com/hero_calm_education.png",
-  };
 
   return (
     <main className="min-h-screen bg-background transition-colors duration-500 relative selection:bg-sapphire/20 selection:text-sapphire">
-      <Script
-        id="subject-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(subjectSchema) }}
-      />
-      <Script
-        id="faq-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-      <Script
-        id="breadcrumb-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <Script
-        id="rating-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ratingSchema) }}
-      />
       <StickyCTA />
 
       {/* ============================================

@@ -39,7 +39,6 @@ import ParentTestimonials from "../components/subjects/ParentTestimonials";
 import StickyCTA from "../components/subjects/StickyCTA";
 import SubjectFAQ, { FAQItemType } from "../components/subjects/SubjectFAQ";
 import Counter from "../components/ui/Counter";
-import Script from "next/script";
 
 export default function IGCSEOnlineTutoringPage() {
   const { user } = useAuthContext();
@@ -63,98 +62,9 @@ export default function IGCSEOnlineTutoringPage() {
     },
   ];
 
-  const subjectSchema = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: "IGCSE Subjects Covered",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "IGCSE Mathematics" },
-      { "@type": "ListItem", position: 2, name: "IGCSE Additional Maths" },
-      { "@type": "ListItem", position: 3, name: "IGCSE English Language" },
-      { "@type": "ListItem", position: 4, name: "IGCSE English Literature" },
-      { "@type": "ListItem", position: 5, name: "IGCSE Biology" },
-      { "@type": "ListItem", position: 6, name: "IGCSE Chemistry" },
-      { "@type": "ListItem", position: 7, name: "IGCSE Physics" },
-      { "@type": "ListItem", position: 8, name: "IGCSE Combined Science" },
-      { "@type": "ListItem", position: 9, name: "IGCSE Accounting" },
-      { "@type": "ListItem", position: 10, name: "IGCSE Business Studies" },
-      { "@type": "ListItem", position: 11, name: "IGCSE Economics" },
-    ],
-  };
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: igcseFaqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.q,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.a,
-      },
-    })),
-  };
-
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://studyhours.com",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Subjects",
-        item: "https://studyhours.com/subjects",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: "IGCSE Online Tuition & Tutoring Service",
-        item: "https://studyhours.com/igcse-online-tutoring",
-      },
-    ],
-  };
-
-  const ratingSchema = {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    name: "IGCSE Online Tuition & Tutoring Service",
-    image: "https://studyhours.com/hero_calm_education.png",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "1200",
-      bestRating: "5",
-      worstRating: "1",
-    },
-  };
 
   return (
     <main className="min-h-screen bg-background transition-colors duration-500 relative selection:bg-primary/20 selection:text-primary">
-      <Script
-        id="subject-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(subjectSchema) }}
-      />
-      <Script
-        id="faq-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-      <Script
-        id="breadcrumb-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <Script
-        id="rating-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ratingSchema) }}
-      />
       <StickyCTA />
 
       {/* ============================================

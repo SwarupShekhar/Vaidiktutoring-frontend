@@ -11,26 +11,41 @@ export default function CookieConsentBanner() {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // Check for existing consent
-        const consent = localStorage.getItem('studyhours_cookie_consent');
-        if (!consent) {
-            // Delay appearance slightly for better UX/performance
-            const timer = setTimeout(() => setIsVisible(true), 1500);
-            return () => clearTimeout(timer);
+        let timer: NodeJS.Timeout;
+        
+        try {
+            // Check for existing consent
+            const consent = localStorage.getItem('studyhours_cookie_consent');
+            if (!consent) {
+                // Delay appearance slightly for better UX/performance
+                timer = setTimeout(() => setIsVisible(true), 1500);
+            }
+        } catch (error) {
+            console.error('Error accessing localStorage for cookie consent:', error);
+            // If storage fails (e.g. Incognito), show the banner anyway
+            timer = setTimeout(() => setIsVisible(true), 1500);
         }
 
-        // Listen for re-opening the banner via "Cookie Preferences" link
+        // Listen for re-opening the banner via "Cookie Preferences" link (always register)
         const handleOpen = () => {
             setIsVisible(true);
         };
         
         window.addEventListener('open-cookie-banner', handleOpen);
-        return () => window.removeEventListener('open-cookie-banner', handleOpen);
+        return () => {
+            if (timer) clearTimeout(timer);
+            window.removeEventListener('open-cookie-banner', handleOpen);
+        };
     }, []);
 
     const handleChoice = (choice: 'accepted' | 'declined') => {
-        localStorage.setItem('studyhours_cookie_consent', choice);
-        localStorage.setItem('studyhours_cookie_consent_timestamp', new Date().toISOString());
+        try {
+            localStorage.setItem('studyhours_cookie_consent', choice);
+            localStorage.setItem('studyhours_cookie_consent_timestamp', new Date().toISOString());
+        } catch (error) {
+            console.error('Failed to save cookie choice to localStorage:', error);
+        }
+        
         setIsVisible(false);
         
         // Dispatch event so other components (like Analytics) can react immediately

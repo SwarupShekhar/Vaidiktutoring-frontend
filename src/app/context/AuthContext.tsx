@@ -45,12 +45,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function initAuth() {
       // 1. Try Local Token
-      const savedToken = localStorage.getItem('auth_token');
+      let savedToken = null;
+      try {
+        savedToken = localStorage.getItem('auth_token');
+      } catch (e) {
+        console.warn('LocalStorage access failed in AuthContext:', e);
+      }
+
       if (savedToken) {
         setToken(savedToken);
         setAuthToken(savedToken);
         // Ensure API always has a way to get the token even if defaults are lost
-        setTokenGetter(async () => localStorage.getItem('auth_token'));
+        setTokenGetter(async () => {
+          try {
+            return localStorage.getItem('auth_token');
+          } catch (e) {
+            return null;
+          }
+        });
         
         try {
           const u = await authLib.getMe();
@@ -175,7 +187,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function logout() {
-    localStorage.removeItem('auth_token');
+    try {
+      localStorage.removeItem('auth_token');
+    } catch (e) {
+      console.warn('Failed to remove auth_token from localStorage:', e);
+    }
     document.cookie = "manual_auth_token=; path=/; max-age=0";
     signOut(() => router.push('/'));
   }

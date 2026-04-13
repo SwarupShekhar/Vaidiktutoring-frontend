@@ -39,7 +39,6 @@ import ParentTestimonials from "../components/subjects/ParentTestimonials";
 import StickyCTA from "../components/subjects/StickyCTA";
 import SubjectFAQ, { FAQItemType } from "../components/subjects/SubjectFAQ";
 import Counter from "../components/ui/Counter";
-import Script from "next/script";
 
 export default function GCSEOnlineTutoringPage() {
   const { user } = useAuthContext();
@@ -62,89 +61,9 @@ export default function GCSEOnlineTutoringPage() {
       a: "Prioritise subject-specific expertise and a proven track record with your child's exact exam board: AQA, Edexcel, or OCR. Look for a tutor who starts with a diagnostic assessment rather than a one-size-fits-all approach. Ensure their teaching style builds confidence and focuses on exam technique, not just content knowledge. Always book a trial session first to confirm they are the right fit for your child.",
     },
   ];
-  const subjectSchema = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Core Subjects" },
-      { "@type": "ListItem", position: 2, name: "Sciences" },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: "Humanities & Social Sciences",
-      },
-      { "@type": "ListItem", position: 4, name: "Creative & Technical" },
-      { "@type": "ListItem", position: 5, name: "Languages" },
-    ],
-  };
-
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: gcseFaqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.q,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.a,
-      },
-    })),
-  };
-
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://studyhours.com",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Subjects",
-        item: "https://studyhours.com/subjects",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: "GCSE Tutoring",
-        item: "https://studyhours.com/gcse-online-tutoring",
-      },
-    ],
-  };
-
-  const ratingSchema = {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    name: "GCSE Tutors Online — Specialist UK GCSE Support",
-    image: "https://studyhours.com/hero_calm_education.png",
-  };
 
   return (
     <main className="min-h-screen bg-background transition-colors duration-500 relative selection:bg-sapphire/20 selection:text-sapphire">
-      <Script
-        id="subject-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(subjectSchema) }}
-      />
-      <Script
-        id="faq-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-      <Script
-        id="breadcrumb-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <Script
-        id="rating-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ratingSchema) }}
-      />
       <StickyCTA />
 
       {/* ============================================

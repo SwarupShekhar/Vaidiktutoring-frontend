@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import Script from "next/script";
 import {
   ArrowRight,
   ShieldCheck,
@@ -54,76 +53,8 @@ export default function K12OnlineTutoringPage() {
     }
   ];
 
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://studyhours.com",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Subjects",
-        item: "https://studyhours.com/subjects",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: "K-12 Tutoring",
-        item: "https://studyhours.com/k-12-online-tutoring",
-      },
-    ],
-  };
-
-  const ratingSchema = {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    name: "K-12 Online Tutoring",
-    "image": "https://studyhours.com/hero_calm_education.png",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "1500",
-      "bestRating": "5",
-      "worstRating": "1"
-    }
-  };
-
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": k12Faqs.map(faq => ({
-      "@type": "Question",
-      "name": faq.q,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.a
-      }
-    }))
-  };
-
   return (
-    <main className="min-h-screen bg-background transition-colors duration-500 relative">
-      <Script
-        id="k12-breadcrumb-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <Script
-        id="k12-rating-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ratingSchema) }}
-      />
-      <Script
-        id="k12-faq-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-      {/* Sticky Action Bar */}
+    <main className="min-h-screen bg-background transition-colors duration-500 relative selection:bg-sapphire/20 selection:text-sapphire">
       <StickyCTA />
 
       {/* ============================================
