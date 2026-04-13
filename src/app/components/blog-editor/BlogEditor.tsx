@@ -324,14 +324,38 @@ export default function BlogEditor({
   }, [content, editor]);
 
   const setLink = () => {
-    if (linkUrl === '') {
-      editor?.chain().focus().extendMarkRange('link').unsetLink().run();
-      setShowLinkInput(false);
-      setLinkUrl('');
-      return;
+    if (isRawMode) {
+      // Logic for Raw Markdown Textarea
+      const textarea = document.querySelector('textarea[aria-label="Raw Markdown Editor"]') as HTMLTextAreaElement;
+      if (textarea) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const selectedText = text.substring(start, end);
+        
+        if (linkUrl === '') {
+          // If no URL but text selected, we can't really "unlink" easily in raw text without complex regex, 
+          // so we just do nothing or suggest manual edit
+          toast.info('In markdown mode, please manually remove the [text](url) syntax to unlink.');
+        } else {
+          // Insert [selected](url)
+          const newText = text.substring(0, start) + `[${selectedText || 'link'}](${linkUrl})` + text.substring(end);
+          onChange(newText);
+          toast.success('Link added to markdown!');
+        }
+      }
+    } else {
+      // Logic for Tiptap Visual Editor
+      if (linkUrl === '') {
+        editor?.chain().focus().extendMarkRange('link').unsetLink().run();
+      } else {
+        editor?.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run();
+        toast.success(`Broadcasting link: ${linkUrl}`);
+      }
     }
-    editor?.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run();
+    
     setShowLinkInput(false);
+    setShowInternalLinks(false);
     setLinkUrl('');
   };
 
@@ -494,6 +518,7 @@ export default function BlogEditor({
           >
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={toggleBold}
               className={`p-2 rounded-lg transition-colors ${isActive('bold') ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
               title="Bold"
@@ -502,6 +527,7 @@ export default function BlogEditor({
             </button>
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={toggleItalic}
               className={`p-2 rounded-lg transition-colors ${isActive('italic') ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
               title="Italic"
@@ -707,6 +733,7 @@ export default function BlogEditor({
             ) : (
               <button
                 type="button"
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={() => setShowLinkInput(true)}
                 className={`p-2 rounded-lg transition-colors ${isActive('link') ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
                 title="Add Link"
@@ -781,12 +808,17 @@ export default function BlogEditor({
               </div>
               <div className="flex items-center gap-2">
                 <button 
+                  type="button"
                   onClick={applyAllLinks}
                   className="text-[9px] font-black bg-white text-primary px-2 py-1 rounded hover:bg-white/90 transition-colors shadow-lg"
                 >
                   LINK ALL
                 </button>
-                <button onClick={() => setShowScanner(false)} className="text-white/30 hover:text-white">
+                <button 
+                  type="button"
+                  onClick={() => setShowScanner(false)} 
+                  className="text-white/30 hover:text-white"
+                >
                   <XCircle size={14} />
                 </button>
               </div>
@@ -798,6 +830,8 @@ export default function BlogEditor({
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs font-bold text-white group-hover:text-primary transition-colors">"{s.keyword}"</span>
                     <button 
+                      type="button"
+                      onMouseDown={(e) => e.preventDefault()}
                       onClick={() => applySuggestedLink(s)}
                       className="px-2 py-1 bg-primary/20 hover:bg-primary text-primary hover:text-white text-[10px] font-bold rounded-lg transition-all"
                     >
