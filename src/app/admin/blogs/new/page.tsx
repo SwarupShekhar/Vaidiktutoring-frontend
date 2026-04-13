@@ -34,6 +34,7 @@ export default function NewBlogPage() {
         seoDescription: '',
         publishedAt: '',
         status: 'PENDING' as 'PENDING' | 'PUBLISHED' | 'REJECTED',
+        related_blog_ids: [] as string[],
     });
 
     const [isRestored, setIsRestored] = useState(false);
@@ -221,6 +222,8 @@ export default function NewBlogPage() {
                                 lastSaved={lastSaved}
                                 editable={canEdit}
                                 content={form.content}
+                                relatedBlogIds={form.related_blog_ids}
+                                onRelatedBlogIdsChange={(ids) => setForm(prev => ({ ...prev, related_blog_ids: ids }))}
                             />
                         </div>
 

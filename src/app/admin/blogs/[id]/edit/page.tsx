@@ -37,6 +37,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
         publishedAt: '',
         status: 'PENDING' as 'PENDING' | 'PUBLISHED' | 'REJECTED',
         author_id: '',
+        related_blog_ids: [] as string[],
     });
 
     // Permission Logic: Check if user can edit/publish
@@ -88,6 +89,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                     publishedAt: blog.publishedAt || '',
                     status: blog.status,
                     author_id: blog.author_id || '',
+                    related_blog_ids: blog.related_blog_ids || [],
                 });
             } catch (error) {
                 console.error('Failed to fetch blog:', error);
@@ -101,7 +103,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
         if (id) fetchBlog();
     }, [id, router]);
 
-    const handleChange = (field: string, value: string) => {
+    const handleChange = (field: string, value: any) => {
         setForm(prev => ({ ...prev, [field]: value }));
     };
 
@@ -122,6 +124,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                 excerpt: form.excerpt,
                 content: form.content,
                 publishedAt: form.publishedAt,
+                related_blog_ids: form.related_blog_ids,
                 summary: summary || 'Content update'
             });
             setLastSaved(new Date().toISOString());
@@ -331,6 +334,8 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                                 lastSaved={lastSaved}
                                 editable={canEdit}
                                 content={form.content}
+                                relatedBlogIds={form.related_blog_ids}
+                                onRelatedBlogIdsChange={(ids) => handleChange('related_blog_ids', ids)}
                             />
                         </div>
 
@@ -356,6 +361,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                                         publishedAt: blog.publishedAt || '',
                                         status: blog.status,
                                         author_id: blog.author_id || '',
+                                        related_blog_ids: blog.related_blog_ids || [],
                                     });
                                 }}
                                 onClose={() => setShowHistory(false)}

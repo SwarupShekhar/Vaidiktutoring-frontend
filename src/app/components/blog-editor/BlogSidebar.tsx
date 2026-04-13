@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import BlogSEOToolkit from './BlogSEOToolkit';
-import { 
-  Type, Tag, Folder, Clock, FileText, Search, AlertCircle, Calendar, Image as ImageIcon
+import {
+  Type, Tag, Folder, Clock, FileText, Search, AlertCircle, Calendar, Image as ImageIcon, Sparkles, Trash2
 } from 'lucide-react';
 import ImageUpload from './ImageUpload';
+import { blogsApi } from '@/app/lib/blogs';
 
 interface BlogSidebarProps {
   title: string;
@@ -31,6 +32,8 @@ interface BlogSidebarProps {
   lastSaved?: string | null;
   editable: boolean;
   content: string;
+  relatedBlogIds: string[];
+  onRelatedBlogIdsChange: (ids: string[]) => void;
 }
 
 const categories = [
@@ -67,8 +70,33 @@ export default function BlogSidebar({
   lastSaved,
   editable,
   content,
+  relatedBlogIds,
+  onRelatedBlogIdsChange,
 }: BlogSidebarProps) {
   const [showSeoPreview, setShowSeoPreview] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [allBlogs, setAllBlogs] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Fetch blogs for search
+  const fetchAllBlogs = async () => {
+    try {
+      const response = await blogsApi.getAll(1, 100);
+      setAllBlogs(response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch blogs for related selection:', error);
+    }
+  };
+
+  const filteredSearch = searchQuery.length > 2 
+    ? allBlogs.filter(b => 
+        b.title.toLowerCase().includes(searchQuery.toLowerCase()) && 
+        !relatedBlogIds.includes(b.id)
+      ).slice(0, 5)
+    : [];
+
+  const selectedBlogs = allBlogs.filter(b => relatedBlogIds.includes(b.id));
 
   // Helper to format Date to local YYYY-MM-DDTHH:mm
   const formatForInput = (dateStr: string) => {
@@ -174,6 +202,84 @@ export default function BlogSidebar({
               disabled={!editable}
               className="w-full px-2 py-2 rounded-lg bg-white/50 dark:bg-black/30 border border-white/20 dark:border-white/10 text-(--color-text-primary) text-xs focus:ring-2 focus:ring-primary outline-none disabled:opacity-50"
             />
+          </div>
+        </motion.div>
+
+        {/* Related Posts - Curated System */}
+        <motion.div 
+          className="p-4 rounded-xl bg-linear-to-br from-indigo-500/5 to-purple-500/5 border border-indigo-500/10 dark:border-white/10 backdrop-blur-md"
+          whileHover={{ scale: 1.01 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Sparkles size={14} className="text-indigo-400" />
+              <label className="text-xs font-black text-text-secondary uppercase tracking-widest text-[9px]">Manual Related Posts</label>
+            </div>
+          </div>
+          
+          {editable && (
+            <div className="relative mb-4">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <Search size={14} />
+              </div>
+              <input 
+                type="text"
+                placeholder="Search blogs to link..."
+                value={searchQuery}
+                onFocus={fetchAllBlogs}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-white/50 dark:bg-black/30 border border-white/20 dark:border-white/10 text-xs focus:ring-2 focus:ring-primary outline-none"
+              />
+              
+              {/* Search Results Dropdown */}
+              <AnimatePresence>
+                {filteredSearch.length > 0 && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute z-50 left-0 right-0 top-full mt-2 bg-white dark:bg-[#0A0A0B] border border-gray-100 dark:border-white/10 rounded-xl shadow-2xl p-2 space-y-1"
+                  >
+                    {filteredSearch.map((post) => (
+                      <button
+                        key={post.id}
+                        type="button"
+                        onClick={() => {
+                          onRelatedBlogIdsChange([...relatedBlogIds, post.id]);
+                          setSearchQuery('');
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-lg hover:bg-primary/10 text-xs font-medium text-gray-700 dark:text-gray-300 transition-colors flex items-center gap-2"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                        {post.title}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+
+          {/* Selected Related Posts List */}
+          <div className="space-y-2 max-h-40 overflow-y-auto scrollbar-hide">
+            {selectedBlogs.map((post) => (
+              <div key={post.id} className="flex items-center justify-between gap-2 p-2 rounded-lg bg-white/40 dark:bg-white/5 border border-white/10 group">
+                <span className="text-[10px] font-bold text-gray-600 dark:text-gray-400 line-clamp-1">{post.title}</span>
+                {editable && (
+                  <button 
+                    type="button"
+                    onClick={() => onRelatedBlogIdsChange(relatedBlogIds.filter(id => id !== post.id))}
+                    className="p-1 rounded-md text-gray-400 hover:text-rose-500 hover:bg-rose-500/10 opacity-0 group-hover:opacity-100 transition-all"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                )}
+              </div>
+            ))}
+            {relatedBlogIds.length === 0 && (
+              <p className="text-[10px] text-gray-400 italic text-center py-2 opacity-50">Auto-detecting via category fallback...</p>
+            )}
           </div>
         </motion.div>
 

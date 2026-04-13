@@ -905,105 +905,128 @@ export default function BlogEditor({
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.3 }}
-                className="w-full bg-[#FDFDFC] dark:bg-black/20 min-h-[800px] overflow-hidden"
+                className="w-full bg-white dark:bg-[#0A0A0B] min-h-[800px] overflow-hidden"
               >
-              {/* High-Fidelity Preview Header */}
-              <div className="max-w-[1000px] mx-auto px-8 pt-16 pb-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-3">
-                      <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest">
-                        {category || 'Uncategorized'}
-                      </span>
-                      <span className="text-text-secondary text-xs font-bold">Preview Mode</span>
-                    </div>
-                    <h1 className="text-4xl md:text-5xl font-black text-(--color-text-primary) leading-[1.1] tracking-tight">
-                      {title || 'Untited Blog Post'}
+                {/* High-Fidelity Preview Header */}
+                <div className="max-w-[1240px] mx-auto px-8 pt-24 pb-12 text-center">
+                  <div className="max-w-5xl mx-auto space-y-10">
+                    <h1 className="text-4xl md:text-5xl lg:text-7xl font-black text-gray-900 dark:text-white leading-[1.05] tracking-tighter">
+                      {title || 'Untitled Blog Post'}
                     </h1>
-                    <p className="text-lg text-text-secondary leading-relaxed font-serif italic border-l-2 border-primary/20 pl-4">
-                      {excerpt || 'Add an excerpt to show a subheadline in the preview...'}
-                    </p>
-                    <div className="flex items-center gap-4 pt-6 border-t border-white/10 mt-6">
-                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-sapphire flex items-center justify-center text-white font-bold text-sm shadow-lg">
-                        {authorName.charAt(0)}
+
+                    <div className="space-y-6">
+                      <div className="flex flex-col items-center gap-3">
+                        <p className="font-bold text-gray-600 dark:text-gray-400 text-sm">
+                          By <span className="text-primary font-black uppercase tracking-tight">{authorName}</span>
+                          <span className="mx-2 opacity-30">•</span>
+                          <span className="uppercase tracking-widest text-[10px] font-black">{new Date().toLocaleDateString()}</span>
+                        </p>
+                        
+                        <div className="flex flex-wrap items-center justify-center gap-2">
+                          <span className="px-4 py-1.5 rounded-full border-2 border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">
+                            {category || 'Uncategorized'}
+                          </span>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-bold text-(--color-text-primary) text-sm">{authorName}</p>
-                        <p className="text-xs text-text-secondary">Education Specialist • {new Date().toLocaleDateString()}</p>
-                      </div>
+
+                      <p className="text-xl md:text-2xl text-gray-400 dark:text-gray-500 leading-relaxed font-serif italic max-w-3xl mx-auto border-t border-gray-100 dark:border-white/10 pt-8">
+                        {excerpt || 'Add an excerpt to show a subheadline in the preview...'}
+                      </p>
                     </div>
                   </div>
-                  <div className="relative aspect-4/3 rounded-2xl overflow-hidden shadow-2xl border border-white/10 group bg-white/5">
+
+                  {/* 21:9 HERO IMAGE PREVIEW */}
+                  <div className="mt-24 relative aspect-21/9 rounded-[3rem] overflow-hidden shadow-2xl border border-white/10 group bg-white/5">
                     {imageUrl ? (
-                      <img src={imageUrl} alt={imageAlt || title} className="w-full h-full object-cover" />
+                      <img src={imageUrl} alt={imageAlt || title} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-1000" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-text-secondary text-xs font-bold uppercase tracking-tighter italic">
+                      <div className="w-full h-full flex items-center justify-center text-text-secondary text-xs font-bold uppercase tracking-tighter italic bg-gray-100 dark:bg-gray-800">
                         No Cover Image Selected
                       </div>
                     )}
                   </div>
                 </div>
-              </div>
 
-              {/* High-Fidelity Quote Box */}
-              <div className="max-w-3xl mx-auto px-8 mb-12">
-                <div className="bg-primary/5 border-l-4 border-primary p-6 rounded-r-xl">
-                  <p className="text-base text-primary font-medium italic">
-                    "This is a high-fidelity preview of how your article will look to the world. Ensure your headings and images are perfectly placed."
-                  </p>
-                </div>
-              </div>
+                {/* TWO-COLUMN PREVIEW LAYOUT */}
+                <div className="max-w-[1240px] mx-auto px-8 mt-12 grid grid-cols-1 lg:grid-cols-[1fr_380px] lg:gap-16 items-start">
+                  
+                  {/* Left Column: Content */}
+                  <div className="w-full pb-24">
+                    {/* Mock Quote Box */}
+                    <div className="mb-12">
+                      <div className="bg-blue-50/50 dark:bg-blue-900/10 border-l-4 border-blue-500 p-8 rounded-r-xl">
+                        <p className="text-lg text-blue-900 dark:text-blue-200 italic font-medium">
+                          &ldquo;Education is not the filling of a pail, but the lighting of a fire.&rdquo;
+                        </p>
+                      </div>
+                    </div>
 
-              {/* Main Content Area */}
-              <div className="max-w-[750px] mx-auto px-8 pb-24">
-                <div className="prose prose-lg dark:prose-invert max-w-none 
-                  prose-headings:font-black prose-headings:tracking-tight 
-                  prose-p:text-text-secondary prose-p:leading-relaxed
-                  prose-img:rounded-2xl prose-img:shadow-xl prose-img:border prose-img:border-white/10
-                  prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5
-                  first-letter:text-5xl first-letter:font-black first-letter:text-(--color-text-primary) first-letter:float-left first-letter:mr-3 first-letter:mt-1">
-                  {isRawMode ? (
-                    /* Raw Markdown mode: render markdown with ReactMarkdown */
-                    <ReactMarkdown 
-                      remarkPlugins={[remarkGfm, remarkBreaks]}
-                      rehypePlugins={[rehypeRaw]}
-                      components={{
-                        h1: (props) => <h1 className="text-3xl font-black mt-12 mb-6 text-(--color-text-primary)" {...props} />,
-                        h2: (props) => <h2 className="text-2xl font-bold mt-10 mb-5 text-(--color-text-primary)" {...props} />,
-                        h3: (props) => <h3 className="text-xl font-bold mt-8 mb-4 text-(--color-text-primary)" {...props} />,
-                        p: (props) => <p className="mb-6" {...props} />,
-                        img: (props) => (
-                          <span className="block my-10 group">
-                            <img 
-                              className="rounded-2xl border border-white/10 shadow-2xl mx-auto block max-w-full transition-transform hover:scale-[1.01]" 
-                              {...props} 
-                              alt={props.alt || 'Content image'} 
-                            />
-                            {props.alt && <span className="block text-center text-[10px] text-text-secondary mt-3 uppercase tracking-widest italic">{props.alt}</span>}
-                          </span>
-                        ),
-                        a: (props) => <a className="text-primary hover:underline font-bold transition-all" {...props} />,
-                        ul: (props) => <ul className="list-disc ml-6 space-y-3 mb-8" {...props} />,
-                        ol: (props) => <ol className="list-decimal ml-6 space-y-3 mb-8" {...props} />,
-                        blockquote: (props) => <blockquote className="border-l-4 border-primary bg-primary/5 px-6 py-4 italic rounded-r-xl my-10" {...props} />,
-                      }}
-                    >
-                      {content || '*Start writing to see the preview...*'}
-                    </ReactMarkdown>
-                  ) : (
-                    /* Visual mode: use TipTap's HTML, post-processed for any markdown remnants */
-                    <div 
-                      dangerouslySetInnerHTML={{ 
-                        __html: processPreviewHtml(
-                          previewHtml.current || editor?.getHTML() || '<p style="opacity:0.5;font-style:italic">Start writing to see the preview...</p>'
-                        )
-                      }} 
-                    />
-                  )}
+                    <div className="prose prose-lg md:prose-xl prose-gray dark:prose-invert max-w-none 
+                      prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white prose-headings:tracking-tight 
+                      prose-p:text-[1.2rem] prose-p:leading-[2rem] prose-p:text-[#242424] dark:prose-p:text-gray-300
+                      prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
+                      prose-strong:text-gray-900 dark:prose-strong:text-white prose-strong:font-black
+                      prose-img:rounded-xl prose-img:shadow-lg prose-img:my-8
+                      prose-blockquote:border-l-4 prose-blockquote:border-gray-900 dark:prose-blockquote:border-white prose-blockquote:bg-gray-50 dark:prose-blockquote:bg-white/5 prose-blockquote:py-2 prose-blockquote:px-6 prose-blockquote:not-italic
+                      prose-li:text-[1.125rem] prose-li:text-gray-700 dark:prose-li:text-gray-300
+                      first-letter:text-5xl first-letter:font-bold first-letter:text-gray-900 dark:first-letter:text-white first-letter:float-left first-letter:mr-3 first-letter:mt-[-4px]">
+                      {isRawMode ? (
+                        <ReactMarkdown 
+                          remarkPlugins={[remarkGfm, remarkBreaks]}
+                          rehypePlugins={[rehypeRaw]}
+                          components={{
+                            h1: (props) => <h2 className="text-3xl font-black mt-10 mb-6 text-gray-900 dark:text-white leading-tight tracking-tight" {...props} />,
+                            h2: (props) => <h2 className="text-2xl font-bold mt-8 mb-4 text-gray-900 dark:text-white leading-snug tracking-tight" {...props} />,
+                            h3: (props) => <h3 className="text-xl font-bold mt-6 mb-3 text-gray-900 dark:text-white" {...props} />,
+                            p: (props) => <p className="mb-6 leading-loose text-lg text-gray-800 dark:text-gray-300" {...props} />,
+                            img: (props) => (
+                              <span className="block my-10 group relative aspect-video overflow-hidden rounded-2xl shadow-2xl">
+                                <img 
+                                  className="w-full h-full object-cover transition-transform hover:scale-[1.01]" 
+                                  src={props.src || ''}
+                                  alt={props.alt || 'Content image'} 
+                                />
+                                {props.alt && <span className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-2 text-center text-[10px] text-white uppercase tracking-widest italic">{props.alt}</span>}
+                              </span>
+                            ),
+                            a: (props) => <a className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-medium transition-colors" {...props} />,
+                            ul: (props) => <ul className="list-disc list-outside ml-6 mb-6 space-y-2 text-lg text-gray-800 dark:text-gray-300" {...props} />,
+                            ol: (props) => <ol className="list-decimal list-outside ml-6 mb-6 space-y-2 text-lg text-gray-800 dark:text-gray-300" {...props} />,
+                            blockquote: (props) => <blockquote className="border-l-4 border-blue-600 pl-6 py-2 italic my-8 bg-blue-50 dark:bg-blue-900/10 text-xl text-gray-900 dark:text-gray-100 font-serif leading-relaxed rounded-r-lg" {...props} />,
+                          }}
+                        >
+                          {content || '*Start writing to see the preview...*'}
+                        </ReactMarkdown>
+                      ) : (
+                        <div 
+                          dangerouslySetInnerHTML={{ 
+                            __html: processPreviewHtml(
+                              previewHtml.current || editor?.getHTML() || '<p style="opacity:0.5;font-style:italic">Start writing to see the preview...</p>'
+                            )
+                          }} 
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Right Column: Sticky Sidebar Mock */}
+                  <aside className="hidden lg:block space-y-8 sticky top-6 self-start opacity-70 cursor-not-allowed">
+                    <div className="bg-primary rounded-3xl p-6 text-white shadow-xl">
+                      <div className="w-full aspect-square rounded-2xl overflow-hidden mb-4 border-2 border-white/20 bg-white/10" />
+                      <span className="text-[10px] font-black uppercase tracking-widest opacity-80">SIDEBAR PREVIEW</span>
+                      <h3 className="text-lg font-black mt-1 leading-tight">Conversion CTA Sidebar</h3>
+                      <p className="text-white/80 text-xs mt-2">This sidebar stays sticky as readers scroll through your article on the live site.</p>
+                    </div>
+                    <div className="bg-gray-100 dark:bg-white/5 rounded-3xl p-6 border border-gray-100 dark:border-white/10">
+                      <div className="h-4 w-32 bg-gray-200 dark:bg-white/10 rounded mb-4" />
+                      <div className="space-y-4">
+                        <div className="h-12 w-full bg-gray-200 dark:bg-white/10 rounded-xl" />
+                        <div className="h-12 w-full bg-gray-200 dark:bg-white/10 rounded-xl" />
+                      </div>
+                    </div>
+                  </aside>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>

@@ -9,14 +9,17 @@ export interface BlogPost {
     imageUrl: string;
     imageAlt?: string;
     category: string;
+    tags?: string[];
     status: 'PENDING' | 'PUBLISHED' | 'REJECTED';
     publishedAt?: string;
     author_id?: string;
     author: {
         first_name: string;
         last_name: string;
+        bio?: string;
     };
     createdAt: string;
+    related_blog_ids?: string[];
 }
 
 export interface BlogVersion {
