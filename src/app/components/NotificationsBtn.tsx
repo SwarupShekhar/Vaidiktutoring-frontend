@@ -8,10 +8,13 @@ import { formatDistanceToNow } from 'date-fns';
 interface Notification {
     id: string;
     message: string;
-    type: 'info' | 'success' | 'warning' | 'error';
+    type: string;
     read: boolean;
     created_at: string;
-    resource_id?: string; // e.g. booking_id
+    payload?: {
+        severity?: 'info' | 'warning' | 'urgent' | 'critical';
+        [key: string]: any;
+    };
 }
 
 export default function NotificationsBtn() {
@@ -120,25 +123,47 @@ export default function NotificationsBtn() {
                             </div>
                         ) : (
                             <div className="divide-y divide-border">
-                                {notifications.map(n => (
-                                    <div
-                                        key={n.id}
-                                        className={`p-4 hover:bg-surface transition-colors cursor-pointer ${!n.read ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
-                                        onClick={() => markAsRead(n.id)}
-                                    >
-                                        <div className="flex gap-3">
-                                            <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${!n.read ? 'bg-primary' : 'bg-transparent'}`} />
-                                            <div className="flex-1 space-y-1">
-                                                <p className={`text-sm ${!n.read ? 'font-semibold text-(--color-text-primary)' : 'text-text-secondary'}`}>
-                                                    {n.message}
-                                                </p>
-                                                <p className="text-xs text-text-secondary">
-                                                    {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
-                                                </p>
+                                {notifications.map(n => {
+                                    const severity = n.payload?.severity || 'info';
+                                    const severityColors = {
+                                        info: 'bg-primary',
+                                        warning: 'bg-amber-500',
+                                        urgent: 'bg-orange-600',
+                                        critical: 'bg-red-600'
+                                    };
+                                    
+                                    return (
+                                        <div
+                                            key={n.id}
+                                            className={`p-4 hover:bg-surface transition-colors cursor-pointer border-l-4 ${!n.read ? 'bg-blue-50/30' : ''} ${
+                                                severity === 'critical' ? 'border-l-red-600' : 
+                                                severity === 'urgent' ? 'border-l-orange-600' :
+                                                severity === 'warning' ? 'border-l-amber-500' : 'border-l-transparent'
+                                            }`}
+                                            onClick={() => markAsRead(n.id)}
+                                        >
+                                            <div className="flex gap-3">
+                                                <div className={`mt-1 w-2.5 h-2.5 rounded-full shrink-0 shadow-sm ${severityColors[severity]}`} />
+                                                <div className="flex-1 space-y-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <p className={`text-sm ${!n.read ? 'font-bold text-(--color-text-primary)' : 'text-text-secondary'}`}>
+                                                            {n.message}
+                                                        </p>
+                                                        {severity !== 'info' && (
+                                                            <span className={`text-[8px] font-black uppercase px-1 rounded text-white ${severityColors[severity]}`}>
+                                                                {severity}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs text-text-secondary flex justify-between">
+                                                        <span>{formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}</span>
+                                                        <span className="text-[10px] opacity-40 uppercase tracking-tighter">{n.type.replace('_', ' ')}</span>
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
                     </div>

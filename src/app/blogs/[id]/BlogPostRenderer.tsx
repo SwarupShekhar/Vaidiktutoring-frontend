@@ -9,7 +9,9 @@ import { format } from 'date-fns';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
-import { List } from 'lucide-react';
+import { List, Globe, ChevronRight, Sparkles, BookOpen } from 'lucide-react';
+import Breadcrumbs from '@/app/components/Breadcrumbs';
+import { blogsApi } from '@/app/lib/blogs';
 
 const makeSlug = (text: string) => {
     return String(text)
@@ -29,6 +31,19 @@ const extractTextFromNode = (node: any): string => {
 export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
     const [imgSrc, setImgSrc] = useState<string>(blog?.imageUrl || '');
     const [headings, setHeadings] = useState<{ id: string, text: string, level: number }[]>([]);
+    const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
+
+    useEffect(() => {
+        const fetchRelated = async () => {
+            try {
+                const { data } = await blogsApi.getAll(1, 3, blog.category);
+                setRelatedPosts(data.filter((p: BlogPost) => p.id !== blog.id).slice(0, 2));
+            } catch (error) {
+                console.error('Failed to fetch related posts', error);
+            }
+        };
+        fetchRelated();
+    }, [blog.category, blog.id]);
 
     useEffect(() => {
         if (!blog?.content) return;
@@ -63,6 +78,9 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
         <main className="min-h-screen bg-[#FDFDFC] pb-24 text-gray-900 font-sans selection:bg-yellow-200">
             {/* HERO SECTION - Split Layout */}
             <header className="max-w-[1240px] mx-auto px-6 pt-16 pb-12">
+                <div className="mb-4">
+                  <Breadcrumbs customLabels={{ [blog.slug]: blog.title }} />
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                     {/* Left: Text Content */}
                     <div className="space-y-6 order-2 md:order-1">
@@ -201,6 +219,65 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
                     </div>
                 </article>
 
+                {/* Related Posts Section */}
+                <div className="max-w-[1240px] mx-auto px-6 pt-24 border-t border-gray-100 mt-24">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <Sparkles size={20} />
+                      </div>
+                      <div>
+                        <h2 className="text-2xl font-black text-gray-900 leading-tight">Recommended Reading</h2>
+                        <p className="text-gray-500 text-sm">More insights on {blog.category || 'personalized learning'}</p>
+                      </div>
+                    </div>
+                    <Link href="/blogs" className="text-sm font-bold text-primary hover:underline flex items-center gap-1 group">
+                      View all articles <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                    {relatedPosts.map((post) => (
+                      <Link 
+                        key={post.id} 
+                        href={`/blogs/${post.slug}`}
+                        className="group flex flex-col sm:flex-row gap-6 p-6 rounded-3xl bg-white border border-gray-100 hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 transition-all"
+                      >
+                        <div className="w-full sm:w-40 h-40 shrink-0 rounded-2xl overflow-hidden bg-gray-50 relative">
+                          <Image
+                            src={post.imageUrl || '/images/blog-placeholder.png'}
+                            alt={post.title}
+                            fill
+                            className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        </div>
+                        <div className="flex flex-col justify-center">
+                          <div className="flex items-center gap-2 mb-2">
+                             <span className="text-[10px] font-black uppercase tracking-tighter text-primary bg-primary/10 px-2 py-0.5 rounded shadow-xs">
+                               {post.category}
+                             </span>
+                             <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest flex items-center gap-1">
+                               <BookOpen size={10} /> 5 min read
+                             </span>
+                          </div>
+                          <h3 className="text-xl font-black text-gray-900 leading-tight group-hover:text-primary transition-colors line-clamp-2 mb-3">
+                            {post.title}
+                          </h3>
+                          <div className="flex items-center gap-2 text-xs font-bold text-gray-900 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0">
+                             Read Article <ChevronRight size={12} />
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                    
+                    {relatedPosts.length === 0 && (
+                      <div className="col-span-2 py-12 text-center bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+                        <p className="text-gray-400 font-medium italic">Our specialists are working on more content for you.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Left Sidebar Table of Contents */}
                 <aside className="hidden xl:block sticky top-24 pt-8 border-l border-gray-100 pl-8">
                     {headings.length > 0 && (
@@ -224,12 +301,35 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
                         </nav>
                     )}
 
-                    <div className="mt-12">
                         <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Share</div>
                         <div className="flex gap-2">
                             <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-500 hover:text-white transition-all">X</button>
                             <button className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-700 hover:text-white transition-all">in</button>
                         </div>
+                    </div>
+
+                    <div className="mt-12 pt-8 border-t border-gray-100">
+                        <div className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                           <Globe size={12} className="text-primary" /> Quick Links
+                        </div>
+                        <nav className="flex flex-col gap-3">
+                            <Link href="/methodology" className="text-sm text-gray-500 hover:text-primary transition-colors flex items-center justify-between group">
+                                <span>Methodology</span>
+                                <span className="opacity-0 group-hover:opacity-100 translate-x-[-4px] group-hover:translate-x-0 transition-all font-mono">→</span>
+                            </Link>
+                            <Link href="/pricing" className="text-sm text-gray-500 hover:text-primary transition-colors flex items-center justify-between group">
+                                <span>Pricing</span>
+                                <span className="opacity-0 group-hover:opacity-100 translate-x-[-4px] group-hover:translate-x-0 transition-all font-mono">→</span>
+                            </Link>
+                            <Link href="/about" className="text-sm text-gray-500 hover:text-primary transition-colors flex items-center justify-between group">
+                                <span>About Us</span>
+                                <span className="opacity-0 group-hover:opacity-100 translate-x-[-4px] group-hover:translate-x-0 transition-all font-mono">→</span>
+                            </Link>
+                            <Link href="/demo" className="text-sm text-gray-500 hover:text-primary transition-colors flex items-center justify-between group">
+                                <span>Book Demo</span>
+                                <span className="opacity-0 group-hover:opacity-100 translate-x-[-4px] group-hover:translate-x-0 transition-all font-mono">→</span>
+                            </Link>
+                        </nav>
                     </div>
                 </aside>
             </div>

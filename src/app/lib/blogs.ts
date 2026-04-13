@@ -167,5 +167,11 @@ export const blogsApi = {
     delete: async (id: string) => {
         const res = await api.delete(`/admin/blogs/${id}`);
         return res.data;
+    },
+
+    // Get internal links for linking mechanism
+    getInternalLinks: async (): Promise<Record<string, { title: string; url: string }[]>> => {
+        const res = await api.get('/admin/blogs/internal-links');
+        return res.data;
     }
 };

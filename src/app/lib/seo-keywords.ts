@@ -1,0 +1,18 @@
+export const SEO_KEYWORD_MAP: Record<string, string> = {
+  'pricing': '/pricing',
+  'cost': '/pricing',
+  'methodology': '/methodology',
+  'how we teach': '/methodology',
+  'about us': '/about',
+  '1-on-1 tutoring': '/',
+  'math tutoring': '/math-tutoring',
+  'science tutoring': '/science-tutoring',
+  'ib tutoring': '/ib-online-tutoring',
+  'igcse tutoring': '/igcse-online-tutoring',
+  'a-level tutoring': '/a-level-online-tutoring',
+  'gcse tutoring': '/gcse-online-tutoring',
+  'demo session': '/demo',
+  'book a free demo': '/demo',
+  'study tips': '/blogs',
+  'exam preparation': '/blogs',
+};

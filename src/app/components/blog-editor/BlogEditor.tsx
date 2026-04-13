@@ -9,9 +9,11 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Bold, Italic, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, List, Link as LinkIcon,
-  Image as ImageIcon, Eye, Edit3, CheckCircle, XCircle, Trash2
+  Image as ImageIcon, Eye, Edit3, CheckCircle, XCircle, Trash2, Search, Globe, FileText, Wand2, Sparkles, AlertCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { blogsApi } from '@/app/lib/blogs';
+import { SEO_KEYWORD_MAP } from '@/app/lib/seo-keywords';
 import { Markdown } from 'tiptap-markdown';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -141,6 +143,65 @@ export default function BlogEditor({
   const isInternalChange = useRef(false);
   const hasShownPasteToast = useRef(false);
   const previewHtml = useRef('');
+  const [internalLinks, setInternalLinks] = useState<Record<string, { title: string; url: string }[]>>({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showInternalLinks, setShowInternalLinks] = useState(false);
+  const [suggestedLinks, setSuggestedLinks] = useState<{ keyword: string; url: string; pos: number }[]>([]);
+  const [showScanner, setShowScanner] = useState(false);
+
+  // Magic Link Scanner
+  const scanForLinks = () => {
+    if (!editor) return;
+    const content = (editor.storage as any).markdown.getMarkdown();
+    const suggestions: { keyword: string; url: string; pos: number }[] = [];
+
+    Object.entries(SEO_KEYWORD_MAP).forEach(([keyword, url]) => {
+      // Regex to find keyword NOT inside a link already
+      // This is a naive check but good for a start
+      const regex = new RegExp(`(?<!\\[)${keyword}(?!\\]|\\(|\\w)`, 'gi');
+      let match;
+      while ((match = regex.exec(content)) !== null) {
+        suggestions.push({
+          keyword: match[0],
+          url,
+          pos: match.index
+        });
+      }
+    });
+
+    setSuggestedLinks(suggestions);
+    setShowScanner(true);
+    if (suggestions.length === 0) {
+      toast.info('Scan Complete: No unlinked SEO keywords found. Great job!');
+    } else {
+      toast.success(`Found ${suggestions.length} linking opportunities!`);
+    }
+  };
+
+  const applySuggestedLink = (suggestion: { keyword: string; url: string }) => {
+    if (!editor) return;
+    // We try to find and replace the keyword in the editor
+    // For simplicity, we'll just suggest the user to use the search tool for now,
+    // OR we can do a global search/replace in the content.
+    // Better: let the user click to copy the URL and go to that word.
+    setLinkUrl(suggestion.url);
+    setShowLinkInput(true);
+    toast.info(`Ready to link "${suggestion.keyword}". Highlight it and press Enter.`);
+    // setShowScanner(false);
+  };
+
+  // Fetch internal links on mount
+  useEffect(() => {
+    const fetchLinks = async () => {
+      try {
+        const links = await blogsApi.getInternalLinks();
+        setInternalLinks(links);
+      } catch (error) {
+        console.error('Failed to fetch internal links', error);
+      }
+    };
+    fetchLinks();
+  }, []);
 
   const editor = useEditor({
     extensions: [
@@ -478,23 +539,113 @@ export default function BlogEditor({
             </button>
             <div className="w-px h-5 bg-white/30 mx-1" />
             {showLinkInput ? (
-              <div className="flex items-center gap-1 ml-1">
-                <input
-                  type="url"
-                  placeholder="Enter URL..."
-                  value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && setLink()}
-                  className="w-36 px-2 py-1 text-sm bg-white/10 border border-white/20 rounded text-white placeholder:text-white/50 outline-none"
-                  autoFocus
-                />
-                <button 
-                  type="button"
-                  onClick={setLink} 
-                  className="p-1.5 text-white/80 hover:text-white"
-                >
-                  <CheckCircle size={16} />
-                </button>
+              <div className="flex flex-col relative ml-1">
+                <div className="flex items-center gap-1">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search pages or paste URL..."
+                      value={linkUrl}
+                      onChange={(e) => {
+                        setLinkUrl(e.target.value);
+                        setShowInternalLinks(true);
+                      }}
+                      onFocus={() => setShowInternalLinks(true)}
+                      onKeyDown={(e) => e.key === 'Enter' && setLink()}
+                      className="w-56 px-3 py-1.5 text-xs bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-white/40 outline-none focus:border-primary/50 transition-all"
+                      autoFocus
+                    />
+                    {linkUrl && (
+                      <button 
+                        onClick={() => { setLinkUrl(''); setShowInternalLinks(false); }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 hover:text-white"
+                      >
+                        <XCircle size={12} />
+                      </button>
+                    )}
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={setLink} 
+                    className="p-1.5 bg-primary text-white rounded-lg hover:bg-primary/80 transition-all shadow-lg shadow-primary/20"
+                  >
+                    <CheckCircle size={14} />
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => { setShowLinkInput(false); setShowInternalLinks(false); }}
+                    className="p-1.5 text-white/50 hover:text-white transition-all"
+                  >
+                    <XCircle size={14} />
+                  </button>
+                </div>
+
+                {/* Internal Links Dropdown */}
+                <AnimatePresence>
+                  {showInternalLinks && (linkUrl.length > 0 || Object.keys(internalLinks).length > 0) && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 5 }}
+                      className="absolute top-full left-0 mt-2 w-64 max-h-60 overflow-y-auto bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl z-50 py-1 scrollbar-hide"
+                    >
+                      <div className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-white/40 border-b border-white/5 mb-1 flex items-center justify-between">
+                        <span className="flex items-center gap-2"><Search size={10} /> Link Suggestions</span>
+                        <span className="text-[8px] bg-white/10 px-1.5 py-0.5 rounded italic">Internal Only</span>
+                      </div>
+                      
+                      {Object.entries(internalLinks).map(([category, links]) => {
+                        const filteredLinks = links.filter(link => 
+                          link.title.toLowerCase().includes(linkUrl.toLowerCase()) || 
+                          link.url.toLowerCase().includes(linkUrl.toLowerCase())
+                        );
+
+                        if (filteredLinks.length === 0) return null;
+
+                        return (
+                          <div key={category} className="mb-2">
+                            <div className="px-3 py-1 flex items-center gap-2 text-[9px] font-bold text-primary/70 uppercase tracking-tighter">
+                              {category === 'Site Pages' && <Search size={8} />}
+                              {category === 'Curriculum Pillars' && <Globe size={8} />}
+                              {category === 'Blog Posts' && <FileText size={8} />}
+                              {category}
+                            </div>
+                            {filteredLinks.map((link, i) => (
+                              <button
+                                key={i}
+                                type="button"
+                                onClick={() => {
+                                  setLinkUrl(link.url);
+                                  setShowInternalLinks(false);
+                                  // Optional: Apply link immediately
+                                  // editor?.chain().focus().extendMarkRange('link').setLink({ href: link.url }).run();
+                                  // setShowLinkInput(false);
+                                }}
+                                className="w-full text-left px-3 py-2 hover:bg-primary/20 group transition-all"
+                              >
+                                <div className="text-xs font-bold text-white group-hover:text-primary transition-colors flex items-center justify-between">
+                                  <span>{link.title}</span>
+                                  <span className="text-[8px] opacity-0 group-hover:opacity-100 bg-primary/20 px-1 rounded text-primary">SELECT</span>
+                                </div>
+                                <div className="text-[10px] text-white/40 truncate font-mono">{link.url}</div>
+                              </button>
+                            ))}
+                          </div>
+                        );
+                      })}
+                      
+                      {Object.values(internalLinks).flat().filter(link => 
+                        link.title.toLowerCase().includes(linkUrl.toLowerCase()) || 
+                        link.url.toLowerCase().includes(linkUrl.toLowerCase())
+                      ).length === 0 && (
+                        <div className="px-3 py-6 text-center">
+                          <p className="text-[10px] text-white/50 font-medium">No internal matches for "{linkUrl}"</p>
+                          <p className="text-[9px] text-primary mt-2 font-bold italic animate-pulse">Press Enter for external URL</p>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
               <button
@@ -506,6 +657,16 @@ export default function BlogEditor({
                 <LinkIcon size={16} />
               </button>
             )}
+
+            <button
+              type="button"
+              onClick={scanForLinks}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all ml-1 ${showScanner ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-primary hover:bg-primary/10'}`}
+              title="Magic Link Scanner"
+            >
+              <Wand2 size={16} className={showScanner ? 'animate-pulse' : ''} />
+              <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">Magic Scan</span>
+            </button>
 
             <div className="w-px h-5 bg-white/30 mx-1" />
             
@@ -538,6 +699,52 @@ export default function BlogEditor({
                 <ImageIcon size={16} />
               </button>
             )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Magic Scanner Results Overlay */}
+      <AnimatePresence>
+        {showScanner && suggestedLinks.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            className="absolute top-16 right-0 w-80 bg-gray-900/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-3xl z-50 overflow-hidden"
+          >
+            <div className="bg-primary/10 px-4 py-3 border-b border-white/5 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles size={14} className="text-primary" />
+                <span className="text-xs font-black uppercase tracking-widest text-white">SEO Opportunities</span>
+              </div>
+              <button onClick={() => setShowScanner(false)} className="text-white/30 hover:text-white">
+                <XCircle size={14} />
+              </button>
+            </div>
+            
+            <div className="max-h-72 overflow-y-auto p-2 space-y-2 scrollbar-hide">
+              {suggestedLinks.map((s, i) => (
+                <div key={i} className="p-3 bg-white/5 rounded-xl border border-white/5 hover:border-primary/30 transition-all group">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold text-white group-hover:text-primary transition-colors">"{s.keyword}"</span>
+                    <button 
+                      onClick={() => applySuggestedLink(s)}
+                      className="px-2 py-1 bg-primary/20 hover:bg-primary text-primary hover:text-white text-[10px] font-bold rounded-lg transition-all"
+                    >
+                      Use Link
+                    </button>
+                  </div>
+                  <div className="text-[10px] text-white/30 truncate font-mono">{s.url}</div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="p-3 bg-white/5 border-t border-white/5 flex items-center gap-2">
+              <AlertCircle size={10} className="text-white/40" />
+              <p className="text-[9px] text-white/40 leading-tight">
+                Interlinking these keywords improves topical authority and site crawlability.
+              </p>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

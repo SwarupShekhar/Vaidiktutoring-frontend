@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Breadcrumbs from '@/app/components/Breadcrumbs';
 
 export const metadata: Metadata = {
   alternates: {
@@ -11,5 +12,10 @@ export const metadata: Metadata = {
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <div className="max-w-[1440px] mx-auto px-6 pt-10 pb-20">
+      <Breadcrumbs />
+      {children}
+    </div>
+  );
 }
