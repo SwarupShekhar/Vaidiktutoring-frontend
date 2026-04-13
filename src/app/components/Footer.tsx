@@ -181,7 +181,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="/privacy"
+                  href="/legal/privacy"
                   className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
                 >
                   Privacy Policy
@@ -189,7 +189,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/terms"
+                  href="/legal/terms"
                   className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
                 >
                   Terms of Service
@@ -197,11 +197,35 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/cookies"
+                  href="/legal/aup"
                   className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
                 >
-                  Cookie Settings
+                  Acceptable Use
                 </Link>
+              </li>
+              <li>
+                <Link
+                  href="/legal/refunds"
+                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                >
+                  Refund Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/legal/cookies"
+                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                >
+                  Cookie Policy
+                </Link>
+              </li>
+              <li>
+                <button
+                  onClick={() => window.dispatchEvent(new CustomEvent('open-cookie-banner'))}
+                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm text-left"
+                >
+                  Cookie Preferences
+                </button>
               </li>
             </ul>
           </div>

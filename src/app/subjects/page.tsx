@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import SubjectsPageClient from "./SubjectsPageClient";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Curriculum Aligned Tutoring for US, UK & IB Students",
@@ -80,15 +81,18 @@ export default function Page() {
 
   return (
     <>
-      <script
+      <Script
+        id="course-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }}
       />
-      <script
+      <Script
+        id="edu-org-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eduOrgSchema) }}
       />
-      <script
+      <Script
+        id="breadcrumb-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />

@@ -39,6 +39,7 @@ import ParentTestimonials from "../components/subjects/ParentTestimonials";
 import StickyCTA from "../components/subjects/StickyCTA";
 import SubjectFAQ, { FAQItemType } from "../components/subjects/SubjectFAQ";
 import Counter from "../components/ui/Counter";
+import Script from "next/script";
 
 export default function IGCSEOnlineTutoringPage() {
   const { user } = useAuthContext();
@@ -134,19 +135,23 @@ export default function IGCSEOnlineTutoringPage() {
 
   return (
     <main className="min-h-screen bg-background transition-colors duration-500 relative selection:bg-primary/20 selection:text-primary">
-      <script
+      <Script
+        id="subject-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(subjectSchema) }}
       />
-      <script
+      <Script
+        id="faq-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <script
+      <Script
+        id="breadcrumb-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <script
+      <Script
+        id="rating-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ratingSchema) }}
       />

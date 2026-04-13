@@ -39,7 +39,7 @@ export default function Breadcrumbs({ customLabels = {} }: BreadcrumbsProps) {
   });
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-xs font-medium text-white/50 mb-6 overflow-x-auto whitespace-nowrap scrollbar-hide">
+    <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-xs font-medium text-gray-400 dark:text-white/50 mb-6 overflow-x-auto whitespace-nowrap scrollbar-hide">
       <Link 
         href="/" 
         className="hover:text-primary transition-colors flex items-center gap-1"
@@ -50,9 +50,9 @@ export default function Breadcrumbs({ customLabels = {} }: BreadcrumbsProps) {
       
       {breadcrumbs.map((crumb, index) => (
         <React.Fragment key={crumb.href}>
-          <ChevronRight size={12} className="text-white/20 shrink-0" />
+          <ChevronRight size={12} className="text-gray-300 dark:text-white/20 shrink-0" />
           {index === breadcrumbs.length - 1 ? (
-            <span className="text-white truncate max-w-[200px]">{crumb.label}</span>
+            <span className="text-gray-900 dark:text-white truncate max-w-[200px]">{crumb.label}</span>
           ) : (
             <Link 
               href={crumb.href}

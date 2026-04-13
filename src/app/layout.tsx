@@ -14,6 +14,8 @@ import VerificationModal from "./components/auth/VerificationModal";
 import VerificationBanner from "./components/auth/VerificationBanner";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import CookieConsentBanner from "./components/CookieConsentBanner";
+import GoogleAnalytics from "./components/GoogleAnalytics";
 
 import { ClerkProvider } from "@clerk/nextjs";
 import { Luckiest_Guy } from "next/font/google";
@@ -63,20 +65,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </AuthProvider>
             </QueryProvider>
           </StyledComponentsRegistry>
-          <Script
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=G-N9YTHTRMH1"
-          />
-          <Script id="google-analytics">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-N9YTHTRMH1');
-            `}
-          </Script>
           <Analytics />
           <SpeedInsights />
+          <CookieConsentBanner />
+          <GoogleAnalytics />
         </body>
       </html>
     );
@@ -128,18 +120,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           />
           <Analytics />
           <SpeedInsights />
-          <Script
-            async
-            src="https://www.googletagmanager.com/gtag/js?id=G-N9YTHTRMH1"
-          />
-          <Script id="google-analytics">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-N9YTHTRMH1');
-            `}
-          </Script>
+          <CookieConsentBanner />
+          <GoogleAnalytics />
         </body>
       </html>
     </ClerkProvider>

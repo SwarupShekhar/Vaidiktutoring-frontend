@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import PricingPageClient from "./PricingPageClient";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Pricing & Learning Plans | StudyHours",
@@ -62,7 +63,8 @@ export default function Page() {
 
   return (
     <>
-      <script
+      <Script
+        id="faq-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />

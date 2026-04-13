@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import AboutPageClient from "./AboutPageClient";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Expert Tutors & AI Learning System | About Us",
@@ -67,11 +68,13 @@ export default function Page() {
 
   return (
     <>
-      <script
+      <Script
+        id="edu-org-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(eduOrgSchema) }}
       />
-      <script
+      <Script
+        id="breadcrumb-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
