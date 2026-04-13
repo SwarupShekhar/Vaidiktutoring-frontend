@@ -159,7 +159,7 @@ export default function BlogEditor({
       // Regex to find keyword NOT inside a link already
       // This is a naive check but good for a start
       const regex = new RegExp(`(?<!\\[)${keyword}(?!\\]|\\(|\\w)`, 'gi');
-      let match;
+      let match: RegExpExecArray | null;
       while ((match = regex.exec(content)) !== null) {
         suggestions.push({
           keyword: match[0],
@@ -180,14 +180,50 @@ export default function BlogEditor({
 
   const applySuggestedLink = (suggestion: { keyword: string; url: string }) => {
     if (!editor) return;
-    // We try to find and replace the keyword in the editor
-    // For simplicity, we'll just suggest the user to use the search tool for now,
-    // OR we can do a global search/replace in the content.
-    // Better: let the user click to copy the URL and go to that word.
     setLinkUrl(suggestion.url);
     setShowLinkInput(true);
-    toast.info(`Ready to link "${suggestion.keyword}". Highlight it and press Enter.`);
-    // setShowScanner(false);
+    toast.info(`Ready to link "${suggestion.keyword}". Highlight it and click the checkmark.`);
+  };
+
+  const applyAllLinks = () => {
+    if (!editor) return;
+    
+    let linkCount = 0;
+    const content = (editor.storage as any).markdown.getMarkdown();
+    let newContent = content;
+
+    // Sort keywords by length (desc) to avoid partial matching issues
+    const sortedKeywords = Object.entries(SEO_KEYWORD_MAP)
+      .sort((a, b) => b[0].length - a[0].length);
+
+    sortedKeywords.forEach(([keyword, url]) => {
+      // Regex: Case-insensitive, word boundaries, not already in a link
+      const regex = new RegExp(`(?<!\\[)${keyword}(?!\\]|\\(|\\w)`, 'gi');
+      if (regex.test(newContent)) {
+        newContent = newContent.replace(regex, (match: string) => {
+          linkCount++;
+          return `[${match}](${url})`;
+        });
+      }
+    });
+
+    if (linkCount > 0) {
+      editor.commands.setContent(newContent);
+      setSuggestedLinks([]);
+      setShowScanner(false);
+      toast.success(`✨ Magic Complete! Added ${linkCount} links.`, {
+        description: "Check the 'Preview' tab to verify internal linking before saving.",
+        duration: 5000,
+        action: {
+          label: "Preview Now",
+          onClick: () => {
+            setMode('preview');
+          }
+        }
+      });
+    } else {
+      toast.info('No new links to apply.');
+    }
   };
 
   // Fetch internal links on mount
@@ -551,7 +587,12 @@ export default function BlogEditor({
                         setShowInternalLinks(true);
                       }}
                       onFocus={() => setShowInternalLinks(true)}
-                      onKeyDown={(e) => e.key === 'Enter' && setLink()}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          setLink();
+                        }
+                      }}
                       className="w-56 px-3 py-1.5 text-xs bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-white/40 outline-none focus:border-primary/50 transition-all"
                       autoFocus
                     />
@@ -590,7 +631,10 @@ export default function BlogEditor({
                       className="absolute top-full left-0 mt-2 w-64 max-h-60 overflow-y-auto bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl z-50 py-1 scrollbar-hide"
                     >
                       <div className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-white/40 border-b border-white/5 mb-1 flex items-center justify-between">
-                        <span className="flex items-center gap-2"><Search size={10} /> Link Suggestions</span>
+                        <span className="flex items-center gap-2">
+                          <Search size={10} /> 
+                          {editor && !editor.state.selection.empty ? 'Link selection to...' : 'Link Suggestions'}
+                        </span>
                         <span className="text-[8px] bg-white/10 px-1.5 py-0.5 rounded italic">Internal Only</span>
                       </div>
                       
@@ -615,11 +659,24 @@ export default function BlogEditor({
                                 key={i}
                                 type="button"
                                 onClick={() => {
-                                  setLinkUrl(link.url);
-                                  setShowInternalLinks(false);
-                                  // Optional: Apply link immediately
-                                  // editor?.chain().focus().extendMarkRange('link').setLink({ href: link.url }).run();
-                                  // setShowLinkInput(false);
+                                  if (!editor) return;
+                                  
+                                  const selection = editor.state.selection;
+                                  const hasSelection = !selection.empty;
+                                  
+                                  // If there is a selection, apply it immediately
+                                  if (hasSelection) {
+                                    editor.chain().focus().extendMarkRange('link').setLink({ href: link.url }).run();
+                                    setShowInternalLinks(false);
+                                    setShowLinkInput(false);
+                                    setLinkUrl('');
+                                    toast.success(`Linked selection to ${link.title}!`);
+                                  } else {
+                                    // Otherwise just populate the input like before
+                                    setLinkUrl(link.url);
+                                    setShowInternalLinks(false);
+                                    toast.info('Link URL set. Now highlight text and click the checkmark or press Enter.');
+                                  }
                                 }}
                                 className="w-full text-left px-3 py-2 hover:bg-primary/20 group transition-all"
                               >
@@ -677,7 +734,12 @@ export default function BlogEditor({
                   placeholder="Image URL..."
                   value={inlineImageUrl}
                   onChange={(e) => setInlineImageUrl(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && addImage()}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addImage();
+                    }
+                  }}
                   className="w-36 px-2 py-1 text-sm bg-white/10 border border-white/20 rounded text-white placeholder:text-white/50 outline-none"
                   autoFocus
                 />
@@ -717,9 +779,17 @@ export default function BlogEditor({
                 <Sparkles size={14} className="text-primary" />
                 <span className="text-xs font-black uppercase tracking-widest text-white">SEO Opportunities</span>
               </div>
-              <button onClick={() => setShowScanner(false)} className="text-white/30 hover:text-white">
-                <XCircle size={14} />
-              </button>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={applyAllLinks}
+                  className="text-[9px] font-black bg-white text-primary px-2 py-1 rounded hover:bg-white/90 transition-colors shadow-lg"
+                >
+                  LINK ALL
+                </button>
+                <button onClick={() => setShowScanner(false)} className="text-white/30 hover:text-white">
+                  <XCircle size={14} />
+                </button>
+              </div>
             </div>
             
             <div className="max-h-72 overflow-y-auto p-2 space-y-2 scrollbar-hide">
