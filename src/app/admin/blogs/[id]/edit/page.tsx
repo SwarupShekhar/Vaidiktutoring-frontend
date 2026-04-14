@@ -34,6 +34,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
         content: '',
         seoTitle: '',
         seoDescription: '',
+        targetKeyword: '',
         publishedAt: '',
         status: 'PENDING' as 'PENDING' | 'PUBLISHED' | 'REJECTED',
         author_id: '',
@@ -84,8 +85,9 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                     imageAlt: blog.imageAlt || '',
                     excerpt: blog.excerpt,
                     content: blog.content,
-                    seoTitle: blog.title,
-                    seoDescription: blog.excerpt,
+                    seoTitle: blog.seo_title || blog.title,
+                    seoDescription: blog.seo_description || blog.excerpt,
+                    targetKeyword: blog.target_keyword || '',
                     publishedAt: blog.publishedAt || '',
                     status: blog.status,
                     author_id: blog.author_id || '',
@@ -123,6 +125,10 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                 imageAlt: form.imageAlt,
                 excerpt: form.excerpt,
                 content: form.content,
+                slug: form.slug,
+                seoTitle: form.seoTitle,
+                seoDescription: form.seoDescription,
+                targetKeyword: form.targetKeyword,
                 publishedAt: form.publishedAt,
                 related_blog_ids: form.related_blog_ids,
                 summary: summary || 'Content update'
@@ -334,6 +340,8 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                                 lastSaved={lastSaved}
                                 editable={canEdit}
                                 content={form.content}
+                                targetKeyword={form.targetKeyword}
+                                onTargetKeywordChange={(v) => handleChange('targetKeyword', v)}
                                 relatedBlogIds={form.related_blog_ids}
                                 onRelatedBlogIdsChange={(ids) => handleChange('related_blog_ids', ids)}
                             />
@@ -347,21 +355,22 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                             <BlogVersionHistory
                                 blogId={id}
                                 currentContent={form.content}
-                                onRestore={(blog) => {
+                                onRestore={(restoredBlog) => {
                                     setForm({
-                                        title: blog.title,
-                                        slug: blog.slug,
-                                        category: blog.category,
-                                        imageUrl: blog.imageUrl,
-                                        imageAlt: blog.imageAlt || '',
-                                        excerpt: blog.excerpt,
-                                        content: blog.content,
-                                        seoTitle: blog.title,
-                                        seoDescription: blog.excerpt,
-                                        publishedAt: blog.publishedAt || '',
-                                        status: blog.status,
-                                        author_id: blog.author_id || '',
-                                        related_blog_ids: blog.related_blog_ids || [],
+                                        title: restoredBlog.title,
+                                        slug: restoredBlog.slug,
+                                        category: restoredBlog.category,
+                                        imageUrl: restoredBlog.imageUrl,
+                                        imageAlt: restoredBlog.imageAlt || '',
+                                        excerpt: restoredBlog.excerpt,
+                                        content: restoredBlog.content,
+                                        seoTitle: restoredBlog.seoTitle || restoredBlog.seo_title || restoredBlog.title,
+                                        seoDescription: restoredBlog.seoDescription || restoredBlog.seo_description || restoredBlog.excerpt,
+                                        targetKeyword: restoredBlog.targetKeyword || restoredBlog.target_keyword || '',
+                                        publishedAt: restoredBlog.publishedAt || '',
+                                        status: restoredBlog.status,
+                                        author_id: restoredBlog.author_id || '',
+                                        related_blog_ids: restoredBlog.related_blog_ids || [],
                                     });
                                 }}
                                 onClose={() => setShowHistory(false)}

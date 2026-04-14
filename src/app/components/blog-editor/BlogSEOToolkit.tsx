@@ -14,6 +14,8 @@ interface SEOToolkitProps {
   seoTitle: string;
   seoDescription: string;
   imageAlt: string;
+  targetKeyword: string;
+  onTargetKeywordChange: (value: string) => void;
 }
 
 export default function BlogSEOToolkit({
@@ -22,9 +24,10 @@ export default function BlogSEOToolkit({
   excerpt,
   seoTitle,
   seoDescription,
-  imageAlt
+  imageAlt,
+  targetKeyword,
+  onTargetKeywordChange
 }: SEOToolkitProps) {
-  const [targetKeyword, setTargetKeyword] = useState('');
   const [activeTab, setActiveTab] = useState<'score' | 'details'>('score');
 
   // Helpers
@@ -236,7 +239,7 @@ export default function BlogSEOToolkit({
             <input 
               type="text"
               value={targetKeyword}
-              onChange={(e) => setTargetKeyword(e.target.value)}
+              onChange={(e) => onTargetKeywordChange(e.target.value)}
               placeholder="e.g. Study Tips, Education, Math"
               className="w-full pl-8 pr-3 py-2 rounded-xl bg-black/20 border border-white/10 text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
             />

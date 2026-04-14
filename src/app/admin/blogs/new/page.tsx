@@ -32,6 +32,7 @@ export default function NewBlogPage() {
         content: '',
         seoTitle: '',
         seoDescription: '',
+        targetKeyword: '',
         publishedAt: '',
         status: 'PENDING' as 'PENDING' | 'PUBLISHED' | 'REJECTED',
         related_blog_ids: [] as string[],
@@ -93,7 +94,12 @@ export default function NewBlogPage() {
                 imageAlt: form.imageAlt,
                 excerpt: form.excerpt,
                 content: form.content,
+                seoTitle: form.seoTitle,
+                seoDescription: form.seoDescription,
+                targetKeyword: form.targetKeyword,
+                slug: form.slug,
                 publishedAt: form.publishedAt,
+                related_blog_ids: form.related_blog_ids
             });
             
             // Clear saved draft
@@ -222,6 +228,8 @@ export default function NewBlogPage() {
                                 lastSaved={lastSaved}
                                 editable={canEdit}
                                 content={form.content}
+                                targetKeyword={form.targetKeyword}
+                                onTargetKeywordChange={(v) => handleChange('targetKeyword', v)}
                                 relatedBlogIds={form.related_blog_ids}
                                 onRelatedBlogIdsChange={(ids) => setForm(prev => ({ ...prev, related_blog_ids: ids }))}
                             />

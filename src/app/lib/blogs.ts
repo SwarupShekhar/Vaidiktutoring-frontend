@@ -20,6 +20,12 @@ export interface BlogPost {
     };
     createdAt: string;
     related_blog_ids?: string[];
+    seo_title?: string;
+    seo_description?: string;
+    target_keyword?: string;
+    seoTitle?: string;
+    seoDescription?: string;
+    targetKeyword?: string;
 }
 
 export interface BlogVersion {
@@ -38,6 +44,10 @@ export interface BlogVersion {
         last_name: string;
     };
     created_at: string;
+    seo_title?: string;
+    seo_description?: string;
+    target_keyword?: string;
+    related_blog_ids?: string[];
 }
 
 const normalizeBlog = (data: any): BlogPost => {
@@ -47,7 +57,11 @@ const normalizeBlog = (data: any): BlogPost => {
         imageAlt: data.imageAlt || data.image_alt || '',
         publishedAt: data.publishedAt || data.published_at || data.created_at || new Date().toISOString(),
         createdAt: data.createdAt || data.created_at || new Date().toISOString(),
-        author: data.author || { first_name: 'Unknown', last_name: 'Author' }
+        author: data.author || { first_name: 'Unknown', last_name: 'Author' },
+        seoTitle: data.seoTitle || data.seo_title || '',
+        seoDescription: data.seoDescription || data.seo_description || '',
+        targetKeyword: data.targetKeyword || data.target_keyword || '',
+        related_blog_ids: data.related_blog_ids || []
     };
 };
 

@@ -33,6 +33,8 @@ interface BlogSidebarProps {
   lastSaved?: string | null;
   editable: boolean;
   content: string;
+  targetKeyword: string;
+  onTargetKeywordChange: (value: string) => void;
   relatedBlogIds: string[];
   onRelatedBlogIdsChange: (ids: string[]) => void;
 }
@@ -71,6 +73,8 @@ export default function BlogSidebar({
   lastSaved,
   editable,
   content,
+  targetKeyword,
+  onTargetKeywordChange,
   relatedBlogIds,
   onRelatedBlogIdsChange,
 }: BlogSidebarProps) {
@@ -462,6 +466,8 @@ export default function BlogSidebar({
           seoTitle={seoTitle}
           seoDescription={seoDescription}
           imageAlt={imageAlt}
+          targetKeyword={targetKeyword}
+          onTargetKeywordChange={onTargetKeywordChange}
         />
       </div>
 
