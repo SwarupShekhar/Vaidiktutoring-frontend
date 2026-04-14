@@ -79,10 +79,10 @@ export default function K12OnlineTutoringPage() {
                 K-12 Online Tutoring
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-deep-navy dark:text-white mb-6 tracking-tight leading-[1.1]">
-                Premium K–12 Online Tutoring Service
+                Smart K–12 Online Tutoring Designed for Your Child
               </h1>
-              <div className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-8 leading-tight">
-                Transform Your Child's Learning Journey
+              <div className="text-2xl md:text-3xl font-bold text-sapphire mb-8 leading-tight">
+                Interactive, adaptive tutoring that drives success
               </div>
               <p className="text-xl md:text-2xl text-text-secondary mb-4 leading-relaxed font-medium">
                 Take the best step for your child's academic success with personalized tutoring.
@@ -226,13 +226,16 @@ export default function K12OnlineTutoringPage() {
                 Personalized Learning
               </div>
               <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy dark:text-white mb-6">
-                Personalized K-12 Tutoring Services for Every Student
+                Personalized K-12 Online Tutoring That Builds Strong Concepts & Confidence
               </h2>
               <p className="text-lg text-text-secondary mb-6 leading-relaxed">
-                StudyHours offers customized K-12 tutoring that adapts to each student's unique learning pace and style. As a dedicated online learning tutor, our expert instructors simplify complex concepts and build strong study habits that provide a lifelong academic advantage.
+                Study Hours is an online tutoring platform focused on delivering personalized learning experiences for K-12 students. Our approach is designed to match each student’s individual learning style, academic needs, and goals, helping them improve performance with clarity and confidence.
+              </p>
+              <p className="text-lg text-text-secondary mb-6 leading-relaxed">
+                We use structured assessments and progress tracking to understand each student’s strengths and areas for improvement. Based on this, our tutors create customized lesson plans that adapt over time, ensuring continuous academic development.
               </p>
               <p className="text-lg text-text-secondary mb-8 leading-relaxed">
-                Through our specialized k-12 program, we create a supportive atmosphere where students feel confident to ask questions and grow, with the flexibility to learn anytime, anywhere with a qualified k-12 tutor.
+                Our experienced educators conduct interactive online sessions that focus on concept clarity rather than rote learning. Students are encouraged to ask questions, think critically, and actively participate in the learning process.
               </p>
 
               <Link
@@ -253,24 +256,24 @@ export default function K12OnlineTutoringPage() {
             >
               {[
                 {
-                  icon: Clock,
-                  title: "Learn Anytime",
-                  desc: "Flexible scheduling that fits your routine",
+                  icon: BookOpen,
+                  title: "Personalized Learning",
+                  desc: "Lessons tailored to each student’s pace, needs, and goals.",
                 },
                 {
-                  icon: Users,
-                  title: "Devoted Instructors",
-                  desc: "Expert tutors dedicated to student success",
+                  icon: TrendingUp,
+                  title: "Progress Tracking",
+                  desc: "Regular assessments and measurable academic improvement.",
                 },
                 {
                   icon: Lightbulb,
                   title: "Concept Clarity",
-                  desc: "Simplify complex ideas with expert help",
+                  desc: "Understand difficult topics through clear explanations.",
                 },
                 {
-                  icon: TrendingUp,
-                  title: "Real Results",
-                  desc: "See measurable improvement in grades",
+                  icon: Users,
+                  title: "Parent Support",
+                  desc: "Progress updates, insights, and feedback for parents.",
                 },
               ].map((item, index) => (
                 <motion.div
@@ -290,6 +293,55 @@ export default function K12OnlineTutoringPage() {
                   <p className="text-sm text-text-secondary">{item.desc}</p>
                 </motion.div>
               ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================
+          SECTION 3.5 (NEW): LEARN FROM EXPERIENCED TUTORS
+      ============================================ */}
+      <section className="py-24 px-6 bg-linear-to-b from-background to-ice-blue/20 dark:to-slate-900/20 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="relative aspect-square lg:aspect-auto lg:h-[600px] w-full rounded-[3rem] overflow-hidden shadow-2xl order-2 lg:order-1"
+            >
+              <Image
+                src="https://res.cloudinary.com/de8vvmpip/image/upload/v1776150164/A_bright__modern_202604141231_aw7o3c.jpg"
+                alt="Learn from Experienced Tutors"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover"
+              />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="order-1 lg:order-2"
+            >
+              <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy dark:text-white mb-8">
+                Learn from Experienced Tutors Who Truly Personalize Every Lesson
+              </h2>
+              <div className="space-y-6">
+                <p className="text-lg text-text-secondary leading-relaxed">
+                  At Study Hours, personalized K–12 tutoring focuses on creating a learning experience tailored to each student’s academic goals. Every learner is different, so our approach adapts to individual learning styles, pace, and strengths to build both understanding and confidence.
+                </p>
+                <p className="text-lg text-text-secondary leading-relaxed">
+                  Our experienced tutors identify knowledge gaps and learning challenges through continuous assessment. Based on these insights, they design targeted lesson plans that help students improve in core subjects such as math, science, and language arts.
+                </p>
+                <p className="text-lg text-text-secondary leading-relaxed">
+                  We use adaptive teaching methods and modern tools to make sessions interactive and effective. This structured yet flexible approach allows students to receive immediate feedback, track their progress, and stay motivated throughout their learning journey.
+                </p>
+                <p className="text-lg text-text-secondary leading-relaxed">
+                  With consistent guidance and personalized support, students not only strengthen their subject knowledge but also develop critical thinking skills and a lasting interest in learning.
+                </p>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -530,6 +582,88 @@ export default function K12OnlineTutoringPage() {
       </section>
 
       {/* ============================================
+          SECTION 6.5 (NEW): K-12 ONLINE TUTORING PROGRAMS
+      ============================================ */}
+      <section className="py-24 px-6 bg-deep-navy dark:bg-slate-950 text-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-6">
+                K–12 Online Tutoring Programs
+              </h2>
+              <p className="text-xl text-blue-100 max-w-3xl mx-auto">
+                Our online tutoring services are designed to support students at every stage of their academic journey, from early childhood learning to senior secondary education.
+              </p>
+            </motion.div>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-8">
+            {[
+              {
+                step: "01",
+                title: "Kindergarten & Pre-Schooling",
+                desc: "Build early learning skills through interactive activities, basic literacy, and numeracy development.",
+                icon: Star,
+                color: "from-amber-400 to-orange-500"
+              },
+              {
+                step: "02",
+                title: "Primary School (Grades 1–5)",
+                desc: "Strengthen foundational concepts in reading, writing, math, and environmental studies with engaging lessons.",
+                icon: BookOpen,
+                color: "from-blue-400 to-indigo-500"
+              },
+              {
+                step: "03",
+                title: "Middle School (Grades 6–8)",
+                desc: "Focus on concept clarity, critical thinking, and subject-specific understanding across math, science, and language.",
+                icon: Lightbulb,
+                color: "from-purple-400 to-pink-500"
+              },
+              {
+                step: "04",
+                title: "Secondary School (Grades 9–10)",
+                desc: "Prepare students for board exams with structured lessons, practice tests, and in-depth subject knowledge.",
+                icon: Target,
+                color: "from-emerald-400 to-teal-500"
+              },
+              {
+                step: "05",
+                title: "Senior Secondary (Grades 11–12)",
+                desc: "Advanced subject tutoring with exam-focused strategies, helping students excel in academics and competitive exams.",
+                icon: GraduationCap,
+                color: "from-rose-400 to-red-500"
+              },
+            ].map((program, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.33%-2rem)] max-w-sm p-8 rounded-[2.5rem] bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden"
+              >
+                {/* Step Indicator */}
+                <div className="absolute top-0 right-0 p-6 text-6xl font-black text-white/5 group-hover:text-white/10 transition-colors pointer-events-none">
+                  {program.step}
+                </div>
+
+                <div className={`w-14 h-14 rounded-2xl bg-linear-to-br ${program.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg shadow-black/20`}>
+                  <program.icon size={28} className="text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-4 pr-12">{program.title}</h3>
+                <p className="text-blue-50/70 leading-relaxed text-sm">{program.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================
           SECTION 7: BENEFITS OF OUR ONLINE TUTORING
       ============================================ */}
       <section className="py-24 px-6 bg-linear-to-br from-sapphire/5 to-blue-100/30 relative overflow-hidden">
@@ -621,7 +755,7 @@ export default function K12OnlineTutoringPage() {
               viewport={{ once: true }}
             >
               <h2 className="text-3xl md:text-5xl font-extrabold text-deep-navy dark:text-white mb-6">
-                Our Science-Backed Learning Framework
+                The Science Behind Our Teaching Approach
               </h2>
               <p className="text-lg md:text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
                 We use a data-driven approach to ensure every session drives maximum retention and engagement, positioning our platform as a high-tech solution for academic excellence.
