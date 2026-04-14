@@ -12,6 +12,8 @@ import Link from 'next/link';
 import api from '@/app/lib/api';
 import BookingsTableSection from '@/app/components/admin/BookingsTableSection';
 import BlogManagementSection from '@/app/components/admin/BlogManagementSection';
+import ActivityPulseFeed from '@/app/components/admin/ActivityPulseFeed';
+import ActiveSessionsMonitor from '@/app/components/admin/ActiveSessionsMonitor';
 import { StatCard } from '@/app/components/dashboard/StatCard';
 import { toast } from 'sonner';
 import {
@@ -24,13 +26,14 @@ import {
     PenTool,
     Activity,
     ShieldCheck,
+    ShieldAlert,
     ChevronRight,
     LifeBuoy,
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
     const { user } = useAuthContext();
-    const [stats, setStats] = React.useState({ students: 0, parents: 0, tutors: 0, upcomingSessions: 0, pendingAllocations: 0 });
+    const [stats, setStats] = React.useState({ students: 0, parents: 0, tutors: 0, upcomingSessions: 0, pendingAllocations: 0, activeNow: 0, inactiveTutors: 0 });
     const [loading, setLoading] = React.useState(true);
 
     // Modal states
@@ -77,7 +80,7 @@ export default function AdminDashboardPage() {
         const fetchStats = async () => {
             try {
                 const res = await api.get('/admin/stats');
-                setStats(res.data || { students: 0, parents: 0, tutors: 0, upcomingSessions: 0, pendingAllocations: 0 });
+                setStats(res.data || { students: 0, parents: 0, tutors: 0, upcomingSessions: 0, pendingAllocations: 0, activeNow: 0, inactiveTutors: 0 });
             } catch (e) {
                 console.warn('Failed to fetch admin stats', e);
             } finally {
@@ -157,8 +160,10 @@ export default function AdminDashboardPage() {
                     </div>
                 </header>
 
+                <ActiveSessionsMonitor />
+
                 {/* ANALYTICS SECTION */}
-                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div onClick={() => setShowStudents(true)} className="cursor-pointer group">
                         <StatCard
                             icon={GraduationCap}
@@ -187,12 +192,22 @@ export default function AdminDashboardPage() {
                             loading={loading}
                         />
                     </div>
+                    <div onClick={() => setShowTutors(true)} className="cursor-pointer group">
+                        <StatCard
+                            icon={ShieldAlert}
+                            label="Inactive Tutors"
+                            value={stats.inactiveTutors}
+                            color="#ef4444"
+                            description="Need attention"
+                            loading={loading}
+                        />
+                    </div>
                     <StatCard
-                        icon={Calendar}
-                        label="Sessions"
-                        value={stats.upcomingSessions}
+                        icon={Activity}
+                        label="Live Now"
+                        value={stats.activeNow}
                         color="#10b981"
-                        description="Coming up next"
+                        description="Ongoing sessions"
                         loading={loading}
                     />
                 </section>
@@ -262,9 +277,17 @@ export default function AdminDashboardPage() {
 
                     {/* SIDEBAR: SYSTEM HEALTH & ACTIVITY */}
                     <div className="space-y-6">
+                        <div className="bg-glass rounded-3xl p-8 border border-white/20 shadow-sm relative overflow-hidden">
+                            <h2 className="text-xl font-bold text-(--color-text-primary) mb-6 flex items-center gap-3">
+                                <Activity className="text-blue-500 animate-pulse" size={20} />
+                                Activity Pulse
+                            </h2>
+                            <ActivityPulseFeed />
+                        </div>
+
                         <div className="bg-glass rounded-3xl p-8 border border-white/20 shadow-sm">
                             <h2 className="text-xl font-bold text-(--color-text-primary) mb-6 flex items-center gap-3">
-                                <Activity className="text-green-500" size={20} />
+                                <ShieldCheck className="text-green-500" size={20} />
                                 System Health
                             </h2>
                             <div className="space-y-6">

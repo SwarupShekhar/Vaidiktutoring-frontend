@@ -92,6 +92,16 @@ export default function TutorListModal({
     }
   };
 
+  const handleNudge = async (tutor: Tutor) => {
+    try {
+      await api.post(`/admin/tutors/${tutor.id}/nudge`);
+      alert(`Nudge email sent to ${tutor.first_name}.`);
+    } catch (error) {
+      console.error('Failed to nudge tutor', error);
+      alert('Failed to send nudge email.');
+    }
+  };
+
   const handleToggleStatus = async (tutor: Tutor) => {
     const isSuspended = tutor.status === "suspended";
     const newStatus = isSuspended ? "active" : "suspended";
@@ -225,6 +235,12 @@ export default function TutorListModal({
                         className="text-blue-500 hover:text-blue-700 font-bold text-xs px-2 py-1 rounded bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
                       >
                         RESET PWD
+                      </button>
+                      <button
+                        onClick={() => handleNudge(tutor)}
+                        className="text-purple-500 hover:text-purple-700 font-bold text-xs px-2 py-1 rounded bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors"
+                      >
+                        NUDGE
                       </button>
                       <button
                         onClick={() => handleDelete(tutor.id)}
