@@ -1492,66 +1492,46 @@ export default function SessionPage({ params }: SessionProps) {
                 )}
             </div>
 
-                {/* SIDEBAR PANEL PLACEHOLDER */}
+                {/* Daily.co sidebar panel - expanded state */}
                 {isPanelExpanded && (
-                    // Sidebar width: 450px on desktop, full width on mobile
-                    <div className="w-full md:w-[450px] border-l border-white/10 bg-black flex flex-col" role="complementary" aria-label="Video session panel">
-                        {/* Daily.co panel content will go here in Task 2 */}
-                        <div className="p-4 text-white text-sm text-center flex-1 flex items-center justify-center">
-                            Sidebar placeholder - Daily.co content goes here
+                    <div className="w-full md:w-[450px] border-l border-white/10 bg-black/80 flex flex-col h-full" role="complementary" aria-label="Video session panel">
+                        {/* Header with title and collapse button */}
+                        <div className="h-12 border-b border-white/10 flex items-center justify-between px-4 bg-gradient-to-r from-purple-600 to-indigo-600">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Session Room</span>
+                                <span className="text-xs font-bold text-white">
+                                    {booking?.students?.first_name || 'Student'}&apos;s Classroom
+                                </span>
+                            </div>
+                            <button
+                                onClick={() => setIsPanelExpanded(false)}
+                                className="text-white hover:bg-white/20 rounded p-1 transition-colors"
+                                title="Collapse video panel"
+                                aria-label="Collapse video panel"
+                            >
+                                ✕
+                            </button>
                         </div>
+
+                        {/* Daily.co iframe - full height */}
+                        {hasJoined && dailyRoomUrl && dailyToken && (
+                            <iframe
+                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false`}
+                                allow="camera; microphone; fullscreen; speaker; display-capture"
+                                className="flex-1 border-0"
+                                title="Daily.co video conference"
+                            />
+                        )}
+
+                        {/* Loading state */}
+                        {!dailyRoomUrl && (
+                            <div className="flex-1 flex items-center justify-center text-white/50 text-sm">
+                                Connecting to video session...
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
-
-            {/* DAILY.CO VIDEO OVERLAY */}
-            {hasJoined && dailyRoomUrl && dailyToken && (
-                <div
-                    className="fixed z-50 bg-black rounded-2xl border-2 border-purple-500/50 shadow-2xl overflow-hidden"
-                    style={{
-                        left: `${position.x}px`,
-                        top: `${position.y}px`,
-                        width: isExpanded ? '80vw' : '400px',
-                        height: isExpanded ? '80vh' : '300px',
-                        transition: 'width 0.3s, height 0.3s'
-                    }}
-                >
-                    <div
-                        onMouseDown={handleMouseDown}
-                        className="absolute top-0 left-0 right-0 h-10 bg-linear-to-r from-purple-600 to-indigo-600 cursor-move flex items-center justify-between px-4 z-10"
-                    >
-                        <div className="flex flex-col">
-                            <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-0.5">Session Room</span>
-                            <span className="text-sm font-black text-white flex items-center gap-2">
-                                {booking?.students?.first_name || 'Student'}&apos;s Classroom
-                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-                            </span>
-                        </div>
-                        <div className="flex gap-2 items-center">
-                            {/* TASK 5: Red End Session button */}
-                            <button
-                                onClick={handleEndSession}
-                                className="bg-red-500/90 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors"
-                                title="End Session"
-                            >
-                                End
-                            </button>
-                            <button
-                                onClick={() => setIsExpanded(!isExpanded)}
-                                className="text-white hover:bg-white/20 rounded px-3 py-1 text-sm transition-colors"
-                            >
-                                {isExpanded ? '🗕' : '🗖'}
-                            </button>
-                        </div>
-                    </div>
-                    {/* TASK 3: Hide Daily.co's built-in leave button via iframe URL params */}
-                    <iframe
-                        src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false`}
-                        allow="camera; microphone; fullscreen; speaker; display-capture"
-                        style={{ width: '100%', height: '100%', border: 'none', paddingTop: '40px' }}
-                    />
-                </div>
-            )}
 
             {/* Loading Overlay for Video */}
             {hasJoined && videoLoading && (
