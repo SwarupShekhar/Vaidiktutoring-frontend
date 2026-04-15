@@ -1122,7 +1122,9 @@ export default function SessionPage({ params }: SessionProps) {
         const handleReceiveUpdate = (data: any) => {
             if (!excalidrawAPIRef.current) return;
             const remoteElements = Array.isArray(data) ? data : (data.elements || []);
-            if (!remoteElements || remoteElements.length === 0) return;
+            // CRITICAL FIX: Don't return on empty updates - allow updates even with 0 elements
+            // This was causing drawing to vanish! Only return if data is undefined
+            if (data === undefined || data === null) return;
 
             // Only update if we aren't currently emitting or if it's the tutor's authoritative update
             whiteboardRef.current.isUpdating = true;
