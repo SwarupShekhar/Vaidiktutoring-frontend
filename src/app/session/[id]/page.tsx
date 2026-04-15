@@ -2500,7 +2500,7 @@ export default function SessionPage({ params }: SessionProps) {
                         width: 150,
                         height: 200,
                     }}
-                    onDragStop={(e, d) => {
+                    onDragStop={(_e, d) => {
                         setFloatingPosition({ x: d.x, y: d.y });
                     }}
                     minWidth={120}
@@ -2509,7 +2509,7 @@ export default function SessionPage({ params }: SessionProps) {
                 >
                     <div className="w-full h-full rounded-lg border-2 border-purple-500/50 shadow-2xl overflow-hidden bg-black flex flex-col">
                         {/* Drag handle */}
-                        <div className="h-8 bg-gradient-to-r from-purple-600 to-indigo-600 cursor-move flex items-center justify-between px-2 flex-shrink-0">
+                        <div className="h-8 bg-linear-to-r from-purple-600 to-indigo-600 cursor-move flex items-center justify-between px-2 shrink-0">
                             <span className="text-[8px] text-white font-bold">Video</span>
                             <button
                                 onClick={() => setIsPanelExpanded(true)}
