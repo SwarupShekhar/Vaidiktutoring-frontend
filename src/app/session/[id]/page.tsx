@@ -120,6 +120,10 @@ export default function SessionPage({ params }: SessionProps) {
     const dragStart = useRef({ x: 0, y: 0 });
     const startPos = useRef({ x: 0, y: 0 });
 
+    // Sidebar Panel State (Task 1)
+    const [isPanelExpanded, setIsPanelExpanded] = useState(true);
+    const [floatingPosition, setFloatingPosition] = useState({ x: typeof window !== 'undefined' ? window.innerWidth - 200 : 0, y: 100 });
+
     // Whiteboard Enhancements State
     const [uploadingSlides, setUploadingSlides] = useState(false);
     const [showAssetLibrary, setShowAssetLibrary] = useState(false);
@@ -1327,7 +1331,7 @@ export default function SessionPage({ params }: SessionProps) {
     if (!user) return null;
 
     return (
-        <div className="relative w-screen h-screen overflow-hidden bg-background">
+        <div className="w-screen h-screen flex flex-col bg-background overflow-hidden">
             {/* PRE-JOIN OVERLAY */}
             {!hasJoined && (
                 <div className="absolute inset-0 z-50 bg-linear-to-br from-gray-950 via-purple-950 to-gray-950 flex flex-col items-center justify-center p-6">
@@ -1422,8 +1426,10 @@ export default function SessionPage({ params }: SessionProps) {
                 </div>
             )}
 
-            {/* 1. BASE LAYER: EXCALIDRAW WHITEBOARD (offset below HUD bar) */}
-            <div className={`absolute top-[52px] left-0 right-0 bottom-0 z-0 whiteboard-container ${isToolbarCollapsed ? "whiteboard-collapsed" : ""} ${user?.role === 'student' || user?.role === 'parent' ? (hasPenAccess ? '' : 'pointer-events-none') : ''}`}>
+            {/* FLEX LAYOUT: Whiteboard + Sidebar Container */}
+            <div className="flex-1 flex flex-row overflow-hidden">
+                {/* 1. BASE LAYER: EXCALIDRAW WHITEBOARD (left side) */}
+                <div className={`flex-1 z-0 whiteboard-container ${isToolbarCollapsed ? "whiteboard-collapsed" : ""} ${user?.role === 'student' || user?.role === 'parent' ? (hasPenAccess ? '' : 'pointer-events-none') : ''}`}>
                 {ExcalidrawComp ? (
                     <>
                         <ExcalidrawComp
@@ -1483,6 +1489,17 @@ export default function SessionPage({ params }: SessionProps) {
                     <div className="flex flex-col items-center justify-center h-full text-text-secondary bg-gray-50">
                         <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
                         <p className="font-medium">Loading Canvas...</p>
+                    </div>
+                )}
+            </div>
+
+                {/* SIDEBAR PANEL PLACEHOLDER */}
+                {isPanelExpanded && (
+                    <div className="w-[450px] border-l border-white/10 bg-black flex flex-col">
+                        {/* Daily.co panel content will go here in Task 2 */}
+                        <div className="p-4 text-white text-sm text-center flex-1 flex items-center justify-center">
+                            Sidebar placeholder - Daily.co content goes here
+                        </div>
                     </div>
                 )}
             </div>
