@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { debounce } from 'lodash';
 
 interface AddTutorModalProps {
     isOpen: boolean;
@@ -19,6 +20,19 @@ export default function AddTutorModal({ isOpen, onClose, programId, onAdded }: A
     const [selectedTutor, setSelectedTutor] = useState('');
     const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+
+    // Debounce search update
+    const updateSearch = useCallback(
+        debounce((val: string) => setDebouncedSearch(val), 300),
+        []
+    );
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setSearch(val);
+        updateSearch(val);
+    };
 
     if (!isOpen) return null;
 
@@ -38,7 +52,7 @@ export default function AddTutorModal({ isOpen, onClose, programId, onAdded }: A
         }
     };
 
-    const filteredTutors = MOCK_ALL_TUTORS.filter(t => t.name.toLowerCase().includes(search.toLowerCase()));
+    const filteredTutors = MOCK_ALL_TUTORS.filter(t => t.name.toLowerCase().includes(debouncedSearch.toLowerCase()));
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -56,7 +70,7 @@ export default function AddTutorModal({ isOpen, onClose, programId, onAdded }: A
                             placeholder="Search tutors..."
                             className="w-full mb-2 px-3 py-2 border rounded-lg text-sm"
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={handleSearchChange}
                         />
                         <div className="max-h-48 overflow-y-auto border rounded-lg divide-y">
                             {filteredTutors.map(tutor => (

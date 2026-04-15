@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '@/app/lib/api';
+import { debounce } from 'lodash';
 
 interface EnrollStudentModalProps {
     isOpen: boolean;
@@ -21,6 +22,19 @@ export default function EnrollStudentModal({ isOpen, onClose, programId, onEnrol
     const [selectedStudent, setSelectedStudent] = useState('');
     const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+
+    // Debounce search update
+    const updateSearch = useCallback(
+        debounce((val: string) => setDebouncedSearch(val), 300),
+        []
+    );
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setSearch(val);
+        updateSearch(val);
+    };
 
     if (!isOpen) return null;
 
@@ -42,7 +56,7 @@ export default function EnrollStudentModal({ isOpen, onClose, programId, onEnrol
         }
     };
 
-    const filteredStudents = MOCK_ALL_STUDENTS.filter(s => s.name.toLowerCase().includes(search.toLowerCase()));
+    const filteredStudents = MOCK_ALL_STUDENTS.filter(s => s.name.toLowerCase().includes(debouncedSearch.toLowerCase()));
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -60,7 +74,7 @@ export default function EnrollStudentModal({ isOpen, onClose, programId, onEnrol
                             placeholder="Search students..."
                             className="w-full mb-2 px-3 py-2 border rounded-lg text-sm"
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={handleSearchChange}
                         />
                         <div className="max-h-48 overflow-y-auto border rounded-lg divide-y">
                             {filteredStudents.map(student => (

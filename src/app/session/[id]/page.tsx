@@ -35,6 +35,7 @@ import {
     FileText
 } from 'lucide-react';
 import { MANIPULATIVES_DATA, DICE_FACES } from '../manipulatives-data';
+import { throttle } from '@/app/lib/utils';
 
 if (typeof window !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
@@ -138,13 +139,14 @@ export default function SessionPage({ params }: SessionProps) {
     const sessionDurationRef = useRef<number>(60);
 
     // Timer & Reactions State
-    const [timeRemaining, setTimeRemaining] = useState(((booking as any)?.duration || 60) * 60);
+    const [timeRemaining, setTimeRemaining] = useState(60 * 60);
     const [showWrapUp, setShowWrapUp] = useState(false);
     const [reactions, setReactions] = useState<{ id: string; emoji: string; x: number; delay?: number }[]>([]);
 
     // Whiteboard Multi-Slide State
     const [slides, setSlides] = useState<string[]>([]);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+    const pendingSlideIndexRef = useRef<number | null>(null);
     const [slideAnnotations, setSlideAnnotations] = useState<Record<number, any[]>>({});
     const [collaborators, setCollaborators] = useState<Map<string, any>>(new Map());
     const [hasPenAccess, setHasPenAccess] = useState(user?.role === 'tutor');
@@ -233,6 +235,25 @@ export default function SessionPage({ params }: SessionProps) {
     }, [hasJoined]);
 
     useEffect(() => {
+        if (!hasJoined) return;
+        
+        const updateTimer = () => {
+            const elapsed = Math.floor((Date.now() - sessionStartRef.current) / 1000);
+            const totalDurationSeconds = sessionDurationRef.current * 60;
+            const remaining = Math.max(0, totalDurationSeconds - elapsed);
+            setTimeRemaining(remaining);
+            
+            if (remaining <= 300 && remaining > 0) { // 5 minutes left
+                setShowWrapUp(true);
+            }
+        };
+
+        updateTimer();
+        const interval = setInterval(updateTimer, 1000);
+        return () => clearInterval(interval);
+    }, [hasJoined]);
+
+    useEffect(() => {
         const interval = setInterval(() => {
             setCurrentTime(new Date());
         }, 1000);
@@ -279,10 +300,12 @@ export default function SessionPage({ params }: SessionProps) {
     useEffect(() => {
         if (!user || !sessionId || !hasJoined) return;
 
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+        const API_URL = (process.env.NEXT_PUBLIC_API_URL || 
+                        process.env.NEXT_PUBLIC_API_BASE_URL || 
+                        'https://k-12-backend.onrender.com').replace(/\/$/, '');
         const SOCKET_URL = `${API_URL}/sessions`;
 
-        console.log('[Attention] Connecting to socket:', SOCKET_URL);
+        console.log('[Attention] Connecting to socket:', SOCKET_URL, 'API_URL:', API_URL);
 
         const newSocket = io(SOCKET_URL, {
             query: { sessionId, userId: user.id },
@@ -500,8 +523,8 @@ export default function SessionPage({ params }: SessionProps) {
     // Whiteboard Sync State (Socket.io based)
     const whiteboardRef = useRef<{ isUpdating: boolean }>({ isUpdating: false });
 
-    // Pointer Updates
-    const onPointerUpdate = useCallback((payload: any) => {
+    // Pointer Updates - Throttled to 100ms to reduce socket traffic
+    const onPointerUpdate = useCallback(throttle((payload: any) => {
         if (!socket || !sessionId) return;
         // Guard: only emit if pointer has valid coordinates
         if (!payload.pointer || typeof payload.pointer.x !== 'number') return;
@@ -514,7 +537,7 @@ export default function SessionPage({ params }: SessionProps) {
             selectedElementIds: payload.selectedElementIds,
             isLaserActive: isLaserMode && user?.role === 'tutor'
         });
-    }, [socket, sessionId, user?.id, user?.first_name, isLaserMode, user?.role]);
+    }, 100), [socket, sessionId, user?.id, user?.first_name, isLaserMode, user?.role]);
 
     const importImageToExcalidraw = useCallback(async (dataUrl: string, customFileId?: string) => {
         if (!excalidrawAPI) return;
@@ -803,7 +826,21 @@ export default function SessionPage({ params }: SessionProps) {
     const switchSlide = useCallback(async (index: number, overrideSlides?: string[], skipEmit = false) => {
         if (!excalidrawAPI) return;
         const targetSlides = overrideSlides || slides;
-        if (!targetSlides[index]) return;
+
+        if (!targetSlides[index]) {
+            console.warn(`[Slides] Slide ${index} not found in state. Slides length: ${targetSlides.length}. Setting as pending.`);
+            // If student joins late and doesn't have the slides array yet, we wait a bit
+            if (user?.role !== 'tutor') {
+                pendingSlideIndexRef.current = index;
+                if (targetSlides.length === 0) {
+                    toast.info("Loading slides from tutor...");
+                }
+            }
+            return;
+        }
+
+        // Clear pending if we found it
+        pendingSlideIndexRef.current = null;
 
         // 1. Save current annotations
         const currentElements = excalidrawAPI.getSceneElements();
@@ -858,7 +895,8 @@ export default function SessionPage({ params }: SessionProps) {
                     canvas.height = viewport.height;
                     canvas.width = viewport.width;
                     await page.render({ canvasContext: context!, viewport, canvas }).promise;
-                    newSlides.push(canvas.toDataURL('image/png'));
+                    // Switch to JPEG 80% to reduce sync payload size dramatically (often 5-10x smaller than PNG)
+                    newSlides.push(canvas.toDataURL('image/jpeg', 0.8));
                     // Release GPU texture immediately — prevents memory build-up on large PDFs
                     canvas.width = 0;
                     canvas.height = 0;
@@ -868,12 +906,15 @@ export default function SessionPage({ params }: SessionProps) {
                 toast.dismiss('pdf-progress');
 
                 setSlides(newSlides);
+                // Broadcast slides individually if the array is large, or just hope the 100MB buffer handles it
                 socket?.emit('whiteboard.syncSlides', { sessionId, slides: newSlides });
                 setCurrentSlideIndex(0);
                 setSlideAnnotations({});
 
                 if (newSlides.length > 0) {
                     await importImageToExcalidraw(newSlides[0], 'slide_0');
+                    // Emit slide change so students are notified which slide to show
+                    socket?.emit('whiteboard.slideChange', { sessionId, index: 0 });
                 }
                 toast.success(`Loaded ${newSlides.length} page${newSlides.length !== 1 ? 's' : ''}`);
             } catch (err) {
@@ -1028,21 +1069,35 @@ export default function SessionPage({ params }: SessionProps) {
 
         // Optimized handler for real-time element sync
         const handleReceiveUpdate = (data: any) => {
-            if (!excalidrawAPIRef.current || whiteboardRef.current.isUpdating) return;
+            if (!excalidrawAPIRef.current) return;
             const remoteElements = Array.isArray(data) ? data : (data.elements || []);
-            if (!remoteElements || remoteElements.length === 0) return; // Prevent accidental clearing
+            if (!remoteElements || remoteElements.length === 0) return;
 
+            // Only update if we aren't currently emitting or if it's the tutor's authoritative update
             whiteboardRef.current.isUpdating = true;
             try {
+                console.log(`[Whiteboard] Received update: ${remoteElements.length} elements`);
+                // Merge remote elements with local elements by ID instead of replacing
+                // This preserves local student strokes that aren't yet in the tutor's scene
+                const localElements = excalidrawAPIRef.current.getSceneElements();
+                const remoteIds = new Set(remoteElements.map((el: any) => el.id));
+
+                // Keep local elements that aren't in the remote set (student's new strokes)
+                // and merge with updated remote elements
+                const mergedElements = [
+                    ...remoteElements,
+                    ...localElements.filter((el: any) => !remoteIds.has(el.id))
+                ];
+
                 excalidrawAPIRef.current.updateScene({
-                    elements: remoteElements,
-                    commitToHistory: false // Don't bloat undo stack with every stroke update
+                    elements: mergedElements,
+                    commitToHistory: false
                 });
             } finally {
-                // Return to normal mode after a small delay to catch consecutive frames
+                // Short lock to prevent echo
                 setTimeout(() => {
                     whiteboardRef.current.isUpdating = false;
-                }, 10);
+                }, 30);
             }
         };
 
@@ -1065,8 +1120,15 @@ export default function SessionPage({ params }: SessionProps) {
 
         socket.on('whiteboard.receiveUpdate', handleReceiveUpdate);
         socket.on('whiteboard.receiveFiles', handleRemoteFiles);
-        socket.on('whiteboard.receiveSlides', (slides: string[]) => {
-            setSlides(slides);
+        socket.on('whiteboard.receiveSlides', (slidesArray: string[]) => {
+            console.log('[Slides] Received slides:', slidesArray.length);
+            setSlides(slidesArray);
+
+            // If we were waiting for a specific slide, switch to it now
+            if (pendingSlideIndexRef.current !== null && slidesArray[pendingSlideIndexRef.current]) {
+                console.log('[Slides] Applying pending slide transition:', pendingSlideIndexRef.current);
+                switchSlide(pendingSlideIndexRef.current, slidesArray, true);
+            }
         });
         socket.on('whiteboard.penAccessUpdated', handlePenAccess);
         socket.on('whiteboard.confettiFired', handleConfetti);
@@ -1144,12 +1206,18 @@ export default function SessionPage({ params }: SessionProps) {
     }, [excalidrawAPI, socket, sessionId, user?.role, hasPenAccess]);
 
     // Students/parents request the current whiteboard state when their canvas is ready.
-    // The tutor's handleSyncRequest handler responds with the full scene + files.
+    const forceResync = useCallback(() => {
+        if (!socket || !sessionId) return;
+        console.log('[Whiteboard] Forcing manual resync...');
+        socket.emit('whiteboard.requestSync', { sessionId });
+        toast.info('Syncing whiteboard state...');
+    }, [socket, sessionId]);
+
     useEffect(() => {
         if (!excalidrawAPI || !socket || !sessionId) return;
         if (user?.role === 'tutor') return;
-        socket.emit('whiteboard.requestSync', { sessionId });
-    }, [excalidrawAPI, socket, sessionId, user?.role]);
+        forceResync();
+    }, [excalidrawAPI, socket, sessionId, user?.role, forceResync]);
 
     // Fetch Daily.co Room & Token
     useEffect(() => {
@@ -1675,6 +1743,13 @@ export default function SessionPage({ params }: SessionProps) {
                                         <img src={`/stickers/${s}`} alt={s} className="w-8 h-8 object-contain" />
                                     </button>
                                 ))}
+                                <button
+                                    onClick={forceResync}
+                                    className="w-full mt-2 py-2 bg-purple-600 hover:bg-purple-700 text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Share2 size={12} />
+                                    Force Resync
+                                </button>
                             </div>
                         )}
 

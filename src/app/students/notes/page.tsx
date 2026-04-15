@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { debounce } from 'lodash';
 import { useRouter } from 'next/navigation';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import { api } from '@/app/lib/api';
@@ -45,6 +46,19 @@ function NotesContent() {
   const [error, setError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  // Debounce search update
+  const updateSearch = useCallback(
+    debounce((val: string) => setDebouncedSearch(val), 300),
+    []
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearch(val);
+    updateSearch(val);
+  };
 
   useEffect(() => {
     api.get('/students/me/notes')
@@ -72,9 +86,9 @@ function NotesContent() {
   };
 
   const filtered = notes.filter(n =>
-    search === '' ||
-    n.title.toLowerCase().includes(search.toLowerCase()) ||
-    (n.sessions?.bookings?.subjects?.name || '').toLowerCase().includes(search.toLowerCase())
+    debouncedSearch === '' ||
+    n.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+    (n.sessions?.bookings?.subjects?.name || '').toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
   const tutorName = (note: ClassNote) =>
@@ -108,7 +122,7 @@ function NotesContent() {
               type="text"
               placeholder="Search notes..."
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={handleSearchChange}
               className="pl-9 pr-4 py-2 text-sm rounded-xl border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-green-400"
             />
           </div>

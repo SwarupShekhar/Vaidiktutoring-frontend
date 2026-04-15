@@ -5,7 +5,8 @@ import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { debounce } from 'lodash';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Bold, Italic, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, List, Link as LinkIcon,
@@ -145,8 +146,22 @@ export default function BlogEditor({
   const [internalLinks, setInternalLinks] = useState<Record<string, { title: string; url: string }[]>>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [showInternalLinks, setShowInternalLinks] = useState(false);
+  const [debouncedLinkUrl, setDebouncedLinkUrl] = useState('');
   const [suggestedLinks, setSuggestedLinks] = useState<{ keyword: string; url: string; pos: number }[]>([]);
   const [showScanner, setShowScanner] = useState(false);
+
+  // Debounce link search
+  const updateLinkSearch = useCallback(
+    debounce((val: string) => setDebouncedLinkUrl(val), 200),
+    []
+  );
+
+  const handleLinkUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setLinkUrl(val);
+    setShowInternalLinks(true);
+    updateLinkSearch(val);
+  };
 
   // Magic Link Scanner
   const scanForLinks = () => {
@@ -607,10 +622,7 @@ export default function BlogEditor({
                       type="text"
                       placeholder="Search pages or paste URL..."
                       value={linkUrl}
-                      onChange={(e) => {
-                        setLinkUrl(e.target.value);
-                        setShowInternalLinks(true);
-                      }}
+                      onChange={handleLinkUrlChange}
                       onFocus={() => setShowInternalLinks(true)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
@@ -665,8 +677,8 @@ export default function BlogEditor({
                       
                       {Object.entries(internalLinks).map(([category, links]) => {
                         const filteredLinks = links.filter(link => 
-                          link.title.toLowerCase().includes(linkUrl.toLowerCase()) || 
-                          link.url.toLowerCase().includes(linkUrl.toLowerCase())
+                          link.title.toLowerCase().includes(debouncedLinkUrl.toLowerCase()) || 
+                          link.url.toLowerCase().includes(debouncedLinkUrl.toLowerCase())
                         );
 
                         if (filteredLinks.length === 0) return null;
@@ -721,7 +733,7 @@ export default function BlogEditor({
                         link.url.toLowerCase().includes(linkUrl.toLowerCase())
                       ).length === 0 && (
                         <div className="px-3 py-6 text-center">
-                          <p className="text-[10px] text-white/50 font-medium">No internal matches for "{linkUrl}"</p>
+                          <p className="text-[10px] text-white/50 font-medium">No internal matches for "{debouncedLinkUrl}"</p>
                           <p className="text-[9px] text-primary mt-2 font-bold italic animate-pulse">Press Enter for external URL</p>
                         </div>
                       )}

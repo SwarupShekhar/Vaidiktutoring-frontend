@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { debounce } from 'lodash';
 import { useRouter } from 'next/navigation';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import { api } from '@/app/lib/api';
@@ -27,6 +28,19 @@ function RecordingsContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  // Debounce search update to prevent excessive re-renders/API calls
+  const updateSearch = useCallback(
+    debounce((val: string) => setDebouncedSearch(val), 300),
+    []
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearch(val);
+    updateSearch(val);
+  };
 
   useEffect(() => {
     api.get('/students/me/sessions')
@@ -37,7 +51,7 @@ function RecordingsContent() {
 
   const filtered = sessions.filter(s =>
     (s.hasRecording || s.hasWhiteboardSnapshot) &&
-    (search === '' || s.subject.toLowerCase().includes(search.toLowerCase()))
+    (debouncedSearch === '' || s.subject.toLowerCase().includes(debouncedSearch.toLowerCase()))
   );
 
   // Group by subject
@@ -77,7 +91,7 @@ function RecordingsContent() {
               type="text"
               placeholder="Search subject..."
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={handleSearchChange}
               className="pl-9 pr-4 py-2 text-sm rounded-xl border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
           </div>
