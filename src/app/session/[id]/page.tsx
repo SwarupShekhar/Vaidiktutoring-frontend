@@ -122,7 +122,6 @@ export default function SessionPage({ params }: SessionProps) {
 
     // Sidebar Panel State (Task 1)
     const [isPanelExpanded, setIsPanelExpanded] = useState(true);
-    const [floatingPosition, setFloatingPosition] = useState({ x: typeof window !== 'undefined' ? window.innerWidth - 200 : 0, y: 100 });
 
     // Whiteboard Enhancements State
     const [uploadingSlides, setUploadingSlides] = useState(false);
@@ -1495,7 +1494,8 @@ export default function SessionPage({ params }: SessionProps) {
 
                 {/* SIDEBAR PANEL PLACEHOLDER */}
                 {isPanelExpanded && (
-                    <div className="w-[450px] border-l border-white/10 bg-black flex flex-col">
+                    // Sidebar width: 450px on desktop, full width on mobile
+                    <div className="w-full md:w-[450px] border-l border-white/10 bg-black flex flex-col" role="complementary" aria-label="Video session panel">
                         {/* Daily.co panel content will go here in Task 2 */}
                         <div className="p-4 text-white text-sm text-center flex-1 flex items-center justify-center">
                             Sidebar placeholder - Daily.co content goes here
