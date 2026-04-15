@@ -170,6 +170,26 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             }
         });
 
+        // 5. TUTOR: 15-Minute Fallback Notification (Unclaimed Booking)
+        // Event: 'booking:unclaimed_fallback'
+        socketInstance.on('booking:unclaimed_fallback', (data: any) => {
+            if (user.role === 'tutor') {
+                addNotification({
+                    type: 'warning',
+                    title: '⏰ Unclaimed Session Available',
+                    message: data.message || `A session with ${data.studentName} (${data.subjectName}) is still available!`,
+                    playAudio: true,
+                    onClick: () => {
+                        if (data.claimUrl) {
+                            window.location.href = data.claimUrl;
+                        } else {
+                            window.location.href = '/tutor/dashboard';
+                        }
+                    }
+                });
+            }
+        });
+
         return () => {
             socketInstance.disconnect();
         };
