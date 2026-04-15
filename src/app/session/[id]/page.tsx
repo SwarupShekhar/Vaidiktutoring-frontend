@@ -670,13 +670,13 @@ export default function SessionPage({ params }: SessionProps) {
             }
             lastInsertionPositions.current[key] = { x: centerX, y: centerY };
 
-            const groupId = `group_${Math.random().toString(36).substr(2, 9)}`;
+            const groupId = `group_${Math.random().toString(36).substring(2, 11)}`;
             const newElements: any[] = [];
             const time = Date.now();
 
             // Helper to create valid Excalidraw elements from simple definitions
             const normalizeElement = (el: any, localGroupId: string) => {
-                const id = `${el.type}_${Math.random().toString(36).substr(2, 9)}`;
+                const id = `${el.type}_${Math.random().toString(36).substring(2, 11)}`;
                 const base = {
                     id,
                     groupIds: [localGroupId],
@@ -714,7 +714,7 @@ export default function SessionPage({ params }: SessionProps) {
                         const fontSize = 14;
                         newElements.push({
                             ...base,
-                            id: `text_${Math.random().toString(36).substr(2, 9)}`,
+                            id: `text_${Math.random().toString(36).substring(2, 11)}`,
                             type: "text",
                             x: shape.x + (shape.width / 2) - (el.label.length * 4), // Rough centering
                             y: shape.y + (shape.height / 2) - (fontSize / 2),
