@@ -624,6 +624,57 @@ export default function SessionPage({ params }: SessionProps) {
         }, 150);
     }, [excalidrawAPI, socket, sessionId]);
 
+    // TASK 1: Unified captureSnapshot and handleEndSession functions
+    const captureSnapshot = useCallback(async (): Promise<string | null> => {
+        if (!excalidrawAPI) return null;
+        try {
+            const { exportToCanvas } = await import('@excalidraw/excalidraw');
+            const canvas = await exportToCanvas({
+                elements: excalidrawAPI.getSceneElements(),
+                appState: excalidrawAPI.getAppState(),
+                files: excalidrawAPI.getFiles(),
+                exportPadding: 20
+            });
+            return canvas.toDataURL('image/jpeg', 0.8);
+        } catch (error) {
+            console.error('Failed to capture snapshot:', error);
+            return null;
+        }
+    }, [excalidrawAPI]);
+
+    const handleEndSession = useCallback(async () => {
+        try {
+            // 1. Capture and post whiteboard snapshot
+            const snapshotUrl = await captureSnapshot();
+            if (snapshotUrl) {
+                await api.post(`/sessions/${sessionId}/whiteboard-snapshot`, { snapshotUrl });
+            }
+
+            // 2. Call backend to end the session
+            await api.post(`/sessions/${sessionId}/end`);
+
+            // 3. Clear session state
+            setHasJoined(false);
+            setDailyRoomUrl(null);
+            setDailyToken(null);
+
+            // 4. Show success toast
+            toast.success('Session ended successfully');
+
+            // 5. Redirect based on user role
+            if (user?.role === 'tutor') {
+                router.push('/tutor/dashboard');
+            } else if (user?.role === 'parent') {
+                router.push('/parent/dashboard');
+            } else {
+                router.push('/students/dashboard');
+            }
+        } catch (error) {
+            console.error('Failed to end session:', error);
+            toast.error('Failed to end session. Please try again.');
+        }
+    }, [sessionId, captureSnapshot, user?.role, router]);
+
     const insertManipulative = (manipulative: any) => {
         if (!excalidrawAPI) {
             toast.error("Whiteboard not ready");
@@ -1241,6 +1292,25 @@ export default function SessionPage({ params }: SessionProps) {
         }
     }, [hasJoined, sessionId]);
 
+    // TASK 2: Listen for Daily.co's built-in end button via postMessage
+    useEffect(() => {
+        const handleDailyMessage = (event: MessageEvent) => {
+            // FIX 2: Log all events to verify Daily.co's actual postMessage format
+            console.log('[Daily Event]', event.data);
+
+            // Check if the message is from Daily.co iframe
+            if (event.data?.action === 'left-meeting' || event.data?.action === 'meeting-left') {
+                console.log('[Daily.co] User left meeting via Daily button');
+                handleEndSession();
+            }
+        };
+
+        window.addEventListener('message', handleDailyMessage);
+        return () => {
+            window.removeEventListener('message', handleDailyMessage);
+        };
+    }, [handleEndSession]);
+
     if (authLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-background">
@@ -1438,7 +1508,15 @@ export default function SessionPage({ params }: SessionProps) {
                                 <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
                             </span>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 items-center">
+                            {/* TASK 5: Red End Session button */}
+                            <button
+                                onClick={handleEndSession}
+                                className="bg-red-500/90 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors"
+                                title="End Session"
+                            >
+                                End
+                            </button>
                             <button
                                 onClick={() => setIsExpanded(!isExpanded)}
                                 className="text-white hover:bg-white/20 rounded px-3 py-1 text-sm transition-colors"
@@ -1447,8 +1525,9 @@ export default function SessionPage({ params }: SessionProps) {
                             </button>
                         </div>
                     </div>
+                    {/* TASK 3: Hide Daily.co's built-in leave button via iframe URL params */}
                     <iframe
-                        src={`${dailyRoomUrl}?t=${dailyToken}`}
+                        src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false`}
                         allow="camera; microphone; fullscreen; speaker; display-capture"
                         style={{ width: '100%', height: '100%', border: 'none', paddingTop: '40px' }}
                     />
@@ -1595,16 +1674,9 @@ export default function SessionPage({ params }: SessionProps) {
                         </button>
                     )}
 
+                    {/* TASK 4: Wire unified End Session button to handleEndSession */}
                     <button
-                        onClick={() => {
-                            if (user?.role === 'tutor') {
-                                setShowNoteModal(true);
-                            } else if (user?.role === 'parent') {
-                                router.push('/parent/dashboard');
-                            } else {
-                                router.push('/students/dashboard');
-                            }
-                        }}
+                        onClick={handleEndSession}
                         className="bg-red-500/90 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all"
                     >
                         <LogOut size={13} />
@@ -2002,7 +2074,7 @@ export default function SessionPage({ params }: SessionProps) {
 
                         <div className="bg-white/5 p-4 flex gap-3 border-t border-white/10">
                             <button
-                                onClick={() => router.push('/tutor/dashboard')}
+                                onClick={handleEndSession}
                                 className="flex-1 px-4 py-3 text-sm font-bold text-white/40 hover:text-white/70 transition-colors"
                             >
                                 Not now, just end
@@ -2011,28 +2083,13 @@ export default function SessionPage({ params }: SessionProps) {
                                 onClick={async () => {
                                     setSubmittingNote(true);
                                     try {
-                                        // 1. Capture Whiteboard Snapshot
-                                        let snapshotUrl = null;
-                                        if (excalidrawAPI) {
-                                            const { exportToCanvas } = await import('@excalidraw/excalidraw');
-                                            const canvas = await exportToCanvas({
-                                                elements: excalidrawAPI.getSceneElements(),
-                                                appState: excalidrawAPI.getAppState(),
-                                                files: excalidrawAPI.getFiles(),
-                                                exportPadding: 20
-                                            });
-                                            snapshotUrl = canvas.toDataURL('image/jpeg', 0.8);
-
-                                            // Background save snapshot
-                                            api.post(`/sessions/${sessionId}/whiteboard-snapshot`, { snapshotUrl }).catch(e => console.error('Snapshot failed', e));
-                                        }
-
-                                        // 2. Save Note
+                                        // FIX 1: Save note, then call unified handleEndSession
+                                        // (which handles snapshot capture, backend /end call, and redirect)
                                         await api.patch(`/sessions/${sessionId}/tutor-note`, { note: sessionNote });
-                                        toast.success('Note & Snapshot saved!');
-                                        router.push('/tutor/dashboard');
+                                        toast.success('Note saved!');
+                                        await handleEndSession();
                                     } catch (error) {
-                                        console.error('Finalize failed', error);
+                                        console.error('Failed to save note and end session:', error);
                                         toast.error('Failed to end session properly');
                                         setSubmittingNote(false);
                                     }
