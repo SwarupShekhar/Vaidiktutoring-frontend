@@ -114,13 +114,6 @@ export default function SessionPage({ params }: SessionProps) {
     };
 
 
-    // Video Card State
-    const [position, setPosition] = useState({ x: 8, y: 280 });
-    const [isExpanded, setIsExpanded] = useState(false);
-    const isDragging = useRef(false);
-    const dragStart = useRef({ x: 0, y: 0 });
-    const startPos = useRef({ x: 0, y: 0 });
-
     // Sidebar Panel State (Task 1)
     const [isPanelExpanded, setIsPanelExpanded] = useState(true);
     const [floatingPosition, setFloatingPosition] = useState({ x: 0, y: 0 });
@@ -460,33 +453,6 @@ export default function SessionPage({ params }: SessionProps) {
         setTimeout(() => {
             setReactions(prev => prev.filter(r => !newReactions.find(nr => nr.id === r.id)));
         }, 4000);
-    };
-
-    // Draggable handlers
-    const handleMouseDown = (e: React.MouseEvent) => {
-        e.preventDefault();
-        isDragging.current = true;
-        dragStart.current = { x: e.clientX, y: e.clientY };
-        startPos.current = { ...position };
-
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-        if (!isDragging.current) return;
-        const dx = e.clientX - dragStart.current.x;
-        const dy = e.clientY - dragStart.current.y;
-        setPosition({
-            x: startPos.current.x + dx,
-            y: startPos.current.y + dy
-        });
-    };
-
-    const handleMouseUp = () => {
-        isDragging.current = false;
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
     };
 
     // Fetch Booking Details
