@@ -46,6 +46,7 @@
     "react-hook-form": "^7.68.0",
     "react-markdown": "^10.1.0",
     "react-phone-number-input": "^3.4.16",
+    "react-rnd": "^10.5.3",
     "rehype-raw": "^7.0.0",
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",

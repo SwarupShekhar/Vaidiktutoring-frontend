@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { MANIPULATIVES_DATA, DICE_FACES } from '../manipulatives-data';
 import { throttle } from '@/app/lib/utils';
+import { Rnd } from 'react-rnd';
 
 if (typeof window !== 'undefined') {
     pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
@@ -122,6 +123,7 @@ export default function SessionPage({ params }: SessionProps) {
 
     // Sidebar Panel State (Task 1)
     const [isPanelExpanded, setIsPanelExpanded] = useState(true);
+    const [floatingPosition, setFloatingPosition] = useState({ x: 0, y: 0 });
 
     // Whiteboard Enhancements State
     const [uploadingSlides, setUploadingSlides] = useState(false);
@@ -2487,6 +2489,49 @@ export default function SessionPage({ params }: SessionProps) {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Floating thumbnail when panel is collapsed */}
+            {!isPanelExpanded && hasJoined && dailyRoomUrl && dailyToken && (
+                <Rnd
+                    default={{
+                        x: typeof window !== 'undefined' ? window.innerWidth - 200 : 0,
+                        y: typeof window !== 'undefined' ? window.innerHeight - 300 : 0,
+                        width: 150,
+                        height: 200,
+                    }}
+                    onDragStop={(e, d) => {
+                        setFloatingPosition({ x: d.x, y: d.y });
+                    }}
+                    minWidth={120}
+                    minHeight={160}
+                    disableDragging={false}
+                >
+                    <div className="w-full h-full rounded-lg border-2 border-purple-500/50 shadow-2xl overflow-hidden bg-black flex flex-col">
+                        {/* Drag handle */}
+                        <div className="h-8 bg-gradient-to-r from-purple-600 to-indigo-600 cursor-move flex items-center justify-between px-2 flex-shrink-0">
+                            <span className="text-[8px] text-white font-bold">Video</span>
+                            <button
+                                onClick={() => setIsPanelExpanded(true)}
+                                className="text-white hover:bg-white/20 rounded p-0.5 text-xs"
+                                title="Expand"
+                                aria-label="Expand video panel"
+                            >
+                                ⛶
+                            </button>
+                        </div>
+
+                        {/* Thumbnail iframe */}
+                        {dailyRoomUrl && dailyToken && (
+                            <iframe
+                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false`}
+                                allow="camera; microphone; fullscreen; speaker; display-capture"
+                                className="flex-1 border-0"
+                                title="Daily.co video conference - floating thumbnail"
+                            />
+                        )}
+                    </div>
+                </Rnd>
             )}
         </div>
     );
