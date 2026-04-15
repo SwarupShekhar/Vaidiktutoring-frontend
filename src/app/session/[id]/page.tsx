@@ -1481,22 +1481,26 @@ export default function SessionPage({ params }: SessionProps) {
                             </button>
                         </div>
 
-                        {/* Daily.co iframe - full height */}
-                        {hasJoined && dailyRoomUrl && dailyToken && (
+                        {/* Daily.co iframe - only render when token is ready */}
+                        {dailyRoomUrl && dailyToken && !videoLoading && (
                             <iframe
-                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false&skipUserMedia=false&iframeStyle.width=100%&iframeStyle.height=100%`}
+                                key={`${dailyRoomUrl}-${dailyToken}`}
+                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false`}
                                 allow="camera; microphone; fullscreen; speaker; display-capture"
                                 className="flex-1 border-0 w-full h-full"
                                 title="Daily.co video conference"
                             />
                         )}
 
-                        {/* Loading state */}
-                        {!dailyRoomUrl && (
-                            <div className="flex-1 flex items-center justify-center text-white/50 text-sm">
-                                Connecting to video session...
+                        {/* Loading state - show while waiting for token */}
+                        {!dailyRoomUrl || videoLoading ? (
+                            <div className="flex-1 flex items-center justify-center">
+                                <div className="text-center">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mx-auto mb-3"></div>
+                                    <p className="text-white/50 text-sm">Connecting to video session...</p>
+                                </div>
                             </div>
-                        )}
+                        ) : null}
                     </div>
                 )}
             </div>
@@ -2487,10 +2491,11 @@ export default function SessionPage({ params }: SessionProps) {
                             </button>
                         </div>
 
-                        {/* Thumbnail iframe */}
-                        {dailyRoomUrl && dailyToken && (
+                        {/* Thumbnail iframe - only render when token is ready */}
+                        {dailyRoomUrl && dailyToken && !videoLoading && (
                             <iframe
-                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false&skipUserMedia=false&iframeStyle.width=100%&iframeStyle.height=100%`}
+                                key={`float-${dailyRoomUrl}-${dailyToken}`}
+                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false`}
                                 allow="camera; microphone; fullscreen; speaker; display-capture"
                                 className="flex-1 border-0 w-full h-full"
                                 title="Daily.co video conference - floating thumbnail"
