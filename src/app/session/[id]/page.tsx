@@ -1496,7 +1496,7 @@ export default function SessionPage({ params }: SessionProps) {
                 {isPanelExpanded && (
                     <div className="w-full md:w-[450px] border-l border-white/10 bg-black/80 flex flex-col h-full" role="complementary" aria-label="Video session panel">
                         {/* Header with title and collapse button */}
-                        <div className="h-12 border-b border-white/10 flex items-center justify-between px-4 bg-gradient-to-r from-purple-600 to-indigo-600">
+                        <div className="h-12 border-b border-white/10 flex items-center justify-between px-4 bg-linear-to-r from-purple-600 to-indigo-600">
                             <div className="flex flex-col">
                                 <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Session Room</span>
                                 <span className="text-xs font-bold text-white">
