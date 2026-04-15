@@ -1462,7 +1462,7 @@ export default function SessionPage({ params }: SessionProps) {
 
                 {/* Daily.co sidebar panel - expanded state */}
                 {isPanelExpanded && (
-                    <div className="w-full md:w-[450px] border-l border-white/10 bg-black/80 flex flex-col h-full" role="complementary" aria-label="Video session panel">
+                    <div className="w-full max-w-[450px] md:max-w-[450px] border-l border-white/10 bg-black/80 flex flex-col h-full" role="complementary" aria-label="Video session panel">
                         {/* Header with title and collapse button */}
                         <div className="h-12 border-b border-white/10 flex items-center justify-between px-4 bg-linear-to-r from-purple-600 to-indigo-600">
                             <div className="flex flex-col">
@@ -1473,7 +1473,7 @@ export default function SessionPage({ params }: SessionProps) {
                             </div>
                             <button
                                 onClick={() => setIsPanelExpanded(false)}
-                                className="text-white hover:bg-white/20 rounded p-1 transition-colors"
+                                className="text-white hover:bg-white/20 rounded p-1 transition-colors relative z-30 cursor-pointer"
                                 title="Collapse video panel"
                                 aria-label="Collapse video panel"
                             >
@@ -1484,9 +1484,9 @@ export default function SessionPage({ params }: SessionProps) {
                         {/* Daily.co iframe - full height */}
                         {hasJoined && dailyRoomUrl && dailyToken && (
                             <iframe
-                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false`}
+                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false&skipUserMedia=false&iframeStyle.width=100%&iframeStyle.height=100%`}
                                 allow="camera; microphone; fullscreen; speaker; display-capture"
-                                className="flex-1 border-0"
+                                className="flex-1 border-0 w-full h-full"
                                 title="Daily.co video conference"
                             />
                         )}
@@ -2490,9 +2490,9 @@ export default function SessionPage({ params }: SessionProps) {
                         {/* Thumbnail iframe */}
                         {dailyRoomUrl && dailyToken && (
                             <iframe
-                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false`}
+                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false&skipUserMedia=false&iframeStyle.width=100%&iframeStyle.height=100%`}
                                 allow="camera; microphone; fullscreen; speaker; display-capture"
-                                className="flex-1 border-0"
+                                className="flex-1 border-0 w-full h-full"
                                 title="Daily.co video conference - floating thumbnail"
                             />
                         )}
