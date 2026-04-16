@@ -8,6 +8,8 @@ import api from '@/app/lib/api';
 // import { DailyProvider } from '@daily-co/daily-react'; // Not used directly, using iframe
 import AttendanceTracker from '@/app/components/session/AttendanceTracker';
 import StudentSnapshotCard from '@/app/components/session/StudentSnapshotCard';
+import VaultSidebar from '@/app/components/session/VaultSidebar';
+import { vaultApi, VaultAsset } from '@/app/lib/vault';
 import { io, Socket } from 'socket.io-client';
 import confetti from 'canvas-confetti';
 // @ts-ignore
@@ -32,7 +34,8 @@ import {
     BarChart,
     X,
     Trash2,
-    FileText
+    FileText,
+    ShieldCheck
 } from 'lucide-react';
 import { MANIPULATIVES_DATA, DICE_FACES } from '../manipulatives-data';
 import { throttle } from '@/app/lib/utils';
@@ -121,6 +124,8 @@ export default function SessionPage({ params }: SessionProps) {
     // Whiteboard Enhancements State
     const [uploadingSlides, setUploadingSlides] = useState(false);
     const [showAssetLibrary, setShowAssetLibrary] = useState(false);
+    const [showVault, setShowVault] = useState(false);
+    const [selectedVaultAsset, setSelectedVaultAsset] = useState<VaultAsset | null>(null);
 
     // Session HUD State
     const [snapshotExpanded, setSnapshotExpanded] = useState(false);
@@ -1004,6 +1009,42 @@ export default function SessionPage({ params }: SessionProps) {
         }
     };
 
+    const handleVaultAssetSelect = async (asset: VaultAsset) => {
+        try {
+            setUploadingSlides(true);
+            setSelectedVaultAsset(asset);
+            
+            // 1. Get SAS URL for the asset
+            const assetData = await vaultApi.getAsset(asset.id);
+            if (!assetData || !assetData.sasUrl) {
+                toast.error('Failed to get access to vault asset');
+                return;
+            }
+
+            // 2. Fetch the file
+            const response = await fetch(assetData.sasUrl);
+            const blob = await response.blob();
+            const file = new File([blob], asset.azure_blob_name, { type: asset.mime_type });
+
+            // 3. Render if PDF
+            if (asset.file_type === 'PDF' || asset.mime_type === 'application/pdf') {
+                renderPdfLocally(file);
+                toast.success(`Loading "${asset.title}" from Vault...`);
+            } else {
+                toast.error('Only PDF assets are currently supported for direct whiteboard rendering.');
+            }
+
+            // 4. Close vault sidebar for better focus
+            setShowVault(false);
+        } catch (error) {
+            console.error('Vault asset selection failed', error);
+            toast.error('Failed to load asset from vault');
+        } finally {
+            setUploadingSlides(false);
+        }
+    };
+
+
     useEffect(() => {
         if (!excalidrawAPI || !socket || !sessionId) return;
 
@@ -1722,6 +1763,15 @@ export default function SessionPage({ params }: SessionProps) {
                         </button>
 
                         <button
+                            onClick={() => setShowVault(!showVault)}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${showVault ? 'bg-indigo-600 border-indigo-500' : 'bg-white/10 hover:bg-white/20 border-white/10'}`}
+                            title="Safe Vault"
+                        >
+                            <ShieldCheck size={16} />
+                        </button>
+
+
+                        <button
                             onClick={() => {
                                 socket?.emit('whiteboard.togglePenAccess', {
                                     sessionId,
@@ -2010,6 +2060,23 @@ export default function SessionPage({ params }: SessionProps) {
                     </div>
                 </div>
             )}
+
+            {/* VAULT SIDEBAR (TUTOR ONLY) */}
+            {user?.role === 'tutor' && showVault && (
+                <div className="absolute left-4 top-[60px] bottom-24 w-80 hidden md:flex bg-white/95 backdrop-blur-xl border border-indigo-500/20 shadow-2xl rounded-2xl overflow-hidden pointer-events-auto z-50">
+                    <VaultSidebar 
+                        onSelectAsset={handleVaultAssetSelect} 
+                        selectedAssetId={selectedVaultAsset?.id}
+                    />
+                    <button 
+                        onClick={() => setShowVault(false)}
+                        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                        <X size={16} />
+                    </button>
+                </div>
+            )}
+
 
             {/* ATTENDANCE TRACKER OVERLAY */}
             <AttendanceTracker
