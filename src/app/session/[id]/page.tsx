@@ -149,6 +149,7 @@ export default function SessionPage({ params }: SessionProps) {
     // Whiteboard Multi-Slide State
     const [slides, setSlides] = useState<string[]>([]);
     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+    const [vaultAssetActive, setVaultAssetActive] = useState<string | null>(null);
     const pendingSlideIndexRef = useRef<number | null>(null);
     const [slideAnnotations, setSlideAnnotations] = useState<Record<number, any[]>>({});
     const [collaborators, setCollaborators] = useState<Map<string, any>>(new Map());
@@ -1030,6 +1031,29 @@ export default function SessionPage({ params }: SessionProps) {
             if (asset.file_type === 'PDF' || asset.mime_type === 'application/pdf') {
                 renderPdfLocally(file);
                 toast.success(`Loading "${asset.title}" from Vault...`);
+                
+                // 3a. Load existing annotations for this session
+                const existing = await vaultApi.getAnnotations(sessionId, asset.id);
+                if (existing && existing.id) {
+                    const savedState = existing.annotations_json as any;
+                    if (savedState && savedState.slides) {
+                        // Restore in-memory annotations for all slides
+                        setSlideAnnotations(savedState.slides);
+                        annotationsRef.current = savedState.slides;
+                        
+                        // Apply annotations for current slide (0) after a short delay
+                        setTimeout(() => {
+                            if (excalidrawAPI) {
+                                const currentScene = excalidrawAPI.getSceneElements();
+                                const slide0Annotations = savedState.slides[0] || [];
+                                excalidrawAPI.updateScene({
+                                    elements: [...currentScene, ...slide0Annotations]
+                                });
+                            }
+                        }, 1500);
+                    }
+                }
+                setVaultAssetActive(asset.id);
             } else {
                 toast.error('Only PDF assets are currently supported for direct whiteboard rendering.');
             }
@@ -1262,6 +1286,33 @@ export default function SessionPage({ params }: SessionProps) {
             if (filesString !== lastSyncedFiles.current) {
                 lastSyncedFiles.current = filesString;
                 socket.emit('whiteboard.syncFiles', { sessionId, files });
+            }
+
+            // 4. Persistence for Vault Annotations (Tutor Only)
+            if (user?.role === 'tutor' && vaultAssetActive) {
+                // Throttle/Debounce saving to DB (once every 5 seconds or if idle)
+                const saveKey = `vault_save_${vaultAssetActive}`;
+                if (!(window as any)[saveKey]) {
+                    (window as any)[saveKey] = setTimeout(async () => {
+                        try {
+                            // Extract current annotations (minus background slide)
+                            const currentElements = excalidrawAPI.getSceneElements();
+                            const annotationsOnly = currentElements.filter((el: any) => el.type !== 'image' || !el.fileId?.startsWith('slide_'));
+                            
+                            // Build the full state to save
+                            const fullState = {
+                                slides: {
+                                    ...annotationsRef.current,
+                                    [slideRef.current]: annotationsOnly
+                                }
+                            };
+                            
+                            await vaultApi.saveAnnotations(sessionId, vaultAssetActive, fullState);
+                        } finally {
+                            delete (window as any)[saveKey];
+                        }
+                    }, 5000);
+                }
             }
         });
 

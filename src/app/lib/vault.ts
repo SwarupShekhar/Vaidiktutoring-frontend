@@ -34,14 +34,14 @@ export const vaultApi = {
     return res.data;
   },
 
-  saveAnnotations: async (data: {
-    session_id: string;
-    asset_id: string;
-    student_id?: string;
-    annotation_data: any;
-    current_page: number;
-  }) => {
-    const res = await axios.post(`${API_URL}/vault/annotations`, data);
+  saveAnnotations: async (sessionId: string, assetId: string, annotationData: any, currentPage: number = 1, studentId?: string) => {
+    const res = await axios.post(`${API_URL}/vault/annotations`, {
+      session_id: sessionId,
+      asset_id: assetId,
+      annotation_data: annotationData,
+      current_page: currentPage,
+      student_id: studentId,
+    });
     return res.data;
   },
 
