@@ -81,16 +81,16 @@ export default function ALevelTutoringPage({
                 Private A-Level Tutors Online — UK & International
               </div>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-deep-navy dark:text-white mb-6 tracking-tighter leading-[0.95] uppercase">
-                Elite A-Level <span className="text-sapphire text-balance">Online Tutoring</span> for Success
+                Elite A-Level <span className="text-sapphire text-balance">Tutoring Mastery</span> Online
               </h1>
               <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-10 leading-tight">
-                A-Level Tutoring <br />
-                Built Around Your University Goals
+                University Entry Focused <br />
+                AQA, Edexcel, OCR & CAIE Specialists
               </div>
               <p className="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed font-medium max-w-xl">
-                Find a specialist online A-Level tutor matched to your exact
-                syllabus and exam board — AQA, Edexcel, OCR, or Cambridge
-                International. From first lesson to final exam.
+                Secure your academic future with specialist A-Level support. 
+                Our tutors are specialists in your exact syllabus, ensuring you're 
+                fully prepared for A-Level exams and university admissions.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-6 justify-start">

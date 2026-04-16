@@ -85,16 +85,16 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
                 Specialist UK GCSE Support
               </div>
               <h1 className="text-4xl md:text-6xl font-black text-deep-navy dark:text-white mb-6 tracking-tighter leading-[0.95] uppercase">
-                Premium GCSE <span className="text-sapphire text-balance">Tutoring Services</span> Online
+                Expert GCSE <span className="text-sapphire text-balance">Tutoring Services</span> Online
               </h1>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-10 leading-tight">
-                Master the AQA, Edexcel & OCR <br />
-                Syllabus with UK Specialists.
+                Master the UK GCSE Syllabus <br />
+                AQA, Edexcel & OCR Specialist.
               </h2>
               <p className="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed font-medium max-w-xl">
-                Behind on GCSEs? There's still time to turn grades around -
-                if you start now. We provide the calm, structured plan your
-                child needs.
+                Behind on GCSEs? There's still time to turn grades around with 
+                personalized 1-on-1 support. We provide the calm, structured plan 
+                needed to excel in UK secondary board exams.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-6 justify-start">

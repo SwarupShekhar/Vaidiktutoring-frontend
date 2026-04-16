@@ -9,6 +9,7 @@ import { useCreditStatus } from '@/app/Hooks/useCreditStatus';
 import { useStudentProgress, ProgressSummary } from '@/app/Hooks/useStudentProgress';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { StatCard } from '@/app/components/dashboard/StatCard';
 import { SessionCommandCard } from '@/app/components/dashboard/SessionCommandCard';
 import { TrialBanner } from '@/app/components/dashboard/TrialBanner';
@@ -33,6 +34,8 @@ import {
   PlayCircle,
   Play,
   Video,
+  Shield,
+  Book,
 } from 'lucide-react';
 import { differenceInMinutes, format, isToday, isTomorrow, addDays, startOfWeek } from 'date-fns';
 import { api } from '@/app/lib/api';
@@ -425,7 +428,29 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
           </div>
         </motion.section>
       )}
-
+      {/* Session Materials */}
+      <motion.section variants={itemVariants} className="space-y-4">
+        <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+          <Book size={20} className="text-indigo-500" /> Session Materials
+        </h3>
+        <div className="bg-surface rounded-3xl p-6 border border-border shadow-sm flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-700 dark:text-indigo-300">
+              <Shield size={24} />
+            </div>
+            <div>
+              <p className="font-bold text-foreground">My Study Vault</p>
+              <p className="text-sm text-text-secondary">Access shared documents and clean materials.</p>
+            </div>
+          </div>
+          <Link
+            href="/students/vault"
+            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/20"
+          >
+            Open Vault
+          </Link>
+        </div>
+      </motion.section>
 
       <motion.div variants={itemVariants} ref={scheduleRef}
         className="bg-surface rounded-3xl p-6 border border-border shadow-sm">

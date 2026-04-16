@@ -29,6 +29,7 @@ import {
     ShieldAlert,
     ChevronRight,
     LifeBuoy,
+    Shield
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -221,7 +222,7 @@ export default function AdminDashboardPage() {
                                 Tutor Management
                             </h2>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 <button
                                     onClick={() => setShowAllocation(true)}
                                     className="p-6 rounded-2xl bg-linear-to-br from-purple-500 to-indigo-600 text-white shadow-lg hover:scale-[1.02] active:scale-95 transition-all group flex flex-col justify-between"
@@ -252,6 +253,16 @@ export default function AdminDashboardPage() {
                                     <div className="text-left">
                                         <p className="font-bold text-lg leading-tight text-(--color-text-primary)">Publish Blog</p>
                                         <p className="text-xs text-text-secondary mt-1">Write new post</p>
+                                    </div>
+                                </Link>
+
+                                <Link href="/admin/vault" className="p-6 rounded-2xl bg-white/40 border border-white/40 hover:bg-white/60 transition-all group flex flex-col justify-between hover:border-indigo-400">
+                                    <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                        <Shield size={20} />
+                                    </div>
+                                    <div className="text-left">
+                                        <p className="font-bold text-lg leading-tight text-(--color-text-primary)">Manage Vault</p>
+                                        <p className="text-xs text-text-secondary mt-1">Assets & Documents</p>
                                     </div>
                                 </Link>
                             </div>

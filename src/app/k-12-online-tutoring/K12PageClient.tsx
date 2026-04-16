@@ -83,13 +83,16 @@ export default function K12OnlineTutoringPage({
                 K-12 Online Tutoring
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-deep-navy dark:text-white mb-6 tracking-tight leading-[1.1]">
-                Complete <span className="text-sapphire">K-12 Online Tutoring</span> & Academic Support
+                Personalized <span className="text-sapphire">K-12 Online Tutoring</span> & Support
               </h1>
               <div className="text-2xl md:text-3xl font-bold text-sapphire mb-8 leading-tight">
-                Empowering Students from Kindergarten to High School.
+                Foundational Excellence <br />
+                from Kindergarten to High School.
               </div>
               <p className="text-xl md:text-2xl text-text-secondary mb-4 leading-relaxed font-medium">
-                Take the best step for your child's academic success with personalized tutoring.
+                Nurturing curiosity and building core confidence in Math, Science, 
+                and English. We provide individualized support tailored to every 
+                grade level to ensure a strong academic foundation.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start mt-8">

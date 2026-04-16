@@ -92,21 +92,16 @@ export default function IGCSEOnlineTutoringPage({
                 IGCSE Tutoring Experts — Cambridge & Edexcel Specialist
               </div>
               <h1 className="text-4xl md:text-6xl xl:text-7xl font-black text-deep-navy dark:text-white mb-6 tracking-tighter leading-[0.95] uppercase">
-                IGCSE <span className="text-sapphire">Online Tuition</span> & Tutoring Experts
+                Global IGCSE <span className="text-sapphire">Online Tuition</span> & Support
               </h1>
               <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-10 leading-tight text-balance">
-                Global Academic Excellence for <br /> International Students.
+                International Academic Excellence <br />
+                for Global Students.
               </div>
               <p className="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed font-medium max-w-xl opacity-90">
-                Your child's{" "}
-                <span className="font-black text-deep-navy dark:text-white">
-                  IGCSE results are not fixed yet.
-                </span>{" "}
-                We provide the{" "}
-                <span className="font-black text-deep-navy dark:text-white">
-                  structured path
-                </span>{" "}
-                from where they are to where they need to be.
+                Success in IGCSE requires a global perspective. Our expert 
+                tutors provide the structured path needed for international students 
+                following Cambridge and Edexcel specifications worldwide.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-6 justify-start">

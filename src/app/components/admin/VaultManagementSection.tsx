@@ -69,8 +69,7 @@ export default function VaultManagementSection() {
             <div className="flex justify-between items-center mb-6">
                 <div className="flex flex-col gap-1">
                     <h2 className="text-xl font-bold text-(--color-text-primary) flex items-center gap-2">
-                        <Shield size={20} className="text-indigo-500" />
-                        Admin Asset Vault
+                        {user?.role === 'admin' ? 'Admin Asset Vault' : 'Curriculum Asset Vault'}
                     </h2>
                     <p className="text-sm text-text-secondary">Secure storage for session materials and clean documents.</p>
                 </div>
@@ -82,13 +81,15 @@ export default function VaultManagementSection() {
                     >
                         <RefreshCw size={18} />
                     </button>
-                    <button
-                        onClick={() => setShowUploadModal(true)}
-                        className="px-4 py-2 bg-linear-to-r from-indigo-500 to-blue-500 text-white text-sm font-bold rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all flex items-center gap-2"
-                    >
-                        <Plus size={16} />
-                        Upload to Vault
-                    </button>
+                    {user?.role === 'admin' && (
+                        <button
+                            onClick={() => setShowUploadModal(true)}
+                            className="px-4 py-2 bg-linear-to-r from-indigo-500 to-blue-500 text-white text-sm font-bold rounded-xl shadow-lg hover:shadow-indigo-500/25 transition-all flex items-center gap-2"
+                        >
+                            <Plus size={16} />
+                            Upload to Vault
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -109,12 +110,14 @@ export default function VaultManagementSection() {
                     <div className="col-span-full py-12 flex flex-col items-center justify-center bg-surface/50 border border-dashed border-border rounded-3xl text-text-secondary">
                         <UploadCloud size={48} className="mb-4 opacity-20" />
                         <p>No assets in the vault yet.</p>
-                        <button 
-                            onClick={() => setShowUploadModal(true)}
-                            className="text-indigo-500 hover:underline mt-2"
-                        >
-                            Upload your first material
-                        </button>
+                        {user?.role === 'admin' && (
+                            <button 
+                                onClick={() => setShowUploadModal(true)}
+                                className="text-indigo-500 hover:underline mt-2"
+                            >
+                                Upload your first material
+                            </button>
+                        )}
                     </div>
                 ) : (
                     assets.map((asset) => (
@@ -137,9 +140,11 @@ export default function VaultManagementSection() {
                                     <button className="p-1.5 hover:bg-white/10 rounded-lg text-text-secondary hover:text-indigo-500 transition-colors">
                                         <Download size={14} />
                                     </button>
-                                    <button className="p-1.5 hover:bg-rose-500/10 rounded-lg text-text-secondary hover:text-rose-500 transition-colors">
-                                        <Trash2 size={14} />
-                                    </button>
+                                    {user?.role === 'admin' && (
+                                        <button className="p-1.5 hover:bg-rose-500/10 rounded-lg text-text-secondary hover:text-rose-500 transition-colors">
+                                            <Trash2 size={14} />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>

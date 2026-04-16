@@ -504,10 +504,7 @@ export default function TutorDashboardPage() {
               <section className="bg-linear-to-br from-slate-900 to-black dark:from-slate-800 dark:to-slate-900 border border-white/10 rounded-[3rem] p-10 shadow-2xl">
                 <h3 className="text-xl font-black text-white mb-8">Service Modules</h3>
                 <div className="grid grid-cols-1 gap-5">
-                  <button 
-                    onClick={() => toast.info('Curriculum Vault is being populated. Access will be granted shortly.')}
-                    className="flex items-center gap-6 p-6 rounded-4xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative"
-                  >
+                  <Link href="/tutor/vault" className="flex items-center gap-6 p-6 rounded-4xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-150 transition-transform">
                       <BookOpen size={80} />
                     </div>
@@ -518,7 +515,7 @@ export default function TutorDashboardPage() {
                       <p className="text-lg font-black text-white">Curriculum Vault</p>
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Asset Repository</p>
                     </div>
-                  </button>
+                  </Link>
                   <button 
                     onClick={() => toast.info('Availability Sync (Shift Intelligence) is coming soon!')}
                     className="flex items-center gap-6 p-6 rounded-4xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group overflow-hidden relative"

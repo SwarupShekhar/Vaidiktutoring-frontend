@@ -99,18 +99,16 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
                 PREMIUM IB DIPLOMA TUTORING
               </div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-deep-navy dark:text-white mb-6 md:mb-8 tracking-tighter leading-[0.95] relative z-10 uppercase">
-                Master the <span className="text-sapphire">IB Diploma</span> with Global Experts
+                IB Diploma <span className="text-sapphire">Program Success</span> with Global Experts
               </h1>
               <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-6 md:mb-10 leading-tight relative z-10">
-                International Baccalaureate <br />
-                Tutoring You Can Trust
+                IBDP Excellence <br />
+                HL/SL, IA & TOK Specialists
               </div>
-              <p className="text-lg md:text-2xl text-text-secondary mb-8 md:mb-12 leading-relaxed font-medium max-w-xl opacity-90">
-                Specialised guidance for{" "}
-                <span className="font-black text-deep-navy dark:text-white">
-                  HL/SL, IA, and TOK.
-                </span>{" "}
-                Your perfect IB tutor is ready to start.
+              <p className="text-lg md:text-2xl text-text-secondary mb-8 md:mb-12 leading-relaxed font-medium max-w-xl opacity-90 relative z-10">
+                Excel in the International Baccalaureate with expert IBDP support. 
+                From TOK and Extended Essays to subject-specific internal assessments, 
+                we provide the specialized guidance needed to achieve a 40+ score.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center gap-6 justify-start">
