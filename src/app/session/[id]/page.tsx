@@ -203,7 +203,7 @@ export default function SessionPage({ params }: SessionProps) {
     const [followingTutor, setFollowingTutor] = useState(false);
 
     // Library Tab State
-    const [libraryTab, setLibraryTab] = useState<'assets' | 'manipulatives'>('assets');
+    const [libraryTab, setLibraryTab] = useState<'vault' | 'assets' | 'manipulatives'>('vault');
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
         'k-1': true,
         '2-3': true,
@@ -1813,13 +1813,6 @@ export default function SessionPage({ params }: SessionProps) {
                             <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-900/90 text-[10px] font-black text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap border border-white/10 pointer-events-none shadow-xl">ASSET LIBRARY</span>
                         </button>
 
-                        <button
-                            onClick={() => setShowVault(!showVault)}
-                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${showVault ? 'bg-indigo-600 border-indigo-500' : 'bg-white/10 hover:bg-white/20 border-white/10'}`}
-                            title="Safe Vault"
-                        >
-                            <ShieldCheck size={16} />
-                        </button>
 
 
                         <button
@@ -1971,29 +1964,43 @@ export default function SessionPage({ params }: SessionProps) {
             {user?.role === 'tutor' && showAssetLibrary && (
                 <div className="absolute left-4 top-[60px] bottom-24 w-72 hidden md:flex bg-white/95 backdrop-blur-xl border border-purple-500/20 shadow-2xl rounded-2xl p-4 overflow-y-auto flex-col pointer-events-auto z-50">
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="font-bold text-lg text-purple-900 leading-none">Library</h2>
+                        <h2 className="font-bold text-lg text-purple-900 leading-none">Session Library</h2>
                         <button onClick={() => setShowAssetLibrary(false)} className="text-gray-400 hover:text-gray-600">
                             <X size={16} />
                         </button>
                     </div>
 
-                    <div className="flex bg-gray-100 p-1 rounded-xl mb-4 shrink-0">
+                    <div className="flex bg-gray-100 p-1 rounded-xl mb-4 shrink-0 overflow-x-auto no-scrollbar">
+                        <button
+                            onClick={() => setLibraryTab('vault')}
+                            className={`flex-1 py-1.5 px-3 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all whitespace-nowrap ${libraryTab === 'vault' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                        >
+                            Materials
+                        </button>
                         <button
                             onClick={() => setLibraryTab('assets')}
-                            className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${libraryTab === 'assets' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                            className={`flex-1 py-1.5 px-3 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all whitespace-nowrap ${libraryTab === 'assets' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                         >
-                            Assets
+                            Session
                         </button>
                         <button
                             onClick={() => setLibraryTab('manipulatives')}
-                            className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${libraryTab === 'manipulatives' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                            className={`flex-1 py-1.5 px-3 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all whitespace-nowrap ${libraryTab === 'manipulatives' ? 'bg-white text-purple-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                         >
-                            Manipulatives
+                            Tools
                         </button>
                     </div>
 
                     <div className="flex-1 overflow-y-auto pr-1 custom-scrollbar">
-                        {libraryTab === 'assets' ? (
+                        {libraryTab === 'vault' ? (
+                            <div className="flex flex-col h-full -mx-4 -mb-4 border-t border-gray-100">
+                                <VaultSidebar 
+                                    onSelectAsset={handleVaultAssetSelect} 
+                                    selectedAssetId={selectedVaultAsset?.id}
+                                    currentSubject={booking?.subject?.name}
+                                />
+                            </div>
+                        ) : libraryTab === 'assets' ? (
                             <div className="grid grid-cols-1 gap-3">
                                 <div className="flex items-center justify-between mb-1 ml-1 pr-1">
                                     <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Uploaded Assets</p>
@@ -2112,21 +2119,6 @@ export default function SessionPage({ params }: SessionProps) {
                 </div>
             )}
 
-            {/* VAULT SIDEBAR (TUTOR ONLY) */}
-            {user?.role === 'tutor' && showVault && (
-                <div className="absolute left-4 top-[60px] bottom-24 w-80 hidden md:flex bg-white/95 backdrop-blur-xl border border-indigo-500/20 shadow-2xl rounded-2xl overflow-hidden pointer-events-auto z-50">
-                    <VaultSidebar 
-                        onSelectAsset={handleVaultAssetSelect} 
-                        selectedAssetId={selectedVaultAsset?.id}
-                    />
-                    <button 
-                        onClick={() => setShowVault(false)}
-                        className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                        <X size={16} />
-                    </button>
-                </div>
-            )}
 
 
             {/* ATTENDANCE TRACKER OVERLAY */}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Shield, Book, Eye, Search, Clock, FileText } from 'lucide-react';
+import { Shield, Book, Eye, Search, Clock, FileText, ChevronLeft } from 'lucide-react';
 import { vaultApi, VaultAsset } from '@/app/lib/vault';
 import { useAuthContext } from '@/app/context/AuthContext';
 import ProtectedClient from '@/app/components/ProtectedClient';
@@ -38,15 +38,19 @@ export default function StudentVaultPage() {
   return (
     <ProtectedClient roles={['student']}>
       <div className="container mx-auto py-12 px-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-          <div>
-            <h1 className="text-4xl font-black text-(--color-text-primary) tracking-tighter mb-2 flex items-center gap-3">
-              <Shield className="text-indigo-500" size={32} />
-              My Study Vault
-            </h1>
-            <p className="text-text-secondary text-lg">Access documents shared by your tutors for review and study.</p>
-          </div>
+        <div className="mb-8">
+          <a href="/students/dashboard" className="text-indigo-600 hover:text-indigo-700 text-sm font-semibold flex items-center gap-2 mb-4 group">
+            <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+            Back to Dashboard
+          </a>
+          <h1 className="text-4xl font-black text-(--color-text-primary) flex items-center gap-4">
+            <Shield className="text-indigo-500" size={36} />
+            Study Vault
+          </h1>
+          <p className="text-text-secondary mt-2">Access all materials and manipulatives shared during your sessions.</p>
+        </div>
 
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div className="relative w-full md:w-96">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
             <input 

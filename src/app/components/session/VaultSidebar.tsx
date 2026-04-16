@@ -7,25 +7,27 @@ import { Search, FileText, Check, Loader2, ShieldCheck, Info } from 'lucide-reac
 interface VaultSidebarProps {
   onSelectAsset: (asset: VaultAsset) => void;
   selectedAssetId?: string;
+  currentSubject?: string;
 }
 
-export default function VaultSidebar({ onSelectAsset, selectedAssetId }: VaultSidebarProps) {
+export default function VaultSidebar({ onSelectAsset, selectedAssetId, currentSubject }: VaultSidebarProps) {
   const [assets, setAssets] = useState<VaultAsset[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const fetchAssets = async () => {
+    try {
+      setLoading(true);
+      const data = await vaultApi.getAssets();
+      setAssets(data);
+    } catch (error) {
+      console.error('Failed to fetch session materials from vault', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchAssets = async () => {
-      try {
-        setLoading(true);
-        const data = await vaultApi.getAssets();
-        setAssets(data);
-      } catch (error) {
-        console.error('Failed to fetch session materials from vault', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchAssets();
   }, []);
 
@@ -37,10 +39,20 @@ export default function VaultSidebar({ onSelectAsset, selectedAssetId }: VaultSi
   return (
     <div className="flex flex-col h-full bg-surface border-l border-border select-none">
       <div className="p-4 border-b border-border bg-linear-to-b from-indigo-500/5 to-transparent">
-        <h3 className="text-sm font-bold flex items-center gap-2 text-indigo-500 uppercase tracking-wider">
-          <ShieldCheck size={16} />
-          Safe Vault Materials
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold flex items-center gap-2 text-indigo-500 uppercase tracking-wider">
+            <ShieldCheck size={16} />
+            Safe Vault Materials
+          </h3>
+          <button 
+            onClick={fetchAssets}
+            disabled={loading}
+            className="p-1 hover:bg-indigo-500/10 rounded-lg text-indigo-500 transition-all active:rotate-180 disabled:opacity-50"
+            title="Refresh vault"
+          >
+            <Loader2 size={14} className={loading ? 'animate-spin' : ''} />
+          </button>
+        </div>
         <p className="text-[10px] text-text-secondary mt-1">Admin-approved session assets.</p>
         
         <div className="relative mt-4">
@@ -68,16 +80,36 @@ export default function VaultSidebar({ onSelectAsset, selectedAssetId }: VaultSi
           </div>
         ) : (
           <div className="space-y-1">
-            {filteredAssets.map((asset) => (
-              <button
-                key={asset.id}
-                onClick={() => onSelectAsset(asset)}
-                className={`w-full group text-left p-3 rounded-xl border transition-all flex items-start gap-3 ${
-                  selectedAssetId === asset.id 
-                    ? 'bg-indigo-500/10 border-indigo-500/30' 
-                    : 'bg-transparent border-transparent hover:bg-surface-secondary hover:border-border'
-                }`}
-              >
+            {filteredAssets
+              .sort((a, b) => {
+                // Highlight current subject matches
+                if (currentSubject) {
+                  const aMatch = a.title.toLowerCase().includes(currentSubject.toLowerCase());
+                  const bMatch = b.title.toLowerCase().includes(currentSubject.toLowerCase());
+                  if (aMatch && !bMatch) return -1;
+                  if (!aMatch && bMatch) return 1;
+                }
+                return 0;
+              })
+              .map((asset) => {
+                const isSubjectMatch = currentSubject && (
+                  asset.title.toLowerCase().includes(currentSubject.toLowerCase()) ||
+                  asset.description?.toLowerCase().includes(currentSubject.toLowerCase())
+                );
+
+                return (
+                  <button
+                    key={asset.id}
+                    onClick={() => onSelectAsset(asset)}
+                    className={`w-full group text-left p-3 rounded-xl border transition-all flex items-start gap-3 relative overflow-hidden ${
+                      selectedAssetId === asset.id 
+                        ? 'bg-indigo-500/10 border-indigo-500/30' 
+                        : 'bg-transparent border-transparent hover:bg-surface-secondary hover:border-border'
+                    }`}
+                  >
+                    {isSubjectMatch && (
+                      <div className="absolute top-0 right-0 w-2 h-2 bg-indigo-500 rounded-bl-lg" />
+                    )}
                 <div className={`mt-0.5 p-2 rounded-lg ${
                   asset.file_type === 'PDF' ? 'bg-red-500/10 text-red-500' : 'bg-orange-500/10 text-orange-500'
                 }`}>
@@ -90,8 +122,9 @@ export default function VaultSidebar({ onSelectAsset, selectedAssetId }: VaultSi
                   </div>
                   <p className="text-[10px] text-text-secondary line-clamp-1 mt-0.5">{asset.description || 'No description'}</p>
                 </div>
-              </button>
-            ))}
+                  </button>
+                );
+              })}
           </div>
         )}
       </div>
