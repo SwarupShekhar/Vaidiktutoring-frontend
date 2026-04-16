@@ -124,250 +124,224 @@ export default function AdminDashboardPage() {
     return (
         <ProtectedClient roles={['admin']}>
             <div className="min-h-screen p-4 md:p-8 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-top-4 duration-700">
-
-                {/* HEADER SECTION */}
-                <header className="bg-glass rounded-4xl p-8 md:p-10 border border-white/20 shadow-xl relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 opacity-5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
-                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div>
-                            <div className="flex items-center gap-3 mb-2">
-                                <div className="p-2 bg-blue-500/10 rounded-lg relative">
-                                    <ShieldCheck className="text-blue-500" size={20} />
-                                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-bg animate-pulse" />
+                {/* BENTO GRID START */}
+                <div className="grid grid-cols-12 gap-6 pb-20">
+                    
+                    {/* 1. WELCOME & IDENTITY TILE (Col 1-5, Row 1) */}
+                    <div className="col-span-full lg:col-span-5 bg-linear-to-br from-indigo-600 to-purple-700 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl flex flex-col justify-center min-h-[220px] group">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-1000" />
+                        <div className="relative z-10 text-left">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
+                                    <ShieldCheck size={20} />
                                 </div>
-                                <span className="text-xs font-black uppercase tracking-widest text-blue-500">Operation Center</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Command Authority</span>
                             </div>
-                            <h1 className="text-3xl md:text-5xl font-black text-(--color-text-primary) tracking-tight">
-                                {getGreeting()}, {user?.firstName || user?.first_name || 'Swarup'}
+                            <h1 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight mb-4 text-left">
+                                {getGreeting()},<br />
+                                <span className="opacity-80 font-medium">{user?.firstName || user?.first_name || 'Admin'}</span>
                             </h1>
-                            <p className="text-text-secondary text-lg mt-2 opacity-80 font-medium">
-                                Everything is running smoothly. Here is your overview.
-                            </p>
-                        </div>
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => setShowAllocation(true)}
-                                className="px-6 py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:scale-[1.03] active:scale-95 transition-all text-sm flex items-center gap-2 relative"
-                            >
-                                <Zap size={18} />
-                                Quick Allocation
-                                {stats.pendingAllocations > 0 && (
-                                    <span className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white animate-bounce shadow-lg">
-                                        {stats.pendingAllocations}
-                                    </span>
-                                )}
-                            </button>
+                            <div className="flex items-center gap-2 text-white/60 text-sm">
+                                <Activity size={14} className="text-emerald-400 animate-pulse" />
+                                <span>System status: <span className="text-white font-bold uppercase text-[10px] tracking-widest">Nominal</span></span>
+                            </div>
                         </div>
                     </div>
-                </header>
 
-                <ActiveSessionsMonitor />
-
-                {/* ANALYTICS SECTION */}
-                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                    <div onClick={() => setShowStudents(true)} className="cursor-pointer group">
-                        <StatCard
-                            icon={GraduationCap}
-                            label="Total Students"
-                            value={stats.students}
-                            color="#3b82f6"
-                            description="Active learners"
-                            loading={loading}
-                        />
+                    {/* 2. LIVE STATS BAR (Col 6-12, Row 1) */}
+                    <div className="col-span-full lg:col-span-7 grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div onClick={() => setShowStudents(true)} className="bg-glass rounded-3xl p-6 border border-white/10 hover:border-blue-500/50 transition-all cursor-pointer group flex flex-col justify-between">
+                            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+                                <GraduationCap size={20} />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-black text-(--color-text-primary)">{stats.students}</p>
+                                <p className="text-[10px] uppercase font-black tracking-widest text-text-secondary">Students</p>
+                            </div>
+                        </div>
+                        <div className="bg-glass rounded-3xl p-6 border border-white/10 hover:border-purple-500/50 transition-all group flex flex-col justify-between">
+                            <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
+                                <Users size={20} />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-black text-(--color-text-primary)">{stats.parents}</p>
+                                <p className="text-[10px] uppercase font-black tracking-widest text-text-secondary">Parents</p>
+                            </div>
+                        </div>
+                        <div onClick={() => setShowTutors(true)} className="bg-glass rounded-3xl p-6 border border-white/10 hover:border-amber-500/50 transition-all cursor-pointer group flex flex-col justify-between">
+                            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform">
+                                <UserCheck size={20} />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-black text-(--color-text-primary)">{stats.tutors}</p>
+                                <p className="text-[10px] uppercase font-black tracking-widest text-text-secondary">Tutors</p>
+                            </div>
+                        </div>
+                        <div className="bg-glass rounded-3xl p-6 border border-white/10 hover:border-emerald-500/50 transition-all group flex flex-col justify-between">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+                                <Activity size={20} />
+                            </div>
+                            <div>
+                                <p className="text-2xl font-black text-(--color-text-primary)">{stats.activeNow}</p>
+                                <p className="text-[10px] uppercase font-black tracking-widest text-text-secondary">Live Sessions</p>
+                            </div>
+                        </div>
                     </div>
-                    <StatCard
-                        icon={Users}
-                        label="Total Parents"
-                        value={stats.parents}
-                        color="#8b5cf6"
-                        description="Family accounts"
-                        loading={loading}
-                    />
-                    <div onClick={() => setShowTutors(true)} className="cursor-pointer group">
-                        <StatCard
-                            icon={UserCheck}
-                            label="Total Tutors"
-                            value={stats.tutors}
-                            color="#f59e0b"
-                            description="Verified experts"
-                            loading={loading}
-                        />
-                    </div>
-                    <div onClick={() => setShowTutors(true)} className="cursor-pointer group">
-                        <StatCard
-                            icon={ShieldAlert}
-                            label="Inactive Tutors"
-                            value={stats.inactiveTutors}
-                            color="#ef4444"
-                            description="Need attention"
-                            loading={loading}
-                        />
-                    </div>
-                    <StatCard
-                        icon={Activity}
-                        label="Live Now"
-                        value={stats.activeNow}
-                        color="#10b981"
-                        description="Ongoing sessions"
-                        loading={loading}
-                    />
-                </section>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* MANAGEMENT CONTROLS */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-glass rounded-3xl p-8 border border-white/20 shadow-sm relative overflow-hidden">
-                            <h2 className="text-2xl font-black text-(--color-text-primary) mb-6 flex items-center gap-3">
-                                <Zap className="text-yellow-500" size={24} />
-                                Tutor Management
-                            </h2>
+                    {/* 3. ACTIVE MONITOR TILE (Full Width, Row 2) */}
+                    <div className="col-span-full bg-glass rounded-4xl p-2 border border-blue-500/20 shadow-2xl overflow-hidden min-h-[140px]">
+                        <ActiveSessionsMonitor />
+                    </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* 4. MAIN OPERATIONAL HUB (Col 1-8, Row 3-4) */}
+                    <div className="col-span-full lg:col-span-8 flex flex-col gap-6">
+                        {/* BOOKINGS TILE */}
+                        <div className="bg-glass rounded-4xl p-6 border border-white/10 shadow-sm flex-1">
+                            <div className="flex items-center justify-between mb-6 px-2">
+                                <div className="flex items-center gap-3">
+                                    <h2 className="text-lg font-black uppercase tracking-tighter text-(--color-text-primary) flex items-center gap-2">
+                                        <Calendar size={18} className="text-blue-500" />
+                                        Session Orchestration
+                                    </h2>
+                                </div>
                                 <button
                                     onClick={() => setShowAllocation(true)}
-                                    className="p-6 rounded-2xl bg-linear-to-br from-purple-500 to-indigo-600 text-white shadow-lg hover:scale-[1.02] active:scale-95 transition-all group flex flex-col justify-between"
+                                    className="px-4 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all"
                                 >
-                                    <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-4">
-                                        <Zap size={20} />
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="font-bold text-lg leading-tight">Allocate Tutor</p>
-                                        <p className="text-xs text-white/70 mt-1">Assign to student</p>
-                                    </div>
+                                    New Allocation
                                 </button>
-
-                                <Link href="/admin/tutors/new" className="p-6 rounded-2xl bg-white/40 border border-white/40 hover:bg-white/60 transition-all group flex flex-col justify-between hover:border-blue-400">
-                                    <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                        <Plus size={20} />
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="font-bold text-lg leading-tight text-(--color-text-primary)">Add Tutor</p>
-                                        <p className="text-xs text-text-secondary mt-1">Onboard expert</p>
-                                    </div>
-                                </Link>
-
-                                <Link href="/admin/blogs/new" className="p-6 rounded-2xl bg-white/40 border border-white/40 hover:bg-white/60 transition-all group flex flex-col justify-between hover:border-pink-400">
-                                    <div className="w-10 h-10 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                        <PenTool size={20} />
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="font-bold text-lg leading-tight text-(--color-text-primary)">Publish Blog</p>
-                                        <p className="text-xs text-text-secondary mt-1">Write new post</p>
-                                    </div>
-                                </Link>
-
-                                <Link href="/admin/vault" className="p-6 rounded-2xl bg-white/40 border border-white/40 hover:bg-white/60 transition-all group flex flex-col justify-between hover:border-indigo-400">
-                                    <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                        <Shield size={20} />
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="font-bold text-lg leading-tight text-(--color-text-primary)">Manage Vault</p>
-                                        <p className="text-xs text-text-secondary mt-1">Assets & Documents</p>
-                                    </div>
-                                </Link>
                             </div>
-                        </div>
-
-                        {/* BOOKINGS TABLE SECTION */}
-                        <div className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm">
                             <BookingsTableSection />
                         </div>
 
-                        {/* SUPPORT TICKETS SECTION */}
-                        <div className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm" id="support-section">
-                            <div className="flex items-center gap-2 mb-4">
-                                {newTicketCount > 0 && (
-                                    <span className="px-2.5 py-1 bg-red-500 text-white text-xs font-black rounded-full animate-bounce">
-                                        {newTicketCount} new
-                                    </span>
-                                )}
+                        {/* BLOG MANAGEMENT TILE */}
+                        <div className="bg-glass rounded-4xl p-6 border border-white/10 shadow-sm">
+                            <div className="flex items-center justify-between mb-6 px-2">
+                                <h2 className="text-lg font-black uppercase tracking-tighter text-(--color-text-primary) flex items-center gap-2">
+                                    <PenTool size={18} className="text-pink-500" />
+                                    Content Engine
+                                </h2>
+                                <Link href="/admin/blogs/new" className="px-4 py-2 border border-white/10 hover:bg-white/5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all">
+                                    Create Post
+                                </Link>
                             </div>
-                            <SupportTicketsSection />
+                            <BlogManagementSection />
                         </div>
                     </div>
 
-                    {/* SIDEBAR: SYSTEM HEALTH & ACTIVITY */}
-                    <div className="space-y-6">
-                        <div className="bg-glass rounded-3xl p-8 border border-white/20 shadow-sm relative overflow-hidden">
-                            <h2 className="text-xl font-bold text-(--color-text-primary) mb-6 flex items-center gap-3">
-                                <Activity className="text-blue-500 animate-pulse" size={20} />
-                                Activity Pulse
-                            </h2>
-                            <ActivityPulseFeed />
-                        </div>
-
-                        <div className="bg-glass rounded-3xl p-8 border border-white/20 shadow-sm">
-                            <h2 className="text-xl font-bold text-(--color-text-primary) mb-6 flex items-center gap-3">
-                                <ShieldCheck className="text-green-500" size={20} />
-                                System Health
-                            </h2>
-                            <div className="space-y-6">
-                                <div className="flex items-center justify-between p-4 rounded-xl bg-green-50/50 border border-green-100">
-                                    <div className="flex items-center gap-3">
-                                        <ShieldCheck className="text-green-600" size={18} />
-                                        <span className="text-sm font-bold text-green-800">Backups Active</span>
-                                    </div>
-                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                </div>
-
-                                <div className="space-y-3">
-                                    <div className="flex justify-between text-xs font-bold text-text-secondary uppercase tracking-widest opacity-60">
-                                        <span>Status</span>
-                                        <span>Live</span>
-                                    </div>
-                                    <div className="flex justify-between items-center py-2 border-b border-white/10">
-                                        <span className="text-sm">API Server</span>
-                                        <span className="text-xs font-black text-green-500">OPERATIONAL</span>
-                                    </div>
-                                    <div className="flex justify-between items-center py-2 border-b border-white/10">
-                                        <span className="text-sm">DB Cluster</span>
-                                        <span className="text-xs font-black text-green-500">STABLE</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* REFRESH / ACTION CARD */}
-                        <div className="bg-linear-to-br from-blue-600 to-indigo-700 rounded-3xl p-1 shadow-xl">
-                            <div className="bg-glass p-8 rounded-[1.4rem] text-white">
-                                <h3 className="font-bold text-xl mb-2">Need Help?</h3>
-                                <p className="text-sm text-white/80 mb-6 leading-relaxed">Check the documentation or contact system support for assistance.</p>
-                                <button className="w-full py-4 bg-white text-blue-700 font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-blue-50 transition-all">
-                                    View Support Docs
-                                    <ChevronRight size={18} />
+                    {/* 5. COMMAND TILE STACK (Col 9-12, Row 3-4) */}
+                    <div className="col-span-full lg:col-span-4 flex flex-col gap-6">
+                        
+                        {/* QUICK ACTIONS BENTO */}
+                        <div className="bg-surface rounded-[2.5rem] p-8 border border-white/10 shadow-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-linear-to-b from-indigo-500 via-purple-500 to-transparent" />
+                            <h2 className="text-xl font-black text-(--color-text-primary) mb-8">Executive Panels</h2>
+                            <div className="grid grid-cols-2 gap-4">
+                                <button onClick={() => setShowAllocation(true)} className="flex flex-col items-center justify-center p-6 bg-glass border border-white/5 rounded-3xl hover:border-indigo-500/50 transition-all group/btn">
+                                    <Zap size={24} className="text-indigo-500 mb-2 group-hover/btn:scale-110 transition-transform" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Allocate</span>
+                                </button>
+                                <Link href="/admin/tutors/new" className="flex flex-col items-center justify-center p-6 bg-glass border border-white/5 rounded-3xl hover:border-blue-500/50 transition-all group/btn">
+                                    <Plus size={24} className="text-blue-500 mb-2 group-hover/btn:scale-110 transition-transform" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Add Tutor</span>
+                                </Link>
+                                <Link href="/admin/vault" className="flex flex-col items-center justify-center p-6 bg-glass border border-white/5 rounded-3xl hover:border-emerald-500/50 transition-all group/btn">
+                                    <Shield size={24} className="text-emerald-500 mb-2 group-hover/btn:scale-110 transition-transform" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Vault</span>
+                                </Link>
+                                <button onClick={() => (document.getElementById('support-section') as HTMLElement)?.scrollIntoView({behavior: 'smooth'})} className="flex flex-col items-center justify-center p-6 bg-glass border border-white/5 rounded-3xl hover:border-pink-500/50 transition-all group/btn">
+                                    <LifeBuoy size={24} className="text-pink-500 mb-2 group-hover/btn:scale-110 transition-transform" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Support</span>
                                 </button>
                             </div>
                         </div>
+
+                        {/* SUPPORT TICKETS BENTO */}
+                        <div id="support-section" className="bg-white/5 dark:bg-black/20 rounded-[2.5rem] p-8 border border-white/5 flex-1 relative overflow-hidden">
+                            <div className="flex items-center justify-between mb-8">
+                                <h2 className="text-xl font-black text-(--color-text-primary)">Active Intelligence</h2>
+                                {newTicketCount > 0 && (
+                                    <span className="px-3 py-1 bg-red-500 text-white text-[10px] font-black rounded-full animate-pulse uppercase tracking-widest">
+                                        {newTicketCount} Urgent
+                                    </span>
+                                )}
+                            </div>
+                            <div className="max-h-[400px] overflow-hidden">
+                                <SupportTicketsSection />
+                            </div>
+                            <div className="absolute bottom-0 left-0 right-0 h-20 bg-linear-to-t from-background to-transparent pointer-events-none" />
+                        </div>
                     </div>
+
+                    {/* 6. TECHNICAL HEALTH & SYSTEM ANALYTICS (Col 1-12, Row 5) */}
+                    <div className="col-span-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        
+                        <div className="bg-glass rounded-4xl p-6 border border-white/10 flex items-center justify-between group">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-2xl group-hover:rotate-12 transition-transform">
+                                    <ShieldCheck size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-black text-(--color-text-primary) uppercase tracking-widest">System Integrity</p>
+                                    <p className="text-[10px] text-emerald-500 font-bold">ALL SERVICES OPERATIONAL</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-1">
+                                {[1, 2, 3, 4, 5].map(i => <div key={i} className="w-1 h-3 bg-emerald-500/40 rounded-full" />)}
+                            </div>
+                        </div>
+
+                        <div className="bg-glass rounded-4xl p-6 border border-white/10 flex items-center justify-between group">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-blue-500/10 text-blue-500 rounded-2xl group-hover:rotate-12 transition-transform">
+                                    <Activity size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-black text-(--color-text-primary) uppercase tracking-widest">Activity Pulse</p>
+                                    <p className="text-[10px] text-text-secondary font-bold">LIVE METRIC STREAM ACTIVE</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-linear-to-br from-gray-900 to-black rounded-4xl p-6 border border-white/5 flex items-center justify-between group cursor-help">
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 group-hover:text-white/80 transition-colors">
+                                StudyHours Dashboard v4.2.0
+                            </p>
+                            <ChevronRight size={16} className="text-white/20 group-hover:text-white transition-colors" />
+                        </div>
+                    </div>
+
                 </div>
+                {/* BENTO GRID END */}
+
 
                 {/* BLOG MANAGEMENT SECTION */}
                 <div className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm">
                     <BlogManagementSection />
                 </div>
-            </div>
 
-            {/* MODALS */}
-            <StudentListModal isOpen={showStudents} onClose={() => setShowStudents(false)} />
-            <TutorAllocationModal 
-                isOpen={showAllocation} 
-                onClose={() => {
-                    setShowAllocation(false);
-                    setSelectedBooking(null);
-                    // trigger refresh of bookings table
-                    window.dispatchEvent(new CustomEvent('refresh-bookings-table'));
-                }} 
-                booking={selectedBooking}
-            />
-            <TutorListModal isOpen={showTutors} onClose={() => setShowTutors(false)} />
-            <AdminSessionSummaryModal 
-                isOpen={showSummary} 
-                onClose={() => {
-                    setShowSummary(false);
-                    setSummarySessionId(null);
-                }} 
-                sessionId={summarySessionId}
-            />
-        </ProtectedClient >
+                {/* MODALS */}
+                <StudentListModal isOpen={showStudents} onClose={() => setShowStudents(false)} />
+                <TutorAllocationModal 
+                    isOpen={showAllocation} 
+                    onClose={() => {
+                        setShowAllocation(false);
+                        setSelectedBooking(null);
+                        // trigger refresh of bookings table
+                        window.dispatchEvent(new CustomEvent('refresh-bookings-table'));
+                    }} 
+                    booking={selectedBooking}
+                />
+                <TutorListModal isOpen={showTutors} onClose={() => setShowTutors(false)} />
+                <AdminSessionSummaryModal 
+                    isOpen={showSummary} 
+                    onClose={() => {
+                        setShowSummary(false);
+                        setSummarySessionId(null);
+                    }} 
+                    sessionId={summarySessionId}
+                />
+            </div>
+        </ProtectedClient>
     );
 }
