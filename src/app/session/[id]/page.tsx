@@ -1491,9 +1491,9 @@ export default function SessionPage({ params }: SessionProps) {
             )}
 
             {/* FLEX LAYOUT: Whiteboard + Sidebar Container */}
-            <div className="flex-1 flex flex-row overflow-hidden">
+            <div className="flex-1 flex flex-row overflow-hidden mt-[52px]">
                 {/* 1. BASE LAYER: EXCALIDRAW WHITEBOARD (left side) */}
-                <div className={`flex-1 z-0 whiteboard-container ${isToolbarCollapsed ? "whiteboard-collapsed" : ""} ${user?.role === 'student' || user?.role === 'parent' ? (hasPenAccess ? '' : 'pointer-events-none') : ''}`}>
+                <div className={`flex-1 relative z-0 whiteboard-container ${isToolbarCollapsed ? "whiteboard-collapsed" : ""} ${user?.role === 'student' || user?.role === 'parent' ? (hasPenAccess ? '' : 'pointer-events-none') : ''}`}>
                 {ExcalidrawComp ? (
                     <>
                         <ExcalidrawComp
