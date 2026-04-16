@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import GCSEPageClient from "./GCSEPageClient";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Expert GCSE Tutors Online | Personalized GCSE Online Tuition",
   description: "Boost GCSE grades with expert tutors. 87% of students improved 2+ grades. Personalized tuition for AQA, Edexcel, OCR exam boards. Build conceptual foundations and exam confidence.",

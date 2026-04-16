@@ -128,64 +128,68 @@ export default function AdminDashboardPage() {
                 <div className="grid grid-cols-12 gap-6 pb-20">
                     
                     {/* 1. WELCOME & IDENTITY TILE (Col 1-5, Row 1) */}
-                    <div className="col-span-full lg:col-span-5 bg-linear-to-br from-indigo-600 to-purple-700 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl flex flex-col justify-center min-h-[220px] group">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-1000" />
+                    <div className="col-span-full lg:col-span-5 bg-slate-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl flex flex-col justify-center min-h-[260px] group border border-white/5">
+                        {/* Dynamic Background Noise */}
+                        <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
+                        <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-600/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:bg-indigo-600/30 transition-colors duration-1000" />
+                        
                         <div className="relative z-10 text-left">
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="p-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
-                                    <ShieldCheck size={20} />
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                                    <span className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-indigo-400">System_Live</span>
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Command Authority</span>
+                                <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">v4.2.0-STABLE</span>
                             </div>
-                            <h1 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight mb-4 text-left">
+
+                            <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-[0.9] mb-6">
                                 {getGreeting()},<br />
-                                <span className="opacity-80 font-medium">{user?.firstName || user?.first_name || 'Admin'}</span>
+                                <span className="text-indigo-400 opacity-90">{user?.firstName || 'Admin'}</span>
                             </h1>
-                            <div className="flex items-center gap-2 text-white/60 text-sm">
-                                <Activity size={14} className="text-emerald-400 animate-pulse" />
-                                <span>System status: <span className="text-white font-bold uppercase text-[10px] tracking-widest">Nominal</span></span>
+
+                            <div className="flex items-center gap-6 pt-4 border-t border-white/5">
+                                <div>
+                                    <p className="text-[8px] font-mono text-white/30 uppercase tracking-[0.2em] mb-1">Active Core</p>
+                                    <p className="text-sm font-black text-white/90 uppercase tracking-widest">{stats.activeNow} Node Clusters</p>
+                                </div>
+                                <div>
+                                    <p className="text-[8px] font-mono text-white/30 uppercase tracking-[0.2em] mb-1">Uptime</p>
+                                    <p className="text-sm font-black text-white/90 uppercase tracking-widest">99.98%</p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* 2. LIVE STATS BAR (Col 6-12, Row 1) */}
+                    {/* 2. INSTRUMENTATION BAR (Stats) */}
                     <div className="col-span-full lg:col-span-7 grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div onClick={() => setShowStudents(true)} className="bg-glass rounded-3xl p-6 border border-white/10 hover:border-blue-500/50 transition-all cursor-pointer group flex flex-col justify-between">
-                            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
-                                <GraduationCap size={20} />
+                        {[
+                            { label: 'Students', value: stats.students, color: 'blue', icon: GraduationCap, onclick: () => setShowStudents(true) },
+                            { label: 'Tutors', value: stats.tutors, color: 'amber', icon: UserCheck, onclick: () => setShowTutors(true) },
+                            { label: 'Live Pulse', value: stats.activeNow, color: 'emerald', icon: Activity },
+                            { label: 'Parents', value: stats.parents, color: 'purple', icon: Users }
+                        ].map((stat, idx) => (
+                            <div 
+                                key={idx} 
+                                onClick={stat.onclick}
+                                className={`bg-slate-900 rounded-4xl p-6 border border-white/5 hover:border-${stat.color}-500/30 transition-all group relative cursor-pointer overflow-hidden shadow-sm`}
+                            >
+                                <div className="flex flex-col h-full justify-between relative z-10">
+                                    <div className={`w-10 h-10 rounded-xl bg-${stat.color}-500/10 flex items-center justify-center text-${stat.color}-500 mb-4 group-hover:scale-110 transition-transform`}>
+                                        <stat.icon size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="text-2xl font-black text-white tracking-tighter mb-1">{stat.value}</p>
+                                        <p className="text-[9px] uppercase font-mono font-black tracking-[0.2em] text-white/30">{stat.label}</p>
+                                    </div>
+                                </div>
+                                {/* Technical Detail: Dotted Visual Indicator */}
+                                <div className="absolute bottom-4 right-4 flex gap-0.5">
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className={`w-1 h-3 rounded-full ${i <= 2 ? `bg-${stat.color}-500/40` : 'bg-white/5'}`} />
+                                    ))}
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-2xl font-black text-(--color-text-primary)">{stats.students}</p>
-                                <p className="text-[10px] uppercase font-black tracking-widest text-text-secondary">Students</p>
-                            </div>
-                        </div>
-                        <div className="bg-glass rounded-3xl p-6 border border-white/10 hover:border-purple-500/50 transition-all group flex flex-col justify-between">
-                            <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
-                                <Users size={20} />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-black text-(--color-text-primary)">{stats.parents}</p>
-                                <p className="text-[10px] uppercase font-black tracking-widest text-text-secondary">Parents</p>
-                            </div>
-                        </div>
-                        <div onClick={() => setShowTutors(true)} className="bg-glass rounded-3xl p-6 border border-white/10 hover:border-amber-500/50 transition-all cursor-pointer group flex flex-col justify-between">
-                            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:scale-110 transition-transform">
-                                <UserCheck size={20} />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-black text-(--color-text-primary)">{stats.tutors}</p>
-                                <p className="text-[10px] uppercase font-black tracking-widest text-text-secondary">Tutors</p>
-                            </div>
-                        </div>
-                        <div className="bg-glass rounded-3xl p-6 border border-white/10 hover:border-emerald-500/50 transition-all group flex flex-col justify-between">
-                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
-                                <Activity size={20} />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-black text-(--color-text-primary)">{stats.activeNow}</p>
-                                <p className="text-[10px] uppercase font-black tracking-widest text-text-secondary">Live Sessions</p>
-                            </div>
-                        </div>
+                        ))}
                     </div>
 
                     {/* 3. ACTIVE MONITOR TILE (Full Width, Row 2) */}
@@ -232,29 +236,80 @@ export default function AdminDashboardPage() {
                     {/* 5. COMMAND TILE STACK (Col 9-12, Row 3-4) */}
                     <div className="col-span-full lg:col-span-4 flex flex-col gap-6">
                         
-                        {/* QUICK ACTIONS BENTO */}
-                        <div className="bg-surface rounded-[2.5rem] p-8 border border-white/10 shadow-2xl relative overflow-hidden group">
-                            <div className="absolute top-0 left-0 w-1 h-full bg-linear-to-b from-indigo-500 via-purple-500 to-transparent" />
-                            <h2 className="text-xl font-black text-(--color-text-primary) mb-8">Executive Panels</h2>
-                            <div className="grid grid-cols-2 gap-4">
-                                <button onClick={() => setShowAllocation(true)} className="flex flex-col items-center justify-center p-6 bg-glass border border-white/5 rounded-3xl hover:border-indigo-500/50 transition-all group/btn">
-                                    <Zap size={24} className="text-indigo-500 mb-2 group-hover/btn:scale-110 transition-transform" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Allocate</span>
-                                </button>
-                                <Link href="/admin/tutors/new" className="flex flex-col items-center justify-center p-6 bg-glass border border-white/5 rounded-3xl hover:border-blue-500/50 transition-all group/btn">
-                                    <Plus size={24} className="text-blue-500 mb-2 group-hover/btn:scale-110 transition-transform" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Add Tutor</span>
-                                </Link>
-                                <Link href="/admin/vault" className="flex flex-col items-center justify-center p-6 bg-glass border border-white/5 rounded-3xl hover:border-emerald-500/50 transition-all group/btn">
-                                    <Shield size={24} className="text-emerald-500 mb-2 group-hover/btn:scale-110 transition-transform" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Vault</span>
-                                </Link>
-                                <button onClick={() => (document.getElementById('support-section') as HTMLElement)?.scrollIntoView({behavior: 'smooth'})} className="flex flex-col items-center justify-center p-6 bg-glass border border-white/5 rounded-3xl hover:border-pink-500/50 transition-all group/btn">
-                                    <LifeBuoy size={24} className="text-pink-500 mb-2 group-hover/btn:scale-110 transition-transform" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Support</span>
-                                </button>
+                        {/* COMMAND CONSOLE (Executive Actions) */}
+                        <div className="bg-slate-900 rounded-[2.5rem] p-8 border border-white/5 shadow-2xl relative overflow-hidden group">
+                            {/* Technical Grid Overlay */}
+                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] bg-size-[20px_20px]" />
+                            <div className="absolute top-0 right-0 p-4 font-mono text-[8px] text-white/20 tracking-tighter uppercase">
+                                Console_v4.2 // SYS_AUTH_LVL_0
+                            </div>
+                            
+                            <div className="relative z-10">
+                                <h2 className="text-xl font-black text-white mb-8 flex items-center gap-3">
+                                    <Zap className="text-indigo-400" size={20} />
+                                    Executive Modules
+                                </h2>
+
+                                <div className="space-y-4">
+                                    {/* PRIMARY ACTION: THE ALLOCATOR */}
+                                    <button 
+                                        onClick={() => setShowAllocation(true)} 
+                                        className="w-full p-6 bg-linear-to-r from-indigo-600 to-blue-600 rounded-[1.8rem] group/btn relative overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-xl shadow-indigo-500/20"
+                                    >
+                                        <div className="absolute top-0 right-0 p-3 opacity-20">
+                                            <Zap size={48} className="rotate-12 group-hover/btn:rotate-45 transition-transform duration-500" />
+                                        </div>
+                                        <div className="flex items-center gap-5">
+                                            <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20 backdrop-blur-xl">
+                                                <Zap size={28} className="text-white" />
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="font-black text-white text-xl tracking-tighter">Allocate Tutor</p>
+                                                <p className="text-[10px] text-white/60 font-mono uppercase tracking-widest mt-0.5">Primary OPS / Priority {stats.pendingAllocations}</p>
+                                            </div>
+                                        </div>
+                                    </button>
+
+                                    {/* SECONDARY CLUSTER */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <Link href="/admin/tutors/new" className="p-5 bg-white/5 border border-white/5 rounded-[1.8rem] hover:bg-white/10 hover:border-white/20 transition-all group/sub text-left">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="p-2 bg-blue-500/10 rounded-xl text-blue-400">
+                                                    <Plus size={18} />
+                                                </div>
+                                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                                            </div>
+                                            <p className="text-white font-bold text-sm">Add Tutor</p>
+                                            <p className="text-[9px] text-white/40 font-mono uppercase mt-1">Onboarding</p>
+                                        </Link>
+
+                                        <Link href="/admin/vault" className="p-5 bg-white/5 border border-white/5 rounded-[1.8rem] hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all group/sub text-left">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-400">
+                                                    <Shield size={18} />
+                                                </div>
+                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/40" />
+                                            </div>
+                                            <p className="text-white font-bold text-sm">Vault</p>
+                                            <p className="text-[9px] text-white/40 font-mono uppercase mt-1">Archival Access</p>
+                                        </Link>
+                                    </div>
+                                    
+                                    {/* SYSTEM UTILITY BUTTON */}
+                                    <button 
+                                        onClick={() => (document.getElementById('support-section') as HTMLElement)?.scrollIntoView({behavior: 'smooth'})}
+                                        className="w-full py-4 px-6 border border-white/5 rounded-2xl flex items-center justify-between hover:bg-white/5 hover:border-pink-500/30 transition-all group/btn"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <LifeBuoy size={16} className="text-pink-500" />
+                                            <span className="text-xs font-bold text-white/70">Support Operations</span>
+                                        </div>
+                                        <ChevronRight size={14} className="text-white/20 group-hover/btn:text-pink-500 transition-colors" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
+
 
                         {/* SUPPORT TICKETS BENTO */}
                         <div id="support-section" className="bg-white/5 dark:bg-black/20 rounded-[2.5rem] p-8 border border-white/5 flex-1 relative overflow-hidden">
