@@ -33,7 +33,11 @@ import StickyCTA from "../components/subjects/StickyCTA";
 import SubjectFAQ, { FAQItemType } from "../components/subjects/SubjectFAQ";
 import Counter from "../components/ui/Counter";
 
-export default function ALevelTutoringPage() {
+export default function ALevelTutoringPage({
+  testimonials = [],
+}: {
+  testimonials?: any[];
+}) {
   const { user } = useAuthContext();
 
   const aLevelFaqs: FAQItemType[] = [
@@ -77,7 +81,7 @@ export default function ALevelTutoringPage() {
                 Private A-Level Tutors Online — UK & International
               </div>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-deep-navy dark:text-white mb-6 tracking-tighter leading-[0.95] uppercase">
-                Expert A-Level Tutors Online — Private A-Level Tuition & Exam Prep
+                Elite A-Level <span className="text-sapphire text-balance">Online Tutoring</span> for Success
               </h1>
               <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-10 leading-tight">
                 A-Level Tutoring <br />
@@ -136,7 +140,7 @@ export default function ALevelTutoringPage() {
                 <div className="grid grid-cols-2 gap-6 text-center">
                   <div className="space-y-1">
                     <div className="text-xl font-black text-sapphire tracking-tighter">
-                      <Counter value={1000} suffix="+" />
+                      850+
                     </div>
                     <div className="text-[8px] font-black text-text-secondary uppercase tracking-widest leading-none">
                       SESSIONS
@@ -144,7 +148,7 @@ export default function ALevelTutoringPage() {
                   </div>
                   <div className="space-y-1">
                     <div className="text-xl font-black text-sapphire tracking-tighter">
-                      <Counter value={4.9} suffix="★" />
+                      4.9★
                     </div>
                     <div className="text-[8px] font-black text-text-secondary uppercase tracking-widest leading-none">
                       RATING
@@ -561,7 +565,7 @@ export default function ALevelTutoringPage() {
         </div>
       </section>
 
-      <ParentTestimonials />
+      <ParentTestimonials testimonials={testimonials} />
     </main>
   );
 }

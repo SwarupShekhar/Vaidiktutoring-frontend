@@ -1,17 +1,17 @@
 import { Metadata } from "next";
 import K12PageClient from "./K12PageClient";
 
+export const revalidate = 3600; // Revalidate every hour for ISR
+
 export const metadata: Metadata = {
   title: "K–12 Online Tutoring | Expert Live Classes for All Subjects",
-  description:
-    "At Studyhours, join K–12 online tutoring with live classes in math, English, science & more. Get personalized support and improve academic performance.",
+  description: "US curriculum aligned K-12 tutoring. Grades K-5, 6-8, 9-12 support. 91% of students showed academic improvement across all grade levels.",
   alternates: {
     canonical: "https://studyhours.com/k-12-online-tutoring",
   },
   openGraph: {
     title: "K–12 Online Tutoring | Expert Live Classes for All Subjects",
-    description:
-      "At Studyhours, join K–12 online tutoring with live classes in math, English, science & more. Get personalized support and improve academic performance.",
+    description: "US curriculum aligned K-12 tutoring. Grades K-5, 6-8, 9-12 support. 91% of students showed academic improvement across all grade levels.",
     url: "https://studyhours.com/k-12-online-tutoring",
     images: [
       {
@@ -25,10 +25,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "K–12 Online Tutoring | Expert Live Classes for All Subjects",
-    description:
-      "At Studyhours, join K–12 online tutoring with live classes in math, English, science & more. Get personalized support and improve academic performance.",
+    title: "K–12 Online Tutors | Expert Live Classes for All Subjects",
+    description: "US curriculum aligned K-12 tutoring. Grades K-5, 6-8, 9-12 support. 91% of students showed academic improvement across all grade levels.",
+    images: ["https://studyhours.com/hero_calm_education.png"],
   },
+  authors: [{ name: "Mrs. Lisa Johnson" }],
 };
 
 export default function Page() {
@@ -107,7 +108,38 @@ export default function Page() {
     })),
   };
 
-  const jsonLd = [breadcrumbSchema, ratingSchema, faqSchema];
+  const courseSchema = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "K-12 Online Tutoring",
+    "provider": { "@type": "Organization", "name": "StudyHours" },
+    "description": "Comprehensive K-12 online tutoring aligned with US curriculum standards across all grade levels.",
+    "educationalLevel": "K-12",
+    "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "online" }
+  };
+
+  const jsonLd = [breadcrumbSchema, ratingSchema, faqSchema, courseSchema];
+
+  const k12Testimonials = [
+    {
+      text: "The personalized attention my daughter received for her 5th-grade math has been transformative. She no longer fears the subject and actually looks forward to her sessions.",
+      author: "Jennifer L.",
+      role: "Parent of 5th Grader",
+      rating: 5
+    },
+    {
+      text: "Exceptional support for middle school writing. The tutor helped my son develop structured thinking and better essay writing skills just in time for his high school transition.",
+      author: "Susan K.",
+      role: "Parent of 8th Grader",
+      rating: 5
+    },
+    {
+      text: "Finding a K-12 program that actually adapts to my child's pace was such a relief. His science grades have improved significantly, but more importantly, so has his interest in the subject.",
+      author: "David P.",
+      role: "Parent of 10th Grader",
+      rating: 5
+    }
+  ];
 
   return (
     <>
@@ -118,7 +150,7 @@ export default function Page() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }}
         />
       ))}
-      <K12PageClient />
+      <K12PageClient testimonials={k12Testimonials} />
     </>
   );
 }

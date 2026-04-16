@@ -36,7 +36,7 @@ import SubjectFAQ, { FAQItemType } from "../components/subjects/SubjectFAQ";
 import { ConstellationBackground } from "../components/ib/ConstellationBackground";
 import Counter from "../components/ui/Counter";
 
-export default function IBTutorsPage() {
+export default function IBTutorsPage({ testimonials }: { testimonials?: any[] }) {
   const { user } = useAuthContext();
 
   const ibFaqs: FAQItemType[] = [
@@ -99,7 +99,7 @@ export default function IBTutorsPage() {
                 PREMIUM IB DIPLOMA TUTORING
               </div>
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-deep-navy dark:text-white mb-6 md:mb-8 tracking-tighter leading-[0.95] relative z-10 uppercase">
-                Expert IB Tutors Online
+                Master the <span className="text-sapphire">IB Diploma</span> with Global Experts
               </h1>
               <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-6 md:mb-10 leading-tight relative z-10">
                 International Baccalaureate <br />
@@ -146,15 +146,15 @@ export default function IBTutorsPage() {
                 <div className="grid grid-cols-3 gap-6 mb-10 text-center">
                   <div className="space-y-2">
                     <div className="text-2xl font-black text-sapphire tracking-tighter">
-                      <Counter value={1200} suffix="+" />
+                      2,400+
                     </div>
                     <div className="text-[9px] font-black text-text-secondary uppercase tracking-widest leading-none">
-                      SESSIONS
+                      HOURS TAUGHT
                     </div>
                   </div>
                   <div className="space-y-2">
                     <div className="text-2xl font-black text-sapphire tracking-tighter">
-                      <Counter value={45} suffix="" />
+                      45
                     </div>
                     <div className="text-[9px] font-black text-text-secondary uppercase tracking-widest leading-none">
                       AVG SCORE
@@ -162,7 +162,7 @@ export default function IBTutorsPage() {
                   </div>
                   <div className="space-y-2">
                     <div className="text-2xl font-black text-sapphire tracking-tighter">
-                      <Counter value={4.9} suffix="★" />
+                      4.9★
                     </div>
                     <div className="text-[9px] font-black text-text-secondary uppercase tracking-widest leading-none">
                       RATING
@@ -895,7 +895,7 @@ export default function IBTutorsPage() {
         </div>
       </section>
 
-      <ParentTestimonials />
+      <ParentTestimonials testimonials={testimonials} />
 
       <SubjectFAQ items={ibFaqs} title="Frequently Asked Questions" />
 
@@ -950,7 +950,7 @@ export default function IBTutorsPage() {
                   <div className="absolute inset-x-0 bottom-0 top-[40%] bg-linear-to-t from-sapphire/10 dark:from-sapphire/20 to-transparent" />
                   <div className="relative z-10 flex flex-col items-center">
                     <span className="text-8xl font-black text-sapphire mb-2 transition-all">
-                      <Counter value={45} suffix="" />
+                      45
                     </span>
                     <span className="text-xs font-black text-text-secondary tracking-[0.4em] uppercase text-center px-6 leading-relaxed">
                       Your Goal Score

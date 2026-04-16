@@ -4,8 +4,8 @@ import React from 'react';
 import { Star, Quote } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function ParentTestimonials() {
-    const testimonials = [
+export default function ParentTestimonials({ testimonials = [] }: { testimonials?: any[] }) {
+    const defaultTestimonials = [
         {
             text: "We were worried about the transition to high school math, but this program mapped perfectly to his Algebra 1 curriculum. His confidence has soared.",
             author: "Sarah J.",
@@ -24,10 +24,11 @@ export default function ParentTestimonials() {
             role: "Parent of IB Diploma Student",
             rating: 5
         },
-        // Duplicate for more content in the loop if needed, or just repeat the array below
     ];
 
-    const duplicatedTestimonials = [...testimonials, ...testimonials, ...testimonials, ...testimonials]; // Quadruple for safety on large screens
+    const actualTestimonials = testimonials.length > 0 ? testimonials : defaultTestimonials;
+
+    const duplicatedTestimonials = [...actualTestimonials, ...actualTestimonials, ...actualTestimonials, ...actualTestimonials]; // Quadruple for safety on large screens
 
     return (
         <section className="py-24 px-6 bg-surface overflow-hidden">

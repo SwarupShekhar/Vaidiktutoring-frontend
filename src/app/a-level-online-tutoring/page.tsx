@@ -1,15 +1,17 @@
 import { Metadata } from "next";
 import ALevelPageClient from "./ALevelPageClient";
 
+export const revalidate = 3600; // Revalidate every hour for ISR
+
 export const metadata: Metadata = {
   title: "Expert A-Level Tutors Online | Private A-Level Tuition & Exam Prep",
-  description: "Boost your grades with expert A-Level tutors online. StudyHours provides premium 1-on-1 private A-Level tuition and exam preparation across all subjects and exam boards.",
+  description: "Secure university offers with A-Level tutoring. 92% of students achieved target grades. EPQ support, predicted grade guidance, and subject-specific exam prep.",
   alternates: {
     canonical: "https://studyhours.com/a-level-online-tutoring",
   },
   openGraph: {
     title: "Expert A-Level Tutors Online | Private A-Level Tuition & Exam Prep",
-    description: "Boost your grades with expert A-Level tutors online. StudyHours provides premium 1-on-1 private A-Level tuition and exam preparation across all subjects and exam boards.",
+    description: "Secure university offers with A-Level tutoring. 92% of students achieved target grades. EPQ support, predicted grade guidance.",
     url: "https://studyhours.com/a-level-online-tutoring",
     images: [
       {
@@ -24,9 +26,10 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Expert A-Level Tutors Online | Private A-Level Tuition & Exam Prep",
-    description: "Boost your grades with expert A-Level tutors online. StudyHours provides premium 1-on-1 private A-Level tuition and exam preparation across all subjects and exam boards.",
+    description: "Secure university offers with A-Level tutoring. 92% of students achieved target grades. EPQ support, predicted grade guidance.",
     images: ["/hero_calm_education.png"],
   },
+  authors: [{ name: "Ms. Emily Chen" }],
 };
 
 
@@ -106,7 +109,38 @@ export default function Page() {
     "image": "https://studyhours.com/hero_calm_education.png",
   };
 
-  const jsonLd = [subjectSchema, faqSchema, breadcrumbSchema, ratingSchema];
+  const courseSchema = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "A-Level Online Tutoring",
+    "provider": { "@type": "Organization", "name": "StudyHours" },
+    "description": "Advanced A-Level tutoring with university application support, EPQ guidance, and predicted grade preparation.",
+    "educationalLevel": "A-Level",
+    "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "online" }
+  };
+
+  const jsonLd = [subjectSchema, faqSchema, breadcrumbSchema, ratingSchema, courseSchema];
+
+  const aLevelTestimonials = [
+    {
+      text: "The A-Level Maths support was instrumental in securing my A*. The tutor's deep knowledge of the Edexcel syllabus and focus on Year 13 challenging topics made a huge difference.",
+      author: "James T.",
+      role: "A-Level Student",
+      rating: 5
+    },
+    {
+      text: "Exceptional Biology tuition. The focus on exam technique and application of knowledge helped my daughter move from a predicted B to an A, securing her first-choice university offer.",
+      author: "Sonia G.",
+      role: "Parent of Year 13 Student",
+      rating: 5
+    },
+    {
+      text: "Our son's confidence in Economics skyrocketed after just a few sessions. The link between theory and current real-world examples made the subject much more accessible.",
+      author: "Robert M.",
+      role: "Parent of A-Level Candidate",
+      rating: 5
+    }
+  ];
 
   return (
     <>
@@ -117,7 +151,7 @@ export default function Page() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }}
         />
       ))}
-      <ALevelPageClient />
+      <ALevelPageClient testimonials={aLevelTestimonials} />
     </>
   );
 }

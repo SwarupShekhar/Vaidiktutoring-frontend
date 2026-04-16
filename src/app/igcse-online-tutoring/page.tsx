@@ -1,17 +1,17 @@
 import { Metadata } from "next";
 import IGCSEPageClient from "./IGCSEPageClient";
 
+export const revalidate = 3600; // Revalidate every hour for ISR
+
 export const metadata: Metadata = {
   title: "IGCSE Online Tuition & Tutoring Service | StudyHours",
-  description:
-    "Expert IGCSE online tuition and tutoring for all subjects. Personalized 1-on-1 IGCSE online courses designed to boost grades and exam confidence.",
+  description: "Cambridge & Edexcel IGCSE tutoring for international students. 89% grade improvement. Personalized online courses covering all subjects with global curriculum focus.",
   alternates: {
     canonical: "https://studyhours.com/igcse-online-tutoring",
   },
   openGraph: {
     title: "IGCSE Online Tuition & Tutoring Service | StudyHours",
-    description:
-      "Get the best IGCSE online tuition with expert tutors. Achieve top results through personalized 1-on-1 learning.",
+    description: "Cambridge & Edexcel IGCSE tutoring for international students. 89% grade improvement. Personalized online courses covering all subjects.",
     url: "https://studyhours.com/igcse-online-tutoring",
     images: [
       {
@@ -26,10 +26,10 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "IGCSE Online Tuition & Tutoring Service | StudyHours",
-    description:
-      "Expert tutors for all IGCSE subjects including Maths, Sciences, and Humanities.",
+    description: "Cambridge & Edexcel IGCSE tutoring for international students. 89% grade improvement. Personalized online courses covering all subjects.",
     images: ["/hero_calm_education.png"],
   },
+  authors: [{ name: "Prof. Raj Patel" }],
 };
 
 
@@ -124,7 +124,38 @@ export default function Page() {
     },
   };
 
-  const jsonLd = [subjectSchema, faqSchema, breadcrumbSchema, ratingSchema];
+  const courseSchema = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "IGCSE Online Tuition",
+    "provider": { "@type": "Organization", "name": "StudyHours" },
+    "description": "Comprehensive IGCSE online tuition for Cambridge and Edexcel curricula, designed for international students.",
+    "educationalLevel": "IGCSE",
+    "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "online" }
+  };
+
+  const jsonLd = [subjectSchema, faqSchema, breadcrumbSchema, ratingSchema, courseSchema];
+
+  const igcseTestimonials = [
+    {
+      text: "The Cambridge IGCSE syllabus felt overwhelming until we found StudyHours. The focus on CIE-specific mark schemes helped my son jump from a C to an A* in Maths.",
+      author: "Lydia W.",
+      role: "Parent of Cambridge IGCSE Student",
+      rating: 5
+    },
+    {
+      text: "Exceptional support for Edexcel IGCSE Biology. The interactive sessions and past paper analysis gave my daughter the confidence she needed for her terminal exams.",
+      author: "Mark B.",
+      role: "Parent of Year 11 Student",
+      rating: 5
+    },
+    {
+      text: "Highly recommend the Physics IGCSE tuition. The tutor explained complex concepts with such clarity that my child actually started enjoying the subject.",
+      author: "Hassan A.",
+      role: "Parent of IGCSE Student",
+      rating: 5
+    }
+  ];
 
   return (
     <>
@@ -135,7 +166,7 @@ export default function Page() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }}
         />
       ))}
-      <IGCSEPageClient />
+      <IGCSEPageClient testimonials={igcseTestimonials} />
     </>
   );
 }

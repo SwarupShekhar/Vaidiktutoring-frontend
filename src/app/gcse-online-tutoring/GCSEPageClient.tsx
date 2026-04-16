@@ -40,7 +40,7 @@ import StickyCTA from "../components/subjects/StickyCTA";
 import SubjectFAQ, { FAQItemType } from "../components/subjects/SubjectFAQ";
 import Counter from "../components/ui/Counter";
 
-export default function GCSEOnlineTutoringPage() {
+export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?: any[] }) {
   const { user } = useAuthContext();
 
   const gcseFaqs: FAQItemType[] = [
@@ -85,12 +85,12 @@ export default function GCSEOnlineTutoringPage() {
                 Specialist UK GCSE Support
               </div>
               <h1 className="text-4xl md:text-6xl font-black text-deep-navy dark:text-white mb-6 tracking-tighter leading-[0.95] uppercase">
-                GCSE Tutors Online
+                Premium GCSE <span className="text-sapphire text-balance">Tutoring Services</span> Online
               </h1>
-              <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-10 leading-tight">
-                Your Child's GCSE Results <br />
-                Are Not Fixed Yet.
-              </div>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-10 leading-tight">
+                Master the AQA, Edexcel & OCR <br />
+                Syllabus with UK Specialists.
+              </h2>
               <p className="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed font-medium max-w-xl">
                 Behind on GCSEs? There's still time to turn grades around -
                 if you start now. We provide the calm, structured plan your
@@ -120,10 +120,10 @@ export default function GCSEOnlineTutoringPage() {
               <div className="grid grid-cols-3 gap-8 mt-16 pt-12 border-t border-border/50">
                 <div>
                   <div className="text-3xl font-black text-sapphire mb-1 tracking-tighter">
-                    92%
+                    87%
                   </div>
                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">
-                    Grade Improvements Tracked
+                    Average Grade Improvements
                   </div>
                 </div>
                 <div>
@@ -131,15 +131,15 @@ export default function GCSEOnlineTutoringPage() {
                     100%
                   </div>
                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">
-                    Exam Board Aligned Tutors
+                    AQA & Edexcel Certified
                   </div>
                 </div>
                 <div>
                   <div className="text-3xl font-black text-sapphire mb-1 tracking-tighter">
-                    500+
+                    420+
                   </div>
                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">
-                    UK GCSE Specialists
+                    Top-Tier GCSE Educators
                   </div>
                 </div>
               </div>
@@ -306,18 +306,18 @@ export default function GCSEOnlineTutoringPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                title: "Mock results came back worse than expected",
-                desc: "A disappointing mock is often a wake-up call. We turn that concern into a focused rescue plan that targets exactly where marks were lost.",
+                title: "Mock results failed to reflect their potential",
+                desc: "Disappointing mock results are common but manageable. We pivot immediately to a grade-rescue plan that targets missing syllabus knowledge and exam technique.",
                 icon: AlertTriangle,
               },
               {
-                title: "Exams are months away and revision hasn't started",
-                desc: "Procrastination is usually hidden anxiety. We break the syllabus down into manageable daily wins to get momentum back instantly.",
+                title: "Year 11 revision is becoming overwhelming",
+                desc: "Burnout is real during GCSEs. We simplify the workload into clear, manageable revision blocks that build momentum and reduce last-minute panic.",
                 icon: Clock,
               },
               {
-                title: "Year 9 gaps are catching up in Year 11",
-                desc: "GCSE builds on foundations. We quickly identify and bridge those missing links from earlier years that are blocking current progress.",
+                title: "Critical gaps in Maths or Science foundations",
+                desc: "GCSE success relies on earlier building blocks. We identify and rapidly patch missing conceptual links in Year 10 and 11 to unlock top grades.",
                 icon: Zap,
               },
             ].map((col, i) => (
@@ -884,7 +884,7 @@ export default function GCSEOnlineTutoringPage() {
         </div>
       </section>
 
-      <ParentTestimonials />
+      <ParentTestimonials testimonials={testimonials} />
     </main>
   );
 }

@@ -27,7 +27,11 @@ import { useAuthContext } from "@/app/context/AuthContext";
 import ParentTestimonials from "../components/subjects/ParentTestimonials";
 import StickyCTA from "../components/subjects/StickyCTA";
 
-export default function K12OnlineTutoringPage() {
+export default function K12OnlineTutoringPage({
+  testimonials = [],
+}: {
+  testimonials?: any[];
+}) {
   const { user } = useAuthContext();
 
   const k12Faqs = [
@@ -79,10 +83,10 @@ export default function K12OnlineTutoringPage() {
                 K-12 Online Tutoring
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-deep-navy dark:text-white mb-6 tracking-tight leading-[1.1]">
-                Smart K–12 Online Tutoring Designed for Your Child
+                Complete <span className="text-sapphire">K-12 Online Tutoring</span> & Academic Support
               </h1>
               <div className="text-2xl md:text-3xl font-bold text-sapphire mb-8 leading-tight">
-                Interactive, adaptive tutoring that drives success
+                Empowering Students from Kindergarten to High School.
               </div>
               <p className="text-xl md:text-2xl text-text-secondary mb-4 leading-relaxed font-medium">
                 Take the best step for your child's academic success with personalized tutoring.
@@ -869,7 +873,7 @@ export default function K12OnlineTutoringPage() {
       {/* ============================================
           SECTION 10: TESTIMONIALS
       ============================================ */}
-      <ParentTestimonials />
+      <ParentTestimonials testimonials={testimonials} />
 
       {/* ============================================
           SECTION 11: FAQ

@@ -40,7 +40,11 @@ import StickyCTA from "../components/subjects/StickyCTA";
 import SubjectFAQ, { FAQItemType } from "../components/subjects/SubjectFAQ";
 import Counter from "../components/ui/Counter";
 
-export default function IGCSEOnlineTutoringPage() {
+export default function IGCSEOnlineTutoringPage({
+  testimonials = [],
+}: {
+  testimonials?: any[];
+}) {
   const { user } = useAuthContext();
 
   const igcseFaqs: FAQItemType[] = [
@@ -88,10 +92,10 @@ export default function IGCSEOnlineTutoringPage() {
                 IGCSE Tutoring Experts — Cambridge & Edexcel Specialist
               </div>
               <h1 className="text-4xl md:text-6xl xl:text-7xl font-black text-deep-navy dark:text-white mb-6 tracking-tighter leading-[0.95] uppercase">
-                IGCSE Online Tuition & Tutoring Service
+                IGCSE <span className="text-sapphire">Online Tuition</span> & Tutoring Experts
               </h1>
-              <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-10 leading-tight">
-                Global Leaders in IGCSE Online Tuition
+              <div className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-sapphire to-primary italic mb-10 leading-tight text-balance">
+                Global Academic Excellence for <br /> International Students.
               </div>
               <p className="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed font-medium max-w-xl opacity-90">
                 Your child's{" "}
@@ -126,8 +130,8 @@ export default function IGCSEOnlineTutoringPage() {
                     ))}
                   </div>
                   <div className="text-sm font-black text-deep-navy dark:text-white uppercase tracking-widest leading-tight">
-                    Join 500+ <br />
-                    IGCSE Students
+                    Join 1,200+ <br />
+                    IGCSE Success Stories
                   </div>
                 </div>
               </div>
@@ -246,7 +250,7 @@ export default function IGCSEOnlineTutoringPage() {
                 <div className="grid grid-cols-2 gap-6 text-center">
                   <div className="space-y-0.5">
                     <div className="text-2xl font-black text-sapphire tracking-tighter leading-none">
-                      <Counter value={94} suffix="%" />
+                      94%
                     </div>
                     <div className="text-[8px] font-black text-text-secondary uppercase tracking-[0.2em]">
                       IMPROVEMENT
@@ -254,7 +258,7 @@ export default function IGCSEOnlineTutoringPage() {
                   </div>
                   <div className="space-y-0.5">
                     <div className="text-2xl font-black text-sapphire tracking-tighter leading-none">
-                      <Counter value={110} suffix="+" />
+                      110+
                     </div>
                     <div className="text-[8px] font-black text-text-secondary uppercase tracking-[0.2em]">
                       TUTORS
@@ -764,7 +768,7 @@ export default function IGCSEOnlineTutoringPage() {
         </div>
       </section>
 
-      <ParentTestimonials />
+      <ParentTestimonials testimonials={testimonials} />
 
       <SubjectFAQ items={igcseFaqs} title="Frequently Asked Questions" />
 
