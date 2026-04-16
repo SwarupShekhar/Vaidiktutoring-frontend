@@ -86,7 +86,7 @@ export default function VaultSidebar({ onSelectAsset, selectedAssetId }: VaultSi
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-start">
                     <span className="text-xs font-bold text-text-primary truncate">{asset.title}</span>
-                    {selectedAssetId === asset.id && <Check size={14} className="text-indigo-500 flex-shrink-0" />}
+                    {selectedAssetId === asset.id && <Check size={14} className="text-indigo-500 shrink-0" />}
                   </div>
                   <p className="text-[10px] text-text-secondary line-clamp-1 mt-0.5">{asset.description || 'No description'}</p>
                 </div>

@@ -220,7 +220,7 @@ export default function VaultManagementSection() {
                                 <button 
                                     type="submit"
                                     disabled={uploading || !selectedFile}
-                                    className="flex-[2] px-4 py-2.5 bg-indigo-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-500/30 hover:bg-indigo-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="flex-2 px-4 py-2.5 bg-indigo-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-500/30 hover:bg-indigo-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     {uploading ? (
                                         <>
