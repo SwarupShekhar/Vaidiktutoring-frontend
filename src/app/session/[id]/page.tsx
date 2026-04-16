@@ -1022,8 +1022,13 @@ export default function SessionPage({ params }: SessionProps) {
                 return;
             }
 
-            // 2. Fetch the file
-            const response = await fetch(assetData.sasUrl);
+            // 2. Fetch the file through our server proxy to avoid CORS issues
+            let fetchUrl = assetData.sasUrl;
+            if (fetchUrl.includes('.blob.core.windows.net/')) {
+                fetchUrl = `/api/vault/proxy?url=${encodeURIComponent(fetchUrl)}`;
+            }
+            const response = await fetch(fetchUrl);
+            if (!response.ok) throw new Error(`Vault fetch failed: ${response.status}`);
             const blob = await response.blob();
             const file = new File([blob], asset.azure_blob_name, { type: asset.mime_type });
 
@@ -1786,8 +1791,8 @@ export default function SessionPage({ params }: SessionProps) {
 
             {/* ── TUTOR TOOLS STRIP (right side, vertical) ─────────────────── */}
             {user?.role === 'tutor' && (
-                <div className="absolute top-[60px] right-2 z-50 pointer-events-auto">
-                    <div className="bg-black/70 backdrop-blur-xl border border-white/10 rounded-xl p-1.5 flex flex-col gap-1.5 items-center">
+                <div className={`absolute top-[60px] z-50 pointer-events-auto transition-all duration-300 ${isPanelExpanded ? 'right-[460px] md:right-[460px]' : 'right-2'}`}>
+                    <div className="bg-black/70 backdrop-blur-xl border border-white/10 rounded-xl p-1.5 flex flex-col gap-1.5 items-center max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-hide shadow-xl">
                         <span className="text-white/20 text-[8px] font-black tracking-widest pt-0.5 pb-1">TOOLS</span>
 
                         <label className="cursor-pointer w-9 h-9 rounded-lg bg-purple-600 hover:bg-purple-700 flex items-center justify-center text-white transition-all" title="Upload PDF / Slides">
