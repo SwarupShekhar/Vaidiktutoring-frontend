@@ -3,7 +3,7 @@ import type { Metadata, ResolvingMetadata } from 'next';
 import Link from 'next/link';
 import BlogPostRenderer from './BlogPostRenderer';
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://k-12-backend.onrender.com').replace(/\/$/, '');
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://vaidiktutoring-backend.onrender.com').replace(/\/$/, '');
 
 // Generate SEO Metadata dynamically on the Server
 export async function generateMetadata(

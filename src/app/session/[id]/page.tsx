@@ -306,7 +306,7 @@ export default function SessionPage({ params }: SessionProps) {
 
         const API_URL = (process.env.NEXT_PUBLIC_API_URL || 
                         process.env.NEXT_PUBLIC_API_BASE_URL || 
-                        'https://k-12-backend.onrender.com').replace(/\/$/, '');
+                        'https://vaidiktutoring-backend.onrender.com').replace(/\/$/, '');
         const SOCKET_URL = `${API_URL}/sessions`;
 
         console.log('[Attention] Connecting to socket:', SOCKET_URL, 'API_URL:', API_URL);

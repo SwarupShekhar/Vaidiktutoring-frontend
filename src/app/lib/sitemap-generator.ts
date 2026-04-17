@@ -227,7 +227,7 @@ export function generateSitemapEntries(
 async function getBlogs(): Promise<BlogPost[]> {
   try {
     const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL || "https://k-12-backend.onrender.com";
+      process.env.NEXT_PUBLIC_API_URL || "https://vaidiktutoring-backend.onrender.com";
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
 

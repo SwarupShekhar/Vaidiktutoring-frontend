@@ -4,7 +4,7 @@ import axios, { AxiosError } from 'axios';
 const API_URL =
   (process.env.NEXT_PUBLIC_API_URL ||
     process.env.NEXT_PUBLIC_API_BASE_URL ||
-    'https://k-12-backend.onrender.com').replace(/\/$/, '');
+    'https://vaidiktutoring-backend.onrender.com').replace(/\/$/, '');
 
 console.log('[API] Connected to:', API_URL);
 

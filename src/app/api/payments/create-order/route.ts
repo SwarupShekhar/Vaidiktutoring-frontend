@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 
     // Add debugging
     console.log('[Payment API] Creating order for user:', userId, 'package:', packageId);
-    console.log('[Payment API] Backend URL:', process.env.NEXT_PUBLIC_API_URL || 'https://k-12-backend.onrender.com');
+    console.log('[Payment API] Backend URL:', process.env.NEXT_PUBLIC_API_URL || 'https://vaidiktutoring-backend.onrender.com');
 
     // Use existing API instance which handles auth automatically
     const response = await api.post('/payments/create-order', { packageId });

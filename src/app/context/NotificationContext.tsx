@@ -64,7 +64,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     useEffect(() => {
         if (!user) return;
 
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://k-12-backend.onrender.com';
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://vaidiktutoring-backend.onrender.com';
         
         console.log('[Notification] Attempting to connect to:', API_URL);
         

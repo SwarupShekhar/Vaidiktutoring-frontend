@@ -65,7 +65,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.daily.co",
               "img-src 'self' data: blob: https: https://*.daily.co",
               "font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com https://*.daily.co data:",
-              "connect-src 'self' data: blob: https://api.razorpay.com https://*.clerk.accounts.dev https://clerk.studyhours.com https://api.clerk.com https://challenges.cloudflare.com https://turnstile.cloudflare.com https://k-12-backend.onrender.com wss://k-12-backend.onrender.com https://va.vercel-scripts.com https://*.daily.co wss://*.daily.co https://placehold.co https://ipapi.co https://www.google-analytics.com https://*.sentry.io https://ip-api.com https://*.blob.core.windows.net",
+              "connect-src 'self' data: blob: https://api.razorpay.com https://*.clerk.accounts.dev https://clerk.studyhours.com https://api.clerk.com https://challenges.cloudflare.com https://turnstile.cloudflare.com https://vaidiktutoring-backend.onrender.com wss://vaidiktutoring-backend.onrender.com https://va.vercel-scripts.com https://*.daily.co wss://*.daily.co https://placehold.co https://ipapi.co https://www.google-analytics.com https://*.sentry.io https://ip-api.com https://*.blob.core.windows.net",
               "frame-src 'self' https://checkout.razorpay.com https://api.razorpay.com https://*.clerk.accounts.dev https://clerk.studyhours.com https://challenges.cloudflare.com https://turnstile.cloudflare.com https://*.daily.co",
               "media-src 'self' data: blob: https://assets.mixkit.co https://commondatastorage.googleapis.com https://*.daily.co https://*.blob.core.windows.net",
               "worker-src 'self' blob:",
