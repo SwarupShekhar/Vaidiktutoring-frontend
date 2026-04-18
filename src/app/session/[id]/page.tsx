@@ -79,7 +79,19 @@ export default function SessionPage({ params }: SessionProps) {
     }, [user, authLoading, router]);
 
     // Daily.co State
-    const [hasJoined, setHasJoined] = useState(false);
+    const [hasJoined, setHasJoined] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return sessionStorage.getItem(`hasJoined_${sessionId}`) === 'true';
+        }
+        return false;
+    });
+
+    // Persistent state sync
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            sessionStorage.setItem(`hasJoined_${sessionId}`, hasJoined.toString());
+        }
+    }, [hasJoined, sessionId]);
     const [dailyRoomUrl, setDailyRoomUrl] = useState<string | null>(null);
     const [dailyToken, setDailyToken] = useState<string | null>(null);
     const [videoLoading, setVideoLoading] = useState(false);
@@ -1369,6 +1381,68 @@ export default function SessionPage({ params }: SessionProps) {
         }
     }, [hasJoined, sessionId]);
 
+    const exportAndSharePdf = useCallback(async () => {
+        if (isExporting) return;
+        setIsExporting(true);
+        try {
+            const { exportToCanvas } = await import('@excalidraw/excalidraw');
+            const { default: jsPDF } = await import('jspdf');
+            
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'px',
+                format: [800, 600] // Matching whiteboard aspect ratio
+            });
+
+            // Store current state to restore later
+            const originalSlide = currentSlideIndex;
+            
+            toast.info("Generating session PDF... please don't switch slides.");
+
+            for (let i = 0; i < slides.length; i++) {
+                if (i > 0) pdf.addPage([800, 600], 'landscape');
+                
+                // 1. Temporarily switch slide and wait for render
+                setCurrentSlideIndex(i);
+                await new Promise(r => setTimeout(r, 800)); // Wait for render
+
+                // 2. Export current view
+                const canvas = await exportToCanvas({
+                    elements: excalidrawAPIRef.current.getSceneElements(),
+                    appState: {
+                        ...excalidrawAPIRef.current.getAppState(),
+                        exportBackground: false,
+                        viewBackgroundColor: '#ffffff',
+                    },
+                    files: excalidrawAPIRef.current.getFiles(),
+                    exportPadding: 10,
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.85);
+                pdf.addImage(imgData, 'JPEG', 0, 0, 800, 600);
+            }
+
+            // Restore original slide
+            setCurrentSlideIndex(originalSlide);
+
+            // 3. Convert to blob and upload
+            const pdfBlob = pdf.output('blob');
+            const formData = new FormData();
+            formData.append('file', pdfBlob, `Session_${sessionId}_Annotations.pdf`);
+            
+            await api.post(`/sessions/${sessionId}/shared-pdf`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            return true;
+        } catch (error: any) {
+            console.error("PDF Export failed", error);
+            throw error;
+        } finally {
+            setIsExporting(false);
+        }
+    }, [isExporting, slides.length, currentSlideIndex, setCurrentSlideIndex, sessionId]);
+
     // TASK 2: Listen for Daily.co's built-in end button via postMessage
     useEffect(() => {
         const handleDailyMessage = (event: MessageEvent) => {
@@ -1564,48 +1638,51 @@ export default function SessionPage({ params }: SessionProps) {
                 )}
             </div>
 
-                {/* Daily.co sidebar panel */}
+                {/* Daily.co sidebar panel - using width transition to prevent iframe unmounting/re-rendering */}
                 <div 
-                    className={`w-full max-w-[450px] md:max-w-[450px] border-l border-white/10 bg-black/80 flex flex-col h-full transition-all duration-300 ${isPanelExpanded ? 'translate-x-0 opacity-100' : 'fixed right-[-500px] opacity-0 pointer-events-none'}`} 
+                    className={`h-full border-l border-white/10 bg-black/80 flex flex-col transition-all duration-500 ease-in-out ${isPanelExpanded ? 'w-[450px] opacity-100' : 'w-0 opacity-0 overflow-hidden border-none'}`} 
                     role="complementary" 
                     aria-label="Video session panel"
                 >
-                    {/* Header with title and collapse button */}
-                    <div className="h-12 border-b border-white/10 flex items-center justify-between px-4 bg-linear-to-r from-purple-600 to-indigo-600 shrink-0">
-                        <div className="flex flex-col">
-                            <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Session Room</span>
-                            <span className="text-xs font-bold text-white">
-                                {booking?.students?.first_name || 'Student'}&apos;s Classroom
-                            </span>
-                        </div>
-                        <button
-                            onClick={() => setIsPanelExpanded(false)}
-                            className="text-white hover:bg-white/20 rounded p-1 transition-colors relative z-30 cursor-pointer"
-                            title="Collapse video panel"
-                            aria-label="Collapse video panel"
-                        >
-                            <X size={16} />
-                        </button>
-                    </div>
-
-                    {/* Daily.co iframe - always kept in DOM but hidden when minimized to prevent re-joining */}
-                    <div className="flex-1 relative bg-black">
-                        {dailyRoomUrl && dailyToken && !videoLoading ? (
-                            <iframe
-                                key={`${dailyRoomUrl}-${dailyToken}`}
-                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false`}
-                                allow="camera; microphone; fullscreen; speaker; display-capture"
-                                className="absolute inset-0 w-full h-full border-0"
-                                title="Daily.co video conference"
-                            />
-                        ) : (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="text-center">
-                                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mx-auto mb-3"></div>
-                                    <p className="text-white/50 text-sm">Connecting to video session...</p>
-                                </div>
+                    {/* Inner wrapper to keep content size stable during transition */}
+                    <div className="w-[450px] h-full flex flex-col flex-none">
+                        {/* Header with title and collapse button */}
+                        <div className="h-12 border-b border-white/10 flex items-center justify-between px-4 bg-linear-to-r from-purple-600 to-indigo-600 shrink-0">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Session Room</span>
+                                <span className="text-xs font-bold text-white">
+                                    {booking?.students?.first_name || 'Student'}&apos;s Classroom
+                                </span>
                             </div>
-                        )}
+                            <button
+                                onClick={() => setIsPanelExpanded(false)}
+                                className="text-white hover:bg-white/20 rounded p-1 transition-colors relative z-30 cursor-pointer"
+                                title="Collapse video panel"
+                                aria-label="Collapse video panel"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+
+                        {/* Daily.co iframe - always kept in DOM with stable rendering context */}
+                        <div className="flex-1 relative bg-black">
+                            {dailyRoomUrl && dailyToken && !videoLoading ? (
+                                <iframe
+                                    key={`${dailyRoomUrl}-${dailyToken}`}
+                                    src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false`}
+                                    allow="camera; microphone; fullscreen; speaker; display-capture"
+                                    className="absolute inset-0 w-full h-full border-0"
+                                    title="Daily.co video conference"
+                                />
+                            ) : (
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="text-center">
+                                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mx-auto mb-3"></div>
+                                        <p className="text-white/50 text-sm">Connecting to video session...</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1668,62 +1745,12 @@ export default function SessionPage({ params }: SessionProps) {
                     {user?.role === 'tutor' && (
                         <button
                             onClick={async () => {
-                                if (isExporting) return;
-                                setIsExporting(true);
                                 try {
-                                    const { exportToCanvas } = await import('@excalidraw/excalidraw');
-                                    const pdf = new jsPDF({
-                                        orientation: 'landscape',
-                                        unit: 'px',
-                                        format: [800, 600] // Matching whiteboard aspect ratio
-                                    });
-
-                                    // Store current state to restore later
-                                    const originalSlide = currentSlideIndex;
-                                    
-                                    toast.info("Generating session PDF... please don't switch slides.");
-
-                                    for (let i = 0; i < slides.length; i++) {
-                                        if (i > 0) pdf.addPage([800, 600], 'landscape');
-                                        
-                                        // 1. Temporarily switch slide and wait for render
-                                        setCurrentSlideIndex(i);
-                                        await new Promise(r => setTimeout(r, 800)); // Wait for render
-
-                                        // 2. Export current view
-                                        const canvas = await exportToCanvas({
-                                            elements: excalidrawAPIRef.current.getSceneElements(),
-                                            appState: {
-                                                ...excalidrawAPIRef.current.getAppState(),
-                                                exportBackground: false,
-                                                viewBackgroundColor: '#ffffff',
-                                            },
-                                            files: excalidrawAPIRef.current.getFiles(),
-                                            exportPadding: 10,
-                                        });
-
-                                        const imgData = canvas.toDataURL('image/jpeg', 0.85);
-                                        pdf.addImage(imgData, 'JPEG', 0, 0, 800, 600);
-                                    }
-
-                                    // Restore original slide
-                                    setCurrentSlideIndex(originalSlide);
-
-                                    // 3. Convert to blob and upload
-                                    const pdfBlob = pdf.output('blob');
-                                    const formData = new FormData();
-                                    formData.append('file', pdfBlob, `Session_${sessionId}_Annotations.pdf`);
-                                    
-                                    await api.post(`/sessions/${sessionId}/shared-pdf`, formData, {
-                                        headers: { 'Content-Type': 'multipart/form-data' }
-                                    });
-
+                                    await exportAndSharePdf();
                                     toast.success("PDF Shared with student!");
-                                } catch (e) {
-                                    console.error("PDF Export failed", e);
-                                    toast.error("Failed to generate PDF. Try taking a single snapshot instead.");
-                                } finally {
-                                    setIsExporting(false);
+                                } catch (error: any) {
+                                    const errorMsg = error.response?.data?.message || error.message || 'Check connection';
+                                    toast.error(`Failed to share PDF: ${errorMsg}`);
                                 }
                             }}
                             disabled={isExporting}
@@ -2178,9 +2205,16 @@ export default function SessionPage({ params }: SessionProps) {
                                     setSubmittingNote(true);
                                     try {
                                         // FIX 1: Save note, then call unified handleEndSession
-                                        // (which handles snapshot capture, backend /end call, and redirect)
                                         await api.patch(`/sessions/${sessionId}/tutor-note`, { note: sessionNote });
                                         toast.success('Note saved!');
+                                        try {
+                                            await exportAndSharePdf();
+                                            toast.success('Annotated PDF shared with student!');
+                                        } catch (error: any) {
+                                            console.error('Failed to export PDF:', error);
+                                            const errorMsg = error.response?.data?.message || error.message || 'Check connection';
+                                            toast.error(`Failed to share PDF: ${errorMsg}`);
+                                        }
                                         await handleEndSession();
                                     } catch (error) {
                                         console.error('Failed to save note and end session:', error);
