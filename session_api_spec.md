@@ -8,10 +8,10 @@ This document outlines the API endpoints needed to support advanced session feat
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Video Conferencing | ✅ Working | Uses Jitsi Meet (no backend needed) |
-| Whiteboard | ✅ Working | Excalidraw (client-side) |
-| Session Chat | ❌ Hidden | Requires backend implementation |
-| Recording Upload | ❌ Hidden | Requires backend implementation |
+| Video Conferencing | ✅ Working | Uses Daily.co (managed sessions) |
+| Whiteboard | ✅ Working | Shared Yjs/Excalidraw |
+| Session Chat | 🚧 Beta | Basic Socket.io chat implemented |
+| Recording Upload | ✅ Working | Azure Blob Storage integration active |
 
 ---
 

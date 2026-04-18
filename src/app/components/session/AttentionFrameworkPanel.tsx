@@ -31,11 +31,15 @@ export default function AttentionFrameworkPanel({ sessionId, studentId, tutorId,
             setSummary(newSummary);
         });
 
-        // Optionally fetch initial summary if needed via API
-        // For now, it will update as events happen.
+        socket.on('session.attentionEvent.created', (event) => {
+            console.log('[AttentionPanel] Real-time event received:', event);
+            // We could show a specific toast or pulse here if desired.
+            // For now, it reinforces the summary update.
+        });
 
         return () => {
             socket.off('session.attentionSummary.updated');
+            socket.off('session.attentionEvent.created');
         };
     }, [socket]);
 

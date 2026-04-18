@@ -9,6 +9,9 @@ import api from '@/app/lib/api';
 import AttendanceTracker from '@/app/components/session/AttendanceTracker';
 import StudentSnapshotCard from '@/app/components/session/StudentSnapshotCard';
 import VaultSidebar from '@/app/components/session/VaultSidebar';
+import SessionFlowBar, { SessionPhase } from '@/app/components/session/SessionFlowBar';
+import PhaseGuidancePanel from '@/app/components/session/PhaseGuidancePanel';
+import AttentionFrameworkPanel from '@/app/components/session/AttentionFrameworkPanel';
 import { vaultApi, VaultAsset } from '@/app/lib/vault';
 import { io, Socket } from 'socket.io-client';
 import confetti from 'canvas-confetti';
@@ -35,7 +38,9 @@ import {
     X,
     Trash2,
     FileText,
-    ShieldCheck
+    ShieldCheck,
+    Maximize2,
+    Minimize2
 } from 'lucide-react';
 import { MANIPULATIVES_DATA, DICE_FACES } from '../manipulatives-data';
 import { throttle } from '@/app/lib/utils';
@@ -132,6 +137,7 @@ export default function SessionPage({ params }: SessionProps) {
     // Sidebar Panel State (Task 1)
     const [isPanelExpanded, setIsPanelExpanded] = useState(true);
     const [floatingPosition, setFloatingPosition] = useState({ x: 0, y: 0 });
+    const [floatingSize, setFloatingSize] = useState({ width: 220, height: 165 });
 
     // Whiteboard Enhancements State
     const [uploadingSlides, setUploadingSlides] = useState(false);
@@ -218,9 +224,14 @@ export default function SessionPage({ params }: SessionProps) {
     const [libraryTab, setLibraryTab] = useState<'vault' | 'assets' | 'manipulatives'>('vault');
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
         'k-1': true,
-        '2-3': true,
-        '4-6': true
+        '2-3': false,
+        '4-6': false
     });
+
+    // Session Flow & Pedagogy State
+    const [currentPhase, setCurrentPhase] = useState<SessionPhase>('WARM_CONNECT');
+    const [showAttentionPanel, setShowAttentionPanel] = useState(false);
+    const [showPhaseGuidance, setShowPhaseGuidance] = useState(true);
 
     const slideRef = useRef(0);
     const annotationsRef = useRef<Record<number, any[]>>({});
@@ -268,6 +279,19 @@ export default function SessionPage({ params }: SessionProps) {
         const interval = setInterval(updateTimer, 1000);
         return () => clearInterval(interval);
     }, [hasJoined]);
+
+    const [windowSize, setWindowSize] = useState({ 
+        width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+        height: typeof window !== 'undefined' ? window.innerHeight : 800
+    });
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -839,7 +863,7 @@ export default function SessionPage({ params }: SessionProps) {
                 centerY,
                 zoom
             });
-        }, 1000); // Sync every second while active
+        }, 500); // Increased frequency to 500ms for smoother sync
 
         return () => {
             if (focusIntervalRef.current) clearInterval(focusIntervalRef.current);
@@ -869,7 +893,6 @@ export default function SessionPage({ params }: SessionProps) {
 
         if (!targetSlides[index]) {
             console.warn(`[Slides] Slide ${index} not found in state. Slides length: ${targetSlides.length}. Setting as pending.`);
-            // If student joins late and doesn't have the slides array yet, we wait a bit
             if (user?.role !== 'tutor') {
                 pendingSlideIndexRef.current = index;
                 if (targetSlides.length === 0) {
@@ -884,7 +907,6 @@ export default function SessionPage({ params }: SessionProps) {
 
         // 1. Save current annotations
         const currentElements = excalidrawAPI.getSceneElements();
-        // Filter out existing slide images
         const annotationsOnly = currentElements.filter((el: any) => el.type !== 'image' || !el.fileId?.startsWith('slide_'));
 
         setSlideAnnotations(prev => {
@@ -911,10 +933,18 @@ export default function SessionPage({ params }: SessionProps) {
         setCurrentSlideIndex(index);
         slideRef.current = index;
 
-        if (!skipEmit) {
-            socket?.emit('whiteboard.slideChange', { sessionId, index });
+        if (!skipEmit && socket) {
+            socket.emit('whiteboard.slideChange', { sessionId, index });
         }
-    }, [excalidrawAPI, slides, socket, sessionId, importImageToExcalidraw]);
+    }, [excalidrawAPI, slides, socket, sessionId, importImageToExcalidraw, user?.role]);
+
+    // Handle Phase Change (Socket + State)
+    const handlePhaseChange = useCallback((phase: SessionPhase) => {
+        setCurrentPhase(phase);
+        if (socket) {
+            socket.emit('session.phase.update', { sessionId, phase });
+        }
+    }, [sessionId, socket]);
 
     // Render a PDF file locally using pdf.js → PNG slides on the canvas
     const renderPdfLocally = (file: File) => {
@@ -1167,7 +1197,7 @@ export default function SessionPage({ params }: SessionProps) {
         // Sync Slide Navigation — use slideRef.current to avoid stale closure
         const handleSlideChange = (payload: any) => {
             if (user?.role !== 'tutor' && payload.index !== slideRef.current) {
-                switchSlide(payload.index, undefined, true);
+                switchSlide(payload.index);
             }
         };
 
@@ -1240,7 +1270,7 @@ export default function SessionPage({ params }: SessionProps) {
             // If we were waiting for a specific slide, switch to it now
             if (pendingSlideIndexRef.current !== null && slidesArray[pendingSlideIndexRef.current]) {
                 console.log('[Slides] Applying pending slide transition:', pendingSlideIndexRef.current);
-                switchSlide(pendingSlideIndexRef.current, slidesArray, true);
+                switchSlide(pendingSlideIndexRef.current);
             }
         });
         socket.on('whiteboard.penAccessUpdated', handlePenAccess);
@@ -1263,10 +1293,25 @@ export default function SessionPage({ params }: SessionProps) {
             }
         });
 
-        socket.on('poll:closed', (data: any) => {
+        socket.on('poll:closed', (results) => {
+            setFinalPollResults(results);
             setActivePoll(null);
-            setFinalPollResults(data);
-            setTimeout(() => setFinalPollResults(null), 3000);
+        });
+
+        // Sync Phase
+        socket.on('session.phase.updated', (data: { phase: SessionPhase }) => {
+            console.log('[Socket] Phase updated:', data.phase);
+            setCurrentPhase(data.phase);
+            toast(`Phase changed to ${data.phase.replace('_', ' ')}`, {
+                icon: '🎯',
+                style: { background: '#9333ea', color: '#fff' }
+            });
+        });
+
+        // Attention Events
+        socket.on('session.attentionEvent.created', (event) => {
+            console.log('[Socket] Attention event created:', event);
+            // No flash needed, summary update handles the UI
         });
 
         return () => {
@@ -1383,6 +1428,11 @@ export default function SessionPage({ params }: SessionProps) {
 
     const exportAndSharePdf = useCallback(async () => {
         if (isExporting) return;
+        if (slides.length === 0) {
+            toast.error("No slides available to export");
+            return;
+        }
+
         setIsExporting(true);
         try {
             const { exportToCanvas } = await import('@excalidraw/excalidraw');
@@ -1402,9 +1452,11 @@ export default function SessionPage({ params }: SessionProps) {
             for (let i = 0; i < slides.length; i++) {
                 if (i > 0) pdf.addPage([800, 600], 'landscape');
                 
-                // 1. Temporarily switch slide and wait for render
-                setCurrentSlideIndex(i);
-                await new Promise(r => setTimeout(r, 800)); // Wait for render
+                // 1. Explicitly switch slide and wait for its full render (loading image + annotations)
+                await switchSlide(i, undefined, true);
+                
+                // Extra buffer to ensure Excalidraw internal state is updated
+                await new Promise(r => setTimeout(r, 600)); 
 
                 // 2. Export current view
                 const canvas = await exportToCanvas({
@@ -1415,15 +1467,15 @@ export default function SessionPage({ params }: SessionProps) {
                         viewBackgroundColor: '#ffffff',
                     },
                     files: excalidrawAPIRef.current.getFiles(),
-                    exportPadding: 10,
+                    exportPadding: 0,
                 });
 
-                const imgData = canvas.toDataURL('image/jpeg', 0.85);
+                const imgData = canvas.toDataURL('image/jpeg', 0.9);
                 pdf.addImage(imgData, 'JPEG', 0, 0, 800, 600);
             }
 
             // Restore original slide
-            setCurrentSlideIndex(originalSlide);
+            await switchSlide(originalSlide, undefined, true);
 
             // 3. Convert to blob and upload
             const pdfBlob = pdf.output('blob');
@@ -1437,11 +1489,19 @@ export default function SessionPage({ params }: SessionProps) {
             return true;
         } catch (error: any) {
             console.error("PDF Export failed", error);
+            const status = error.response?.status;
+            if (status === 404) {
+                toast.error("Shared PDF upload failed: Session not found");
+            } else if (status === 401 || status === 403) {
+                toast.error("Permissions error: Try refreshing your session");
+            } else {
+                toast.error(`Export error: ${error.message || 'Check connection'}`);
+            }
             throw error;
         } finally {
             setIsExporting(false);
         }
-    }, [isExporting, slides.length, currentSlideIndex, setCurrentSlideIndex, sessionId]);
+    }, [isExporting, slides.length, currentSlideIndex, switchSlide, sessionId]);
 
     // TASK 2: Listen for Daily.co's built-in end button via postMessage
     useEffect(() => {
@@ -1664,22 +1724,24 @@ export default function SessionPage({ params }: SessionProps) {
                             </button>
                         </div>
 
-                        {/* Daily.co iframe - always kept in DOM with stable rendering context */}
-                        <div className="flex-1 relative bg-black">
-                            {dailyRoomUrl && dailyToken && !videoLoading ? (
-                                <iframe
-                                    key={`${dailyRoomUrl}-${dailyToken}`}
-                                    src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false`}
-                                    allow="camera; microphone; fullscreen; speaker; display-capture"
-                                    className="absolute inset-0 w-full h-full border-0"
-                                    title="Daily.co video conference"
-                                />
-                            ) : (
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="text-center">
-                                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mx-auto mb-3"></div>
-                                        <p className="text-white/50 text-sm">Connecting to video session...</p>
-                                    </div>
+                        {/* Video Panel Placeholder - The actual video is rendered in a stable Rnd container at the bottom of the JSX to prevent unmounting/re-rendering when toggling panel expansion */}
+                        <div className="flex-1 relative bg-black flex items-center justify-center">
+                            {!videoLoading && !isPanelExpanded && (
+                                <div className="text-center p-8 opacity-50">
+                                    <Video className="w-12 h-12 text-white/20 mx-auto mb-4" />
+                                    <p className="text-white/40 text-sm font-medium">Video minimized</p>
+                                    <button 
+                                        onClick={() => setIsPanelExpanded(true)}
+                                        className="mt-4 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs rounded-lg transition-colors"
+                                    >
+                                        Expand Video Panel
+                                    </button>
+                                </div>
+                            )}
+                            {videoLoading && (
+                                <div className="text-center">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mx-auto mb-3"></div>
+                                    <p className="text-white/50 text-sm">Initializing video...</p>
                                 </div>
                             )}
                         </div>
@@ -1708,6 +1770,17 @@ export default function SessionPage({ params }: SessionProps) {
                     <span className="text-white text-xs font-bold truncate">
                         {booking?.subject?.name || 'Session'}
                     </span>
+                </div>
+
+                {/* Center: Phase Flow (Tutor & Student see this) */}
+                <div className="flex-1 flex justify-center">
+                    <div className="max-w-md w-full">
+                        <SessionFlowBar 
+                            currentPhase={currentPhase} 
+                            onPhaseChange={user?.role === 'tutor' ? handlePhaseChange : () => {}} 
+                            variant="hud"
+                        />
+                    </div>
                 </div>
 
                 {/* Right: timer + reactions + end */}
@@ -1908,6 +1981,14 @@ export default function SessionPage({ params }: SessionProps) {
                             <Smile size={16} />
                         </button>
 
+                        <button
+                            onClick={() => setShowAttentionPanel(!showAttentionPanel)}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${showAttentionPanel ? 'bg-purple-600 border-purple-400' : 'bg-white/10 hover:bg-white/20 border-white/10'}`}
+                            title="Attention Framework"
+                        >
+                            <ShieldCheck size={16} />
+                        </button>
+
                         {showStickerPanel && (
                             <div className="absolute right-12 top-0 bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-2xl p-3 shadow-2xl flex flex-wrap gap-2 w-48 animate-in slide-in-from-right-2 duration-200">
                                 <p className="w-full text-[10px] font-black text-white/50 uppercase tracking-widest mb-1 ml-1">Send a Sticker</p>
@@ -1965,6 +2046,30 @@ export default function SessionPage({ params }: SessionProps) {
                             <Trash2 size={16} />
                         </button>
                     </div>
+                </div>
+            )}
+
+            {/* PEDAGOGY / ATTENTION SIDEBAR (Tutor Only) */}
+            {user?.role === 'tutor' && (showAttentionPanel || showPhaseGuidance) && (
+                <div 
+                    className={`absolute bottom-24 z-50 flex flex-col gap-4 transition-all duration-300 pointer-events-auto ${isPanelExpanded ? 'left-4 w-[400px]' : 'left-4 w-80'}`}
+                >
+                    {showPhaseGuidance && (
+                        <div className="animate-in slide-in-from-left-4 duration-500">
+                            <PhaseGuidancePanel phase={currentPhase} suggestions={[]} />
+                        </div>
+                    )}
+                    
+                    {showAttentionPanel && (
+                        <div className="h-[450px] animate-in slide-in-from-left-4 duration-500 delay-100">
+                            <AttentionFrameworkPanel 
+                                sessionId={sessionId}
+                                studentId={booking?.students?.id || ''}
+                                tutorId={booking?.tutor?.id || ''}
+                                socket={socket}
+                            />
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -2618,46 +2723,90 @@ export default function SessionPage({ params }: SessionProps) {
                 </div>
             )}
 
-            {/* Floating thumbnail when panel is collapsed */}
-            {!isPanelExpanded && hasJoined && dailyRoomUrl && dailyToken && (
+            {/* Unified Video Container - Using a single Rnd instance to prevent iframe unmounting/resetting */}
+            {hasJoined && dailyRoomUrl && dailyToken && (
                 <Rnd
-                    default={{
-                        x: typeof window !== 'undefined' ? window.innerWidth - 200 : 0,
-                        y: typeof window !== 'undefined' ? window.innerHeight - 300 : 0,
-                        width: 150,
-                        height: 200,
+                    size={isPanelExpanded ? 
+                        { width: 450, height: windowSize.height - 52 } : 
+                        { width: floatingSize.width, height: floatingSize.height }
+                    }
+                    position={isPanelExpanded ? 
+                        { x: windowSize.width - 450, y: 52 } : 
+                        { x: floatingPosition.x || (windowSize.width - 240), y: floatingPosition.y || (windowSize.height - 320) }
+                    }
+                    onDragStop={(e, d) => {
+                        if (!isPanelExpanded) {
+                            setFloatingPosition({ x: d.x, y: d.y });
+                        }
                     }}
-                    onDragStop={(_e, d) => {
-                        setFloatingPosition({ x: d.x, y: d.y });
+                    onResizeStop={(e, direction, ref, delta, position) => {
+                        if (!isPanelExpanded) {
+                            setFloatingSize({ width: parseInt(ref.style.width), height: parseInt(ref.style.height) });
+                            setFloatingPosition(position);
+                        }
                     }}
-                    minWidth={120}
-                    minHeight={160}
-                    disableDragging={false}
+                    minWidth={isPanelExpanded ? 450 : 150}
+                    minHeight={isPanelExpanded ? windowSize.height - 52 : 120}
+                    maxWidth={isPanelExpanded ? 450 : 800}
+                    maxHeight={isPanelExpanded ? windowSize.height - 52 : 600}
+                    disableDragging={isPanelExpanded}
+                    enableResizing={!isPanelExpanded}
+                    style={{ 
+                        zIndex: 100, 
+                        transition: isPanelExpanded ? 'all 0.5s ease-in-out' : 'none',
+                        // If it's expanding, we might want to disable transition on position if it feel janky
+                    }}
+                    className={isPanelExpanded ? "" : "shadow-2xl"}
                 >
-                    <div className="w-full h-full rounded-lg border-2 border-purple-500/50 shadow-2xl overflow-hidden bg-black flex flex-col">
-                        {/* Drag handle */}
-                        <div className="h-8 bg-linear-to-r from-purple-600 to-indigo-600 cursor-move flex items-center justify-between px-2 shrink-0">
-                            <span className="text-[8px] text-white font-bold">Video</span>
-                            <button
-                                onClick={() => setIsPanelExpanded(true)}
-                                className="text-white hover:bg-white/20 rounded p-0.5 text-xs"
-                                title="Expand"
-                                aria-label="Expand video panel"
-                            >
-                                ⛶
-                            </button>
+                    <div className={`w-full h-full flex flex-col bg-black overflow-hidden border-white/10 ${isPanelExpanded ? 'border-l' : 'rounded-xl border-2 shadow-2xl overflow-hidden'}`}>
+                        {/* Header for the video window */}
+                        <div className={`flex items-center justify-between bg-linear-to-r from-purple-600 to-indigo-600 shrink-0 select-none ${isPanelExpanded ? 'h-12 px-4' : 'h-8 px-2 cursor-move'}`}>
+                            <div className="flex flex-col">
+                                <span className={isPanelExpanded ? "text-[10px] font-black text-white/40 uppercase tracking-[0.2em]" : "text-[8px] font-black text-white/40 uppercase"}>
+                                    {isPanelExpanded ? "Session Room" : "Video"}
+                                </span>
+                                {isPanelExpanded && (
+                                    <span className="text-xs font-bold text-white truncate max-w-[200px]">
+                                        {booking?.students?.first_name || 'Student'}&apos;s Classroom
+                                    </span>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={() => setIsPanelExpanded(!isPanelExpanded)}
+                                    className="text-white hover:bg-white/20 rounded p-1 transition-colors"
+                                    title={isPanelExpanded ? "Minimize" : "Maximize"}
+                                >
+                                    {isPanelExpanded ? <Minimize2 size={isPanelExpanded ? 16 : 12} /> : <Maximize2 size={12} />}
+                                </button>
+                                {isPanelExpanded && (
+                                    <button
+                                        onClick={() => setIsPanelExpanded(false)}
+                                        className="text-white hover:bg-white/20 rounded p-1 transition-colors"
+                                        title="Close panel"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
-                        {/* Thumbnail iframe - only render when token is ready */}
-                        {dailyRoomUrl && dailyToken && !videoLoading && (
+                        {/* The Iframe itself - Removed key to prevent unmounting on re-render */}
+                        <div className="flex-1 relative bg-black">
                             <iframe
-                                key={`float-${dailyRoomUrl}-${dailyToken}`}
-                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false`}
+                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false&autoJoin=1`}
                                 allow="camera; microphone; fullscreen; speaker; display-capture"
-                                className="flex-1 border-0 w-full h-full"
-                                title="Daily.co video conference - floating thumbnail"
+                                className="absolute inset-0 w-full h-full border-0"
+                                title="Daily.co video conference"
                             />
-                        )}
+                            
+                            {/* Loading state just in case */}
+                            {videoLoading && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-10">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-purple-500 border-t-transparent"></div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </Rnd>
             )}
