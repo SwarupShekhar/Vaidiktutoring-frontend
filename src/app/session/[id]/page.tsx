@@ -1163,32 +1163,39 @@ export default function SessionPage({ params }: SessionProps) {
         const handleReceiveUpdate = (data: any) => {
             if (!excalidrawAPIRef.current) return;
             const remoteElements = Array.isArray(data) ? data : (data.elements || []);
-            // CRITICAL FIX: Don't return on empty updates - allow updates even with 0 elements
-            // This was causing drawing to vanish! Only return if data is undefined
             if (data === undefined || data === null) return;
 
-            // Only update if we aren't currently emitting or if it's the tutor's authoritative update
             whiteboardRef.current.isUpdating = true;
             try {
-                console.log(`[Whiteboard] Received update: ${remoteElements.length} elements`);
-                // Merge remote elements with local elements by ID instead of replacing
-                // This preserves local student strokes that aren't yet in the tutor's scene
                 const localElements = excalidrawAPIRef.current.getSceneElements();
-                const remoteIds = new Set(remoteElements.map((el: any) => el.id));
+                const localMap = new Map(localElements.map((el: any) => [el.id, el]));
 
-                // Keep local elements that aren't in the remote set (student's new strokes)
-                // and merge with updated remote elements
-                const mergedElements = [
-                    ...remoteElements,
-                    ...localElements.filter((el: any) => !remoteIds.has(el.id))
-                ];
+                // CRITICAL FIX: Robust merging logic
+                // Only update elements if the remote version is strictly newer.
+                // This prevents "flicker" and vanishing strokes when the student is drawing.
+                const updatedElements = remoteElements.map((remoteEl: any) => {
+                    const localEl: any = localMap.get(remoteEl.id);
+                    if (!localEl) return remoteEl; // New element from tutor
+                    
+                    // If remote version is newer, use it.
+                    // If versions are same, remote versionNonce can be a tie-breaker.
+                    if (remoteEl.version > localEl.version || 
+                       (remoteEl.version === localEl.version && remoteEl.versionNonce !== localEl.versionNonce)) {
+                        return remoteEl;
+                    }
+                    return localEl; // Keep local version if it's newer
+                });
+
+                const remoteIds = new Set(remoteElements.map((el: any) => el.id));
+                const studentOnlyElements = localElements.filter((el: any) => !remoteIds.has(el.id));
+
+                const mergedElements = [...updatedElements, ...studentOnlyElements];
 
                 excalidrawAPIRef.current.updateScene({
                     elements: mergedElements,
                     commitToHistory: false
                 });
             } finally {
-                // Short lock to prevent echo
                 setTimeout(() => {
                     whiteboardRef.current.isUpdating = false;
                 }, 30);
@@ -1557,49 +1564,50 @@ export default function SessionPage({ params }: SessionProps) {
                 )}
             </div>
 
-                {/* Daily.co sidebar panel - expanded state */}
-                {isPanelExpanded && (
-                    <div className="w-full max-w-[450px] md:max-w-[450px] border-l border-white/10 bg-black/80 flex flex-col h-full" role="complementary" aria-label="Video session panel">
-                        {/* Header with title and collapse button */}
-                        <div className="h-12 border-b border-white/10 flex items-center justify-between px-4 bg-linear-to-r from-purple-600 to-indigo-600">
-                            <div className="flex flex-col">
-                                <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Session Room</span>
-                                <span className="text-xs font-bold text-white">
-                                    {booking?.students?.first_name || 'Student'}&apos;s Classroom
-                                </span>
-                            </div>
-                            <button
-                                onClick={() => setIsPanelExpanded(false)}
-                                className="text-white hover:bg-white/20 rounded p-1 transition-colors relative z-30 cursor-pointer"
-                                title="Collapse video panel"
-                                aria-label="Collapse video panel"
-                            >
-                                ✕
-                            </button>
+                {/* Daily.co sidebar panel */}
+                <div 
+                    className={`w-full max-w-[450px] md:max-w-[450px] border-l border-white/10 bg-black/80 flex flex-col h-full transition-all duration-300 ${isPanelExpanded ? 'translate-x-0 opacity-100' : 'fixed right-[-500px] opacity-0 pointer-events-none'}`} 
+                    role="complementary" 
+                    aria-label="Video session panel"
+                >
+                    {/* Header with title and collapse button */}
+                    <div className="h-12 border-b border-white/10 flex items-center justify-between px-4 bg-linear-to-r from-purple-600 to-indigo-600 shrink-0">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">Session Room</span>
+                            <span className="text-xs font-bold text-white">
+                                {booking?.students?.first_name || 'Student'}&apos;s Classroom
+                            </span>
                         </div>
+                        <button
+                            onClick={() => setIsPanelExpanded(false)}
+                            className="text-white hover:bg-white/20 rounded p-1 transition-colors relative z-30 cursor-pointer"
+                            title="Collapse video panel"
+                            aria-label="Collapse video panel"
+                        >
+                            <X size={16} />
+                        </button>
+                    </div>
 
-                        {/* Daily.co iframe - only render when token is ready */}
-                        {dailyRoomUrl && dailyToken && !videoLoading && (
+                    {/* Daily.co iframe - always kept in DOM but hidden when minimized to prevent re-joining */}
+                    <div className="flex-1 relative bg-black">
+                        {dailyRoomUrl && dailyToken && !videoLoading ? (
                             <iframe
                                 key={`${dailyRoomUrl}-${dailyToken}`}
                                 src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false`}
                                 allow="camera; microphone; fullscreen; speaker; display-capture"
-                                className="flex-1 border-0 w-full h-full"
+                                className="absolute inset-0 w-full h-full border-0"
                                 title="Daily.co video conference"
                             />
-                        )}
-
-                        {/* Loading state - show while waiting for token */}
-                        {!dailyRoomUrl || videoLoading ? (
-                            <div className="flex-1 flex items-center justify-center">
+                        ) : (
+                            <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="text-center">
                                     <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mx-auto mb-3"></div>
                                     <p className="text-white/50 text-sm">Connecting to video session...</p>
                                 </div>
                             </div>
-                        ) : null}
+                        )}
                     </div>
-                )}
+                </div>
             </div>
 
             {/* Loading Overlay for Video */}
