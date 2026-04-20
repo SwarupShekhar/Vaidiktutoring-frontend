@@ -301,10 +301,8 @@ export default function PlaybookDashboard() {
                                             </AnimatePresence>
                                         </div>
                                     </div>
-                                    {/* Grid Overlay */}
-                                    <div className="absolute inset-0 z-0 opacity-/5 pointer-events-none"
-                                        style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}
-                                    />
+                                    {/* Grid Overlay removed as per user feedback */}
+
                                 </div>
                             </div>
                         </div>
