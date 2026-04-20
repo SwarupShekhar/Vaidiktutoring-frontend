@@ -79,7 +79,8 @@ const PricingPlans = () => {
             plans: [
                 { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 149, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
                 { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 249, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
-                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 375, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 375, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] },
+                { id: 'testing', name: 'Test Gateway', frequency: 'Diagnostic', monthlyPrice: 1, credits: 1, features: ['Razorpay Test', 'Low-value transaction'] }
             ]
         },
         uk: {
@@ -89,7 +90,8 @@ const PricingPlans = () => {
             plans: [
                 { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 149, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
                 { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 249, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
-                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 375, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 375, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] },
+                { id: 'testing', name: 'Test Gateway', frequency: 'Diagnostic', monthlyPrice: 1, credits: 1, features: ['Razorpay Test', 'Low-value transaction'] }
             ]
         },
         australia: {
@@ -99,7 +101,8 @@ const PricingPlans = () => {
             plans: [
                 { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 250, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
                 { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 450, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
-                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 650, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 650, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] },
+                { id: 'testing', name: 'Test Gateway', frequency: 'Diagnostic', monthlyPrice: 1, credits: 1, features: ['Razorpay Test', 'Low-value transaction'] }
             ]
         },
         singapore: {
@@ -109,7 +112,8 @@ const PricingPlans = () => {
             plans: [
                 { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 280, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
                 { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 520, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
-                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 750, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 750, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] },
+                { id: 'testing', name: 'Test Gateway', frequency: 'Diagnostic', monthlyPrice: 1, credits: 1, features: ['Razorpay Test', 'Low-value transaction'] }
             ]
         },
         middleeast: {
@@ -119,7 +123,8 @@ const PricingPlans = () => {
             plans: [
                 { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 199, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
                 { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 349, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
-                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 499, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 499, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] },
+                { id: 'testing', name: 'Test Gateway', frequency: 'Diagnostic', monthlyPrice: 1, credits: 1, features: ['Razorpay Test', 'Low-value transaction'] }
             ]
         },
         southafrica: {
@@ -129,7 +134,8 @@ const PricingPlans = () => {
             plans: [
                 { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 1500, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
                 { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 2800, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
-                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 4200, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 4200, credits: 24, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] },
+                { id: 'testing', name: 'Test Gateway', frequency: 'Diagnostic', monthlyPrice: 1, credits: 1, features: ['Razorpay Test', 'Low-value transaction'] }
             ]
         }
     };
