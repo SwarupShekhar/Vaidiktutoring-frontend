@@ -130,11 +130,11 @@ export default function PlaybookDashboard() {
                         </h2>
                     </FadeUpSection>
 
-                    <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 grow items-center min-h-0 overflow-hidden">
+                    <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 grow items-center justify-center min-h-0">
                         {/* Left Side: Focus Stack Architecture */}
-                        <div className="lg:w-1/2 relative flex gap-8 items-start h-full min-h-[400px]">
+                        <div className="lg:w-1/2 relative flex gap-8 items-center h-fit min-h-[400px]">
                             {/* 1. The Timeline Sidebar (Navigation) */}
-                            <div className="flex flex-col h-full py-4 relative shrink-0">
+                            <div className="flex flex-col h-fit py-4 relative shrink-0">
                                 {/* Track Line */}
                                 <div className="absolute left-3 top-4 bottom-4 w-px bg-border/30" />
 
@@ -163,7 +163,7 @@ export default function PlaybookDashboard() {
                             </div>
 
                             {/* 2. The Active Content Stage */}
-                            <div className="flex-1 relative h-full pt-2 overflow-y-auto custom-scrollbar">
+                            <div className="flex-1 relative h-fit pt-2">
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={activeIndex}
@@ -211,8 +211,8 @@ export default function PlaybookDashboard() {
                         </div>
 
                         {/* Right Side: Sticky Interactive Mockup (The "Engine") */}
-                        <div className="hidden lg:block lg:w-1/2 h-full max-h-[600px]">
-                            <div className="h-full w-full bg-gray-950 rounded-[3.5rem] p-1 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden border border-white/5 relative transform transition-transform duration-700">
+                        <div className="hidden lg:block lg:w-1/2 h-fit max-h-[600px]">
+                            <div className="h-full w-full bg-gray-950 rounded-[3.5rem] p-1 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-white/5 relative transform transition-transform duration-700">
                                 <div className="h-full w-full bg-[#050505] rounded-[3.2rem] p-8 flex flex-col relative overflow-hidden">
                                     {/* Top OS Bar */}
                                     <div className="flex items-center justify-between mb-8 relative z-20">
