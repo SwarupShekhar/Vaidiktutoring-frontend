@@ -146,13 +146,13 @@ export default function Page() {
   return (
     <>
       {jsonLd.map((schema, i) => (
-         <script
-      :  key={i}
-      :  type="application/ld+json"
-      :  dangerouslySetInnerHTML={{
-      : : __html: JSON.stringify(schema).replace(/</g, "\\u003c"),
-      :  }}
-         />
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(schema).replace(/</g, "\\u003c"),
+          }}
+        />
       ))}
       <OLevelPageClient testimonials={oLevelTestimonials} faqs={faqs} />
     </>
