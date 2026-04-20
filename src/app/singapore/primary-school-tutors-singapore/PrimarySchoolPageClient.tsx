@@ -649,6 +649,7 @@ export default function PrimarySchoolPageClient({
             </div>
           </div>
         </div>
+        </div>
       </section>
 
       {/* ============================================
