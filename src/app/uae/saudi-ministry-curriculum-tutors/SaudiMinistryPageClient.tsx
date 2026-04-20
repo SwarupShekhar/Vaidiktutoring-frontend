@@ -349,7 +349,7 @@ export default function SaudiMinistryPageClient({ testimonials, faqs }: Props) {
             <h2 className="text-3xl md:text-4xl font-black text-deep-navy dark:text-white mb-6 uppercase tracking-tighter">Cinematic Growth Matrix</h2>
             <div className="h-1.5 w-24 bg-primary mx-auto rounded-full" />
           </motion.div>
-          <div className="rounded-[3.5rem] overflow-hidden border border-border/60 shadow-2xl bg-surface relative">
+          <div className="rounded-[3.5rem] overflow-hidden border border-border/60 shadow-2xl bg-white dark:bg-slate-900/50 relative">
             <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
             <div className="grid grid-cols-3 bg-deep-navy text-white text-[10px] font-black uppercase tracking-[0.2em] relative z-10">
               <div className="px-8 py-6">Stage / Focus</div>

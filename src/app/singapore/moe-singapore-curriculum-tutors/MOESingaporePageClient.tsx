@@ -397,7 +397,7 @@ export default function MOESingaporePageClient({ testimonials, faqs }: Props) {
             <h2 className="text-3xl font-black text-deep-navy dark:text-white mb-3">Before and After StudyHours</h2>
             <p className="text-text-secondary">Outcomes across MOE Singapore levels after consistent specialist tutoring</p>
           </motion.div>
-          <div className="rounded-[3.5rem] overflow-hidden border border-border/60 shadow-2xl bg-white relative group">
+          <div className="rounded-[3.5rem] overflow-hidden border border-border/60 shadow-2xl bg-white dark:bg-slate-900/50 relative group">
             <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
             <div className="grid grid-cols-3 bg-deep-navy text-white text-[10px] font-black uppercase tracking-[0.2em] relative z-10">
               <div className="px-8 py-6">Level / Context</div>

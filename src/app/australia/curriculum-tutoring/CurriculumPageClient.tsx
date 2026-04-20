@@ -352,7 +352,7 @@ export default function CurriculumPageClient() {
               Before vs After <span className="text-sapphire">Curriculum Tutoring</span>
             </h2>
           </div>
-          <div className="rounded-[3.5rem] overflow-hidden border border-border/60 shadow-2xl bg-white relative group">
+          <div className="rounded-[3.5rem] overflow-hidden border border-border/60 shadow-2xl bg-white dark:bg-slate-900/50 relative group">
             <div className="absolute inset-0 bg-linear-to-br from-sapphire/5 via-transparent to-transparent pointer-events-none" />
             <div className="grid grid-cols-12 bg-deep-navy text-white text-[10px] font-black uppercase tracking-[0.2em] relative z-10">
               <div className="col-span-12 px-8 py-6 flex items-center justify-between border-b border-white/10">

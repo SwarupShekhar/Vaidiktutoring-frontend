@@ -231,6 +231,80 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Locations Section */}
+        <div className="mb-16">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-6">
+            Tutoring by Location
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {/* Australia */}
+            <div>
+              <Link href="/australia" className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-widest mb-3 block hover:text-primary dark:hover:text-primary transition-colors">
+                Australia
+              </Link>
+              <ul className="space-y-2">
+                {[
+                  { href: "/australia/vce-online-tutoring", label: "VCE Tutoring" },
+                  { href: "/australia/hsc-online-tutoring", label: "HSC Tutoring" },
+                  { href: "/australia/qce-online-tutoring", label: "QCE Tutoring" },
+                  { href: "/australia/wace-online-tutoring", label: "WACE Tutoring" },
+                  { href: "/australia/atar-online-tutoring", label: "ATAR Tutoring" },
+                  { href: "/australia/curriculum-tutoring", label: "Australian Curriculum" },
+                ].map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* Singapore */}
+            <div>
+              <Link href="/singapore" className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-widest mb-3 block hover:text-primary dark:hover:text-primary transition-colors">
+                Singapore
+              </Link>
+              <ul className="space-y-2">
+                {[
+                  { href: "/singapore/psle-tutors-online", label: "PSLE Tutors" },
+                  { href: "/singapore/o-level-tutors-singapore", label: "O-Level Tutors" },
+                  { href: "/singapore/a-level-tutors-singapore", label: "A-Level Tutors" },
+                  { href: "/singapore/ip-programme-tutors-singapore", label: "IP Programme Tutors" },
+                  { href: "/singapore/moe-singapore-curriculum-tutors", label: "MOE Singapore Curriculum" },
+                  { href: "/singapore/primary-school-tutors-singapore", label: "Primary School Tutors" },
+                ].map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* UAE */}
+            <div>
+              <Link href="/uae" className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-widest mb-3 block hover:text-primary dark:hover:text-primary transition-colors">
+                UAE &amp; Middle East
+              </Link>
+              <ul className="space-y-2">
+                {[
+                  { href: "/uae/online-tutors-dubai", label: "Online Tutors Dubai" },
+                  { href: "/uae/online-tutors-abu-dhabi", label: "Online Tutors Abu Dhabi" },
+                  { href: "/uae/online-tutors-riyadh", label: "Online Tutors Riyadh" },
+                  { href: "/uae/moe-uae-curriculum-tutors", label: "MOE UAE Curriculum" },
+                  { href: "/uae/saudi-ministry-curriculum-tutors", label: "Saudi Ministry Curriculum" },
+                ].map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
         <div className="pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-500 dark:text-gray-500">
             &copy; {year} StudyHours. All rights reserved.

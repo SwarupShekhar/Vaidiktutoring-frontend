@@ -249,7 +249,7 @@ export default function ALevelSingaporePageClient({ testimonials, faqs }: Props)
             <p className="text-text-secondary max-w-2xl mx-auto font-medium lowercase">calculated from your best 3 h2 subjects + 1 h1 contrasting subject + gp + mtl. maximum rp = {maxRP}.</p>
           </motion.div>
           
-          <div className="rounded-[3.5rem] overflow-hidden border border-border/60 shadow-2xl bg-surface relative group">
+          <div className="rounded-[3.5rem] overflow-hidden border border-border/60 shadow-2xl bg-white dark:bg-slate-900/50 relative group">
             <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 via-transparent to-transparent pointer-events-none" />
             <div className="grid grid-cols-3 bg-deep-navy text-white text-[10px] font-black uppercase tracking-[0.2em] relative z-10">
               <div className="px-8 py-6">Grade Achievement</div>
@@ -446,7 +446,7 @@ export default function ALevelSingaporePageClient({ testimonials, faqs }: Props)
             <h2 className="text-4xl font-black text-deep-navy dark:text-white mb-6 uppercase tracking-tighter italic">Delta Matrix</h2>
             <div className="h-1.5 w-24 bg-primary mx-auto rounded-full" />
           </motion.div>
-          <div className="rounded-[3.5rem] overflow-hidden border border-border/60 shadow-2xl bg-white relative group">
+          <div className="rounded-[3.5rem] overflow-hidden border border-border/60 shadow-2xl bg-white dark:bg-slate-900/50 relative group">
             <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
             <div className="grid grid-cols-3 bg-deep-navy text-white text-[10px] font-black uppercase tracking-[0.2em] relative z-10">
               <div className="px-8 py-6">Subject / Scenario</div>
