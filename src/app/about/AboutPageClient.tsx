@@ -109,7 +109,7 @@ const HeroAboutK12 = () => {
                             initial={{ opacity: 0, x: -30, y: 30 }}
                             animate={{ opacity: 1, x: 0, y: 0 }}
                             transition={{ delay: 0.5, duration: 0.8 }}
-                            className="absolute bottom-10 -left-12 z-20 scale-[0.6] origin-bottom-left"
+                            className="absolute bottom-10 -left-12 z-20 scale-/60 origin-bottom-left"
                         >
                             <div className="p-8 rounded-[3rem] bg-white/90 dark:bg-slate-900/95 backdrop-blur-2xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
                                 <div className="space-y-6">
@@ -376,7 +376,7 @@ const DifferentiationSection = () => {
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
                             transition={{ delay: idx * 0.1 }}
-                            className="bg-background dark:bg-slate-900/40 p-10 rounded-[2.5rem] border border-border dark:border-white/10 shadow-sm hover:shadow-2xl transition-all relative"
+                            className="bg-background dark:bg-slate-900/40 p-10 rounded-4xl border border-border dark:border-white/10 shadow-sm hover:shadow-2xl transition-all relative"
                         >
                             <div className="w-16 h-16 rounded-2xl bg-ice-blue dark:bg-blue-900/20 flex items-center justify-center text-sapphire mb-8">
                                 <pillar.icon size={32} />

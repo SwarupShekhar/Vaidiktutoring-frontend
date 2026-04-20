@@ -171,7 +171,7 @@ export default function K12OnlineTutoringPage({
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1, duration: 0.8 }}
-                  className="absolute bottom-12 -left-4 p-6 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl rounded-[2.5rem] border border-white/20 shadow-2xl z-20 min-w-[200px]"
+                  className="absolute bottom-12 -left-4 p-6 bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl rounded-4xl border border-white/20 shadow-2xl z-20 min-w-[200px]"
                 >
                    <div className="flex items-center justify-center gap-6">
                       <div className="text-center">
@@ -652,7 +652,7 @@ export default function K12OnlineTutoringPage({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.33%-2rem)] max-w-sm p-8 rounded-[2.5rem] bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden"
+                className="w-full md:w-[calc(50%-1.5rem)] lg:w-[calc(33.33%-2rem)] max-w-sm p-8 rounded-4xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 hover:-translate-y-2 transition-all duration-300 group relative overflow-hidden"
               >
                 {/* Step Indicator */}
                 <div className="absolute top-0 right-0 p-6 text-6xl font-black text-white/5 group-hover:text-white/10 transition-colors pointer-events-none">

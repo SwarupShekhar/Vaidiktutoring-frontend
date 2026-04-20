@@ -138,7 +138,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="relative z-10 p-1 bg-linear-to-br from-surface/40 via-surface/20 to-transparent dark:from-surface/10 dark:via-surface/5 dark:to-transparent rounded-[2.5rem] md:rounded-[3rem] backdrop-blur-3xl border border-border/30 dark:border-border/10 shadow-2xl"
+              className="relative z-10 p-1 bg-linear-to-br from-surface/40 via-surface/20 to-transparent dark:from-surface/10 dark:via-surface/5 dark:to-transparent rounded-4xl md:rounded-[3rem] backdrop-blur-3xl border border-border/30 dark:border-border/10 shadow-2xl"
             >
               <div className="p-6 md:p-10 w-full max-w-md bg-surface/90 dark:bg-surface/90 rounded-[2.3rem] md:rounded-[2.8rem] backdrop-blur-3xl">
                 <div className="grid grid-cols-3 gap-6 mb-10 text-center">
@@ -244,7 +244,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1, duration: 0.8 }}
-                className="flex flex-col p-10 rounded-[2.5rem] bg-background dark:bg-surface/5 border border-border/50 hover:border-sapphire/30 transition-all group"
+                className="flex flex-col p-10 rounded-4xl bg-background dark:bg-surface/5 border border-border/50 hover:border-sapphire/30 transition-all group"
               >
                 <div className="w-14 h-14 rounded-2xl bg-sapphire/10 text-sapphire flex items-center justify-center mb-8 group-hover:bg-sapphire group-hover:text-white transition-colors duration-500">
                   <callout.icon size={28} />
@@ -328,7 +328,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
               <motion.div
                 key={idx}
                 whileHover={{ y: -15 }}
-                className={`relative p-0.5 rounded-[2.5rem] bg-linear-to-br transition-all group overflow-hidden ${
+                className={`relative p-0.5 rounded-4xl bg-linear-to-br transition-all group overflow-hidden ${
                   prog.featured
                     ? "from-sapphire to-primary shadow-[0_0_50px_rgba(79,70,229,0.2)] md:scale-105 z-10"
                     : "from-border to-transparent dark:from-border/15 dark:to-transparent shadow-2xl"
@@ -682,7 +682,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
             ].map((step, idx) => (
               <motion.div
                 key={idx}
-                className="relative p-10 rounded-[2.5rem] bg-surface dark:bg-surface/5 border border-border group"
+                className="relative p-10 rounded-4xl bg-surface dark:bg-surface/5 border border-border group"
               >
                 <div className="absolute -top-6 -right-6 text-6xl font-black text-sapphire/5 group-hover:text-sapphire/10 transition-colors">
                   {step.step}

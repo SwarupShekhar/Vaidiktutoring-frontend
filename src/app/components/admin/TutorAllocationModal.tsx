@@ -268,7 +268,7 @@ export default function TutorAllocationModal({ isOpen, onClose, booking }: Tutor
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-6 p-8 rounded-[2.5rem] bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/5 relative overflow-hidden">
+                                <div className="grid grid-cols-2 gap-6 p-8 rounded-4xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/5 relative overflow-hidden">
                                     <div className="space-y-4">
                                         <div className="space-y-1">
                                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Student Subject Focus</span>
@@ -325,7 +325,7 @@ export default function TutorAllocationModal({ isOpen, onClose, booking }: Tutor
                                         ))}
                                     </div>
                                 ) : recommendations.length === 0 ? (
-                                    <div className="p-12 rounded-[2.5rem] border-2 border-dashed border-red-500/20 bg-red-500/5 flex flex-col items-center justify-center text-center">
+                                    <div className="p-12 rounded-4xl border-2 border-dashed border-red-500/20 bg-red-500/5 flex flex-col items-center justify-center text-center">
                                         <AlertCircle size={32} className="text-red-500 mb-4" />
                                         <p className="text-sm font-bold text-red-500 tracking-tight">No experts found for {selectedItem.subjectName}</p>
                                         <p className="text-xs text-red-400 font-medium mt-1">Please update tutor skills or adjust the student subject focus.</p>
@@ -434,7 +434,7 @@ export default function TutorAllocationModal({ isOpen, onClose, booking }: Tutor
             {/* Success/Processing Overlay */}
             {allocating && (
                 <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-blue-600/20 backdrop-blur-md animate-in fade-in duration-500">
-                    <div className="bg-white dark:bg-slate-900 p-12 rounded-[2.5rem] shadow-2xl border border-white/20 flex flex-col items-center gap-6">
+                    <div className="bg-white dark:bg-slate-900 p-12 rounded-4xl shadow-2xl border border-white/20 flex flex-col items-center gap-6">
                         <Loader2 size={48} className="text-blue-500 animate-spin" />
                         <div className="text-center">
                             <h4 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Syncing Allocation</h4>

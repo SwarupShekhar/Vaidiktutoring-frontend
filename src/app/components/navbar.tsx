@@ -17,6 +17,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
+  const [activeResourceGroup, setActiveResourceGroup] = useState<string | null>(null);
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
   const { activeCurriculum, setCurriculum } = useCurriculum();
 
@@ -32,12 +33,49 @@ export default function Navbar() {
     { name: "Blogs", href: "/blogs" },
   ];
 
-  const resourceLinks = [
-    { name: "K-12 Online Tutoring", href: "/k-12-online-tutoring" },
-    { name: "IB Tutors Online", href: "/ib-online-tutoring" },
-    { name: "A-Level Tutors Online", href: "/a-level-online-tutoring" },
-    { name: "IGCSE Tutors Online", href: "/igcse-online-tutoring" },
-    { name: "GCSE Tutors Online", href: "/gcse-online-tutoring" },
+  const resourceGroups = [
+    {
+      label: "UK & International",
+      links: [
+        { name: "K-12 Online Tutoring", href: "/k-12-online-tutoring" },
+        { name: "IB Tutors Online", href: "/ib-online-tutoring" },
+        { name: "A-Level Tutors Online", href: "/a-level-online-tutoring" },
+        { name: "IGCSE Tutors Online", href: "/igcse-online-tutoring" },
+        { name: "GCSE Tutors Online", href: "/gcse-online-tutoring" },
+      ],
+    },
+    {
+      label: "UAE & Middle East",
+      links: [
+        { name: "Online Tutors Dubai", href: "/uae/online-tutors-dubai" },
+        { name: "Online Tutors Abu Dhabi", href: "/uae/online-tutors-abu-dhabi" },
+        { name: "Online Tutors Riyadh", href: "/uae/online-tutors-riyadh" },
+        { name: "MOE UAE Curriculum Tutors", href: "/uae/moe-uae-curriculum-tutors" },
+        { name: "Saudi Ministry Curriculum Tutors", href: "/uae/saudi-ministry-curriculum-tutors" },
+      ],
+    },
+    {
+      label: "Singapore (MOE)",
+      links: [
+        { name: "PSLE Tutors Online", href: "/singapore/psle-tutors-online" },
+        { name: "O-Level Tutors Singapore", href: "/singapore/o-level-tutors-singapore" },
+        { name: "Primary School Tutors Singapore", href: "/singapore/primary-school-tutors-singapore" },
+        { name: "MOE Singapore Curriculum Tutors", href: "/singapore/moe-singapore-curriculum-tutors" },
+        { name: "A-Level Tutors Singapore", href: "/singapore/a-level-tutors-singapore" },
+        { name: "IP Programme Tutors Singapore", href: "/singapore/ip-programme-tutors-singapore" },
+      ],
+    },
+    {
+      label: "Australia (ATAR/VCE/HSC)",
+      links: [
+        { name: "VCE Tutors Online", href: "/australia/vce-online-tutoring" },
+        { name: "HSC Tutors Online", href: "/australia/hsc-online-tutoring" },
+        { name: "ATAR Tutors Online", href: "/australia/atar-online-tutoring" },
+        { name: "QCE Tutors Online", href: "/australia/qce-online-tutoring" },
+        { name: "WACE Tutors Online", href: "/australia/wace-online-tutoring" },
+        { name: "Australian Curriculum Tutors", href: "/australia/curriculum-tutoring" },
+      ],
+    },
   ];
 
   return (
@@ -75,7 +113,7 @@ export default function Navbar() {
               onClick={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}
               onMouseEnter={() => setResourcesDropdownOpen(true)}
               className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1 ${
-                resourceLinks.some((link) => isActive(link.href))
+                resourceGroups.some((g) => g.links.some((link) => isActive(link.href)))
                   ? "bg-white dark:bg-white/10 text-primary shadow-sm"
                   : "text-text-secondary hover:text-primary"
               }`}
@@ -96,24 +134,47 @@ export default function Navbar() {
               </svg>
             </button>
 
-            {/* Dropdown Menu */}
+            {/* Dropdown Menu - Tier 1: Regions */}
             {resourcesDropdownOpen && (
               <div
-                className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-black rounded-xl shadow-xl border border-white/20 dark:border-white/10 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                onMouseLeave={() => setResourcesDropdownOpen(false)}
+                className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-black rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 py-3 animate-in fade-in slide-in-from-top-2 duration-200 z-70"
+                onMouseLeave={() => {
+                   setResourcesDropdownOpen(false);
+                   setActiveResourceGroup(null);
+                }}
               >
-                {resourceLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className={`block px-4 py-3 text-sm font-medium transition-all ${
-                      isActive(link.href)
-                        ? "bg-primary/10 text-primary"
-                        : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10 hover:text-primary"
-                    }`}
+                {resourceGroups.map((group) => (
+                  <div 
+                    key={group.label} 
+                    className="relative group/sub"
+                    onMouseEnter={() => setActiveResourceGroup(group.label)}
                   >
-                    {link.name}
-                  </Link>
+                    <div className={`flex items-center justify-between px-4 py-3 text-sm font-bold transition-all cursor-pointer ${activeResourceGroup === group.label ? "bg-primary/10 text-primary" : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10"}`}>
+                      <span>{group.label}</span>
+                      <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+
+                    {/* Tier 2: Specific Pages (Flyout) */}
+                    {activeResourceGroup === group.label && (
+                      <div className="absolute left-full top-0 ml-1 w-64 bg-white dark:bg-black rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 py-3 animate-in fade-in zoom-in-95 duration-150">
+                        {group.links.map((link) => (
+                          <Link
+                            key={link.name}
+                            href={link.href}
+                            className={`block px-4 py-2.5 text-xs font-bold transition-all ${
+                              isActive(link.href)
+                                ? "bg-primary/10 text-primary"
+                                : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10 hover:text-primary"
+                            }`}
+                          >
+                            {link.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             )}
@@ -190,15 +251,8 @@ export default function Navbar() {
           {/* Primary CTA */}
           {(!user || user.role !== "tutor") && (
             <Link
-              href={
-                user
-                  ? "https://calendly.com/swarupshekhar-vaidikedu/30min"
-                  : "/signup?type=assessment"
-              }
+              href={user ? "/bookings/new" : "/signup?type=assessment"}
               className="hidden sm:inline-flex items-center justify-center px-4 lg:px-6 py-2 rounded-full bg-primary text-white font-black text-xs tracking-wide hover:bg-sapphire hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-blue-500/20"
-              {...(user
-                ? { target: "_blank", rel: "noopener noreferrer" }
-                : {})}
             >
               Book Demo
             </Link>
@@ -280,24 +334,39 @@ export default function Navbar() {
               </Link>
             ))}
 
-            {/* Mobile Resources Submenu */}
-            <div className="py-2">
-              <p className="px-3 py-1 text-xs font-bold text-text-secondary uppercase tracking-wide">
-                Resources
-              </p>
-              {resourceLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`block px-6 py-2.5 rounded-lg text-sm font-medium tracking-wide transition-all ml-2 ${
-                    isActive(link.href)
-                      ? "bg-primary/10 text-primary"
-                      : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10"
-                  }`}
-                >
-                  {link.name}
-                </Link>
+            {/* Mobile Resources Submenu - Tiered Accordion Style */}
+            <div className="py-2 space-y-1">
+              {resourceGroups.map((group) => (
+                <div key={group.label}>
+                  <button 
+                    onClick={() => setActiveResourceGroup(activeResourceGroup === group.label ? null : group.label)}
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-black text-sapphire uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
+                  >
+                    <span>{group.label}</span>
+                    <svg className={`w-4 h-4 transition-transform ${activeResourceGroup === group.label ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                  
+                  {activeResourceGroup === group.label && (
+                    <div className="grid grid-cols-1 gap-0.5 mt-1 border-l-2 border-sapphire/20 ml-4 pl-2 animate-in slide-in-from-top duration-200">
+                      {group.links.map((link) => (
+                        <Link
+                          key={link.name}
+                          href={link.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`block px-4 py-2.5 rounded-lg text-xs font-bold tracking-wide transition-all ${
+                            isActive(link.href)
+                              ? "bg-primary/10 text-primary"
+                              : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10"
+                          }`}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
 
@@ -340,16 +409,9 @@ export default function Navbar() {
               )}
               {(!user || user.role !== "tutor") && (
                 <Link
-                  href={
-                    user
-                      ? "https://calendly.com/swarupshekhar-vaidikedu/30min"
-                      : "/signup?type=assessment"
-                  }
+                  href={user ? "/bookings/new" : "/signup?type=assessment"}
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex-1 px-3 py-2.5 rounded-lg bg-primary text-white font-bold text-sm tracking-wide text-center hover:bg-sapphire transition-all"
-                  {...(user
-                    ? { target: "_blank", rel: "noopener noreferrer" }
-                    : {})}
                 >
                   Book Demo
                 </Link>

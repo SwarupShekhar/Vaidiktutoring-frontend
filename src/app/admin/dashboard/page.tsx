@@ -128,9 +128,9 @@ export default function AdminDashboardPage() {
                 <div className="grid grid-cols-12 gap-6 pb-20">
                     
                     {/* 1. WELCOME & IDENTITY TILE (Col 1-5, Row 1) */}
-                    <div className="col-span-full lg:col-span-5 bg-slate-900 rounded-[2.5rem] p-10 text-white relative overflow-hidden shadow-2xl flex flex-col justify-center min-h-[260px] group border border-white/5">
+                    <div className="col-span-full lg:col-span-5 bg-slate-900 rounded-4xl p-10 text-white relative overflow-hidden shadow-2xl flex flex-col justify-center min-h-[260px] group border border-white/5">
                         {/* Dynamic Background Noise */}
-                        <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
+                        <div className="absolute inset-0 opacity-/5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
                         <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-600/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:bg-indigo-600/30 transition-colors duration-1000" />
                         
                         <div className="relative z-10 text-left">
@@ -237,7 +237,7 @@ export default function AdminDashboardPage() {
                     <div className="col-span-full lg:col-span-4 flex flex-col gap-6">
                         
                         {/* COMMAND CONSOLE (Executive Actions) */}
-                        <div className="bg-slate-900 rounded-[2.5rem] p-8 border border-white/5 shadow-2xl relative overflow-hidden group">
+                        <div className="bg-slate-900 rounded-4xl p-8 border border-white/5 shadow-2xl relative overflow-hidden group">
                             {/* Technical Grid Overlay */}
                             <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] bg-size-[20px_20px]" />
                             <div className="absolute top-0 right-0 p-4 font-mono text-[8px] text-white/20 tracking-tighter uppercase">
@@ -312,7 +312,7 @@ export default function AdminDashboardPage() {
 
 
                         {/* SUPPORT TICKETS BENTO */}
-                        <div id="support-section" className="bg-white/5 dark:bg-black/20 rounded-[2.5rem] p-8 border border-white/5 flex-1 relative overflow-hidden">
+                        <div id="support-section" className="bg-white/5 dark:bg-black/20 rounded-4xl p-8 border border-white/5 flex-1 relative overflow-hidden">
                             <div className="flex items-center justify-between mb-8">
                                 <h2 className="text-xl font-black text-(--color-text-primary)">Active Intelligence</h2>
                                 {newTicketCount > 0 && (

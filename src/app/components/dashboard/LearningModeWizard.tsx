@@ -96,7 +96,7 @@ export function LearningModeWizard({ studentId, programId, packageId, curriculum
         className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden"
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white">
+        <div className="bg-linear-to-r from-purple-600 to-indigo-600 p-6 text-white">
           <div className="flex items-center gap-2 mb-1">
             <Zap size={20} className="text-yellow-300" />
             <span className="text-sm font-bold uppercase tracking-widest text-purple-200">Learning Mode</span>

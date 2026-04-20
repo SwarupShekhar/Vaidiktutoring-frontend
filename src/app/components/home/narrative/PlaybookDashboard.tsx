@@ -281,7 +281,7 @@ export default function PlaybookDashboard() {
                                                     </div>
 
                                                     {/* Bottom Telemetry Bar */}
-                                                    <div className="mt-auto p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-between shrink-0">
+                                                    <div className="mt-auto p-4 bg-white//2 border border-white/5 rounded-2xl flex items-center justify-between shrink-0">
                                                         <div className="flex items-center gap-4">
                                                             <div className="flex -space-x-2">
                                                                 <div className="w-6 h-6 rounded-full bg-primary/30 border-2 border-[#050505]" />
@@ -302,7 +302,7 @@ export default function PlaybookDashboard() {
                                         </div>
                                     </div>
                                     {/* Grid Overlay */}
-                                    <div className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none"
+                                    <div className="absolute inset-0 z-0 opacity-/5 pointer-events-none"
                                         style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}
                                     />
                                 </div>

@@ -47,7 +47,7 @@ export const SupportModal = ({ isOpen, onClose, context }: SupportModalProps) =>
 
     return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-surface w-full max-w-lg rounded-[2.5rem] shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-surface w-full max-w-lg rounded-4xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
                 <div className="p-8">
                     <div className="flex justify-between items-start mb-6">
                         <div className="flex items-center gap-4">

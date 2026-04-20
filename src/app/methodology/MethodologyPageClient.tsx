@@ -28,6 +28,13 @@ import { useAuthContext } from "@/app/context/AuthContext";
 import ParentTestimonials from "../components/subjects/ParentTestimonials";
 import StickyCTA from "../components/subjects/StickyCTA";
 
+const optimizeCloudinaryUrl = (url: string) => {
+  if (url.includes("cloudinary.com") && !url.includes("f_auto")) {
+    return url.replace("/upload/", "/upload/f_auto,q_auto/");
+  }
+  return url;
+};
+
 export default function MethodologyPage() {
   const { user } = useAuthContext();
 
@@ -79,11 +86,11 @@ export default function MethodologyPage() {
               className="relative aspect-4/3 rounded-4xl overflow-hidden shadow-2xl border border-border z-10"
             >
               <Image
-                src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774268693/Candid_photography_of_202603231754-Photoroom_uweihq.png"
+                src={optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1774268693/Candid_photography_of_202603231754-Photoroom_uweihq.png")}
                 alt="Online tutor using AI-assisted feedback tools to guide a student"
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
+                sizes="(max-width: 768px) 100vw, 40vw"
                 priority
               />
               <div className="absolute inset-0 bg-linear-to-t from-deep-navy/20 to-transparent" />
@@ -179,7 +186,7 @@ export default function MethodologyPage() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="group p-8 rounded-[2.5rem] bg-background border border-border shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+              className="group p-8 rounded-4xl bg-background border border-border shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
             >
               <div className="mb-8 relative">
                 <div className="w-20 h-20 rounded-4xl bg-surface dark:bg-surface/5 border border-border flex items-center justify-center text-sapphire shadow-sm group-hover:scale-110 group-hover:bg-sapphire group-hover:text-white transition-all duration-700">
@@ -203,7 +210,7 @@ export default function MethodologyPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="p-8 rounded-[2.5rem] bg-background border-2 border-sapphire shadow-2xl relative hover:-translate-y-2 transition-all duration-500 scale-105 z-20"
+              className="p-8 rounded-4xl bg-background border-2 border-sapphire shadow-2xl relative hover:-translate-y-2 transition-all duration-500 scale-105 z-20"
             >
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                 <span className="text-[10px] font-bold uppercase tracking-widest text-white bg-sapphire px-4 py-1.5 rounded-full shadow-lg">
@@ -232,7 +239,7 @@ export default function MethodologyPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="group p-8 rounded-[2.5rem] bg-background border border-border shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+              className="group p-8 rounded-4xl bg-background border border-border shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
             >
               <div className="mb-8 relative">
                 <div className="w-20 h-20 rounded-4xl bg-surface dark:bg-surface/5 border border-border flex items-center justify-center text-sapphire shadow-sm group-hover:scale-110 group-hover:bg-sapphire group-hover:text-white transition-all duration-700">

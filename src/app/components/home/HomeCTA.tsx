@@ -28,7 +28,7 @@ export default function HomeCTA() {
     return (
         <section className="w-full py-24 px-6">
             <div className="max-w-5xl mx-auto">
-                <div className="relative rounded-[2.5rem] bg-primary overflow-hidden px-6 py-16 md:px-16 md:py-20 text-center shadow-2xl">
+                <div className="relative rounded-4xl bg-primary overflow-hidden px-6 py-16 md:px-16 md:py-20 text-center shadow-2xl">
                     {/* Decorative circles */}
                     <div className="absolute top-0 left-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
                     <div className="absolute bottom-0 right-0 w-80 h-80 bg-white opacity-10 rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />

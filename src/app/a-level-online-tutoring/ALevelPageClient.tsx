@@ -162,7 +162,7 @@ export default function ALevelTutoringPage({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1 }}
-                className="absolute bottom-6 left-6 right-6 p-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-[2.5rem] border border-white/20 shadow-2xl"
+                className="absolute bottom-6 left-6 right-6 p-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-4xl border border-white/20 shadow-2xl"
               >
                 <p className="text-[10px] font-black text-deep-navy dark:text-white uppercase tracking-widest opacity-60 mb-4">
                   Find an A-Level Tutor For:

@@ -18,7 +18,7 @@ export default function CareersPageClient() {
       </div>
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-        <div className="p-8 rounded-[2.5rem] bg-white border border-border/50 shadow-sm hover:shadow-xl transition-all">
+        <div className="p-8 rounded-4xl bg-white border border-border/50 shadow-sm hover:shadow-xl transition-all">
           <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-6">
             <Heart size={24} />
           </div>
@@ -29,7 +29,7 @@ export default function CareersPageClient() {
           </p>
         </div>
 
-        <div className="p-8 rounded-[2.5rem] bg-white border border-border/50 shadow-sm hover:shadow-xl transition-all">
+        <div className="p-8 rounded-4xl bg-white border border-border/50 shadow-sm hover:shadow-xl transition-all">
           <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-6">
             <Rocket size={24} />
           </div>
@@ -40,7 +40,7 @@ export default function CareersPageClient() {
           </p>
         </div>
 
-        <div className="p-8 rounded-[2.5rem] bg-white border border-border/50 shadow-sm hover:shadow-xl transition-all">
+        <div className="p-8 rounded-4xl bg-white border border-border/50 shadow-sm hover:shadow-xl transition-all">
           <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center mb-6">
             <Award size={24} />
           </div>

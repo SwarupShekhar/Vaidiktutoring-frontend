@@ -82,7 +82,7 @@ export default function ReviewCarousel() {
                                     key={i}
                                     className="shrink-0 w-[320px] md:w-[400px]"
                                 >
-                                    <div className="h-full bg-surface p-8 rounded-[2.5rem] border border-border/50 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between group">
+                                    <div className="h-full bg-surface p-8 rounded-4xl border border-border/50 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col justify-between group">
                                         <div className="space-y-6">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary font-black text-xs group-hover:bg-primary group-hover:text-white transition-colors duration-500">

@@ -44,7 +44,7 @@ export default function LegalLayout({ children }: { children: React.ReactNode })
 
         {/* Content Area */}
         <main className="flex-1 max-w-4xl">
-          <div className="bg-white/50 dark:bg-white/2 border border-gray-100 dark:border-white/5 rounded-[2.5rem] p-8 md:p-12 shadow-sm backdrop-blur-sm">
+          <div className="bg-white/50 dark:bg-white/2 border border-gray-100 dark:border-white/5 rounded-4xl p-8 md:p-12 shadow-sm backdrop-blur-sm">
             {children}
           </div>
         </main>

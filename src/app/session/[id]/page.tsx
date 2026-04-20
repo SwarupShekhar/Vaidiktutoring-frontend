@@ -2489,7 +2489,7 @@ export default function SessionPage({ params }: SessionProps) {
             {/* STUDENT POLL OVERLAY */}
             {user?.role === 'student' && activePoll && (
                 <div className="fixed inset-0 z-40 bg-purple-900/40 backdrop-blur-lg flex items-center justify-center p-6 pb-24">
-                    <div className="bg-gray-900 rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/10">
+                    <div className="bg-gray-900 rounded-4xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/10">
                         <div className="p-8 md:p-10 text-center">
                             <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
                                 <BarChart className="text-purple-400" size={32} />
@@ -2534,7 +2534,7 @@ export default function SessionPage({ params }: SessionProps) {
             {/* FINAL RESULTS POPUP (FOR EVERYONE) */}
             {finalPollResults && (
                 <div className="fixed inset-0 z-100 bg-black/60 backdrop-blur-md flex items-center justify-center p-6">
-                    <div className="bg-gray-900 rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/10">
+                    <div className="bg-gray-900 rounded-4xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 border border-white/10">
                         <div className="p-8 text-center">
                             <div className="w-16 h-16 bg-green-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
                                 <span className="text-3xl">📊</span>
@@ -2680,7 +2680,7 @@ export default function SessionPage({ params }: SessionProps) {
                         >
                             <div className="relative">
                                 <div className="w-4 h-4 bg-red-500 rounded-full blur-[2px] shadow-[0_0_15px_5px_rgba(239,68,68,0.8)]" />
-                                <div className="absolute inset-0 w-4 h-4 bg-white rounded-full scale-[0.3]" />
+                                <div className="absolute inset-0 w-4 h-4 bg-white rounded-full scale-/30" />
                                 <div className="absolute -inset-4 border border-red-500/20 rounded-full animate-ping" />
                                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-tighter whitespace-nowrap">
                                     {data.username}

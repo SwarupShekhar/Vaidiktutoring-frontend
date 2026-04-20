@@ -73,7 +73,7 @@ export default function ProblemSection() {
                 </div>
 
                 {/* New Bridge Section */}
-                <FadeUpSection className="max-w-4xl mx-auto p-12 rounded-[2.5rem] bg-foreground text-background shadow-2xl relative overflow-hidden">
+                <FadeUpSection className="max-w-4xl mx-auto p-12 rounded-4xl bg-foreground text-background shadow-2xl relative overflow-hidden">
                     <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
                         <div className="md:w-1/3">
                             <h3 className="text-3xl font-black tracking-tighter leading-tight">

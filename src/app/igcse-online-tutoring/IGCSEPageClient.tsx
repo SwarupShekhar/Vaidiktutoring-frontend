@@ -240,7 +240,7 @@ export default function IGCSEOnlineTutoringPage({
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.8 }}
-                className="absolute -bottom-10 -left-6 md:-left-12 z-20 p-6 md:p-8 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-border shadow-2xl w-full max-w-[320px]"
+                className="absolute -bottom-10 -left-6 md:-left-12 z-20 p-6 md:p-8 bg-white dark:bg-slate-900 rounded-4xl border border-border shadow-2xl w-full max-w-[320px]"
               >
                 <div className="grid grid-cols-2 gap-6 text-center">
                   <div className="space-y-0.5">
@@ -287,7 +287,7 @@ export default function IGCSEOnlineTutoringPage({
           </span>
           <h2 className="text-3xl md:text-5xl font-black text-deep-navy dark:text-white mb-20 tracking-tighter leading-tight">
             Where are you in your{" "}
-            <span className="text-sapphire text-italic italic font-black">
+            <span className="text-sapphire text-italic  font-black">
               IGCSE journey
             </span>{" "}
             right now?
@@ -394,7 +394,7 @@ export default function IGCSEOnlineTutoringPage({
                 transition={{ delay: i * 0.1 }}
                 className="flex flex-col items-center group"
               >
-                <div className="w-full aspect-4/3 rounded-[2.5rem] bg-background dark:bg-white/5 border border-border mb-8 overflow-hidden relative group-hover:scale-[1.02] transition-all duration-500">
+                <div className="w-full aspect-4/3 rounded-4xl bg-background dark:bg-white/5 border border-border mb-8 overflow-hidden relative group-hover:scale-[1.02] transition-all duration-500">
                   <div className="absolute inset-0 bg-linear-to-br from-sapphire/5 to-primary/5 group-hover:from-sapphire/10 transition-colors" />
 
                   {/* Background Image Cutout - Spanning Full Width */}
@@ -464,7 +464,7 @@ export default function IGCSEOnlineTutoringPage({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left: Image Context */}
             <div className="relative">
-              <div className="aspect-square rounded-[2.5rem] overflow-hidden shadow-lg relative group max-w-md mx-auto lg:ml-0">
+              <div className="aspect-square rounded-4xl overflow-hidden shadow-lg relative group max-w-md mx-auto lg:ml-0">
                 <div className="absolute inset-0 bg-deep-navy/30 group-hover:bg-transparent transition-colors z-10" />
                 <Image
                   src="https://res.cloudinary.com/de8vvmpip/image/upload/v1773999817/close-up_of_a_202603201513_o4tnoh.jpg"

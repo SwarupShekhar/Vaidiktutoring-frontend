@@ -112,7 +112,7 @@ export default function OnboardingPage() {
         {/* ... existing content ... */}
 
 
-        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-2xl border border-white/50 dark:border-white/10 rounded-[2.5rem] shadow-2xl p-10 md:p-14 mb-8">
+        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-2xl border border-white/50 dark:border-white/10 rounded-4xl shadow-2xl p-10 md:p-14 mb-8">
 
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary text-white text-4xl mb-8 shadow-lg shadow-blue-500/30">
             👋

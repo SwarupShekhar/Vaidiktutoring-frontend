@@ -192,7 +192,7 @@ const CheckoutContent = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-8 md:p-12 rounded-[2.5rem] bg-white dark:bg-white/5 border border-border dark:border-white/10 shadow-2xl backdrop-blur-3xl relative overflow-hidden"
+                    className="p-8 md:p-12 rounded-4xl bg-white dark:bg-white/5 border border-border dark:border-white/10 shadow-2xl backdrop-blur-3xl relative overflow-hidden"
                 >
                     <div className="relative z-10 text-center">
                         <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-primary mx-auto mb-8 shadow-sm">

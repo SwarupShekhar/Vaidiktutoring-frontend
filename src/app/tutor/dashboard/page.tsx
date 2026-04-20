@@ -167,7 +167,7 @@ export default function TutorDashboardPage() {
 
           {/* TOP ANNOUNCEMENT: AVAILABLE JOBS */}
           {availableJobs.length > 0 && (
-            <div className="relative group overflow-hidden rounded-[2.5rem] p-8 bg-linear-to-br from-indigo-600 via-purple-600 to-pink-600 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="relative group overflow-hidden rounded-4xl p-8 bg-linear-to-br from-indigo-600 via-purple-600 to-pink-600 shadow-2xl animate-in fade-in slide-in-from-top-4 duration-700">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
                 <Zap size={160} />
               </div>
@@ -306,7 +306,7 @@ export default function TutorDashboardPage() {
                       {todaySessions.map((session: any) => (
                         <div
                           key={session.id}
-                          className="group relative flex flex-col md:flex-row md:items-center justify-between gap-8 p-8 rounded-[2.5rem] bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-white/5 hover:border-purple-500 transition-all hover:shadow-2xl hover:shadow-purple-500/10"
+                          className="group relative flex flex-col md:flex-row md:items-center justify-between gap-8 p-8 rounded-4xl bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-white/5 hover:border-purple-500 transition-all hover:shadow-2xl hover:shadow-purple-500/10"
                         >
                           <div className="flex items-center gap-8">
                             <div className="hidden md:flex flex-col items-center justify-center w-24 h-24 rounded-3xl bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-center group-hover:bg-purple-50 dark:group-hover:bg-purple-900/10 group-hover:border-purple-200 dark:group-hover:border-purple-800 transition-colors">
@@ -374,7 +374,7 @@ export default function TutorDashboardPage() {
                       ))}
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center justify-center h-full min-h-[300px] bg-slate-50/50 dark:bg-white/5 rounded-[2.5rem] border-4 border-dashed border-slate-200 dark:border-slate-800 group hover:border-purple-200 dark:hover:border-purple-800 transition-colors">
+                    <div className="flex flex-col items-center justify-center h-full min-h-[300px] bg-slate-50/50 dark:bg-white/5 rounded-4xl border-4 border-dashed border-slate-200 dark:border-slate-800 group hover:border-purple-200 dark:hover:border-purple-800 transition-colors">
                       <div className="h-24 w-24 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center mb-6 shadow-xl text-slate-400 group-hover:text-purple-500 transition-colors">
                         <Zap size={40} className="group-hover:animate-pulse" />
                       </div>

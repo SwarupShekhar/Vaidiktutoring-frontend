@@ -40,6 +40,13 @@ import StickyCTA from "../components/subjects/StickyCTA";
 import SubjectFAQ, { FAQItemType } from "../components/subjects/SubjectFAQ";
 import Counter from "../components/ui/Counter";
 
+const optimizeCloudinaryUrl = (url: string) => {
+  if (url.includes("cloudinary.com") && !url.includes("f_auto")) {
+    return url.replace("/upload/", "/upload/f_auto,q_auto/");
+  }
+  return url;
+};
+
 export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?: any[] }) {
   const { user } = useAuthContext();
 
@@ -150,11 +157,12 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
               <div className="aspect-4/5 rounded-[3rem] overflow-hidden shadow-2xl relative group">
                 <div className="absolute inset-0 bg-deep-navy/10 group-hover:bg-transparent transition-colors z-10" />
                 <Image
-                  src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774002647/Tutor_and_young_202603201600-Photoroom_tumr1w.png"
+                  src={optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1774002647/Tutor_and_young_202603201600-Photoroom_tumr1w.png")}
                   alt="Expert online GCSE tutor for private tuition and exam prep | StudyHours"
                   fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="(max-width: 768px) 100vw, 40vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-[4s]"
+                  priority
                 />
               </div>
             </div>
@@ -395,10 +403,10 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
             <div className="relative">
               <div className="aspect-square rounded-4xl overflow-hidden shadow-2xl relative">
                 <Image
-                  src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774002717/Warning_Signs___202603201601-Photoroom_vej9y0.png"
+                  src={optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1774002717/Warning_Signs___202603201601-Photoroom_vej9y0.png")}
                   alt="Student showing signs of academic stress"
                   fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="(max-width: 768px) 100vw, 40vw"
                   className="object-cover"
                 />
               </div>
@@ -566,7 +574,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
             </h2>
           </div>
 
-          <div className="max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-[2.5rem] border border-border dark:border-white/10 shadow-2xl overflow-hidden relative">
+          <div className="max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-4xl border border-border dark:border-white/10 shadow-2xl overflow-hidden relative">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:divide-x divide-border dark:divide-white/10">
               {/* Traditional Column */}
               <div className="p-10 bg-slate-50 dark:bg-slate-900/50">
@@ -747,9 +755,10 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
         <div className="max-w-7xl mx-auto rounded-4xl bg-deep-navy dark:bg-slate-950 relative overflow-hidden p-12 lg:p-24 shadow-2xl">
           <div className="absolute inset-0 bg-deep-navy/60 dark:bg-black/60 z-0" />
           <Image
-            src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774002811/__Exam_Prep_Band___202603201603_wsokxw.jpg"
+            src={optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1774002811/__Exam_Prep_Band___202603201603_wsokxw.jpg")}
             alt="Exam Prep Background"
             fill
+            sizes="100vw"
             className="object-cover opacity-20 dark:opacity-40"
           />
           <div className="relative z-10 max-w-2xl">

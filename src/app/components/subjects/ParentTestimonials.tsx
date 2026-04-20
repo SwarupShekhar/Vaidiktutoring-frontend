@@ -31,7 +31,8 @@ export default function ParentTestimonials({ testimonials = [] }: { testimonials
     const duplicatedTestimonials = [...actualTestimonials, ...actualTestimonials, ...actualTestimonials, ...actualTestimonials]; // Quadruple for safety on large screens
 
     return (
-        <section className="py-24 px-6 bg-surface overflow-hidden">
+        <section className="py-24 px-6 bg-background overflow-hidden relative border-t border-border/30">
+            <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_bottom_left,var(--tw-gradient-stops))] from-sapphire/10 via-transparent to-transparent opacity-40 pointer-events-none" />
             <div className="max-w-[100vw] mx-auto">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl font-extrabold text-deep-navy dark:text-white mb-4">
@@ -63,24 +64,27 @@ export default function ParentTestimonials({ testimonials = [] }: { testimonials
                             }}
                         >
                             {duplicatedTestimonials.map((testimonial, idx) => (
-                                <div key={idx} className="w-[350px] md:w-[450px] shrink-0 bg-background p-8 rounded-4xl relative border border-border hover:shadow-lg transition-shadow">
-                                    <div className="absolute top-8 right-8 text-ice-blue">
-                                        <Quote size={48} fill="currentColor" className="opacity-50" />
+                                <div key={idx} className="w-[400px] md:w-[500px] shrink-0 bg-white dark:bg-slate-900/40 p-12 rounded-[3.5rem] relative border border-border/40 hover:border-sapphire/30 transition-all group shadow-sm hover:shadow-2xl">
+                                    <div className="absolute top-10 right-10 text-sapphire/10 group-hover:text-sapphire/20 transition-colors">
+                                        <Quote size={80} fill="currentColor" />
                                     </div>
 
-                                    <div className="flex gap-1 text-yellow-500 mb-6">
+                                    <div className="flex gap-1.5 text-emerald-500 mb-8">
                                         {[...Array(testimonial.rating)].map((_, i) => (
-                                            <Star key={i} size={16} fill="currentColor" />
+                                            <Star key={i} size={14} fill="currentColor" />
                                         ))}
                                     </div>
 
-                                    <p className="text-(--color-text-primary) text-lg leading-relaxed mb-8 relative z-10 italic">
+                                    <p className="text-deep-navy dark:text-slate-300 text-xl leading-relaxed mb-10 relative z-10 italic font-medium tracking-tight">
                                         "{testimonial.text}"
                                     </p>
 
-                                    <div className="mt-auto">
-                                        <p className="font-bold text-deep-navy dark:text-white">{testimonial.author}</p>
-                                        <p className="text-sm text-text-secondary uppercase tracking-wider font-semibold">{testimonial.role}</p>
+                                    <div className="mt-auto flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-full bg-linear-to-br from-sapphire to-primary shrink-0 opacity-20" />
+                                        <div>
+                                            <p className="font-black text-deep-navy dark:text-white uppercase tracking-tighter italic text-base leading-none mb-1">{testimonial.author}</p>
+                                            <p className="text-[10px] text-text-secondary uppercase tracking-[0.2em] font-black opacity-60 leading-none">{testimonial.role}</p>
+                                        </div>
                                     </div>
                                 </div>
                             ))}

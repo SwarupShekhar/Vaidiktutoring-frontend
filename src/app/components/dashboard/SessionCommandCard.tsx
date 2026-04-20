@@ -39,7 +39,7 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
                 </button>
                 
                 {/* Decorative Pattern */}
-                <div className="absolute top-0 right-0 w-24 h-24 opacity-[0.03] dark:opacity-[0.05] pointer-events-none">
+                <div className="absolute top-0 right-0 w-24 h-24 opacity-[0.03] dark:opacity-/5 pointer-events-none">
                     <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M100 0H0V100C30 80 70 80 100 100V0Z" fill="currentColor" />
                     </svg>
@@ -66,7 +66,7 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-            className="group relative overflow-hidden bg-surface rounded-[2.5rem] border border-border shadow-sm transition-all duration-300"
+            className="group relative overflow-hidden bg-surface rounded-4xl border border-border shadow-sm transition-all duration-300"
         >
 
             <div className="p-8 relative z-10">

@@ -44,7 +44,7 @@ export default function AdminSessionSummaryModal({ sessionId, isOpen, onClose }:
 
     return (
         <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xl animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] w-full max-w-2xl shadow-2xl border border-white/20 dark:border-white/5 flex flex-col max-h-[90vh] overflow-hidden relative">
+            <div className="bg-white dark:bg-slate-900 rounded-4xl w-full max-w-2xl shadow-2xl border border-white/20 dark:border-white/5 flex flex-col max-h-[90vh] overflow-hidden relative">
                 
                 {/* Header */}
                 <div className="p-8 border-b border-border flex justify-between items-start relative z-10">
