@@ -17,7 +17,7 @@ const CheckoutContent = () => {
     const router = useRouter();
     const { user, loading: authLoading } = useAuthContext();
     const plan = searchParams.get('plan') || 'FOUNDATION';
-    const region = searchParams.get('region') || 'US';
+    const region = (searchParams.get('region') || 'global').toLowerCase();
 
     const [paymentState, setPaymentState] = useState<PaymentState>('initial');
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -138,24 +138,52 @@ const CheckoutContent = () => {
         // Map plan names and regions to package IDs
         const packageIds: Record<string, Record<string, string>> = {
             'FOUNDATION': { 
-                US: 'da36d75d-8e6d-4786-9a25-9de7890f5d5e', 
-                UK: 'f47385ef-963d-4299-bb6e-2f54297a73e3' 
+                global: '47a32d16-64e0-4965-983b-3d0b84f331ad',
+                uk: 'f47385ef-963d-4299-bb6e-2f54297a73e3',
+                middleeast: 'da36d75d-8e6d-4786-9a25-9de7890f5d5e',
+                australia: 'e1f22d16-64e0-4965-983b-3d0b84f331b0',
+                singapore: 'c1d22d16-64e0-4965-983b-3d0b84f331b3',
+                southafrica: '6a7b2d16-64e0-4965-983b-3d0b84f331b6'
             },
             'MASTERY': { 
-                US: '8d89045b-3814-4632-95f7-873b8852e690', 
-                UK: '76fb2bd0-96f3-47ad-9a00-50284b7f4337' 
+                global: '9b8c2d16-64e0-4965-983b-3d0b84f331ae',
+                uk: '76fb2bd0-96f3-47ad-9a00-50284b7f4337',
+                middleeast: '8d89045b-3814-4632-95f7-873b8852e690',
+                australia: 'f2a32d16-64e0-4965-983b-3d0b84f331b1',
+                singapore: 'd2e32d16-64e0-4965-983b-3d0b84f331b4',
+                southafrica: '7b8c2d16-64e0-4965-983b-3d0b84f331b7'
             },
             'ELITE': { 
-                US: '5952f418-477c-4749-8086-5389476b7bd1', 
-                UK: '6f48a101-3820-4180-8b1e-25ba3194a0d9' 
+                global: 'b3d42d16-64e0-4965-983b-3d0b84f331af',
+                uk: '6f48a101-3820-4180-8b1e-25ba3194a0d9',
+                middleeast: '5952f418-477c-4749-8086-5389476b7bd1',
+                australia: 'a3b42d16-64e0-4965-983b-3d0b84f331b2',
+                singapore: 'e3f42d16-64e0-4965-983b-3d0b84f331b5',
+                southafrica: '8c9d2d16-64e0-4965-983b-3d0b84f331b8'
             }
         };
-        return packageIds[planName]?.[regionCode] || 'da36d75d-8e6d-4786-9a25-9de7890f5d5e';
+        return packageIds[planName]?.[regionCode] || '47a32d16-64e0-4965-983b-3d0b84f331ad';
     };
 
     // Regional pricing configuration
-    const pricingConfig = {
-        US: {
+    const pricingConfig: Record<string, any> = {
+        global: {
+            currency: '$',
+            plans: {
+                'FOUNDATION': { monthlyPrice: 149, credits: 8 },
+                'MASTERY': { monthlyPrice: 249, credits: 16 },
+                'ELITE': { monthlyPrice: 375, credits: 24 }
+            }
+        },
+        uk: {
+            currency: '£',
+            plans: {
+                'FOUNDATION': { monthlyPrice: 149, credits: 8 },
+                'MASTERY': { monthlyPrice: 249, credits: 16 },
+                'ELITE': { monthlyPrice: 375, credits: 24 }
+            }
+        },
+        middleeast: {
             currency: '$',
             plans: {
                 'FOUNDATION': { monthlyPrice: 199, credits: 8 },
@@ -163,19 +191,35 @@ const CheckoutContent = () => {
                 'ELITE': { monthlyPrice: 499, credits: 24 }
             }
         },
-        UK: {
-            currency: '£',
+        australia: {
+            currency: 'A$',
             plans: {
-                'FOUNDATION': { monthlyPrice: 149, credits: 8 },
-                'MASTERY': { monthlyPrice: 249, credits: 16 },
-                'ELITE': { monthlyPrice: 375, credits: 24 }
+                'FOUNDATION': { monthlyPrice: 250, credits: 8 },
+                'MASTERY': { monthlyPrice: 450, credits: 16 },
+                'ELITE': { monthlyPrice: 650, credits: 24 }
+            }
+        },
+        singapore: {
+            currency: 'S$',
+            plans: {
+                'FOUNDATION': { monthlyPrice: 280, credits: 8 },
+                'MASTERY': { monthlyPrice: 520, credits: 16 },
+                'ELITE': { monthlyPrice: 750, credits: 24 }
+            }
+        },
+        southafrica: {
+            currency: 'R',
+            plans: {
+                'FOUNDATION': { monthlyPrice: 1500, credits: 8 },
+                'MASTERY': { monthlyPrice: 2800, credits: 16 },
+                'ELITE': { monthlyPrice: 4200, credits: 24 }
             }
         }
     };
 
-    const currentConfig = pricingConfig[region as keyof typeof pricingConfig];
+    const currentConfig = pricingConfig[region] || pricingConfig['global'];
     const planConfig = currentConfig.plans[plan as keyof typeof currentConfig.plans];
-    const currentPrice = planConfig?.monthlyPrice || 199;
+    const currentPrice = planConfig?.monthlyPrice || 149;
     const currentCredits = planConfig?.credits || 8;
 
     return (
