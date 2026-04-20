@@ -46,7 +46,7 @@ const HeroPricing = () => {
                             href="/signup?type=assessment"
                             className="w-full sm:w-auto px-8 py-4 border-2 border-border text-(--color-text-primary) dark:text-white font-bold rounded-full hover:bg-surface transition-all"
                         >
-                            Book Free Assessment
+                            Book Free Session
                         </Link_Next>
                     </div>
                 </motion.div>
@@ -246,7 +246,7 @@ const PricingPlans = () => {
                                     href={user ? '/students/dashboard' : '/signup?type=assessment'}
                                     className="w-full py-3 text-sm font-bold text-text-secondary hover:text-primary text-center transition-colors"
                                 >
-                                    Book Free Assessment
+                                    Book Free Session
                                 </Link_Next>
                             </div>
                         </motion.div>
@@ -381,7 +381,7 @@ const StickyPricingCTA = () => {
                             href="/signup?type=assessment"
                             className="inline-flex items-center gap-3 px-10 py-5 bg-white text-primary font-black text-xl rounded-full hover:scale-105 hover:shadow-xl transition-all"
                         >
-                            Book Free Learning Assessment
+                            Book Free Session
                             <ArrowRight size={24} />
                         </Link_Next>
                     </div>

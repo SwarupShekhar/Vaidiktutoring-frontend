@@ -109,7 +109,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
                   href={user ? "/bookings/new" : "/signup?type=assessment"}
                   className="w-full sm:w-auto px-12 py-6 bg-sapphire text-white font-black rounded-3xl hover:bg-primary transition-all shadow-2xl shadow-sapphire/20 text-center flex items-center justify-center gap-3 group text-lg tracking-tighter"
                 >
-                  Book a Free Assessment
+                  Book a Free Session
                   <ArrowRight
                     size={20}
                     className="group-hover:translate-x-1 transition-transform"
@@ -859,7 +859,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
                 href="/signup?type=assessment"
                 className="w-full sm:w-auto px-12 py-6 bg-sapphire text-white font-black rounded-4xl hover:bg-primary transition-all shadow-2xl text-lg uppercase tracking-tighter"
               >
-                Book a Free Assessment
+                Book a Free Session
               </Link>
               <Link
                 href="/contact"

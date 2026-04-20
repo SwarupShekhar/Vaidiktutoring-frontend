@@ -184,7 +184,7 @@ export default function QCEPageClient() {
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4">
                 <Link href={ctaHref} className="w-full sm:w-auto px-10 py-5 bg-sapphire text-white font-black rounded-3xl hover:bg-primary transition-all shadow-2xl shadow-sapphire/20 text-center flex items-center justify-center gap-3 group text-lg tracking-tighter">
-                  Book Free QCE Assessment
+                  Book Free QCE Session
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <div className="text-sm font-black text-text-secondary uppercase tracking-widest">
@@ -448,7 +448,7 @@ export default function QCEPageClient() {
             Join Queensland students who have achieved A grades and 90+ ATARs with our specialist QCE tutors. Book a free session today.
           </p>
           <Link href={ctaHref} className="inline-block px-12 py-5 bg-sapphire text-white font-black rounded-3xl hover:bg-white hover:text-black transition-all shadow-2xl shadow-sapphire/40 text-lg tracking-wide">
-            Book Free QCE Assessment
+            Book Free QCE Session
           </Link>
         </div>
       </section>

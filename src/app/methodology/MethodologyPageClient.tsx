@@ -489,7 +489,7 @@ export default function MethodologyPage() {
               href={user ? "/students/dashboard" : "/signup"}
               className="inline-flex items-center justify-center px-12 py-5 rounded-full bg-primary text-white font-bold text-xl hover:bg-sapphire hover:scale-105 transition-all shadow-xl shadow-blue-500/30 gap-3"
             >
-              Book a Free Learning Assessment
+              Book a Free Session
               <ArrowRight size={24} />
             </Link>
           </div>

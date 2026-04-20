@@ -179,7 +179,7 @@ export default function AustraliaTutoringPageClient({
                   href={user ? "/bookings/new" : "/signup?type=assessment"}
                   className={`w-full sm:w-auto px-10 py-5 sm:px-12 sm:py-6 ${accentBg} text-white font-black rounded-3xl hover:bg-primary transition-all shadow-2xl ${accentShadow} text-center flex items-center justify-center gap-3 group text-base sm:text-lg tracking-tighter`}
                 >
-                  Book a Free Assessment
+                  Book a Free Session
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <div className="flex items-center gap-4">
@@ -445,7 +445,7 @@ export default function AustraliaTutoringPageClient({
               href={user ? "/bookings/new" : "/signup?type=assessment"}
               className={`w-full sm:w-auto px-10 py-4 sm:px-12 sm:py-5 ${accentBg} text-white font-black rounded-3xl hover:bg-white hover:text-black transition-all shadow-2xl ${accentShadow} text-base sm:text-lg tracking-wide`}
             >
-              Book Free Assessment
+              Book Free Session
             </Link>
           </div>
         </div>

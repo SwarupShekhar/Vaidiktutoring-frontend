@@ -220,7 +220,7 @@ export default function PrimarySchoolPageClient({
                   href={user ? "/bookings/new" : "/signup?type=assessment"}
                   className="w-full sm:w-auto px-12 py-6 bg-sapphire text-white font-black rounded-3xl hover:bg-primary transition-all shadow-2xl shadow-sapphire/20 text-center flex items-center justify-center gap-3 group text-lg tracking-tighter"
                 >
-                  Book a Free Assessment
+                  Book a Free Session
                   <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <div className="flex items-center gap-4 px-6 md:px-0">
@@ -755,7 +755,7 @@ export default function PrimarySchoolPageClient({
                 href={user ? "/bookings/new" : "/signup?type=assessment"}
                 className="w-full sm:w-auto px-12 py-5 bg-white text-black font-black rounded-3xl hover:bg-primary hover:text-white transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)] text-lg tracking-wide active:scale-95"
               >
-                Book Free Assessment
+                Book Free Session
               </Link>
               <Link
                 href="/contact"

@@ -469,7 +469,7 @@ export default function ALevelTutoringPage({
                  </p>
                  <div className="flex gap-4">
                     <Link href="/signup?type=assessment" className="px-10 py-5 bg-white text-deep-navy dark:text-slate-900 font-black rounded-3xl hover:bg-blue-50 transition-all flex items-center gap-2 uppercase italic tracking-tight shadow-xl">
-                      Book a Free Assessment <ArrowRight size={18} />
+                      Book a Free Session <ArrowRight size={18} />
                     </Link>
                  </div>
               </div>
@@ -526,7 +526,7 @@ export default function ALevelTutoringPage({
                 href="/signup?type=assessment"
                 className="w-full sm:w-auto px-12 py-6 bg-sapphire text-white font-black rounded-4xl hover:bg-primary transition-all shadow-2xl text-lg uppercase tracking-tighter"
               >
-                Book a Free Assessment
+                Book a Free Session
               </Link>
               <Link
                 href="/contact"

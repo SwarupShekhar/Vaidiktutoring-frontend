@@ -50,7 +50,7 @@ const HeroAboutK12 = () => {
                                 href={user ? '/students/dashboard' : '/signup'}
                                 className="w-full sm:w-auto px-8 py-4 border-2 border-border text-(--color-text-primary) dark:text-white font-bold rounded-full hover:bg-surface transition-all text-center"
                             >
-                                Book Free Assessment
+                                Book Free Session
                             </Link_Next>
                         </div>
                     </motion.div>
@@ -494,7 +494,7 @@ const FinalCTA = () => {
                         href={user ? '/students/dashboard' : '/signup'}
                         className="w-full sm:w-auto px-12 py-5 bg-primary text-white font-bold text-xl rounded-full hover:bg-sapphire transition-all shadow-2xl shadow-blue-500/30 flex items-center justify-center gap-3"
                     >
-                        Book a Free Learning Assessment
+                        Book a Free Session
                         <ArrowRight size={24} />
                     </Link_Next>
                     <Link_Next
