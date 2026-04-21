@@ -334,7 +334,7 @@ const CheckoutContent = () => {
                                     <CheckCircle size={32} className="text-green-600" />
                                 </div>
                                 <h3 className="text-xl font-bold text-green-600">Payment Successful!</h3>
-                                <p className="text-sm text-text-secondary">Redirecting to dashboard...</p>
+                                <p className="text-sm text-text-secondary">Redirecting to set up your schedule...</p>
                             </motion.div>
                         )}
 
