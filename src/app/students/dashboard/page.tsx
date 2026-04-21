@@ -192,9 +192,10 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
     }
   };
 
-  // Tutor info
-  const assignedTutor = enrollment?.assignedTutorId
-    ? { name: 'Your Tutor', initials: 'T' } // enriched by backend in future
+  // Tutor info — pull name from weeklySchedule if available
+  const tutorName = enrollment?.weeklySchedule?.find((s: any) => s.tutorName)?.tutorName ?? null;
+  const assignedTutor = (enrollment?.assignedTutorId || tutorName)
+    ? { name: tutorName || 'Your Tutor', initials: tutorName ? tutorName.split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'T' }
     : null;
 
   // Stickers
@@ -457,34 +458,50 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
         <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
           <Calendar size={20} className="text-blue-500" /> This Week
         </h2>
-        <div className="grid grid-cols-7 gap-2">
-          {weekDays.map(({ day, sessions }) => {
-            const isNow = isToday(day);
-            return (
-              <div key={day.toISOString()} className={`rounded-2xl p-3 border transition-all ${
-                isNow ? 'border-blue-400 bg-blue-50 dark:bg-blue-500/10' : 'border-border bg-background'
-              }`}>
-                <p className={`text-xs font-bold uppercase mb-1 ${isNow ? 'text-blue-600 dark:text-blue-400' : 'text-text-secondary'}`}>
-                  {format(day, 'EEE')}
-                </p>
-                <p className={`text-lg font-bold ${isNow ? 'text-blue-700 dark:text-blue-300' : 'text-foreground'}`}>
-                  {format(day, 'd')}
-                </p>
-                {sessions.length > 0 ? (
-                  <div className="mt-2 space-y-1">
-                    {sessions.map((s: any) => (
-                      <div key={s.id} className="text-[10px] bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300 rounded-lg px-1.5 py-0.5 font-medium truncate">
-                        {format(new Date(s.start_time ?? s.requested_start), 'h:mm a')}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="mt-2 w-2 h-2 rounded-full bg-gray-200 dark:bg-white/10 mx-auto" />
-                )}
-              </div>
-            );
-          })}
-        </div>
+        {upcomingSessions.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+              <Calendar size={24} className="text-blue-400" />
+            </div>
+            <p className="font-semibold text-foreground">No sessions scheduled yet</p>
+            <p className="text-sm text-text-secondary max-w-xs">Your schedule hasn't been set up. Complete your enrollment to book sessions with your tutor.</p>
+            <button
+              onClick={() => router.push(`/enroll/${studentProfile?.id}`)}
+              className="mt-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all"
+            >
+              Set Up My Schedule
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-7 gap-2">
+            {weekDays.map(({ day, sessions }) => {
+              const isNow = isToday(day);
+              return (
+                <div key={day.toISOString()} className={`rounded-2xl p-3 border transition-all ${
+                  isNow ? 'border-blue-400 bg-blue-50 dark:bg-blue-500/10' : 'border-border bg-background'
+                }`}>
+                  <p className={`text-xs font-bold uppercase mb-1 ${isNow ? 'text-blue-600 dark:text-blue-400' : 'text-text-secondary'}`}>
+                    {format(day, 'EEE')}
+                  </p>
+                  <p className={`text-lg font-bold ${isNow ? 'text-blue-700 dark:text-blue-300' : 'text-foreground'}`}>
+                    {format(day, 'd')}
+                  </p>
+                  {sessions.length > 0 ? (
+                    <div className="mt-2 space-y-1">
+                      {sessions.map((s: any) => (
+                        <div key={s.id} className="text-[10px] bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300 rounded-lg px-1.5 py-0.5 font-medium truncate">
+                          {format(new Date(s.start_time ?? s.requested_start), 'h:mm a')}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mt-2 w-2 h-2 rounded-full bg-gray-200 dark:bg-white/10 mx-auto" />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
