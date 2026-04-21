@@ -14,6 +14,7 @@ import BookingsTableSection from '@/app/components/admin/BookingsTableSection';
 import BlogManagementSection from '@/app/components/admin/BlogManagementSection';
 import ActivityPulseFeed from '@/app/components/admin/ActivityPulseFeed';
 import ActiveSessionsMonitor from '@/app/components/admin/ActiveSessionsMonitor';
+import OperationalSuccessHub from '@/app/components/admin/OperationalSuccessHub';
 import { StatCard } from '@/app/components/dashboard/StatCard';
 import { toast } from 'sonner';
 import {
@@ -29,12 +30,30 @@ import {
     ShieldAlert,
     ChevronRight,
     LifeBuoy,
-    Shield
+    Shield,
+    FileText,
+    RefreshCw
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
     const { user } = useAuthContext();
-    const [stats, setStats] = React.useState({ students: 0, parents: 0, tutors: 0, upcomingSessions: 0, pendingAllocations: 0, activeNow: 0, inactiveTutors: 0 });
+    const [stats, setStats] = React.useState({ 
+        students: 0, 
+        parents: 0, 
+        tutors: 0, 
+        upcomingSessions: 0, 
+        pendingAllocations: 0, 
+        activeNow: 0, 
+        inactiveTutors: 0,
+        revenue: [] as { currency: string, total: number }[],
+        enrollment: {} as Record<string, number>,
+        recentFailures: 0,
+        upcomingExpirations: 0,
+        success: {
+            attendanceRate: 0,
+            avgMastery: 0
+        }
+    });
     const [loading, setLoading] = React.useState(true);
 
     // Modal states
@@ -69,6 +88,17 @@ export default function AdminDashboardPage() {
                         duration: 8000,
                     });
                 });
+
+                // Phase 3: Real-time Payment Failure Alerts
+                socket.on('payment_failed', (data: { email: string, orderId: string, reason: string }) => {
+                    toast.error(`Critical: Payment Failed`, {
+                        description: `${data.email} - ${data.reason}`,
+                        icon: <ShieldAlert className="text-rose-500" size={16} />,
+                        duration: 10000,
+                    });
+                    // Refresh stats to show new failure count
+                    window.dispatchEvent(new CustomEvent('refresh-admin-stats'));
+                });
             } catch {
                 // Socket not critical — admin can still see tickets by refreshing
             }
@@ -81,7 +111,23 @@ export default function AdminDashboardPage() {
         const fetchStats = async () => {
             try {
                 const res = await api.get('/admin/stats');
-                setStats(res.data || { students: 0, parents: 0, tutors: 0, upcomingSessions: 0, pendingAllocations: 0, activeNow: 0, inactiveTutors: 0 });
+                setStats(res.data || { 
+                    students: 0, 
+                    parents: 0, 
+                    tutors: 0, 
+                    upcomingSessions: 0, 
+                    pendingAllocations: 0, 
+                    activeNow: 0, 
+                    inactiveTutors: 0,
+                    revenue: [],
+                    enrollment: {},
+                    recentFailures: 0,
+                    upcomingExpirations: 0,
+                    success: {
+                        attendanceRate: 0,
+                        avgMastery: 0
+                    }
+                });
             } catch (e) {
                 console.warn('Failed to fetch admin stats', e);
             } finally {
@@ -124,6 +170,20 @@ export default function AdminDashboardPage() {
     return (
         <ProtectedClient roles={['admin']}>
             <div className="min-h-screen p-4 md:p-8 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-top-4 duration-700">
+                <div className="flex justify-between items-end mb-4">
+                    <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-1">Control Plane</p>
+                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">Strategic Intelligence</h1>
+                    </div>
+                    <button 
+                        onClick={() => window.dispatchEvent(new Event('refresh-admin-stats'))}
+                        className="group flex items-center gap-3 px-6 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl hover:bg-slate-50 dark:hover:bg-white/10 transition-all shadow-xl shadow-slate-200/50 dark:shadow-none"
+                    >
+                        <RefreshCw size={16} className="text-indigo-500 group-hover:rotate-180 transition-transform duration-700" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-white/70">Sync Now</span>
+                    </button>
+                </div>
+
                 {/* BENTO GRID START */}
                 <div className="grid grid-cols-12 gap-6 pb-20">
                     
@@ -163,10 +223,38 @@ export default function AdminDashboardPage() {
                     {/* 2. INSTRUMENTATION BAR (Stats) */}
                     <div className="col-span-full lg:col-span-7 grid grid-cols-2 md:grid-cols-4 gap-4">
                         {[
-                            { label: 'Students', value: stats.students, color: 'blue', icon: GraduationCap, onclick: () => setShowStudents(true) },
-                            { label: 'Tutors', value: stats.tutors, color: 'amber', icon: UserCheck, onclick: () => setShowTutors(true) },
-                            { label: 'Live Pulse', value: stats.activeNow, color: 'emerald', icon: Activity },
-                            { label: 'Parents', value: stats.parents, color: 'purple', icon: Users }
+                            { 
+                                label: 'Students', 
+                                value: stats.students, 
+                                color: 'blue', 
+                                icon: GraduationCap, 
+                                onclick: () => setShowStudents(true),
+                                detail: stats.enrollment?.active ? `${stats.enrollment.active} Active` : 'Review Enrollment'
+                            },
+                            { 
+                                label: 'Tutors', 
+                                value: stats.tutors, 
+                                color: 'amber', 
+                                icon: UserCheck, 
+                                onclick: () => setShowTutors(true),
+                                detail: stats.inactiveTutors > 0 ? `${stats.inactiveTutors} Inactive` : 'Full Performance'
+                            },
+                            { 
+                                label: 'Revenue', 
+                                value: stats.revenue.length > 0 
+                                    ? stats.revenue.map(r => `${r.currency === 'INR' ? '₹' : '$'}${Math.round(r.total/100).toLocaleString()}`).join(' / ')
+                                    : '$0', 
+                                color: 'emerald', 
+                                icon: Activity,
+                                detail: 'Total Completed' 
+                            },
+                            { 
+                                label: 'Intelligence', 
+                                value: stats.recentFailures + stats.upcomingExpirations, 
+                                color: stats.recentFailures > 0 ? 'rose' : 'purple', 
+                                icon: stats.recentFailures > 0 ? ShieldAlert : ShieldCheck,
+                                detail: stats.recentFailures > 0 ? `${stats.recentFailures} Failures` : `${stats.upcomingExpirations} Expiries`
+                            }
                         ].map((stat, idx) => (
                             <div 
                                 key={idx} 
@@ -178,8 +266,13 @@ export default function AdminDashboardPage() {
                                         <stat.icon size={20} />
                                     </div>
                                     <div>
-                                        <p className="text-2xl font-black text-white tracking-tighter mb-1">{stat.value}</p>
-                                        <p className="text-[9px] uppercase font-mono font-black tracking-[0.2em] text-white/30">{stat.label}</p>
+                                        <p className="text-xl font-black text-white tracking-tighter mb-1 truncate">{stat.value}</p>
+                                        <div className="flex flex-col">
+                                            <p className="text-[9px] uppercase font-mono font-black tracking-[0.2em] text-white/30">{stat.label}</p>
+                                            <p className={`text-[8px] font-bold ${stat.color === 'rose' ? 'text-rose-500' : 'text-white/20'} uppercase tracking-widest mt-1`}>
+                                                {stat.detail}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                                 {/* Technical Detail: Dotted Visual Indicator */}
@@ -195,6 +288,11 @@ export default function AdminDashboardPage() {
                     {/* 3. ACTIVE MONITOR TILE (Full Width, Row 2) */}
                     <div className="col-span-full bg-glass rounded-4xl p-2 border border-blue-500/20 shadow-2xl overflow-hidden min-h-[140px]">
                         <ActiveSessionsMonitor />
+                    </div>
+
+                    {/* PHASE 2 & 3: SUCCESS & INTELLIGENCE HUB */}
+                    <div className="col-span-full">
+                        <OperationalSuccessHub stats={stats} />
                     </div>
 
                     {/* 4. MAIN OPERATIONAL HUB (Col 1-8, Row 3-4) */}
@@ -298,13 +396,39 @@ export default function AdminDashboardPage() {
                                     {/* SYSTEM UTILITY BUTTON */}
                                     <button 
                                         onClick={() => (document.getElementById('support-section') as HTMLElement)?.scrollIntoView({behavior: 'smooth'})}
-                                        className="w-full py-4 px-6 border border-white/5 rounded-2xl flex items-center justify-between hover:bg-white/5 hover:border-pink-500/30 transition-all group/btn"
+                                        className="w-full py-4 px-6 border border-white/5 rounded-2xl flex items-center justify-between hover:bg-white/5 hover:border-pink-500/30 transition-all group/btn mb-2"
                                     >
                                         <div className="flex items-center gap-3">
                                             <LifeBuoy size={16} className="text-pink-500" />
                                             <span className="text-xs font-bold text-white/70">Support Operations</span>
                                         </div>
                                         <ChevronRight size={14} className="text-white/20 group-hover/btn:text-pink-500 transition-colors" />
+                                    </button>
+
+                                    {/* INTELLIGENCE REPORTING (CSV) */}
+                                    <button 
+                                        onClick={async () => {
+                                            try {
+                                                const res = await api.get('/admin/reports/finance', { responseType: 'blob' });
+                                                const url = window.URL.createObjectURL(new Blob([res.data]));
+                                                const link = document.createElement('a');
+                                                link.href = url;
+                                                link.setAttribute('download', `financial_ledger_${new Date().toISOString().split('T')[0]}.csv`);
+                                                document.body.appendChild(link);
+                                                link.click();
+                                                link.parentNode?.removeChild(link);
+                                                toast.success('Ledger generated successfully');
+                                            } catch (e) {
+                                                toast.error('Failed to generate report');
+                                            }
+                                        }}
+                                        className="w-full py-4 px-6 border border-white/5 rounded-2xl flex items-center justify-between hover:bg-white/5 hover:border-amber-500/30 transition-all group/btn"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <FileText size={16} className="text-amber-500" />
+                                            <span className="text-xs font-bold text-white/70">Export Finance Ledger</span>
+                                        </div>
+                                        <ChevronRight size={14} className="text-white/20 group-hover/btn:text-amber-500 transition-colors" />
                                     </button>
                                 </div>
                             </div>

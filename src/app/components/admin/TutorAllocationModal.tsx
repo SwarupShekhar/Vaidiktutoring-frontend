@@ -27,6 +27,7 @@ interface QueueItem {
     requestedEnd: string;
     note: string;
     createdAt: string;
+    enrollmentStatus?: string;
 }
 
 interface RecommendedTutor {
@@ -64,7 +65,8 @@ export default function TutorAllocationModal({ isOpen, onClose, booking }: Tutor
                     requestedStart: booking.requested_start,
                     requestedEnd: booking.requested_end,
                     note: booking.note,
-                    createdAt: booking.created_at
+                    createdAt: booking.created_at,
+                    enrollmentStatus: booking.enrollment_status || booking.student?.enrollment_status
                 };
                 setSelectedItem(mappedItem);
                 fetchRecommendations(booking.subject_id || booking.subjects?.id || booking.subject?.id);
@@ -207,11 +209,20 @@ export default function TutorAllocationModal({ isOpen, onClose, booking }: Tutor
                                                     {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
                                                 </span>
                                             </div>
-                                            <h4 className={`text-lg font-black tracking-tight mb-1 ${
-                                                selectedItem?.id === item.id ? 'text-white' : 'text-slate-900 dark:text-white'
-                                            }`}>
-                                                {item.studentName}
-                                            </h4>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <h4 className={`text-lg font-black tracking-tight ${
+                                                    selectedItem?.id === item.id ? 'text-white' : 'text-slate-900 dark:text-white'
+                                                }`}>
+                                                    {item.studentName}
+                                                </h4>
+                                                {item.enrollmentStatus === 'active' && (
+                                                    <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full ${
+                                                        selectedItem?.id === item.id ? 'bg-white text-blue-600' : 'bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                                                    }`}>
+                                                        Premium
+                                                    </span>
+                                                )}
+                                            </div>
                                             <div className="flex items-center gap-3">
                                                 <div className={`flex items-center gap-1.5 text-xs font-bold ${
                                                     selectedItem?.id === item.id ? 'text-blue-100' : 'text-slate-500'

@@ -172,7 +172,7 @@ export default function SessionChat({ sessionId: propSessionId, socket }: Sessio
 
     return (
         <>
-            <div className={`fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2 pointer-events-none`}>
+            <div className="flex flex-col items-end gap-2 pointer-events-none">
                 {isOpen && (
                     <div className="pointer-events-auto w-[350px] md:w-[400px] h-[500px] max-h-[70vh] flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-white/20 shadow-2xl origin-bottom-right transition-all animate-in fade-in zoom-in-95 duration-200">
                         {/* Header */}
