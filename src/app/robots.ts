@@ -23,7 +23,6 @@ export default function robots(): MetadataRoute.Robots {
           "/signup/",
           "/login/",
           "/search/",
-          "/_vercel/",
         ],
       },
     ],
