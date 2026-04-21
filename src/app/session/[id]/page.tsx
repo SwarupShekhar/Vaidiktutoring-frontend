@@ -9,8 +9,6 @@ import api from '@/app/lib/api';
 import AttendanceTracker from '@/app/components/session/AttendanceTracker';
 import StudentSnapshotCard from '@/app/components/session/StudentSnapshotCard';
 import VaultSidebar from '@/app/components/session/VaultSidebar';
-import SessionFlowBar, { SessionPhase } from '@/app/components/session/SessionFlowBar';
-import PhaseGuidancePanel from '@/app/components/session/PhaseGuidancePanel';
 import AttentionFrameworkPanel from '@/app/components/session/AttentionFrameworkPanel';
 import { vaultApi, VaultAsset } from '@/app/lib/vault';
 import { io, Socket } from 'socket.io-client';
@@ -229,9 +227,7 @@ export default function SessionPage({ params }: SessionProps) {
     });
 
     // Session Flow & Pedagogy State
-    const [currentPhase, setCurrentPhase] = useState<SessionPhase>('WARM_CONNECT');
     const [showAttentionPanel, setShowAttentionPanel] = useState(false);
-    const [showPhaseGuidance, setShowPhaseGuidance] = useState(true);
 
     const slideRef = useRef(0);
     const annotationsRef = useRef<Record<number, any[]>>({});
@@ -938,13 +934,6 @@ export default function SessionPage({ params }: SessionProps) {
         }
     }, [excalidrawAPI, slides, socket, sessionId, importImageToExcalidraw, user?.role]);
 
-    // Handle Phase Change (Socket + State)
-    const handlePhaseChange = useCallback((phase: SessionPhase) => {
-        setCurrentPhase(phase);
-        if (socket) {
-            socket.emit('session.phase.update', { sessionId, phase });
-        }
-    }, [sessionId, socket]);
 
     // Render a PDF file locally using pdf.js → PNG slides on the canvas
     const renderPdfLocally = (file: File) => {
@@ -1134,7 +1123,7 @@ export default function SessionPage({ params }: SessionProps) {
 
                 if (isNowGranted) {
                     toast.success('Pen access granted by tutor');
-                    excalidrawAPI?.updateScene({ appState: { viewModeEnabled: false } });
+                    excalidrawAPI?.updateScene({ appState: { viewModeEnabled: false, activeTool: { type: 'freedraw', customType: null, locked: false, lastActiveTool: null } } });
                 } else {
                     toast.info('Pen access removed');
                     excalidrawAPI?.updateScene({ appState: { viewModeEnabled: true } });
@@ -1298,15 +1287,6 @@ export default function SessionPage({ params }: SessionProps) {
             setActivePoll(null);
         });
 
-        // Sync Phase
-        socket.on('session.phase.updated', (data: { phase: SessionPhase }) => {
-            console.log('[Socket] Phase updated:', data.phase);
-            setCurrentPhase(data.phase);
-            toast(`Phase changed to ${data.phase.replace('_', ' ')}`, {
-                icon: '🎯',
-                style: { background: '#9333ea', color: '#fff' }
-            });
-        });
 
         // Attention Events
         socket.on('session.attentionEvent.created', (event) => {
@@ -1772,16 +1752,7 @@ export default function SessionPage({ params }: SessionProps) {
                     </span>
                 </div>
 
-                {/* Center: Phase Flow (Tutor & Student see this) */}
-                <div className="flex-1 flex justify-center">
-                    <div className="max-w-md w-full">
-                        <SessionFlowBar 
-                            currentPhase={currentPhase} 
-                            onPhaseChange={user?.role === 'tutor' ? handlePhaseChange : () => {}} 
-                            variant="hud"
-                        />
-                    </div>
-                </div>
+                <div className="flex-1" />
 
                 {/* Right: timer + reactions + end */}
                 <div className="flex items-center gap-2 ml-auto">
@@ -2049,17 +2020,11 @@ export default function SessionPage({ params }: SessionProps) {
                 </div>
             )}
 
-            {/* PEDAGOGY / ATTENTION SIDEBAR (Tutor Only) */}
-            {user?.role === 'tutor' && (showAttentionPanel || showPhaseGuidance) && (
-                <div 
+            {/* ATTENTION SIDEBAR (Tutor Only) */}
+            {user?.role === 'tutor' && showAttentionPanel && (
+                <div
                     className={`absolute bottom-24 z-50 flex flex-col gap-4 transition-all duration-300 pointer-events-auto ${isPanelExpanded ? 'left-4 w-[400px]' : 'left-4 w-80'}`}
                 >
-                    {showPhaseGuidance && (
-                        <div className="animate-in slide-in-from-left-4 duration-500">
-                            <PhaseGuidancePanel phase={currentPhase} suggestions={[]} />
-                        </div>
-                    )}
-                    
                     {showAttentionPanel && (
                         <div className="h-[450px] animate-in slide-in-from-left-4 duration-500 delay-100">
                             <AttentionFrameworkPanel 
