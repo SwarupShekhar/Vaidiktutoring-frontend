@@ -83,18 +83,19 @@ export default function EnrollmentWizard() {
       // Fetch tutors for recommendations
       const tutorRes = await fetch(`/api/enrollments/tutor-recommendations/${studentId}`);
       const tutorData = await tutorRes.json();
-      setTutors(tutorData);
-      
+      const tutorList = Array.isArray(tutorData) ? tutorData : [];
+      setTutors(tutorList);
+
       // Fetch subjects
       const subjectRes = await fetch('/api/catalog/subjects');
       const subjectData = await subjectRes.json();
-      setSubjects(subjectData);
+      setSubjects(Array.isArray(subjectData) ? subjectData : []);
 
       // Pre-fill some data
       setFormData(prev => ({
         ...prev,
         curriculum_id: studentData.curriculum_preference || '',
-        tutor_id: tutorData[0]?.id || '',
+        tutor_id: tutorList[0]?.id || '',
       }));
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -146,7 +147,7 @@ export default function EnrollmentWizard() {
       }
 
       toast.success('Congratulations! Your schedule has been created.');
-      router.push(`/parent/dashboard`);
+      router.push(`/students/dashboard`);
     } catch (error: any) {
       console.error('Enrollment error:', error);
       toast.error(error.message || 'Something went wrong during enrollment');

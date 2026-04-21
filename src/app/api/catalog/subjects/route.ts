@@ -7,7 +7,7 @@ export async function GET() {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const response = await api.get('/catalog/subjects');
+    const response = await api.get('/subjects');
     return NextResponse.json(response.data);
   } catch (error: any) {
     return NextResponse.json(
