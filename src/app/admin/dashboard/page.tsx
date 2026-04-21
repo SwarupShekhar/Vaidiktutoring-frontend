@@ -494,11 +494,6 @@ export default function AdminDashboardPage() {
                 {/* BENTO GRID END */}
 
 
-                {/* BLOG MANAGEMENT SECTION */}
-                <div className="bg-glass rounded-3xl p-6 border border-white/20 shadow-sm">
-                    <BlogManagementSection />
-                </div>
-
                 {/* MODALS */}
                 <StudentListModal isOpen={showStudents} onClose={() => setShowStudents(false)} />
                 <TutorAllocationModal 

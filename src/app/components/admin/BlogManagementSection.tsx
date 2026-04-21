@@ -26,10 +26,10 @@ export default function BlogManagementSection({ filterOnlyMyBlogs = false }: Blo
             setLoading(true);
             const res = await blogsApi.getAdminAll(page, 10);
             
-            let filteredData = res.data;
+            let filteredData = Array.isArray(res.data) ? res.data : [];
             if (filterOnlyMyBlogs && user) {
                 const currentUserId = user.userId || user.id;
-                filteredData = res.data.filter((b: BlogPost) => b.author_id === currentUserId);
+                filteredData = filteredData.filter((b: BlogPost) => b.author_id === currentUserId);
             }
             
             setBlogs(filteredData);
