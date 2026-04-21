@@ -668,7 +668,7 @@ export default function StudentDashboardPage() {
     staleTime: 60_000,
   });
 
-  const isEnrolled = enrollment?.status === 'enrolled';
+  const isEnrolled = enrollment?.status === 'learning';
 
   const stats = useMemo(() => {
     const completedCount = progressSummary?.totalSessions || 0;
