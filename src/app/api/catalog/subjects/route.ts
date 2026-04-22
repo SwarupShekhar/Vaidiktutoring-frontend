@@ -4,10 +4,15 @@ import api from '@/app/lib/api';
 
 export async function GET() {
   try {
-    const { userId } = await auth();
+    const { userId, getToken } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const response = await api.get('/subjects');
+    const token = await getToken();
+    const response = await api.get('/subjects', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return NextResponse.json(response.data);
   } catch (error: any) {
     return NextResponse.json(

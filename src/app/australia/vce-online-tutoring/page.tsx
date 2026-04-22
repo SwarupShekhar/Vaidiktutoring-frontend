@@ -4,15 +4,15 @@ import VCEPageClient from "./VCEPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "VCE Tutoring Online | VCAA-Aligned Expert Tutors | Study Hours",
+  title: "VCE Tutoring Online | Expert Tutors & Better Results",
   description:
-    "Expert 1-on-1 VCE tutoring aligned to the VCAA study design. Specialist tutors for Maths Methods, English, Sciences & Humanities. SAC prep and scaling strategy to maximise your ATAR.",
+    "Get expert VCE tutoring online with personalised lessons, exam strategies, and qualified tutors to improve grades, confidence, and results fast.",
   alternates: {
     canonical: "https://studyhours.com/australia/vce-online-tutoring",
   },
   openGraph: {
-    title: "VCE Tutors Online: Victoria's Best | StudyHours",
-    description: "1-on-1 VCE tutoring aligned to the VCAA study design. Expert tutors with 40-50 study scores in Maths Methods, English, Sciences, and Humanities.",
+    title: "VCE Tutoring Online | Expert Tutors & Better Results",
+    description: "Get expert VCE tutoring online with personalised lessons, exam strategies, and qualified tutors to improve grades, confidence, and results fast.",
     url: "https://studyhours.com/australia/vce-online-tutoring",
     siteName: "StudyHours",
     images: [{ url: "/australia_tutor_hero.png", width: 1200, height: 630, alt: "VCE Online Tutoring Victoria" }],
@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "VCE Tutors Online: Victoria's Best | StudyHours",
-    description: "Expert VCE tutors for Melbourne and Victoria. VCAA-aligned 1-on-1 coaching for SAC prep and study score improvement.",
+    title: "VCE Tutoring Online | Expert Tutors & Better Results",
+    description: "Get expert VCE tutoring online with personalised lessons, exam strategies, and qualified tutors to improve grades, confidence, and results fast.",
     images: ["/australia_tutor_hero.png"],
   },
 };

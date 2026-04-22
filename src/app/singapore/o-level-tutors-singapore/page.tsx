@@ -4,16 +4,16 @@ import OLevelPageClient from "./OLevelPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "O-Level Tutors Singapore: Sec 3 & Sec 4 GCE | StudyHours",
+  title: "O-Level Tutors Online Singapore - Math, English & Biology",
   description:
-    "Expert O-Level tutors in Singapore for all subjects. A1 grade strategies, SEAB-aligned lessons, past year paper mastery. Express & Normal Academic.",
+    "Boost your O-Level scores with expert online tutors for Math, English & Biology. Personalized lessons, flexible schedules & exam-focused strategies.",
   alternates: {
     canonical: "https://studyhours.com/singapore/o-level-tutors-singapore",
   },
   openGraph: {
-    title: "O-Level Tutors Singapore: Sec 3 & Sec 4 GCE | StudyHours",
+    title: "O-Level Tutors Online Singapore - Math, English & Biology",
     description:
-      "Expert O-Level tutors in Singapore for all subjects. A1 grade strategies, SEAB-aligned lessons, past year paper mastery. Express & Normal Academic.",
+      "Boost your O-Level scores with expert online tutors for Math, English & Biology. Personalized lessons, flexible schedules & exam-focused strategies.",
     url: "https://studyhours.com/singapore/o-level-tutors-singapore",
     images: [
       {
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "O-Level Tutors Singapore: Sec 3 & Sec 4 GCE | StudyHours",
+    title: "O-Level Tutors Online Singapore - Math, English & Biology",
     description:
-      "Expert O-Level tutors in Singapore for all subjects. A1 grade strategies, SEAB-aligned, past year paper mastery.",
+      "Boost your O-Level scores with expert online tutors for Math, English & Biology. Personalized lessons, flexible schedules & exam-focused strategies.",
     images: ["/hero_calm_education.png"],
   },
   authors: [{ name: "StudyHours Academic Team" }],

@@ -4,16 +4,16 @@ import DubaiPageClient from "./DubaiPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Online Tutors Dubai: IGCSE, IB & A-Level | StudyHours",
+  title: "Dubai Curriculum Tutors | IB, IGCSE, A-Level & American",
   description:
-    "Top-rated online tutors in Dubai for IGCSE, IB Diploma, A-Level, MOE UAE & American curriculum. 94% grade improvement. KHDA-aware specialists.",
+    "At study hours, find expert Dubai tutors online for IB, British, American, Indian  & UAE MOE curriculum. 1-on-1 support for IGCSE, A-Level, IB, AP, SAT & Emsat.",
   alternates: {
     canonical: "https://studyhours.com/uae/online-tutors-dubai",
   },
   openGraph: {
-    title: "Online Tutors Dubai: IGCSE, IB & A-Level | StudyHours",
+    title: "Dubai Curriculum Tutors | IB, IGCSE, A-Level & American",
     description:
-      "Top-rated online tutors in Dubai for IGCSE, IB Diploma, A-Level, MOE UAE & American curriculum. 94% grade improvement. KHDA-aware specialists.",
+      "At study hours, find expert Dubai tutors online for IB, British, American, Indian  & UAE MOE curriculum. 1-on-1 support for IGCSE, A-Level, IB, AP, SAT & Emsat.",
     url: "https://studyhours.com/uae/online-tutors-dubai",
     images: [
       {
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Online Tutors Dubai: IGCSE, IB & A-Level | StudyHours",
+    title: "Dubai Curriculum Tutors | IB, IGCSE, A-Level & American",
     description:
-      "Top-rated online tutors in Dubai for IGCSE, IB Diploma, A-Level, MOE UAE & American curriculum. 94% grade improvement. KHDA-aware specialists.",
+      "At study hours, find expert Dubai tutors online for IB, British, American, Indian  & UAE MOE curriculum. 1-on-1 support for IGCSE, A-Level, IB, AP, SAT & Emsat.",
     images: ["/hero_calm_education.png"],
   },
   authors: [{ name: "StudyHours Academic Team" }],

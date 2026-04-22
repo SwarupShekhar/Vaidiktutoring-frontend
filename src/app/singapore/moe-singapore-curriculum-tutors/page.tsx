@@ -4,24 +4,24 @@ import MOESingaporePageClient from "./MOESingaporePageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "MOE Singapore Tutors Online | PSLE to A-Level | Study Hours",
+  title: "Best MOE Curriculum Tutors in Singapore – Online Learning",
   description:
-    "Expert online tutors for the full MOE Singapore curriculum. PSLE, O-Level, A-Level, and IP pathway. SEAB-aligned specialists for Primary, Secondary, and Junior College.",
+    "Find the best MOE curriculum tutors in Singapore for online learning. Experienced tutors, personalized lessons & flexible schedules to help students improve grades",
   alternates: {
     canonical: "https://studyhours.com/singapore/moe-singapore-curriculum-tutors",
   },
   openGraph: {
-    title: "MOE Singapore Curriculum Tutors Online | StudyHours",
+    title: "Best MOE Curriculum Tutors in Singapore – Online Learning",
     description:
-      "Online tutors for the full MOE Singapore curriculum: Primary, Secondary, and JC. PSLE, O-Level, A-Level, and IP. SEAB-aligned specialists.",
+      "Find the best MOE curriculum tutors in Singapore for online learning. Experienced tutors, personalized lessons & flexible schedules to help students improve grades",
     url: "https://studyhours.com/singapore/moe-singapore-curriculum-tutors",
     images: [{ url: "/hero_calm_education.png", width: 1200, height: 630, alt: "StudyHours MOE Singapore Curriculum Tutors" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MOE Singapore Curriculum Tutors Online | StudyHours",
-    description: "Online tutors for the full MOE Singapore curriculum: Primary, Secondary, JC. PSLE, O-Level, A-Level, IP. SEAB-aligned.",
+    title: "Best MOE Curriculum Tutors in Singapore – Online Learning",
+    description: "Find the best MOE curriculum tutors in Singapore for online learning. Experienced tutors, personalized lessons & flexible schedules to help students improve grades",
     images: ["/hero_calm_education.png"],
   },
   authors: [{ name: "StudyHours Academic Team" }],

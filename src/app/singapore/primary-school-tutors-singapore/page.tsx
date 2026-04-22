@@ -6,14 +6,14 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Primary School Tutors Singapore: P1 to P6 | StudyHours",
   description:
-    "Expert online primary school tutors in Singapore for P1–P6. MOE-aligned Math, English, Science & Mother Tongue. GEP preparation. PSLE-ready by P6.",
+    "Find expert primary school tutors in Singapore for P1 to P6 with StudyHours. engaging online classes, & exam-focused support to boost your child’s performance.",
   alternates: {
     canonical: "https://studyhours.com/singapore/primary-school-tutors-singapore",
   },
   openGraph: {
     title: "Primary School Tutors Singapore: P1 to P6 | StudyHours",
     description:
-      "Expert online primary school tutors in Singapore for P1–P6. MOE-aligned Math, English, Science & Mother Tongue. GEP preparation. PSLE-ready by P6.",
+      "Find expert primary school tutors in Singapore for P1 to P6 with StudyHours. engaging online classes, & exam-focused support to boost your child’s performance.",
     url: "https://studyhours.com/singapore/primary-school-tutors-singapore",
     images: [
       {
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Primary School Tutors Singapore: P1 to P6 | StudyHours",
     description:
-      "Expert online primary school tutors in Singapore for P1–P6. MOE-aligned. GEP preparation. PSLE-ready by P6.",
+      "Find expert primary school tutors in Singapore for P1 to P6 with StudyHours. engaging online classes, & exam-focused support to boost your child’s performance.",
     images: ["/hero_calm_education.png"],
   },
   authors: [{ name: "StudyHours Academic Team" }],

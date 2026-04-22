@@ -4,15 +4,15 @@ import HSCPageClient from "./HSCPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "HSC Tutoring Online | Band 6 Experts Sydney & NSW | Study Hours",
+  title: "Online HSC Tutoring, Higher Marks & Confidence - Study Hours",
   description:
-    "Expert 1-on-1 HSC tutoring for NSW students. Band 6 graduates from selective schools coach you through SBAs and NESA external exams in all subjects.",
+    "At Study Hours, join the best online HSC tutoring for one-to-one support, stronger study habits & higher scores in exams & helping you learn faster.",
   alternates: {
     canonical: "https://studyhours.com/australia/hsc-online-tutoring",
   },
   openGraph: {
-    title: "HSC Tutors Online: Band 6 Experts | StudyHours",
-    description: "1-on-1 HSC tutoring for NSW students. Band 6 graduates from selective schools coach you through SBAs and NESA external exams.",
+    title: "Online HSC Tutoring, Higher Marks & Confidence - Study Hours",
+    description: "At Study Hours, join the best online HSC tutoring for one-to-one support, stronger study habits & higher scores in exams & helping you learn faster.",
     url: "https://studyhours.com/australia/hsc-online-tutoring",
     siteName: "StudyHours",
     images: [{ url: "/australia_tutor_hero.png", width: 1200, height: 630, alt: "HSC Online Tutoring NSW" }],
@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "HSC Tutors Online: Band 6 Experts | StudyHours",
-    description: "Expert HSC tutors for Sydney and NSW. NESA-aligned 1-on-1 coaching for Band 6 results.",
+    title: "Online HSC Tutoring, Higher Marks & Confidence - Study Hours",
+    description: "At Study Hours, join the best online HSC tutoring for one-to-one support, stronger study habits & higher scores in exams & helping you learn faster.",
     images: ["/australia_tutor_hero.png"],
   },
 };

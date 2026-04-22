@@ -4,23 +4,23 @@ import ALevelSingaporePageClient from "./ALevelSingaporePageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "A-Level Tutors Singapore: JC1 & JC2 H2 H3 | StudyHours",
+  title: "A-Level Tutors Online Singapore | H1, H2 & H3, JC1 & JC2",
   description:
-    "Expert A-Level and JC tutors in Singapore for H1, H2, H3 subjects. GP, Project Work, and university rank point strategy. SEAB-aligned.",
+    "Find expert A-Level tutors online in Singapore for H1, H2 & H3 subjects. 1-on-1 coaching for JC1 & JC2 with proven strategies for top results.",
   alternates: {
     canonical: "https://studyhours.com/singapore/a-level-tutors-singapore",
   },
   openGraph: {
-    title: "A-Level Tutors Singapore: JC1 & JC2 H2 H3 | StudyHours",
-    description: "Expert A-Level and JC tutors in Singapore for H1, H2, H3 subjects. GP, Project Work, university rank point strategy. SEAB-aligned.",
+    title: "A-Level Tutors Online Singapore | H1, H2 & H3, JC1 & JC2",
+    description: "Find expert A-Level tutors online in Singapore for H1, H2 & H3 subjects. 1-on-1 coaching for JC1 & JC2 with proven strategies for top results.",
     url: "https://studyhours.com/singapore/a-level-tutors-singapore",
     images: [{ url: "/hero_calm_education.png", width: 1200, height: 630, alt: "StudyHours A-Level Tutors Singapore" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "A-Level Tutors Singapore: JC1 & JC2 H2 H3 | StudyHours",
-    description: "Expert A-Level and JC tutors in Singapore for H1, H2, H3. GP, Project Work, rank point strategy.",
+    title: "A-Level Tutors Online Singapore | H1, H2 & H3, JC1 & JC2",
+    description: "Find expert A-Level tutors online in Singapore for H1, H2 & H3 subjects. 1-on-1 coaching for JC1 & JC2 with proven strategies for top results.",
     images: ["/hero_calm_education.png"],
   },
   authors: [{ name: "StudyHours Academic Team" }],

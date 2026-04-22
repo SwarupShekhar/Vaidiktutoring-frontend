@@ -4,15 +4,15 @@ import CurriculumPageClient from "./CurriculumPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Australian Curriculum Tutors: ACARA F-Year 10 | StudyHours",
+  title: "Australian Curriculum Online Tutoring For Success Path",
   description:
-    "Expert ACARA-aligned tutors for Foundation to Year 10. 1-on-1 online coaching for Maths, English, and Science. NAPLAN preparation for all states. Book free.",
+    "Start your success path with Australian Curriculum online tutoring. Gain confidence, improve marks, & enjoy smarter learning online.",
   alternates: {
     canonical: "https://studyhours.com/australia/curriculum-tutoring",
   },
   openGraph: {
-    title: "Australian Curriculum Tutors Online | StudyHours",
-    description: "ACARA-aligned 1-on-1 tutoring for Foundation to Year 10. NAPLAN prep, Year 7 transition support, and senior pathway foundations.",
+    title: "Australian Curriculum Online Tutoring For Success Path",
+    description: "Start your success path with Australian Curriculum online tutoring. Gain confidence, improve marks, & enjoy smarter learning online.",
     url: "https://studyhours.com/australia/curriculum-tutoring",
     siteName: "StudyHours",
     images: [{ url: "/australia_tutor_hero.png", width: 1200, height: 630, alt: "Australian Curriculum Tutoring ACARA Prep to Year 10" }],
@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Australian Curriculum Tutors Online | StudyHours",
-    description: "Expert ACARA-aligned tutors for Prep to Year 10. NAPLAN prep and senior school foundation building.",
+    title: "Australian Curriculum Online Tutoring For Success Path",
+    description: "Start your success path with Australian Curriculum online tutoring. Gain confidence, improve marks, & enjoy smarter learning online.",
     images: ["/australia_tutor_hero.png"],
   },
 };

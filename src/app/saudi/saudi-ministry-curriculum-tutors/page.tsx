@@ -4,23 +4,23 @@ import SaudiMinistryPageClient from "./SaudiMinistryPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Saudi MOE Tutors Online | Tawjihi Exam Prep | Study Hours",
+  title: "Saudi MOE Tutors Online | Tawjihi Exam Prep for Top Scores",
   description:
-    "Expert online tutors for the Saudi Ministry of Education curriculum. Arabic, Islamic Studies, Mathematics and Sciences. Tawjihi and Qudurat preparation for secondary students.",
+    "At Study hours, get expert Saudi MOE tutors online for Tawjihi exam prep. 1-on-1 coaching, personalized lessons, and proven strategies to boost scores fast.",
   alternates: {
     canonical: "https://studyhours.com/uae/saudi-ministry-curriculum-tutors",
   },
   openGraph: {
-    title: "Saudi MOE Curriculum Tutors Online | StudyHours",
-    description: "Online tutors for the Saudi Ministry of Education curriculum. Arabic, Islamic Studies, Mathematics, Sciences. Tawjihi and Qudurat preparation.",
+    title: "Saudi MOE Tutors Online | Tawjihi Exam Prep for Top Scores",
+    description: "At Study hours, get expert Saudi MOE tutors online for Tawjihi exam prep. 1-on-1 coaching, personalized lessons, and proven strategies to boost scores fast.",
     url: "https://studyhours.com/uae/saudi-ministry-curriculum-tutors",
     images: [{ url: "/hero_calm_education.png", width: 1200, height: 630, alt: "StudyHours Saudi Ministry Curriculum Tutors" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Saudi Ministry Curriculum Tutors Online | StudyHours",
-    description: "Online tutors for the Saudi MOE curriculum. Arabic, Islamic Studies, Mathematics, Sciences. Tawjihi and Qudurat prep.",
+    title: "Saudi MOE Tutors Online | Tawjihi Exam Prep for Top Scores",
+    description: "At Study hours, get expert Saudi MOE tutors online for Tawjihi exam prep. 1-on-1 coaching, personalized lessons, and proven strategies to boost scores fast.",
     images: ["/hero_calm_education.png"],
   },
   authors: [{ name: "StudyHours Academic Team" }],

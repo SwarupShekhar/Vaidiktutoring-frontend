@@ -4,12 +4,13 @@ import api from '@/app/lib/api';
 
 export async function POST(req: Request) {
   try {
-    const { userId } = await auth();
+    const { userId, getToken } = await auth();
 
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const token = await getToken();
     const body = await req.json();
     const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = body;
 
@@ -22,6 +23,10 @@ export async function POST(req: Request) {
       razorpayOrderId,
       razorpayPaymentId,
       razorpaySignature,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     return NextResponse.json(response.data);

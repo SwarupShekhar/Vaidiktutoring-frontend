@@ -7,11 +7,16 @@ export async function GET(
   { params }: { params: Promise<{ studentId: string }> }
 ) {
   try {
-    const { userId } = await auth();
+    const { userId, getToken } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+    const token = await getToken();
     const { studentId } = await params;
-    const response = await api.get(`/enrollments/tutor-recommendations/${studentId}`);
+    const response = await api.get(`/enrollments/tutor-recommendations/${studentId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return NextResponse.json(response.data);
   } catch (error: any) {
     return NextResponse.json(

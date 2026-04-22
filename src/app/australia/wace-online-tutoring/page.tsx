@@ -4,15 +4,15 @@ import WACEPageClient from "./WACEPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "WACE Tutors Online: Perth & WA ATAR Prep | Study Hours",
+  title: "WACE Online Tutor | One-to-One Learning Support",
   description:
-    "1-on-1 WACE ATAR tutoring for Perth and Western Australia. SCSA-aligned coaching for school assessments and external exams across all ATAR courses.",
+    "Connect with a skilled WACE online tutor for personalised guidance, flexible classes, and targeted support to improve confidence & grades.",
   alternates: {
     canonical: "https://studyhours.com/australia/wace-online-tutoring",
   },
   openGraph: {
-    title: "WACE Tutors Online: WA Specialists | StudyHours",
-    description: "1-on-1 WACE tutoring for Perth and Western Australia. SCSA-aligned coaching for ATAR courses, school assessments, and external exams.",
+    title: "WACE Online Tutor | One-to-One Learning Support",
+    description: "Connect with a skilled WACE online tutor for personalised guidance, flexible classes, and targeted support to improve confidence & grades.",
     url: "https://studyhours.com/australia/wace-online-tutoring",
     siteName: "StudyHours",
     images: [{ url: "/australia_tutor_hero.png", width: 1200, height: 630, alt: "WACE Online Tutoring Western Australia" }],
@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "WACE Tutors Online: WA Specialists | StudyHours",
-    description: "Expert WACE tutors for Perth and WA. SCSA-aligned ATAR course coaching.",
+    title: "WACE Online Tutor | One-to-One Learning Support",
+    description: "Connect with a skilled WACE online tutor for personalised guidance, flexible classes, and targeted support to improve confidence & grades.",
     images: ["/australia_tutor_hero.png"],
   },
 };

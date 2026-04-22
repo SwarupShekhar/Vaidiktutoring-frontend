@@ -4,23 +4,23 @@ import IPProgrammePageClient from "./IPProgrammePageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "IP Programme Tutors Singapore: Year 1–6 Online | Study Hours",
+  title: "IP Programme Online Tutors Singapore | Study Hours",
   description:
-    "Expert online tutors for Singapore's Integrated Programme. School-specific internal assessments for RI, HCI, Dunman High and all IP schools. IP Year 1–6 specialists.",
+    "Struggling with IP subjects? Expert online tutors in Singapore deliver personalized coaching, clear concepts, and results you can see fast.",
   alternates: {
     canonical: "https://studyhours.com/singapore/ip-programme-tutors-singapore",
   },
   openGraph: {
-    title: "IP Programme Tutors Singapore Online | StudyHours",
-    description: "Online tutors for Singapore's Integrated Programme. School-specific internal assessments, no O-Level pressure. IP Year 1–6 specialists.",
+    title: "IP Programme Online Tutors Singapore | Study Hours",
+    description: "Struggling with IP subjects? Expert online tutors in Singapore deliver personalized coaching, clear concepts, and results you can see fast.",
     url: "https://studyhours.com/singapore/ip-programme-tutors-singapore",
     images: [{ url: "/hero_calm_education.png", width: 1200, height: 630, alt: "StudyHours IP Programme Tutors Singapore" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "IP Programme Tutors Singapore: Integrated Programme | StudyHours",
-    description: "Online tutors for Singapore's Integrated Programme. School-specific internal assessments. IP Year 1–6.",
+    title: "IP Programme Online Tutors Singapore | Study Hours",
+    description: "Struggling with IP subjects? Expert online tutors in Singapore deliver personalized coaching, clear concepts, and results you can see fast.",
     images: ["/hero_calm_education.png"],
   },
   authors: [{ name: "StudyHours Academic Team" }],

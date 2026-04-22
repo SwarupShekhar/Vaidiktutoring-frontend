@@ -4,16 +4,16 @@ import PSLEPageClient from "./PSLEPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "PSLE Tutors Online: Math, English & Science | StudyHours",
+  title: "PSLE Tutors Online for English, Math & Science Tuition",
   description:
-    "Expert PSLE tutors online for all 4 subjects. MOE-aligned lessons, AL1 score strategies, past year paper practice. Trusted by Singapore families.",
+    "Get expert PSLE tutors online for English, Math & Science. Personalized lessons, interactive classes & proven strategies to boost scores and exam confidence.",
   alternates: {
     canonical: "https://studyhours.com/singapore/psle-tutors-online",
   },
   openGraph: {
-    title: "PSLE Tutors Online: Math, English & Science | StudyHours",
+    title: "PSLE Tutors Online for English, Math & Science Tuition",
     description:
-      "Expert PSLE tutors online for all 4 subjects. MOE-aligned lessons, AL1 score strategies, past year paper practice. Trusted by Singapore families.",
+      "Get expert PSLE tutors online for English, Math & Science. Personalized lessons, interactive classes & proven strategies to boost scores and exam confidence.",
     url: "https://studyhours.com/singapore/psle-tutors-online",
     images: [
       {
@@ -27,9 +27,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PSLE Tutors Online: Math, English & Science | StudyHours",
+    title: "PSLE Tutors Online for English, Math & Science Tuition",
     description:
-      "Expert PSLE tutors online for all 4 subjects. MOE-aligned lessons, AL1 score strategies, past year paper practice.",
+      "Get expert PSLE tutors online for English, Math & Science. Personalized lessons, interactive classes & proven strategies to boost scores and exam confidence.",
     images: ["/hero_calm_education.png"],
   },
   authors: [{ name: "StudyHours Academic Team" }],

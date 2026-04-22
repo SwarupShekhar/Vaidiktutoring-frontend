@@ -4,15 +4,15 @@ import QCEPageClient from "./QCEPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "QCE Tutoring Online | QCAA-Aligned Expert Tutors | Study Hours",
+  title: "QCE Online Tutoring for Higher Exam Results - Study Hours",
   description:
-    "1-on-1 QCE tutoring for Queensland students. QCAA-aligned coaching for IA1, IA2, IA3 preparation and External Assessment across all subjects.",
+    "At Study hours, join our best QCE online tutoring with skilled tutors. Enhance weak areas, boost marks & study confidently for upcoming exams.",
   alternates: {
     canonical: "https://studyhours.com/australia/qce-online-tutoring",
   },
   openGraph: {
-    title: "QCE Tutors Online: Queensland's Best | StudyHours",
-    description: "1-on-1 QCE tutoring for Brisbane and Queensland. QCAA-aligned coaching for IA1, IA2, IA3 preparation and external assessments.",
+    title: "QCE Online Tutoring for Higher Exam Results - Study Hours",
+    description: "At Study hours, join our best QCE online tutoring with skilled tutors. Enhance weak areas, boost marks & study confidently for upcoming exams.",
     url: "https://studyhours.com/australia/qce-online-tutoring",
     siteName: "StudyHours",
     images: [{ url: "/australia_tutor_hero.png", width: 1200, height: 630, alt: "QCE Online Tutoring Queensland" }],
@@ -20,8 +20,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "QCE Tutors Online: Queensland's Best | StudyHours",
-    description: "Expert QCE tutors for Brisbane and QLD. QCAA-aligned IA and external exam prep.",
+    title: "QCE Online Tutoring for Higher Exam Results - Study Hours",
+    description: "At Study hours, join our best QCE online tutoring with skilled tutors. Enhance weak areas, boost marks & study confidently for upcoming exams.",
     images: ["/australia_tutor_hero.png"],
   },
 };
