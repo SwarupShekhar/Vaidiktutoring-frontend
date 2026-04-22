@@ -290,9 +290,9 @@ export default function Footer() {
                 {[
                   { href: "/uae/online-tutors-dubai", label: "Online Tutors Dubai" },
                   { href: "/uae/online-tutors-abu-dhabi", label: "Online Tutors Abu Dhabi" },
-                  { href: "/uae/online-tutors-riyadh", label: "Online Tutors Riyadh" },
+                  { href: "/saudi/online-tutors-riyadh", label: "Online Tutors Riyadh" },
                   { href: "/uae/moe-uae-curriculum-tutors", label: "MOE UAE Curriculum" },
-                  { href: "/uae/saudi-ministry-curriculum-tutors", label: "Saudi Ministry Curriculum" },
+                  { href: "/saudi/saudi-ministry-curriculum-tutors", label: "Saudi Ministry Curriculum" },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">

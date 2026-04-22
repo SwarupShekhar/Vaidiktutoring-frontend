@@ -4,9 +4,9 @@ import SaudiMinistryPageClient from "./SaudiMinistryPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Saudi MOE Curriculum Tutors Online | StudyHours",
+  title: "Saudi MOE Tutors Online | Tawjihi Exam Prep | Study Hours",
   description:
-    "Online tutors for the Saudi Ministry of Education curriculum. Arabic, Islamic Studies, Mathematics and Sciences. Tawjihi and Qudurat preparation.",
+    "Expert online tutors for the Saudi Ministry of Education curriculum. Arabic, Islamic Studies, Mathematics and Sciences. Tawjihi and Qudurat preparation for secondary students.",
   alternates: {
     canonical: "https://studyhours.com/uae/saudi-ministry-curriculum-tutors",
   },

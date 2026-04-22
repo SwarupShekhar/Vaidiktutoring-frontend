@@ -4,9 +4,9 @@ import MOEUAEPageClient from "./MOEUAEPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "MOE UAE Curriculum Tutors Online | StudyHours",
+  title: "MOE UAE Tutors | Arabic, Maths & EmSAT Prep | Study Hours",
   description:
-    "Online tutors for the UAE Ministry of Education curriculum. Arabic, Islamic Studies, Mathematics and Sciences for Cycle 1, 2, 3. EmSAT preparation.",
+    "Expert online tutors for the UAE Ministry of Education curriculum. Arabic, Islamic Studies, Mathematics and Sciences for Cycle 1–3. EmSAT university entrance preparation.",
   alternates: {
     canonical: "https://studyhours.com/uae/moe-uae-curriculum-tutors",
   },

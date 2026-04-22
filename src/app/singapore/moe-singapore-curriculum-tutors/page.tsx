@@ -4,9 +4,9 @@ import MOESingaporePageClient from "./MOESingaporePageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "MOE Singapore Curriculum Tutors Online | StudyHours",
+  title: "MOE Singapore Tutors Online | PSLE to A-Level | Study Hours",
   description:
-    "Online tutors for the full MOE Singapore curriculum: Primary, Secondary, and JC. PSLE, O-Level, A-Level, and IP. SEAB-aligned specialists.",
+    "Expert online tutors for the full MOE Singapore curriculum. PSLE, O-Level, A-Level, and IP pathway. SEAB-aligned specialists for Primary, Secondary, and Junior College.",
   alternates: {
     canonical: "https://studyhours.com/singapore/moe-singapore-curriculum-tutors",
   },

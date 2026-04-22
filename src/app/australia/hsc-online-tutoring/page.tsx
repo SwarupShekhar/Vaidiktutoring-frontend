@@ -4,9 +4,9 @@ import HSCPageClient from "./HSCPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "HSC Tutors Online: Band 6 Experts Sydney & NSW | StudyHours",
+  title: "HSC Tutoring Online | Band 6 Experts Sydney & NSW | Study Hours",
   description:
-    "Expert HSC tutors in Sydney and NSW. NESA-aligned 1-on-1 coaching for Maths Extension, English Advanced, Physics, and Chemistry. Band 6 strategy.",
+    "Expert 1-on-1 HSC tutoring for NSW students. Band 6 graduates from selective schools coach you through SBAs and NESA external exams in all subjects.",
   alternates: {
     canonical: "https://studyhours.com/australia/hsc-online-tutoring",
   },

@@ -410,7 +410,7 @@ export default function SaudiMinistryPageClient({ testimonials, faqs }: Props) {
           </motion.div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { name: "Online Tutors Riyadh", href: "/uae/online-tutors-riyadh", desc: "BIS, AISR, Saudi MOE" },
+              { name: "Online Tutors Riyadh", href: "/saudi/online-tutors-riyadh", desc: "BIS, AISR, Saudi MOE" },
               { name: "MOE UAE Curriculum", href: "/uae/moe-uae-curriculum-tutors", desc: "UAE national schools, EmSAT" },
               { name: "Online Tutors Dubai", href: "/uae/online-tutors-dubai", desc: "All Dubai curricula" },
               { name: "Online Tutors Abu Dhabi", href: "/uae/online-tutors-abu-dhabi", desc: "ADEK regulated schools" },

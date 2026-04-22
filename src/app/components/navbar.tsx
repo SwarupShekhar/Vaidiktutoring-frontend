@@ -49,9 +49,9 @@ export default function Navbar() {
       links: [
         { name: "Online Tutors Dubai", href: "/uae/online-tutors-dubai" },
         { name: "Online Tutors Abu Dhabi", href: "/uae/online-tutors-abu-dhabi" },
-        { name: "Online Tutors Riyadh", href: "/uae/online-tutors-riyadh" },
+        { name: "Online Tutors Riyadh", href: "/saudi/online-tutors-riyadh" },
         { name: "MOE UAE Curriculum Tutors", href: "/uae/moe-uae-curriculum-tutors" },
-        { name: "Saudi Ministry Curriculum Tutors", href: "/uae/saudi-ministry-curriculum-tutors" },
+        { name: "Saudi Ministry Curriculum Tutors", href: "/saudi/saudi-ministry-curriculum-tutors" },
       ],
     },
     {

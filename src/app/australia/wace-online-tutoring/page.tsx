@@ -4,9 +4,9 @@ import WACEPageClient from "./WACEPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "WACE Tutors Online: Perth & WA Specialists | StudyHours",
+  title: "WACE Tutors Online: Perth & WA ATAR Prep | Study Hours",
   description:
-    "Expert WACE tutors in Perth and Western Australia. SCSA-aligned 1-on-1 coaching for Maths Specialist, Methods, Physics, and English ATAR.",
+    "1-on-1 WACE ATAR tutoring for Perth and Western Australia. SCSA-aligned coaching for school assessments and external exams across all ATAR courses.",
   alternates: {
     canonical: "https://studyhours.com/australia/wace-online-tutoring",
   },

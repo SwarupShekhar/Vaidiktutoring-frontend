@@ -122,18 +122,18 @@ export default function EnrollmentWizard() {
         'Friday': 5, 'Saturday': 6, 'Sunday': 0
       };
 
-      const payload = {
+      const payload: Record<string, any> = {
         student_id: studentId,
-        tutor_id: formData.tutor_id,
-        program_id: student.program_id,
-        package_id: student.bookings?.[0]?.package_id || 'DEFAULT_PACKAGE',
-        curriculum_id: formData.curriculum_id,
         subject_ids: formData.subject_ids,
         schedule_preset: formData.schedule_preset,
         schedule_days: formData.schedule_days.map(d => dayMap[d]),
         start_time: formData.start_time,
-        status: 'active'
       };
+
+      if (formData.tutor_id) payload.tutor_id = formData.tutor_id;
+      if (student.program_id) payload.program_id = student.program_id;
+      if (student.package_id) payload.package_id = student.package_id;
+      if (formData.curriculum_id) payload.curriculum_id = formData.curriculum_id;
 
       const res = await fetch('/api/enrollments', {
         method: 'POST',

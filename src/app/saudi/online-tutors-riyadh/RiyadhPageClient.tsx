@@ -407,7 +407,7 @@ export default function RiyadhPageClient({ testimonials, faqs }: Props) {
             {[
               { name: "Online Tutors Dubai", href: "/uae/online-tutors-dubai", desc: "KHDA rated Dubai schools" },
               { name: "Online Tutors Abu Dhabi", href: "/uae/online-tutors-abu-dhabi", desc: "ADEK regulated Abu Dhabi" },
-              { name: "Saudi Ministry Curriculum", href: "/uae/saudi-ministry-curriculum-tutors", desc: "Saudi MOE, Tawjihi, Qudurat" },
+              { name: "Saudi Ministry Curriculum", href: "/saudi/saudi-ministry-curriculum-tutors", desc: "Saudi MOE, Tawjihi, Qudurat" },
               { name: "MOE UAE Curriculum", href: "/uae/moe-uae-curriculum-tutors", desc: "UAE national schools, EmSAT" },
             ].map((l, i) => (
               <motion.div key={l.href} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={{ ...fadeUp, visible: { ...fadeUp.visible, transition: { duration: 0.5, delay: i * 0.08 } } }}>

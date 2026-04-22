@@ -4,9 +4,9 @@ import VCEPageClient from "./VCEPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "VCE Tutors Online: Victoria's Best VCE Tutoring | StudyHours",
+  title: "VCE Tutoring Online | VCAA-Aligned Expert Tutors | Study Hours",
   description:
-    "Expert VCE tutors in Melbourne & Victoria. VCAA-aligned 1-on-1 coaching for Maths Methods, English, and Sciences. SAC prep and scaling strategy.",
+    "Expert 1-on-1 VCE tutoring aligned to the VCAA study design. Specialist tutors for Maths Methods, English, Sciences & Humanities. SAC prep and scaling strategy to maximise your ATAR.",
   alternates: {
     canonical: "https://studyhours.com/australia/vce-online-tutoring",
   },

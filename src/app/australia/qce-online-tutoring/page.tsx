@@ -4,9 +4,9 @@ import QCEPageClient from "./QCEPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "QCE Tutors Online: Queensland's Best QCE | StudyHours",
+  title: "QCE Tutoring Online | QCAA-Aligned Expert Tutors | Study Hours",
   description:
-    "Expert QCE tutors in Brisbane and Queensland. QCAA-aligned 1-on-1 coaching for Maths Methods, Physics, and English. IA1, IA2, IA3 prep.",
+    "1-on-1 QCE tutoring for Queensland students. QCAA-aligned coaching for IA1, IA2, IA3 preparation and External Assessment across all subjects.",
   alternates: {
     canonical: "https://studyhours.com/australia/qce-online-tutoring",
   },

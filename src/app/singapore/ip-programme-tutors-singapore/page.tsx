@@ -4,9 +4,9 @@ import IPProgrammePageClient from "./IPProgrammePageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "IP Programme Tutors Singapore Online | StudyHours",
+  title: "IP Programme Tutors Singapore: Year 1–6 Online | Study Hours",
   description:
-    "Online tutors for Singapore's Integrated Programme (IP). School-specific internal assessments, no O-Level pressure. IP Year 1–6 specialists.",
+    "Expert online tutors for Singapore's Integrated Programme. School-specific internal assessments for RI, HCI, Dunman High and all IP schools. IP Year 1–6 specialists.",
   alternates: {
     canonical: "https://studyhours.com/singapore/ip-programme-tutors-singapore",
   },
