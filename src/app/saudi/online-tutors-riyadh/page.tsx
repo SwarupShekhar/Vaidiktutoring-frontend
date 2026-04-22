@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   description:
     "Expert online tutors for Riyadh students. IB, IGCSE, British A-Level, American AP, CBSE and Saudi Ministry curriculum. BIS Riyadh, AISR, Manarat.",
   alternates: {
-    canonical: "https://studyhours.com/uae/online-tutors-riyadh",
+    canonical: "https://studyhours.com/saudi/online-tutors-riyadh",
   },
   openGraph: {
     title: "Online Tutors Riyadh: IB, IGCSE & Saudi MOE | StudyHours",
     description: "Expert online tutors for Riyadh students. IB, IGCSE, British A-Level, American AP, CBSE and Saudi Ministry curriculum.",
-    url: "https://studyhours.com/uae/online-tutors-riyadh",
+    url: "https://studyhours.com/saudi/online-tutors-riyadh",
     images: [{ url: "/hero_calm_education.png", width: 1200, height: 630, alt: "StudyHours Online Tutors Riyadh" }],
     type: "website",
   },
@@ -67,7 +67,7 @@ export default function Page() {
     "@type": "LocalBusiness",
     name: "StudyHours: Online Tutors Riyadh",
     description: "Expert online tutoring for Riyadh students across IB, IGCSE, British A-Level, American AP, CBSE and Saudi Ministry of Education curricula. BIS Riyadh, AISR, Manarat International and Saudi national schools supported.",
-    url: "https://studyhours.com/uae/online-tutors-riyadh",
+    url: "https://studyhours.com/saudi/online-tutors-riyadh",
     image: "https://studyhours.com/hero_calm_education.png",
     address: {
       "@type": "PostalAddress",
@@ -115,8 +115,8 @@ export default function Page() {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://studyhours.com" },
-      { "@type": "ListItem", position: 2, name: "UAE Tutoring", item: "https://studyhours.com/uae" },
-      { "@type": "ListItem", position: 3, name: "Online Tutors Riyadh", item: "https://studyhours.com/uae/online-tutors-riyadh" },
+      { "@type": "ListItem", position: 2, name: "Saudi Tutoring", item: "https://studyhours.com/saudi" },
+      { "@type": "ListItem", position: 3, name: "Online Tutors Riyadh", item: "https://studyhours.com/saudi/online-tutors-riyadh" },
     ],
   };
 

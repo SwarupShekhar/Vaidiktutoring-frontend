@@ -42,6 +42,16 @@ const nextConfig: NextConfig = {
         destination: '/ib-online-tutoring',
         permanent: true,
       },
+      {
+        source: '/uae/saudi-ministry-curriculum-tutors',
+        destination: '/saudi/saudi-ministry-curriculum-tutors',
+        permanent: true,
+      },
+      {
+        source: '/uae/online-tutors-riyadh',
+        destination: '/saudi/online-tutors-riyadh',
+        permanent: true,
+      },
     ];
   },
   // Security headers

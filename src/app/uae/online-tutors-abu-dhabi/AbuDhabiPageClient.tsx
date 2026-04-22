@@ -398,9 +398,9 @@ export default function AbuDhabiPageClient({ testimonials, faqs }: Props) {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { name: "Online Tutors Dubai", href: "/uae/online-tutors-dubai", desc: "KHDA regulated, all Dubai curricula" },
-              { name: "Online Tutors Riyadh", href: "/uae/online-tutors-riyadh", desc: "BIS, AISR, Saudi MOE" },
+              { name: "Online Tutors Riyadh", href: "/saudi/online-tutors-riyadh", desc: "BIS, AISR, Saudi MOE" },
               { name: "MOE UAE Curriculum", href: "/uae/moe-uae-curriculum-tutors", desc: "UAE national schools, EmSAT" },
-              { name: "Saudi Ministry Curriculum", href: "/uae/saudi-ministry-curriculum-tutors", desc: "Tawjihi and Qudurat prep" },
+              { name: "Saudi Ministry Curriculum", href: "/saudi/saudi-ministry-curriculum-tutors", desc: "Tawjihi and Qudurat prep" },
             ].map((l, i) => (
               <motion.div key={l.href} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={{ ...fadeUp, visible: { ...fadeUp.visible, transition: { duration: 0.5, delay: i * 0.08 } } }}>
                 <Link href={l.href} className="block p-4 rounded-xl border border-border bg-white dark:bg-white/5 hover:border-primary hover:shadow-md transition-all group">

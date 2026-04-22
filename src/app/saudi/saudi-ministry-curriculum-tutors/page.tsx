@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   description:
     "At Study hours, get expert Saudi MOE tutors online for Tawjihi exam prep. 1-on-1 coaching, personalized lessons, and proven strategies to boost scores fast.",
   alternates: {
-    canonical: "https://studyhours.com/uae/saudi-ministry-curriculum-tutors",
+    canonical: "https://studyhours.com/saudi/saudi-ministry-curriculum-tutors",
   },
   openGraph: {
-    title: "Saudi MOE Tutors Online | Tawjihi Exam Prep for Top Scores",
-    description: "At Study hours, get expert Saudi MOE tutors online for Tawjihi exam prep. 1-on-1 coaching, personalized lessons, and proven strategies to boost scores fast.",
-    url: "https://studyhours.com/uae/saudi-ministry-curriculum-tutors",
+    title: "Saudi Ministry Curriculum Tutors | Expert Online Tawjihi & Qudurat Prep",
+    description: "Expert online tutors for Saudi Ministry of Education curriculum. Arabic-medium instruction for Tawjihi, Qudurat, Tahsili and Saudi MOE school assessments.",
+    url: "https://studyhours.com/saudi/saudi-ministry-curriculum-tutors",
     images: [{ url: "/hero_calm_education.png", width: 1200, height: 630, alt: "StudyHours Saudi Ministry Curriculum Tutors" }],
     type: "website",
   },
@@ -67,7 +67,7 @@ export default function Page() {
     "@type": "EducationalOrganization",
     name: "StudyHours: Saudi Ministry of Education Curriculum Tutors",
     description: "Expert online tutors for the Saudi Ministry of Education curriculum. Arabic, Islamic Studies, Mathematics, Sciences across Primary, Intermediate and Secondary stages. Tawjihi, Qudurat and Tahsili preparation.",
-    url: "https://studyhours.com/uae/saudi-ministry-curriculum-tutors",
+    url: "https://studyhours.com/saudi/saudi-ministry-curriculum-tutors",
     image: "https://studyhours.com/hero_calm_education.png",
     areaServed: { "@type": "Country", name: "Saudi Arabia" },
     aggregateRating: {
@@ -104,8 +104,8 @@ export default function Page() {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://studyhours.com" },
-      { "@type": "ListItem", position: 2, name: "UAE Tutoring", item: "https://studyhours.com/uae" },
-      { "@type": "ListItem", position: 3, name: "Saudi Ministry Curriculum Tutors", item: "https://studyhours.com/uae/saudi-ministry-curriculum-tutors" },
+      { "@type": "ListItem", position: 2, name: "Saudi Tutoring", item: "https://studyhours.com/saudi" },
+      { "@type": "ListItem", position: 3, name: "Saudi Ministry Curriculum Tutors", item: "https://studyhours.com/saudi/saudi-ministry-curriculum-tutors" },
     ],
   };
 
