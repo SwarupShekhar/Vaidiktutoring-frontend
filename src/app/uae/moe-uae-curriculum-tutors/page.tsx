@@ -9,6 +9,12 @@ export const metadata: Metadata = {
     "Expert online tutors for the UAE Ministry of Education curriculum. Arabic, Islamic Studies, Mathematics and Sciences for Cycle 1–3. EmSAT university entrance preparation.",
   alternates: {
     canonical: "https://studyhours.com/uae/moe-uae-curriculum-tutors",
+    languages: {
+      "en-SG": "https://studyhours.com/singapore/moe-singapore-curriculum-tutors",
+      "en-AE": "https://studyhours.com/uae/moe-uae-curriculum-tutors",
+      "en-SA": "https://studyhours.com/saudi/saudi-ministry-curriculum-tutors",
+      "en-AU": "https://studyhours.com/australia/curriculum-tutoring",
+    },
   },
   openGraph: {
     title: "MOE UAE Curriculum Tutors Online | StudyHours",
@@ -72,10 +78,10 @@ export default function Page() {
     areaServed: { "@type": "Country", name: "United Arab Emirates" },
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "348",
-      bestRating: "5",
-      worstRating: "1",
+      ratingValue: 4.9,
+      reviewCount: 348,
+      bestRating: 5,
+      worstRating: 1,
     },
   };
 

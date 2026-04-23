@@ -9,6 +9,12 @@ export const metadata: Metadata = {
     "At Study hours, get expert Saudi MOE tutors online for Tawjihi exam prep. 1-on-1 coaching, personalized lessons, and proven strategies to boost scores fast.",
   alternates: {
     canonical: "https://studyhours.com/saudi/saudi-ministry-curriculum-tutors",
+    languages: {
+      "en-SG": "https://studyhours.com/singapore/moe-singapore-curriculum-tutors",
+      "en-AE": "https://studyhours.com/uae/moe-uae-curriculum-tutors",
+      "en-SA": "https://studyhours.com/saudi/saudi-ministry-curriculum-tutors",
+      "en-AU": "https://studyhours.com/australia/curriculum-tutoring",
+    },
   },
   openGraph: {
     title: "Saudi Ministry Curriculum Tutors | Expert Online Tawjihi & Qudurat Prep",
@@ -72,10 +78,10 @@ export default function Page() {
     areaServed: { "@type": "Country", name: "Saudi Arabia" },
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "294",
-      bestRating: "5",
-      worstRating: "1",
+      ratingValue: 4.9,
+      reviewCount: 294,
+      bestRating: 5,
+      worstRating: 1,
     },
   };
 

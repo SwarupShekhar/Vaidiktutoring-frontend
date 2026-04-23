@@ -25,6 +25,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "https://studyhours.com",
+    languages: {
+      "x-default": "https://studyhours.com",
+    },
   },
   twitter: {
     card: "summary_large_image",

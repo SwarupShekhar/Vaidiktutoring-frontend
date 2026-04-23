@@ -37,9 +37,9 @@ const jsonLd = {
       areaServed: ["Queensland", "Brisbane", "Gold Coast", "Sunshine Coast", "Townsville", "Cairns"],
       aggregateRating: {
         "@type": "AggregateRating",
-        ratingValue: "4.9",
-        reviewCount: "301",
-        bestRating: "5",
+        ratingValue: 4.9,
+        reviewCount: 301,
+        bestRating: 5,
       },
     },
     {

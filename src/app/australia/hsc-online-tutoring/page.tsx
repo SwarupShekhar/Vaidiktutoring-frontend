@@ -37,9 +37,9 @@ const jsonLd = {
       areaServed: ["New South Wales", "Sydney", "Newcastle", "Wollongong", "Central Coast"],
       aggregateRating: {
         "@type": "AggregateRating",
-        ratingValue: "4.9",
-        reviewCount: "389",
-        bestRating: "5",
+        ratingValue: 4.9,
+        reviewCount: 389,
+        bestRating: 5,
       },
     },
     {

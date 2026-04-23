@@ -92,10 +92,10 @@ export default function Page() {
     priceRange: "$$",
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "847",
-      bestRating: "5",
-      worstRating: "1",
+      ratingValue: 4.9,
+      reviewCount: 847,
+      bestRating: 5,
+      worstRating: 1,
     },
   };
 

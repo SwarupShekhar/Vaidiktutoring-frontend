@@ -37,9 +37,9 @@ const jsonLd = {
       areaServed: ["Western Australia", "Perth", "Fremantle", "Mandurah", "Bunbury", "Albany"],
       aggregateRating: {
         "@type": "AggregateRating",
-        ratingValue: "4.9",
-        reviewCount: "267",
-        bestRating: "5",
+        ratingValue: 4.9,
+        reviewCount: 267,
+        bestRating: 5,
       },
     },
     {

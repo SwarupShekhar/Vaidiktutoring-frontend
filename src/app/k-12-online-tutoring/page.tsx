@@ -88,10 +88,10 @@ export default function Page() {
     image: "https://studyhours.com/hero_calm_education.png",
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "1500",
-      bestRating: "5",
-      worstRating: "1",
+      ratingValue: 4.9,
+      reviewCount: 1500,
+      bestRating: 5,
+      worstRating: 1,
     },
   };
 

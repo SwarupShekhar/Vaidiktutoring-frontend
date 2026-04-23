@@ -37,9 +37,9 @@ const jsonLd = {
       areaServed: ["Victoria", "Melbourne", "Geelong", "Ballarat", "Bendigo"],
       aggregateRating: {
         "@type": "AggregateRating",
-        ratingValue: "4.9",
-        reviewCount: "412",
-        bestRating: "5",
+        ratingValue: 4.9,
+        reviewCount: 412,
+        bestRating: 5,
       },
     },
     {

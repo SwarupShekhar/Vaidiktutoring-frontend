@@ -93,10 +93,10 @@ export default function Page() {
     areaServed: { "@type": "Country", name: "Singapore" },
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "1,320",
-      bestRating: "5",
-      worstRating: "1",
+      ratingValue: 4.9,
+      reviewCount: 1320,
+      bestRating: 5,
+      worstRating: 1,
     },
   };
 

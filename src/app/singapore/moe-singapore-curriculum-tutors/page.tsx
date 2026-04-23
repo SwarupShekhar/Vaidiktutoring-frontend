@@ -9,6 +9,12 @@ export const metadata: Metadata = {
     "Find the best MOE curriculum tutors in Singapore for online learning. Experienced tutors, personalized lessons & flexible schedules to help students improve grades",
   alternates: {
     canonical: "https://studyhours.com/singapore/moe-singapore-curriculum-tutors",
+    languages: {
+      "en-SG": "https://studyhours.com/singapore/moe-singapore-curriculum-tutors",
+      "en-AE": "https://studyhours.com/uae/moe-uae-curriculum-tutors",
+      "en-SA": "https://studyhours.com/saudi/saudi-ministry-curriculum-tutors",
+      "en-AU": "https://studyhours.com/australia/curriculum-tutoring",
+    },
   },
   openGraph: {
     title: "Best MOE Curriculum Tutors in Singapore – Online Learning",
@@ -83,10 +89,10 @@ export default function Page() {
     areaServed: { "@type": "Country", name: "Singapore" },
     aggregateRating: {
       "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "1,580",
-      bestRating: "5",
-      worstRating: "1",
+      ratingValue: 4.9,
+      reviewCount: 1580,
+      bestRating: 5,
+      worstRating: 1,
     },
   };
 

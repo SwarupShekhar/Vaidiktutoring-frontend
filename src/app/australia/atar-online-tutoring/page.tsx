@@ -37,9 +37,9 @@ const jsonLd = {
       areaServed: ["Australia", "Victoria", "New South Wales", "Queensland", "Western Australia", "South Australia"],
       aggregateRating: {
         "@type": "AggregateRating",
-        ratingValue: "4.9",
-        reviewCount: "528",
-        bestRating: "5",
+        ratingValue: 4.9,
+        reviewCount: 528,
+        bestRating: 5,
       },
     },
     {
