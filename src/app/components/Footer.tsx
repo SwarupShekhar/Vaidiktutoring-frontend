@@ -293,6 +293,7 @@ export default function Footer() {
                   { href: "/saudi/online-tutors-riyadh", label: "Online Tutors Riyadh" },
                   { href: "/uae/moe-uae-curriculum-tutors", label: "MOE UAE Curriculum" },
                   { href: "/saudi/saudi-ministry-curriculum-tutors", label: "Saudi Ministry Curriculum" },
+                  { href: "/uae/physics-maths-tutor", label: "Physics & Maths Tutor UAE" },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">

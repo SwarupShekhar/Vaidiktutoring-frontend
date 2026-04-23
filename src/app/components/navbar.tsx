@@ -52,6 +52,7 @@ export default function Navbar() {
         { name: "Online Tutors Riyadh", href: "/saudi/online-tutors-riyadh" },
         { name: "MOE UAE Curriculum Tutors", href: "/uae/moe-uae-curriculum-tutors" },
         { name: "Saudi Ministry Curriculum Tutors", href: "/saudi/saudi-ministry-curriculum-tutors" },
+        { name: "Physics and Maths Tutor UAE", href: "/uae/physics-maths-tutor" },
       ],
     },
     {

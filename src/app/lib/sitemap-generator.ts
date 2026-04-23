@@ -65,6 +65,7 @@ const MANUAL_PAGES: Record<
   "/saudi/saudi-ministry-curriculum-tutors": { priority: 0.85, changeFrequency: "weekly" },
   "/uae/online-tutors-dubai": { priority: 0.85, changeFrequency: "weekly" },
   "/uae/online-tutors-abu-dhabi": { priority: 0.85, changeFrequency: "weekly" },
+  "/uae/physics-maths-tutor": { priority: 0.85, changeFrequency: "weekly" },
   "/saudi/online-tutors-riyadh": { priority: 0.8, changeFrequency: "weekly" },
 };
 
