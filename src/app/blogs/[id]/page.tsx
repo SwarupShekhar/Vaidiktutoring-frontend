@@ -5,6 +5,9 @@ import BlogPostRenderer from './BlogPostRenderer';
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://vaidiktutoring-backend.onrender.com').replace(/\/$/, '');
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Generate SEO Metadata dynamically on the Server
 export async function generateMetadata(
     { params }: { params: Promise<{ id: string }> },

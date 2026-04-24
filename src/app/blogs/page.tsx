@@ -2,7 +2,8 @@ import { Metadata } from "next";
 import BlogsPageClient from "./BlogsPageClient";
 import { blogsApi } from "@/app/lib/blogs";
 
-export const revalidate = 60; // Revalidate every 60 seconds for ISR
+export const dynamic = 'force-dynamic'; // Never pre-render at build time — backend may be cold
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "Educational Insights & Study Tips | StudyHours Blog",
