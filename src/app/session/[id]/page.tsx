@@ -876,7 +876,8 @@ export default function SessionPage({ params }: SessionProps) {
         socket.emit('sticker:give', {
             sessionId,
             studentId: booking.students.id,
-            stickerType: normalized
+            stickerType: normalized,
+            studentName: booking.students.first_name || 'Student'
         });
 
         setShowStickerPanel(false);
