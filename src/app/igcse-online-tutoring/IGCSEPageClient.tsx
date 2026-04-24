@@ -83,7 +83,7 @@ export default function IGCSEOnlineTutoringPage({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             {/* Left Column — Transformation Message */}
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
+              initial={{ opacity: 1, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
@@ -219,7 +219,7 @@ export default function IGCSEOnlineTutoringPage({
               </div>
 
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 1, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3, duration: 1 }}
                 className="relative z-10 aspect-square rounded-[3.5rem] overflow-hidden shadow-2xl group"
@@ -237,7 +237,7 @@ export default function IGCSEOnlineTutoringPage({
 
               {/* Stats Card Overlay (Scaled Down) */}
               <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 1, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8, duration: 0.8 }}
                 className="absolute -bottom-10 -left-6 md:-left-12 z-20 p-6 md:p-8 bg-white dark:bg-slate-900 rounded-4xl border border-border shadow-2xl w-full max-w-[320px]"
@@ -388,7 +388,7 @@ export default function IGCSEOnlineTutoringPage({
             ].map((col, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 1, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
@@ -685,7 +685,7 @@ export default function IGCSEOnlineTutoringPage({
             ].map((item, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 1, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
@@ -778,7 +778,7 @@ export default function IGCSEOnlineTutoringPage({
 
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 1, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1 }}
@@ -861,7 +861,7 @@ function SubjectGroup({
           {displayedSubjects.map((sub: string) => (
             <motion.span
               key={sub}
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 1, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               className="px-3 py-1.5 rounded-xl bg-surface dark:bg-slate-800/50 border border-border dark:border-white/10 text-[10px] font-black text-deep-navy/70 dark:text-white/70 uppercase tracking-tight"

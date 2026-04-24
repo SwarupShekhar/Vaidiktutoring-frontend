@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     description: "National ATAR tutoring across VCE, HSC, QCE, WACE. Top 1% graduate mentors. Scaling strategy and exam mastery.",
     images: ["/australia_tutor_hero.png"],
   },
+  authors: [{ name: "StudyHours Academic Team" }],
 };
 
 const jsonLd = {

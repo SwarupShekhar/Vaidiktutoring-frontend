@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     description: "At Study Hours, join the best online HSC tutoring for one-to-one support, stronger study habits & higher scores in exams & helping you learn faster.",
     images: ["/australia_tutor_hero.png"],
   },
+  authors: [{ name: "StudyHours Academic Team" }],
 };
 
 const jsonLd = {

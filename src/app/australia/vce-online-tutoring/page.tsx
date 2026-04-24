@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     description: "Get expert VCE tutoring online with personalised lessons, exam strategies, and qualified tutors to improve grades, confidence, and results fast.",
     images: ["/australia_tutor_hero.png"],
   },
+  authors: [{ name: "StudyHours Academic Team" }],
 };
 
 const jsonLd = {

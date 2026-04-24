@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     description: "At Study hours, join our best QCE online tutoring with skilled tutors. Enhance weak areas, boost marks & study confidently for upcoming exams.",
     images: ["/australia_tutor_hero.png"],
   },
+  authors: [{ name: "StudyHours Academic Team" }],
 };
 
 const jsonLd = {

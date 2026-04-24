@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     description: "Connect with a skilled WACE online tutor for personalised guidance, flexible classes, and targeted support to improve confidence & grades.",
     images: ["/australia_tutor_hero.png"],
   },
+  authors: [{ name: "StudyHours Academic Team" }],
 };
 
 const jsonLd = {

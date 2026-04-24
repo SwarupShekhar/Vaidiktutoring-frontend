@@ -4,6 +4,31 @@ import React from 'react';
 import { Star, Quote } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+function TestimonialCard({ testimonial }: { testimonial: any }) {
+    return (
+        <div className="w-[400px] md:w-[500px] shrink-0 bg-white dark:bg-slate-900/40 p-12 rounded-[3.5rem] relative border border-border/40 hover:border-sapphire/30 transition-all group shadow-sm hover:shadow-2xl">
+            <div className="absolute top-10 right-10 text-sapphire/10 group-hover:text-sapphire/20 transition-colors">
+                <Quote size={80} fill="currentColor" />
+            </div>
+            <div className="flex gap-1.5 text-emerald-500 mb-8">
+                {[...Array(testimonial.rating)].map((_: unknown, i: number) => (
+                    <Star key={i} size={14} fill="currentColor" />
+                ))}
+            </div>
+            <p className="text-deep-navy dark:text-slate-300 text-xl leading-relaxed mb-10 relative z-10 italic font-medium tracking-tight">
+                &ldquo;{testimonial.text}&rdquo;
+            </p>
+            <div className="mt-auto flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-linear-to-br from-sapphire to-primary shrink-0 opacity-20" />
+                <div>
+                    <p className="font-black text-deep-navy dark:text-white uppercase tracking-tighter italic text-base leading-none mb-1">{testimonial.author}</p>
+                    <p className="text-[10px] text-text-secondary uppercase tracking-[0.2em] font-black opacity-60 leading-none">{testimonial.role}</p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function ParentTestimonials({ testimonials = [] }: { testimonials?: any[] }) {
     const defaultTestimonials = [
         {
@@ -27,8 +52,6 @@ export default function ParentTestimonials({ testimonials = [] }: { testimonials
     ];
 
     const actualTestimonials = testimonials.length > 0 ? testimonials : defaultTestimonials;
-
-    const duplicatedTestimonials = [...actualTestimonials, ...actualTestimonials, ...actualTestimonials, ...actualTestimonials]; // Quadruple for safety on large screens
 
     return (
         <section className="py-24 px-6 bg-background overflow-hidden relative border-t border-border/30">
@@ -60,34 +83,19 @@ export default function ParentTestimonials({ testimonials = [] }: { testimonials
                             transition={{
                                 repeat: Infinity,
                                 ease: "linear",
-                                duration: 50, // Adjust speed
+                                duration: 50,
                             }}
                         >
-                            {duplicatedTestimonials.map((testimonial, idx) => (
-                                <div key={idx} className="w-[400px] md:w-[500px] shrink-0 bg-white dark:bg-slate-900/40 p-12 rounded-[3.5rem] relative border border-border/40 hover:border-sapphire/30 transition-all group shadow-sm hover:shadow-2xl">
-                                    <div className="absolute top-10 right-10 text-sapphire/10 group-hover:text-sapphire/20 transition-colors">
-                                        <Quote size={80} fill="currentColor" />
-                                    </div>
-
-                                    <div className="flex gap-1.5 text-emerald-500 mb-8">
-                                        {[...Array(testimonial.rating)].map((_, i) => (
-                                            <Star key={i} size={14} fill="currentColor" />
-                                        ))}
-                                    </div>
-
-                                    <p className="text-deep-navy dark:text-slate-300 text-xl leading-relaxed mb-10 relative z-10 italic font-medium tracking-tight">
-                                        "{testimonial.text}"
-                                    </p>
-
-                                    <div className="mt-auto flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-linear-to-br from-sapphire to-primary shrink-0 opacity-20" />
-                                        <div>
-                                            <p className="font-black text-deep-navy dark:text-white uppercase tracking-tighter italic text-base leading-none mb-1">{testimonial.author}</p>
-                                            <p className="text-[10px] text-text-secondary uppercase tracking-[0.2em] font-black opacity-60 leading-none">{testimonial.role}</p>
-                                        </div>
-                                    </div>
-                                </div>
+                            {/* Original set — indexed by search engines */}
+                            {actualTestimonials.map((testimonial, idx) => (
+                                <TestimonialCard key={idx} testimonial={testimonial} />
                             ))}
+                            {/* Duplicate set — aria-hidden so crawlers see each testimonial once */}
+                            <span aria-hidden="true" className="contents">
+                                {actualTestimonials.map((testimonial, idx) => (
+                                    <TestimonialCard key={`dup-${idx}`} testimonial={testimonial} />
+                                ))}
+                            </span>
                         </motion.div>
                     </div>
                 </div>

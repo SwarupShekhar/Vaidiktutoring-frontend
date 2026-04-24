@@ -83,7 +83,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             {/* Left Column: Reassurance & Urgency */}
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
+              initial={{ opacity: 1, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
@@ -177,7 +177,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Left Column: Content */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 1, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
@@ -212,7 +212,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
 
             {/* Right Column: Decorative Element */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 1, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               className="relative aspect-square max-w-sm mx-auto"
@@ -267,7 +267,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
           ].map((item, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 1, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
@@ -331,7 +331,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
             ].map((col, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 1, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
@@ -359,7 +359,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 1, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
@@ -538,7 +538,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
           ].map((item, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 1, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
@@ -675,7 +675,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
             ].map((pt, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 1, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
@@ -842,7 +842,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
       <section className="py-24 px-6 bg-deep-navy dark:bg-slate-950 relative overflow-hidden text-center">
         <div className="max-w-4xl mx-auto relative z-10">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 1, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >

@@ -6,7 +6,6 @@ import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/navbar";
 import Footer from "./components/Footer";
 import AuthRoleRedirect from "./components/AuthRoleRedirect";
-import Script from "next/script";
 import StyledComponentsRegistry from "./lib/registry";
 import { NotificationProvider } from "./context/NotificationContext";
 import GlobalNotification from "./components/GlobalNotification";
@@ -93,8 +92,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </AuthProvider>
             </QueryProvider>
           </StyledComponentsRegistry>
-          <Script
-            id="organization-schema"
+          {/* Server-rendered org schema — plain <script> so Google sees it in Wave 1 HTML */}
+          <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
               __html: JSON.stringify({

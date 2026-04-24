@@ -1,0 +1,55 @@
+# StudyHours
+
+> StudyHours is an online 1-on-1 tutoring platform serving students across Singapore, the UAE, Saudi Arabia, Australia, and the UK. We match students with specialist tutors aligned to their exact school curriculum and examination board.
+
+## Singapore Tutoring
+
+- [O-Level Tutors Singapore](https://studyhours.com/singapore/o-level-tutors-singapore): Expert 1-on-1 online tutoring for GCE O-Level students in Secondary 3 and Secondary 4. Covers E-Math, A-Math, Pure Sciences, English, Humanities, and all SEAB-examined subjects. L1R5 optimisation focus.
+- [A-Level Tutors Singapore](https://studyhours.com/singapore/a-level-tutors-singapore): Specialist JC tutors for H1, H2, and H3 subjects. General Paper, Mathematics, Sciences, Humanities, and Mother Tongue for JC1 and JC2 students.
+- [PSLE Tutors Online](https://studyhours.com/singapore/psle-tutors-online): Primary school exam preparation for PSLE across English, Mathematics, Science, and Mother Tongue Languages. MOE Singapore syllabus aligned.
+- [Primary School Tutors Singapore](https://studyhours.com/singapore/primary-school-tutors-singapore): Online tuition for P1 to P6 students in Singapore. GEP preparation, PSLE readiness, and subject support across all primary school levels.
+- [IP Programme Tutors Singapore](https://studyhours.com/singapore/ip-programme-tutors-singapore): Specialist tutors for Integrated Programme students across all 13 IP schools in Singapore.
+- [MOE Singapore Curriculum Tutors](https://studyhours.com/singapore/moe-singapore-curriculum-tutors): Comprehensive support for the full MOE Singapore national curriculum from Primary through Junior College.
+
+## UAE Tutoring
+
+- [MOE UAE Curriculum Tutors](https://studyhours.com/uae/moe-uae-curriculum-tutors): Expert online tutors for the UAE Ministry of Education curriculum across Cycle 1, Cycle 2, and Cycle 3. Arabic Language, Islamic Education, Mathematics, Sciences, and Moral Education. EmSAT preparation for UAEU, Zayed University, and HCT.
+- [Online Tutors Dubai](https://studyhours.com/uae/online-tutors-dubai): 1-on-1 tutoring for Dubai students across IB, IGCSE, British A-Level, American, Indian CBSE, and UAE MOE curricula.
+- [Online Tutors Abu Dhabi](https://studyhours.com/uae/online-tutors-abu-dhabi): Specialist tutors for Abu Dhabi students. IB MYP and DP, IGCSE, A-Level, CBSE, American AP/SAT, and MOE UAE curricula.
+- [Physics and Maths Tutor UAE](https://studyhours.com/uae/physics-maths-tutor): Dedicated Physics and Mathematics tutoring for UAE students across IGCSE, IB, A-Level, MOE UAE, and AP curricula.
+
+## Saudi Arabia Tutoring
+
+- [Saudi Ministry of Education Curriculum Tutors](https://studyhours.com/saudi/saudi-ministry-curriculum-tutors): Arabic-medium online tutoring for the Saudi national curriculum across Primary, Intermediate, and Secondary stages. Tawjihi, Qudurat, and Tahsili examination preparation.
+- [Online Tutors Riyadh](https://studyhours.com/saudi/online-tutors-riyadh): 1-on-1 online tutoring for students in Riyadh across Saudi national curriculum and international curricula.
+
+## Australia Tutoring
+
+- [VCE Online Tutoring](https://studyhours.com/australia/vce-online-tutoring): Expert VCE tutoring for Victorian Certificate of Education students. VCAA-aligned 1-on-1 sessions across all VCE subjects.
+- [HSC Online Tutoring](https://studyhours.com/australia/hsc-online-tutoring): Online HSC tutoring for New South Wales students. NESA-aligned coaching for all HSC subjects.
+- [QCE Online Tutoring](https://studyhours.com/australia/qce-online-tutoring): Specialist QCE tutoring for Queensland students. QCAA-aligned 1-on-1 sessions.
+- [WACE Online Tutoring](https://studyhours.com/australia/wace-online-tutoring): Expert WACE tutoring for Western Australian students. SCSA-aligned 1-on-1 sessions for all ATAR courses.
+- [ATAR Tutors Online](https://studyhours.com/australia/atar-online-tutoring): National ATAR mentorship and coaching across VCE, HSC, QCE, and WACE. Top 1% graduate tutors with scaling strategy expertise.
+- [Australian Curriculum Tutoring](https://studyhours.com/australia/curriculum-tutoring): Comprehensive tutoring for the Australian national curriculum across all year levels and states.
+
+## International Programmes
+
+- [IB Online Tutoring](https://studyhours.com/ib-online-tutoring): International Baccalaureate tutoring for IB Diploma Programme and MYP students globally.
+- [IGCSE Online Tutoring](https://studyhours.com/igcse-online-tutoring): Expert Cambridge IGCSE tutoring across all subjects and exam series.
+- [GCSE Online Tutoring](https://studyhours.com/gcse-online-tutoring): Specialist GCSE tutoring for British curriculum students.
+- [A-Level Online Tutoring](https://studyhours.com/a-level-online-tutoring): Expert A-Level tutoring across all exam boards.
+- [K-12 Online Tutoring](https://studyhours.com/k-12-online-tutoring): Comprehensive K-12 tutoring for American curriculum students.
+
+## About StudyHours
+
+- [About StudyHours](https://studyhours.com/about): Our mission, tutoring methodology, and team.
+- [Our Methodology](https://studyhours.com/methodology): The StudyHours diagnostic and personalised tutoring framework.
+- [Contact](https://studyhours.com/contact): Get in touch with the StudyHours team.
+
+## Key Facts
+
+- Platform: Online 1-on-1 live tutoring sessions (video + digital whiteboard)
+- Coverage: Singapore, UAE, Saudi Arabia, Australia, UK, and global IB/IGCSE students
+- Session recording: All sessions are recorded for student review
+- Tutor matching: Students are matched to curriculum-specialist tutors
+- Rated 4.9/5 by over 1,500 families

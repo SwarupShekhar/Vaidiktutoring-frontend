@@ -72,7 +72,7 @@ export default function ALevelTutoringPage({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             {/* Left Column — Value Prop */}
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
+              initial={{ opacity: 1, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
@@ -115,7 +115,7 @@ export default function ALevelTutoringPage({
 
             {/* Right Column — Large Mentor Visual & Floating Stats */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 1, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4, duration: 1 }}
               className="relative aspect-square lg:aspect-auto lg:h-[600px] rounded-[3rem] overflow-hidden group shadow-2xl"
@@ -132,7 +132,7 @@ export default function ALevelTutoringPage({
               
               {/* Floating Stats Card */}
               <motion.div 
-                initial={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 1, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.8 }}
                 className="absolute top-8 right-8 p-6 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl max-w-[280px]"
@@ -159,7 +159,7 @@ export default function ALevelTutoringPage({
 
               {/* Subject Selector Overlay (Bottom) */}
               <motion.div 
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 1, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1 }}
                 className="absolute bottom-6 left-6 right-6 p-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-4xl border border-white/20 shadow-2xl"
@@ -222,7 +222,7 @@ export default function ALevelTutoringPage({
             ].map((col, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 1, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
@@ -296,7 +296,7 @@ export default function ALevelTutoringPage({
           ].map((benefit, idx) => (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 1, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1, duration: 0.8 }}
@@ -341,7 +341,7 @@ export default function ALevelTutoringPage({
             ].map((item, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 1, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
@@ -360,7 +360,7 @@ export default function ALevelTutoringPage({
 
           {/* Supporting Visual - Image 3 */}
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 1, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             className="lg:w-1/3 aspect-3/4 relative rounded-4xl overflow-hidden shadow-2xl hidden lg:block"
@@ -510,7 +510,7 @@ export default function ALevelTutoringPage({
       <section className="py-24 px-6 bg-deep-navy dark:bg-slate-950 relative overflow-hidden text-center">
         <div className="max-w-4xl mx-auto relative z-10">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 1, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
@@ -595,7 +595,7 @@ function SubjectGroup({ title, subjects, boards, icon: Icon, isExpandable, initi
           {displayedSubjects.map((sub: string) => (
             <motion.span 
               key={sub}
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 1, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               className="px-3 py-1.5 rounded-xl bg-surface dark:bg-slate-800/50 border border-border dark:border-white/10 text-[10px] font-black text-deep-navy/70 dark:text-white/70 uppercase tracking-tight"

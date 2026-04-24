@@ -72,14 +72,14 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
         <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative z-10">
           <div className="text-left">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 1, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               className="relative"
             >
               {/* Added Hero Image - Absolute positioned to sit in whitespace */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 1, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.8 }}
                 className="hidden md:block absolute -top-56 left-0 w-[180px] h-[220px] rounded-[3.5rem] overflow-hidden shadow-xl"
@@ -135,7 +135,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
 
           <div className="relative flex justify-center items-center mt-12 lg:mt-0">
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 1, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}
               className="relative z-10 p-1 bg-linear-to-br from-surface/40 via-surface/20 to-transparent dark:from-surface/10 dark:via-surface/5 dark:to-transparent rounded-4xl md:rounded-[3rem] backdrop-blur-3xl border border-border/30 dark:border-border/10 shadow-2xl"
@@ -240,7 +240,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
             ].map((callout, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 1, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1, duration: 0.8 }}
@@ -451,7 +451,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
             ].map((benefit, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 1, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1, duration: 0.8 }}
@@ -974,7 +974,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
 
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 1, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1 }}
@@ -1093,7 +1093,7 @@ function SubjectGroup({
             {displayedSubjects.map((sub: string) => (
               <motion.span
                 key={sub}
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 1, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 className="px-3 py-1.5 rounded-xl bg-surface dark:bg-slate-800/50 border border-border dark:border-white/10 text-[10px] font-black text-deep-navy/70 dark:text-white/70 uppercase tracking-tight"

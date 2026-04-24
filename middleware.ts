@@ -31,7 +31,17 @@ const isPublicRoute = createRouteMatcher([
     '/experts(.*)',
     '/careers(.*)',
     '/onboarding(.*)',
+    // Service & regional pages — public marketing content, no auth needed
     '/k-12-online-tutoring(.*)',
+    '/igcse-online-tutoring(.*)',
+    '/gcse-online-tutoring(.*)',
+    '/a-level-online-tutoring(.*)',
+    '/ib-online-tutoring(.*)',
+    '/singapore(.*)',
+    '/uae(.*)',
+    '/australia(.*)',
+    '/saudi(.*)',
+    '/resources(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

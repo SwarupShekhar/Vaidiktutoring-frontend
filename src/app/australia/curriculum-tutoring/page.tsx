@@ -9,12 +9,6 @@ export const metadata: Metadata = {
     "Start your success path with Australian Curriculum online tutoring. Gain confidence, improve marks, & enjoy smarter learning online.",
   alternates: {
     canonical: "https://studyhours.com/australia/curriculum-tutoring",
-    languages: {
-      "en-SG": "https://studyhours.com/singapore/moe-singapore-curriculum-tutors",
-      "en-AE": "https://studyhours.com/uae/moe-uae-curriculum-tutors",
-      "en-SA": "https://studyhours.com/saudi/saudi-ministry-curriculum-tutors",
-      "en-AU": "https://studyhours.com/australia/curriculum-tutoring",
-    },
   },
   openGraph: {
     title: "Australian Curriculum Online Tutoring For Success Path",
