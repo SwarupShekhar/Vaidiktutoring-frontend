@@ -58,6 +58,36 @@ export default function SessionChat({ sessionId: propSessionId, socket }: Sessio
         }
     };
 
+    // Fetch Chat History
+    useEffect(() => {
+        if (!user || !sessionId) return;
+
+        const fetchHistory = async () => {
+            try {
+                // The backend handles both Booking ID and Session ID
+                const response = await api.get(`/sessions/${sessionId}/messages`);
+                const history = response.data.map((m: any) => ({
+                    id: m.id,
+                    text: m.text,
+                    sender: String(m.user_id || m.senderId) === String(user.sub || user.id) ? 'me' : 'them',
+                    timestamp: new Date(m.created_at || m.timestamp),
+                    senderName: m.from || m.senderName || 'Anonymous'
+                }));
+                
+                setMessages(prev => {
+                    // Merge and deduplicate
+                    const existingIds = new Set(prev.map(p => p.id));
+                    const newMessages = history.filter((h: any) => !existingIds.has(h.id));
+                    return [...prev, ...newMessages].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+                });
+            } catch (err) {
+                console.error('[Chat] Failed to fetch history:', err);
+            }
+        };
+
+        fetchHistory();
+    }, [user, sessionId]);
+
     // Initialize Socket Listeners
     useEffect(() => {
         if (!user || !sessionId || !socket) return;

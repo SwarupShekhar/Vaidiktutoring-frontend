@@ -20,7 +20,7 @@ export default function GlobalNotification() {
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.8 }}
-                                className="fixed inset-0 flex items-center justify-center bg-black/60 pointer-events-auto backdrop-blur-sm p-4 z-10000"
+                                className="fixed inset-0 flex items-center justify-center bg-black/60 pointer-events-auto backdrop-blur-sm p-4 z-[10000]"
                             >
                                 <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 max-w-lg w-full border-2 border-purple-500 text-center relative overflow-hidden">
                                     {/* Pulsing background effect */}

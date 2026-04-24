@@ -2047,9 +2047,9 @@ export default function SessionPage({ params }: SessionProps) {
             )}
 
             {/* 3. OVERLAY LAYER: CHAT SIDEBAR (Elevated z-index to stay above video panel) */}
-            <div className={`absolute bottom-24 z-1000 w-80 pointer-events-auto transition-all duration-300 ${isPanelExpanded ? 'right-[464px]' : 'right-4'}`}>
+            <div className={`absolute bottom-24 z-[1000] w-80 pointer-events-auto transition-all duration-300 ${isPanelExpanded ? 'right-[464px]' : 'right-4'}`}>
                 <SessionChat
-                    key={booking?.sessions?.[0]?.id || sessionId}
+                    key={sessionId}
                     sessionId={booking?.sessions?.[0]?.id || sessionId}
                     socket={socket}
                 />
