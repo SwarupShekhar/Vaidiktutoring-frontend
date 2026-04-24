@@ -1012,7 +1012,7 @@ export default function SessionPage({ params }: SessionProps) {
         try {
             const formData = new FormData();
             formData.append('file', file);
-            const token = localStorage.getItem('K12_TOKEN');
+            const token = localStorage.getItem('auth_token');
 
             const res = await api.post(`/sessions/${sessionId}/slides`, formData, {
                 timeout: 60000,
@@ -1388,7 +1388,7 @@ export default function SessionPage({ params }: SessionProps) {
     useEffect(() => {
         if (hasJoined && sessionId) {
             setVideoLoading(true);
-            const token = localStorage.getItem('K12_TOKEN');
+            const token = localStorage.getItem('auth_token');
 
             api.get(`/sessions/${sessionId}/daily-token`, {
                 headers: { Authorization: `Bearer ${token}` }
