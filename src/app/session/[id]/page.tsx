@@ -1030,7 +1030,14 @@ export default function SessionPage({ params }: SessionProps) {
                     toast.error(`Cannot display file type "${mime}". Upload a PNG, JPG, or PDF instead.`);
                     return;
                 }
-                await importImageToExcalidraw(res.data.sasUrl, `slide_${Date.now()}`);
+                const imgFetch = await fetch(res.data.sasUrl);
+                const imgBlob = await imgFetch.blob();
+                const dataUrl = await new Promise<string>((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result as string);
+                    reader.readAsDataURL(imgBlob);
+                });
+                await importImageToExcalidraw(dataUrl, `slide_${Date.now()}`);
                 toast.success('Image inserted');
             }
         } catch (err: any) {
