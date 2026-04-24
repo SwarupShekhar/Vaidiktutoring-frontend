@@ -160,17 +160,11 @@ const CheckoutContent = () => {
                 australia: 'a3b42d16-64e0-4965-983b-3d0b84f331b2',
                 singapore: 'e3f42d16-64e0-4965-983b-3d0b84f331b5',
                 southafrica: '8c9d2d16-64e0-4965-983b-3d0b84f331b8'
-            },
-            'TESTING': {
-                global: 'c7b32d16-64e0-4965-983b-3d0b84f33200'
             }
         };
         
         const selectedPackage = packageIds[planName]?.[regionCode];
         if (selectedPackage) return selectedPackage;
-        
-        // Special fallback for TESTING plan
-        if (planName === 'TESTING') return 'c7b32d16-64e0-4965-983b-3d0b84f33200';
         
         return '47a32d16-64e0-4965-983b-3d0b84f331ad';
     };
@@ -182,8 +176,7 @@ const CheckoutContent = () => {
             plans: {
                 'FOUNDATION': { monthlyPrice: 149, credits: 8 },
                 'MASTERY': { monthlyPrice: 249, credits: 16 },
-                'ELITE': { monthlyPrice: 375, credits: 24 },
-                'TESTING': { monthlyPrice: 1, credits: 1 }
+                'ELITE': { monthlyPrice: 375, credits: 24 }
             }
         },
         uk: {
@@ -191,8 +184,7 @@ const CheckoutContent = () => {
             plans: {
                 'FOUNDATION': { monthlyPrice: 149, credits: 8 },
                 'MASTERY': { monthlyPrice: 249, credits: 16 },
-                'ELITE': { monthlyPrice: 375, credits: 24 },
-                'TESTING': { monthlyPrice: 1, credits: 1 }
+                'ELITE': { monthlyPrice: 375, credits: 24 }
             }
         },
         middleeast: {
@@ -200,8 +192,7 @@ const CheckoutContent = () => {
             plans: {
                 'FOUNDATION': { monthlyPrice: 199, credits: 8 },
                 'MASTERY': { monthlyPrice: 349, credits: 16 },
-                'ELITE': { monthlyPrice: 499, credits: 24 },
-                'TESTING': { monthlyPrice: 1, credits: 1 }
+                'ELITE': { monthlyPrice: 499, credits: 24 }
             }
         },
         australia: {
@@ -209,8 +200,7 @@ const CheckoutContent = () => {
             plans: {
                 'FOUNDATION': { monthlyPrice: 250, credits: 8 },
                 'MASTERY': { monthlyPrice: 450, credits: 16 },
-                'ELITE': { monthlyPrice: 650, credits: 24 },
-                'TESTING': { monthlyPrice: 1, credits: 1 }
+                'ELITE': { monthlyPrice: 650, credits: 24 }
             }
         },
         singapore: {
@@ -218,8 +208,7 @@ const CheckoutContent = () => {
             plans: {
                 'FOUNDATION': { monthlyPrice: 280, credits: 8 },
                 'MASTERY': { monthlyPrice: 520, credits: 16 },
-                'ELITE': { monthlyPrice: 750, credits: 24 },
-                'TESTING': { monthlyPrice: 1, credits: 1 }
+                'ELITE': { monthlyPrice: 750, credits: 24 }
             }
         },
         southafrica: {
@@ -227,8 +216,7 @@ const CheckoutContent = () => {
             plans: {
                 'FOUNDATION': { monthlyPrice: 1500, credits: 8 },
                 'MASTERY': { monthlyPrice: 2800, credits: 16 },
-                'ELITE': { monthlyPrice: 4200, credits: 24 },
-                'TESTING': { monthlyPrice: 1, credits: 1 }
+                'ELITE': { monthlyPrice: 4200, credits: 24 }
             }
         }
     };
