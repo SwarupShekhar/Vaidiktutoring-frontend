@@ -81,7 +81,7 @@ export default function Navbar() {
 
   return (
     <nav className="w-full sticky top-0 z-50 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-white/20 dark:border-white/5 transition-all duration-300">
-      <div className="max-w-[1400px] mx-auto px-4 lg:px-12 py-3 lg:py-4 flex items-center justify-between">
+      <div className="max-w-[1400px] mx-auto px-4 lg:px-8 xl:px-12 py-3 lg:py-4 flex items-center justify-between gap-4">
         {/* Left: Logo */}
         <Link href="/" className="flex items-center gap-2 group shrink-0">
           <div className="w-9 h-9 lg:w-11 lg:h-11 rounded-lg shadow-lg group-hover:scale-110 transition-all duration-300">
@@ -93,12 +93,12 @@ export default function Navbar() {
         </Link>
 
         {/* Center: Navigation - Desktop Only */}
-        <div className="hidden lg:flex items-center gap-1 p-1 rounded-full bg-slate-100/50 dark:bg-white/5 border border-white/20 dark:border-white/5">
+        <div className="hidden xl:flex items-center gap-1 p-1 rounded-full bg-slate-100/50 dark:bg-white/5 border border-white/20 dark:border-white/5 shrink">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all ${
+              className={`px-3 xl:px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all ${
                 isActive(link.href)
                   ? "bg-white dark:bg-white/10 text-primary shadow-sm"
                   : "text-text-secondary hover:text-primary"
@@ -113,7 +113,7 @@ export default function Navbar() {
             <button
               onClick={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}
               onMouseEnter={() => setResourcesDropdownOpen(true)}
-              className={`px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1 ${
+              className={`px-3 xl:px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1 ${
                 resourceGroups.some((g) => g.links.some((link) => isActive(link.href)))
                   ? "bg-white dark:bg-white/10 text-primary shadow-sm"
                   : "text-text-secondary hover:text-primary"
@@ -229,7 +229,7 @@ export default function Navbar() {
             )}
           </div>
 
-          <div className="h-4 w-px bg-slate-200 dark:bg-white/10 hidden lg:block mx-1" />
+          <div className="h-4 w-px bg-slate-200 dark:bg-white/10 hidden xl:block mx-1" />
 
           {/* Dashboard Link */}
           {user && (
@@ -243,7 +243,7 @@ export default function Navbar() {
                       ? "/students/dashboard"
                       : "/parent/dashboard"
               }
-              className="hidden md:block text-xs font-bold tracking-wide transition-all text-text-secondary hover:text-primary"
+              className="hidden xl:block text-xs font-bold tracking-wide transition-all text-text-secondary hover:text-primary"
             >
               Dashboard
             </Link>
@@ -259,19 +259,19 @@ export default function Navbar() {
             </Link>
           )}
 
-          <div className="h-4 w-px bg-slate-200 dark:bg-white/10 hidden lg:block" />
+          <div className="h-4 w-px bg-slate-200 dark:bg-white/10 hidden xl:block" />
 
           {user ? (
             <button
               onClick={logout}
-              className="hidden md:block px-2 lg:px-4 py-2 text-xs font-bold text-text-secondary hover:text-red-500 transition-colors"
+              className="hidden xl:block px-2 lg:px-4 py-2 text-xs font-bold text-text-secondary hover:text-red-500 transition-colors"
             >
               Logout
             </button>
           ) : (
             <Link
               href="/login"
-              className="hidden md:block px-2 lg:px-4 py-2 text-xs font-bold text-text-secondary hover:text-primary transition-colors"
+              className="hidden xl:block px-2 lg:px-4 py-2 text-xs font-bold text-text-secondary hover:text-primary transition-colors"
             >
               Login
             </Link>
@@ -287,7 +287,7 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+            className="xl:hidden p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
             aria-label="Toggle menu"
           >
             <svg
@@ -318,7 +318,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown - Inside nav, properly aligned */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-white/20 dark:border-white/5 bg-white dark:bg-black">
+        <div className="xl:hidden border-t border-white/20 dark:border-white/5 bg-white dark:bg-black">
           <div className="max-w-[1400px] mx-auto px-4 py-3 flex flex-col gap-1">
             {navLinks.map((link) => (
               <Link
