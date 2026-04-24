@@ -1022,14 +1022,14 @@ export default function SessionPage({ params }: SessionProps) {
                 }
             });
 
-            if (res.data.success && excalidrawAPI && res.data.base64) {
+            if (res.data.success && excalidrawAPI && res.data.sasUrl) {
                 // Verify the backend returned an image MIME type before inserting
                 const mime: string = res.data.mimeType || '';
                 if (!mime.startsWith('image/')) {
                     toast.error(`Cannot display file type "${mime}". Upload a PNG, JPG, or PDF instead.`);
                     return;
                 }
-                await importImageToExcalidraw(res.data.base64, `slide_${Date.now()}`);
+                await importImageToExcalidraw(res.data.sasUrl, `slide_${Date.now()}`);
                 toast.success('Image inserted');
             }
         } catch (err: any) {
