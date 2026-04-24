@@ -97,7 +97,7 @@ export default function StudentListModal({ isOpen, onClose }: StudentListModalPr
                                     <th className="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Name</th>
                                     <th className="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Status</th>
                                     <th className="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Plan</th>
-                                    <th className="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center text-indigo-500">Tutor</th>
+                                    <th className="p-4 text-[10px] font-black uppercase tracking-widest text-center text-indigo-500">Tutor</th>
                                     <th className="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Credits</th>
                                     <th className="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Grade</th>
                                     <th className="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Email</th>

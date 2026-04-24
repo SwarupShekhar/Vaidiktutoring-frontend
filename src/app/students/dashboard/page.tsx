@@ -144,7 +144,7 @@ function AchievementBadges({ progress }: { progress: ProgressSummary | null }) {
 }
 
 /* ─── Enrolled Dashboard ─── */
-function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastSessions, bookings, loading, user, progressSummary }: any) {
+function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastSessions, bookings, loading, user, progressSummary, isEnrolled }: any) {
   const scheduleRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const nextSession = upcomingSessions[0] ?? null;
@@ -767,6 +767,7 @@ export default function StudentDashboardPage() {
           loading={loading}
           user={user}
           progressSummary={progressSummary}
+          isEnrolled={isEnrolled}
         />
         {studentProfile && (
           <EditStudentProfileModal
