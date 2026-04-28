@@ -4,14 +4,18 @@ import K12PageClient from "./K12PageClient";
 export const revalidate = 3600; // Revalidate every hour for ISR
 
 export const metadata: Metadata = {
-  title: "K–12 Online Tutoring | Expert Live Classes for All Subjects",
-  description: "US curriculum aligned K-12 tutoring. Grades K-5, 6-8, 9-12 support. 91% of students showed academic improvement across all grade levels.",
+  title: "Online Tutoring for Primary & Secondary Students | StudyHours",
+  description: "Expert online tutoring for primary and secondary students. Personalised 1-on-1 sessions across Maths, Science, English and more. 91% of students showed measurable improvement.",
   alternates: {
     canonical: "https://studyhours.com/k-12-online-tutoring",
+    languages: {
+      "en-GB": "https://studyhours.com/k-12-online-tutoring",
+      "en": "https://studyhours.com/k-12-online-tutoring",
+    },
   },
   openGraph: {
-    title: "K–12 Online Tutoring | Expert Live Classes for All Subjects",
-    description: "US curriculum aligned K-12 tutoring. Grades K-5, 6-8, 9-12 support. 91% of students showed academic improvement across all grade levels.",
+    title: "Online Tutoring for Primary & Secondary Students | StudyHours",
+    description: "Expert online tutoring for primary and secondary students. Personalised 1-on-1 sessions across Maths, Science, English and more. 91% of students showed measurable improvement.",
     url: "https://studyhours.com/k-12-online-tutoring",
     images: [
       {
@@ -25,8 +29,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "K–12 Online Tutors | Expert Live Classes for All Subjects",
-    description: "US curriculum aligned K-12 tutoring. Grades K-5, 6-8, 9-12 support. 91% of students showed academic improvement across all grade levels.",
+    title: "Online Tutoring for Primary & Secondary Students | StudyHours",
+    description: "Expert online tutoring for primary and secondary students. Personalised 1-on-1 sessions across Maths, Science, English and more. 91% of students showed measurable improvement.",
     images: ["https://studyhours.com/hero_calm_education.png"],
   },
   authors: [{ name: "Mrs. Lisa Johnson" }],
@@ -53,6 +57,10 @@ export default function Page() {
     {
       q: "How does K-12 tutoring work?",
       a: "It provides additional support outside of regular school hours. Tutors help students clear doubts and boost results through customized sessions that match their own learning rhythm.",
+    },
+    {
+      q: "Does online tutoring work for UK primary and secondary school students?",
+      a: "Yes. StudyHours supports students at every stage of the UK school system — from Key Stage 2 and Key Stage 3 through to GCSEs and A-Levels. Our tutors align sessions with the UK National Curriculum and your child's specific school subjects, adapting to your school's approach and your child's individual learning pace.",
     },
   ];
 
@@ -85,6 +93,7 @@ export default function Page() {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     name: "K-12 Online Tutoring",
+    url: "https://studyhours.com/k-12-online-tutoring",
     image: "https://studyhours.com/hero_calm_education.png",
     aggregateRating: {
       "@type": "AggregateRating",
@@ -111,11 +120,20 @@ export default function Page() {
   const courseSchema = {
     "@context": "https://schema.org",
     "@type": "Course",
-    "name": "K-12 Online Tutoring",
-    "provider": { "@type": "Organization", "name": "StudyHours" },
-    "description": "Comprehensive K-12 online tutoring aligned with US curriculum standards across all grade levels.",
-    "educationalLevel": "K-12",
-    "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "online" }
+    name: "K-12 Online Tutoring",
+    url: "https://studyhours.com/k-12-online-tutoring",
+    provider: { "@type": "Organization", name: "StudyHours", url: "https://studyhours.com" },
+    description: "Comprehensive online tutoring for primary and secondary students across all subjects, supporting UK and international curricula.",
+    educationalLevel: "Primary and Secondary",
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "online",
+      offers: {
+        "@type": "Offer",
+        category: "Paid",
+        url: "https://studyhours.com/pricing",
+      },
+    }
   };
 
   const jsonLd = [breadcrumbSchema, ratingSchema, faqSchema, courseSchema];

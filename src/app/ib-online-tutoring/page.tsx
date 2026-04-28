@@ -4,13 +4,17 @@ import IBPageClient from "./IBPageClient";
 export const revalidate = 3600; // Revalidate every hour for ISR
 
 export const metadata: Metadata = {
-  title: "Expert IB Tutors Online | IB Tutoring You Can Trust",
-  description: "Master IB with expert tutoring. 94% achieved target predicted grades. IA, EE, TOK support with specialized IB curriculum guidance.",
+  title: "IB Tutors Online UK & Global | IB Diploma Tutoring | StudyHours",
+  description: "Expert IB tutors online for UK and international students. 94% achieved target grades. Specialist IA, EE and TOK support across all six subject groups.",
   alternates: {
     canonical: "https://studyhours.com/ib-online-tutoring",
+    languages: {
+      "en-GB": "https://studyhours.com/ib-online-tutoring",
+      "en": "https://studyhours.com/ib-online-tutoring",
+    },
   },
   openGraph: {
-    title: "Expert IB Tutors Online | IB Tutoring You Can Trust",
+    title: "IB Tutors Online UK & Global | IB Diploma Tutoring | StudyHours",
     description: "Master IB with expert tutoring. 94% achieved target predicted grades. IA, EE, TOK support with specialized IB curriculum guidance.",
     url: "https://studyhours.com/ib-online-tutoring",
     images: [
@@ -25,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Expert IB Tutors Online | IB Tutoring You Can Trust",
+    title: "IB Tutors Online UK & Global | IB Diploma Tutoring | StudyHours",
     description: "Master IB with expert tutoring. 94% achieved target predicted grades. IA, EE, TOK support with specialized IB curriculum guidance.",
     images: ["https://studyhours.com/hero_calm_education.png"],
   },
@@ -49,6 +53,10 @@ export default function Page() {
     {
       q: "Can I choose between SL and HL tutoring?",
       a: "Absolutely. Our tutors are specialised in both Standard Level (SL) and Higher Level (HL) requirements for all subjects.",
+    },
+    {
+      q: "Do you support IB students at UK schools?",
+      a: "Yes. StudyHours tutors work with IB Diploma students at schools across the UK — including international schools in London, Manchester, Edinburgh, and beyond. Our tutors understand the UK IB school environment, UCAS personal statement requirements for IB students, and predicted grade pressures unique to UK university applications.",
     },
   ];
 
@@ -119,17 +127,39 @@ export default function Page() {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     name: "IB Online Tutoring — Premium IB Diploma Tuition",
+    url: "https://studyhours.com/ib-online-tutoring",
     image: "https://studyhours.com/hero_calm_education.png",
+    areaServed: [
+      { "@type": "Country", name: "United Kingdom" },
+      { "@type": "Country", name: "Australia" },
+      { "@type": "Country", name: "Singapore" },
+    ],
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: 4.9,
+      reviewCount: 800,
+      bestRating: 5,
+      worstRating: 1,
+    },
   };
 
   const courseSchema = {
     "@context": "https://schema.org",
     "@type": "Course",
-    "name": "IB Online Tutoring",
-    "provider": { "@type": "Organization", "name": "StudyHours" },
-    "description": "Comprehensive IB tutoring covering all programmes with specialized support for IA, EE, TOK, and CAS components.",
-    "educationalLevel": "IB",
-    "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "online" }
+    name: "IB Online Tutoring",
+    url: "https://studyhours.com/ib-online-tutoring",
+    provider: { "@type": "Organization", name: "StudyHours", url: "https://studyhours.com" },
+    description: "Comprehensive IB tutoring covering all programmes with specialized support for IA, EE, TOK, and CAS components.",
+    educationalLevel: "IB Diploma",
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "online",
+      offers: {
+        "@type": "Offer",
+        category: "Paid",
+        url: "https://studyhours.com/pricing",
+      },
+    },
   };
 
   const jsonLd = [subjectSchema, faqSchema, breadcrumbSchema, ratingSchema, courseSchema];

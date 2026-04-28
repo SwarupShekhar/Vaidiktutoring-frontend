@@ -218,6 +218,9 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
             <p className="text-xl text-text-secondary dark:text-slate-400 max-w-2xl mx-auto font-medium">
               Our IB tutoring connects students with the perfect IB tutor to bridge the gap between curriculum demands and student confidence.
             </p>
+            <p className="text-xl text-text-secondary dark:text-slate-400 max-w-2xl mx-auto font-medium mt-6">
+              IB Diploma students at schools across the UK — including London, Edinburgh, Manchester, and international schools throughout England, Scotland, Wales, and Northern Ireland — access StudyHours for specialist subject support, IA guidance, and TOK preparation. Our tutors understand UK IB school requirements and UCAS personal statement context for IB students applying to UK universities.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
@@ -593,6 +596,21 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
               </Link>
             </p>
           </div>
+
+          <motion.div
+            initial={{ opacity: 1, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="mt-24 pt-24 border-t border-border"
+          >
+            <h3 className="text-3xl md:text-4xl font-black text-deep-navy dark:text-white mb-8 tracking-tighter">
+              IB Schools Across the UK
+            </h3>
+            <p className="text-lg text-text-secondary dark:text-slate-400 leading-relaxed font-medium max-w-3xl">
+              StudyHours supports IB Diploma students at schools throughout the UK — from international schools in London, Manchester, Birmingham, Edinburgh, and Bristol, to state schools and sixth forms offering the IB. Whether your school follows the May or November examination session, our tutors align sessions to your timetable, internal assessment deadlines, and UCAS application milestones.
+            </p>
+          </motion.div>
         </div>
       </section>
 
@@ -699,6 +717,18 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
               </motion.div>
             ))}
           </div>
+
+          <motion.div
+            initial={{ opacity: 1, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="mt-20 pt-16 border-t border-border"
+          >
+            <p className="text-lg text-text-secondary dark:text-slate-400 leading-relaxed font-medium max-w-2xl">
+              For UK-based IB students, we also provide UCAS personal statement guidance — helping you present your IB subject choices, Extended Essay research, and CAS activities in a way that resonates with UK university admissions teams.
+            </p>
+          </motion.div>
         </div>
       </section>
 

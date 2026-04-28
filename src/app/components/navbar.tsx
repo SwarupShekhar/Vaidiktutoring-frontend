@@ -37,6 +37,7 @@ export default function Navbar() {
     {
       label: "UK & International",
       links: [
+        { name: "Online Tutoring UK", href: "/online-tutoring-uk" },
         { name: "K-12 Online Tutoring", href: "/k-12-online-tutoring" },
         { name: "IB Tutors Online", href: "/ib-online-tutoring" },
         { name: "A-Level Tutors Online", href: "/a-level-online-tutoring" },

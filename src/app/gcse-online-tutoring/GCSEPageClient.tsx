@@ -188,6 +188,9 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
               <p className="text-xl text-text-secondary dark:text-slate-400 mb-10 leading-relaxed font-medium">
                 At StudyHours, we go beyond traditional tutoring that focuses only on quick fixes for homework or exams. Our expert GCSE tutors are dedicated to building strong conceptual foundations, helping students truly understand each subject rather than just memorising answers. With a focus on long-term learning, critical thinking, and academic confidence, we empower students to achieve lasting success and reach their full potential.
               </p>
+              <p className="text-xl text-text-secondary dark:text-slate-400 mb-10 leading-relaxed font-medium">
+                StudyHours provides expert GCSE tutors online to students across the UK — whether you're in London, Manchester, Birmingham, Leeds, or anywhere else. Every session is tailored to your child's specific exam board: AQA, Edexcel, or OCR. Our online GCSE tuition means no travel, no fixed location — just focused 1-on-1 support wherever your child studies.
+              </p>
               
               {/* Trust Chips */}
               <div className="flex flex-wrap gap-3 mb-12">
@@ -489,6 +492,15 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
             ]}
             icon={Languages}
           />
+        </div>
+
+        <div className="max-w-7xl mx-auto mt-16 mb-16">
+          <p className="text-xl text-text-secondary dark:text-slate-400 mb-6 leading-relaxed font-medium">
+            Looking for an online GCSE Maths tutor? Our GCSE Maths tutors cover Number, Algebra, Geometry, Statistics and Probability across AQA, Edexcel, and OCR — with dedicated Higher Tier and Foundation Tier sessions. For GCSE English Language and English Literature, our tutors guide students through AQA and Edexcel unseen texts, creative writing, and set texts like An Inspector Calls, Macbeth, and Jekyll and Hyde.
+          </p>
+          <p className="text-xl text-text-secondary dark:text-slate-400 mb-10 leading-relaxed font-medium">
+            Need a GCSE Science tutor online? We offer dedicated GCSE Biology, Chemistry, and Physics tutoring as well as Combined Science (Trilogy and Synergy). Our science tutors are exam board specialists who focus on Required Practicals, mark scheme language, and the six-mark extended response questions that most students find hardest.
+          </p>
         </div>
 
         <div className="max-w-7xl mx-auto mt-16 text-center border-t border-border pt-12">

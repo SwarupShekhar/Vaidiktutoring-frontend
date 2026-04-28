@@ -630,6 +630,15 @@ export default function IGCSEOnlineTutoringPage({
           />
         </div>
 
+        <div className="max-w-7xl mx-auto mt-16">
+          <p className="text-lg md:text-xl text-text-secondary dark:text-slate-400 mb-8 leading-relaxed font-medium opacity-90 max-w-4xl">
+            Our most in-demand IGCSE tutors are for Mathematics, Additional Mathematics, English Language, Biology, Chemistry, and Physics. IGCSE Maths tutors cover Number, Algebra, Geometry and Statistics for both Cambridge International and Edexcel specifications, with past paper practice from recent exam series. For IGCSE English Language, tutors focus on comprehension techniques, summary writing, and extended writing tasks — the three skill areas tested in both CIE Paper 1 and Paper 2.
+          </p>
+          <p className="text-lg md:text-xl text-text-secondary dark:text-slate-400 mb-8 leading-relaxed font-medium opacity-90 max-w-4xl">
+            StudyHours also provides specialist IGCSE Science tutors for students taking Coordinated Sciences (Double Award) and students taking separate Biology, Chemistry, and Physics. Our tutors are familiar with the CIE and Edexcel mark schemes and teach students to write answers that match examiner expectations — a skill that often makes the difference between a grade B and A*.
+          </p>
+        </div>
+
         <div className="max-w-7xl mx-auto mt-16 text-center border-t border-border pt-12">
           <p className="text-lg font-black text-deep-navy/60 italic uppercase tracking-tight">
             Don't see your subject? We likely cover it -{" "}
@@ -760,6 +769,26 @@ export default function IGCSEOnlineTutoringPage({
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ============================================
+          SECTION: UK GEO-TARGETING (Who Studies IGCSE in the UK?)
+      ============================================ */}
+      <section className="py-20 md:py-32 px-6 bg-background relative overflow-hidden">
+        <div className="max-w-5xl mx-auto relative z-10">
+          <h2 className="text-3xl md:text-5xl font-black text-deep-navy dark:text-white mb-8 tracking-tighter leading-tight">
+            Who Studies IGCSE in the UK?
+          </h2>
+          <p className="text-lg md:text-xl text-text-secondary dark:text-slate-400 mb-8 leading-relaxed font-medium opacity-90">
+            The IGCSE is taken by students at international schools, independent schools, and homeschooled students across the UK. Unlike GCSEs, IGCSEs are offered by Cambridge International (CIE) and Edexcel and are recognised by UK universities and employers as equivalent to standard GCSEs. If your child is studying at a British international school or following the Cambridge curriculum, our IGCSE online tutors provide specialist support for both Cambridge and Edexcel specifications.
+          </p>
+          <h3 className="text-2xl md:text-4xl font-black text-deep-navy dark:text-white mb-8 tracking-tighter leading-tight">
+            Cambridge IGCSE vs Edexcel IGCSE — Which Do You Need?
+          </h3>
+          <p className="text-lg md:text-xl text-text-secondary dark:text-slate-400 leading-relaxed font-medium opacity-90">
+            Cambridge IGCSE (CIE) and Edexcel IGCSE have different syllabuses, paper structures, and mark schemes. Our tutors are matched to your specific board: a Cambridge Maths tutor uses CIE past papers and mark schemes; an Edexcel Biology tutor focuses on Pearson&apos;s specification. We do not use generic notes — every session is board-specific.
+          </p>
         </div>
       </section>
 

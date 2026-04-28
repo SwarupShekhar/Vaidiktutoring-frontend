@@ -4,13 +4,17 @@ import GCSEPageClient from "./GCSEPageClient";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Expert GCSE Tutors Online | Personalized GCSE Online Tuition",
+  title: "GCSE Tutors Online UK | Expert GCSE Tuition | StudyHours",
   description: "Boost GCSE grades with expert tutors. 87% of students improved 2+ grades. Personalized tuition for AQA, Edexcel, OCR exam boards. Build conceptual foundations and exam confidence.",
   alternates: {
     canonical: "https://studyhours.com/gcse-online-tutoring",
+    languages: {
+      "en-GB": "https://studyhours.com/gcse-online-tutoring",
+      "en": "https://studyhours.com/gcse-online-tutoring",
+    },
   },
   openGraph: {
-    title: "Expert GCSE Tutors Online | Personalized GCSE Online Tuition",
+    title: "GCSE Tutors Online UK | Expert GCSE Tuition | StudyHours",
     description: "Boost GCSE grades with expert tutors. 87% of students improved 2+ grades. Personalized tuition for AQA, Edexcel, OCR exam boards.",
     url: "https://studyhours.com/gcse-online-tutoring",
     images: [
@@ -25,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Expert GCSE Tutors Online | Personalized GCSE Online Tuition",
+    title: "GCSE Tutors Online UK | Expert GCSE Tuition | StudyHours",
     description: "Boost GCSE grades with expert tutors. 87% of students improved 2+ grades. Personalized tuition for AQA, Edexcel, OCR exam boards.",
     images: ["/hero_calm_education.png"],
   },
@@ -49,6 +53,10 @@ export default function Page() {
     {
       q: "How do I choose a reliable GCSE tutor service?",
       a: "Prioritise subject-specific expertise and a proven track record with your child's exact exam board: AQA, Edexcel, or OCR. Look for a tutor who starts with a diagnostic assessment rather than a one-size-fits-all approach. Ensure their teaching style builds confidence and focuses on exam technique, not just content knowledge. Always book a trial session first to confirm they are the right fit for your child.",
+    },
+    {
+      q: "Can I get GCSE tutoring online in the UK?",
+      a: "Yes. StudyHours offers online GCSE tutoring to students across the UK — from London and Manchester to Edinburgh and Cardiff. Our tutors specialise in AQA, Edexcel, and OCR and support students in Year 9, Year 10, and Year 11. All sessions are fully online with no travel required — just a laptop and internet connection.",
     },
   ];
 
@@ -110,17 +118,35 @@ export default function Page() {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     name: "GCSE Tutors Online — Specialist UK GCSE Support",
+    url: "https://studyhours.com/gcse-online-tutoring",
     image: "https://studyhours.com/hero_calm_education.png",
+    areaServed: { "@type": "Country", name: "United Kingdom" },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: 4.9,
+      reviewCount: 1500,
+      bestRating: 5,
+      worstRating: 1,
+    },
   };
 
   const courseSchema = {
     "@context": "https://schema.org",
     "@type": "Course",
-    "name": "GCSE Online Tutoring",
-    "provider": { "@type": "Organization", "name": "StudyHours" },
-    "description": "Comprehensive GCSE online tuition covering all subjects and exam boards including AQA, Edexcel, and OCR.",
-    "educationalLevel": "GCSE",
-    "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "online" }
+    name: "GCSE Online Tutoring",
+    url: "https://studyhours.com/gcse-online-tutoring",
+    provider: { "@type": "Organization", name: "StudyHours", url: "https://studyhours.com" },
+    description: "Comprehensive GCSE online tuition covering all subjects and exam boards including AQA, Edexcel, and OCR.",
+    educationalLevel: "GCSE",
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "online",
+      offers: {
+        "@type": "Offer",
+        category: "Paid",
+        url: "https://studyhours.com/pricing",
+      },
+    },
   };
 
   const jsonLd = [subjectSchema, faqSchema, breadcrumbSchema, ratingSchema, courseSchema];

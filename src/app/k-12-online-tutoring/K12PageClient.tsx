@@ -589,6 +589,48 @@ export default function K12OnlineTutoringPage({
       </section>
 
       {/* ============================================
+          SECTION 6.3 (NEW): UK GEO-TARGETING SECTION
+      ============================================ */}
+      <section className="py-24 px-6 bg-linear-to-b from-ice-blue/30 to-background dark:from-slate-900/20 dark:to-background relative overflow-hidden">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 1, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-deep-navy dark:text-white mb-6">
+                Online Tutoring for UK Primary and Secondary Students
+              </h2>
+            </motion.div>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 1, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="p-8 rounded-3xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700"
+            >
+              <p className="text-lg text-text-secondary mb-6 leading-relaxed">
+                While the K-12 framework describes education from kindergarten through to secondary school, StudyHours supports students at every stage of the UK school system — from Key Stage 2 and Key Stage 3 through to GCSEs and A-Levels. Whether your child needs primary school Maths support or secondary Science tutoring, our tutors adapt sessions to the UK National Curriculum and your child's school approach.
+              </p>
+              <p className="text-lg text-text-secondary leading-relaxed">
+                Students across the UK — from London and Birmingham to Manchester, Leeds, and Edinburgh — access StudyHours for structured, personalised online tutoring that fits around school timetables and term dates. No travel needed. All sessions are live, 1-on-1, and delivered online.
+              </p>
+              <p className="text-lg text-text-secondary mb-6 leading-relaxed">
+                For UK primary school students (Years 1–6), our tutors cover Key Stage 1 and Key Stage 2 Maths and English — including times tables, fractions, written methods, reading comprehension, grammar, and spelling. Many families use StudyHours to prepare for the Year 6 SATs or to build confidence ahead of secondary school transition.
+              </p>
+              <p className="text-lg text-text-secondary leading-relaxed">
+                For UK secondary school students (Years 7–11), our tutors support all core subjects — Maths, English, Science, History, Geography, and languages — aligned to the UK National Curriculum and your child's school's schemes of work. We also support Year 11 students preparing for their GCSE mock exams and final exams in May and June.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================
           SECTION 6.5 (NEW): K-12 ONLINE TUTORING PROGRAMS
       ============================================ */}
       <section className="py-24 px-6 bg-deep-navy dark:bg-slate-950 text-white relative overflow-hidden">

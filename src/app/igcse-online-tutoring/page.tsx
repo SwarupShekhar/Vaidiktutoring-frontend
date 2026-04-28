@@ -4,13 +4,17 @@ import IGCSEPageClient from "./IGCSEPageClient";
 export const revalidate = 3600; // Revalidate every hour for ISR
 
 export const metadata: Metadata = {
-  title: "IGCSE Online Tuition & Tutoring Service | StudyHours",
-  description: "Cambridge & Edexcel IGCSE tutoring for international students. 89% grade improvement. Personalized online courses covering all subjects with global curriculum focus.",
+  title: "IGCSE Online Tutoring UK | Cambridge & Edexcel Specialists | StudyHours",
+  description: "Expert IGCSE tutors online for UK and international students. Cambridge & Edexcel specialists. 89% grade improvement across all subjects. Book a free assessment.",
   alternates: {
     canonical: "https://studyhours.com/igcse-online-tutoring",
+    languages: {
+      "en-GB": "https://studyhours.com/igcse-online-tutoring",
+      "en": "https://studyhours.com/igcse-online-tutoring",
+    },
   },
   openGraph: {
-    title: "IGCSE Online Tuition & Tutoring Service | StudyHours",
+    title: "IGCSE Online Tutoring UK | Cambridge & Edexcel Specialists | StudyHours",
     description: "Cambridge & Edexcel IGCSE tutoring for international students. 89% grade improvement. Personalized online courses covering all subjects.",
     url: "https://studyhours.com/igcse-online-tutoring",
     images: [
@@ -25,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "IGCSE Online Tuition & Tutoring Service | StudyHours",
+    title: "IGCSE Online Tutoring UK | Cambridge & Edexcel Specialists | StudyHours",
     description: "Cambridge & Edexcel IGCSE tutoring for international students. 89% grade improvement. Personalized online courses covering all subjects.",
     images: ["/hero_calm_education.png"],
   },
@@ -50,6 +54,14 @@ export default function Page() {
     {
       q: "Are online IGCSE classes effective for exam preparation?",
       a: "Yes. They provide access to global experts and flexible schedules, using interactive tools that make exam prep highly effective.",
+    },
+    {
+      q: "Is IGCSE recognised in the UK?",
+      a: "Yes. Cambridge IGCSE and Edexcel IGCSE are both recognised by UK universities, employers, and UCAS as equivalent to standard GCSEs. Many independent schools and international schools across the UK follow the IGCSE curriculum. All major UK universities accept IGCSE qualifications for entry requirements.",
+    },
+    {
+      q: "Can UK students access IGCSE online tutoring?",
+      a: "Absolutely. StudyHours offers online IGCSE tutoring to students across the UK and internationally. Our tutors specialise in both Cambridge International (CIE) and Edexcel IGCSE specifications, with board-specific past papers and mark scheme practice built into every session.",
     },
   ];
 
@@ -114,7 +126,13 @@ export default function Page() {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     name: "IGCSE Online Tuition & Tutoring Service",
+    url: "https://studyhours.com/igcse-online-tutoring",
     image: "https://studyhours.com/hero_calm_education.png",
+    areaServed: [
+      { "@type": "Country", name: "United Kingdom" },
+      { "@type": "Country", name: "Australia" },
+      { "@type": "Country", name: "Singapore" },
+    ],
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: 4.9,
@@ -127,11 +145,20 @@ export default function Page() {
   const courseSchema = {
     "@context": "https://schema.org",
     "@type": "Course",
-    "name": "IGCSE Online Tuition",
-    "provider": { "@type": "Organization", "name": "StudyHours" },
-    "description": "Comprehensive IGCSE online tuition for Cambridge and Edexcel curricula, designed for international students.",
-    "educationalLevel": "IGCSE",
-    "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "online" }
+    name: "IGCSE Online Tuition",
+    url: "https://studyhours.com/igcse-online-tutoring",
+    provider: { "@type": "Organization", name: "StudyHours", url: "https://studyhours.com" },
+    description: "Comprehensive IGCSE online tuition for Cambridge and Edexcel curricula, designed for international students.",
+    educationalLevel: "IGCSE",
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "online",
+      offers: {
+        "@type": "Offer",
+        category: "Paid",
+        url: "https://studyhours.com/pricing",
+      },
+    },
   };
 
   const jsonLd = [subjectSchema, faqSchema, breadcrumbSchema, ratingSchema, courseSchema];

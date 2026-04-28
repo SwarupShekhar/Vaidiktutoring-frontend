@@ -121,6 +121,14 @@ export default function Footer() {
                   GCSE Tutoring
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/online-tutoring-uk"
+                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                >
+                  Online Tutoring UK
+                </Link>
+              </li>
             </ul>
           </div>
 

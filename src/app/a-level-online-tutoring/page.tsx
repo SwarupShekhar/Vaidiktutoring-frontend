@@ -4,13 +4,17 @@ import ALevelPageClient from "./ALevelPageClient";
 export const revalidate = 3600; // Revalidate every hour for ISR
 
 export const metadata: Metadata = {
-  title: "Expert A-Level Tutors Online | Private A-Level Tuition & Exam Prep",
+  title: "A-Level Tutors Online UK | Private A-Level Tuition & Exam Prep",
   description: "Secure university offers with A-Level tutoring. 92% of students achieved target grades. EPQ support, predicted grade guidance, and subject-specific exam prep.",
   alternates: {
     canonical: "https://studyhours.com/a-level-online-tutoring",
+    languages: {
+      "en-GB": "https://studyhours.com/a-level-online-tutoring",
+      "en": "https://studyhours.com/a-level-online-tutoring",
+    },
   },
   openGraph: {
-    title: "Expert A-Level Tutors Online | Private A-Level Tuition & Exam Prep",
+    title: "A-Level Tutors Online UK | Private A-Level Tuition & Exam Prep",
     description: "Secure university offers with A-Level tutoring. 92% of students achieved target grades. EPQ support, predicted grade guidance.",
     url: "https://studyhours.com/a-level-online-tutoring",
     images: [
@@ -25,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Expert A-Level Tutors Online | Private A-Level Tuition & Exam Prep",
+    title: "A-Level Tutors Online UK | Private A-Level Tuition & Exam Prep",
     description: "Secure university offers with A-Level tutoring. 92% of students achieved target grades. EPQ support, predicted grade guidance.",
     images: ["/hero_calm_education.png"],
   },
@@ -50,6 +54,10 @@ export default function Page() {
     {
       q: "Which exam boards do your A-Level tutors cover?",
       a: "We cover all major UK exam boards including AQA, Edexcel, OCR, and Cambridge International. Your tutor will be matched specifically to your board and syllabus.",
+    },
+    {
+      q: "Do you offer A-Level tutoring across the UK?",
+      a: "Yes. All our A-Level tutoring is delivered online, meaning students anywhere in the UK can access specialist support — from Year 12 through Year 13. We cover every major UK exam board: AQA, Edexcel, OCR, and Cambridge International (CAIE). Each student is matched to a tutor who specialises in their exact syllabus and university application context.",
     },
   ];
 
@@ -106,17 +114,35 @@ export default function Page() {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     name: "Expert A-Level Tutors Online — Private A-Level Tuition",
-    "image": "https://studyhours.com/hero_calm_education.png",
+    url: "https://studyhours.com/a-level-online-tutoring",
+    image: "https://studyhours.com/hero_calm_education.png",
+    areaServed: { "@type": "Country", name: "United Kingdom" },
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: 4.9,
+      reviewCount: 1200,
+      bestRating: 5,
+      worstRating: 1,
+    },
   };
 
   const courseSchema = {
     "@context": "https://schema.org",
     "@type": "Course",
-    "name": "A-Level Online Tutoring",
-    "provider": { "@type": "Organization", "name": "StudyHours" },
-    "description": "Advanced A-Level tutoring with university application support, EPQ guidance, and predicted grade preparation.",
-    "educationalLevel": "A-Level",
-    "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "online" }
+    name: "A-Level Online Tutoring",
+    url: "https://studyhours.com/a-level-online-tutoring",
+    provider: { "@type": "Organization", name: "StudyHours", url: "https://studyhours.com" },
+    description: "Advanced A-Level tutoring with university application support, EPQ guidance, and predicted grade preparation.",
+    educationalLevel: "A-Level",
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "online",
+      offers: {
+        "@type": "Offer",
+        category: "Paid",
+        url: "https://studyhours.com/pricing",
+      },
+    },
   };
 
   const jsonLd = [subjectSchema, faqSchema, breadcrumbSchema, ratingSchema, courseSchema];

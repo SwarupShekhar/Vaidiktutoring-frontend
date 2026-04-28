@@ -49,6 +49,7 @@ const MANUAL_PAGES: Record<
   "/igcse-online-tutoring": { priority: 0.8, changeFrequency: "weekly" },
   "/a-level-online-tutoring": { priority: 0.8, changeFrequency: "weekly" },
   "/ib-online-tutoring": { priority: 0.8, changeFrequency: "weekly" },
+  "/online-tutoring-uk": { priority: 0.9, changeFrequency: "weekly" },
   "/australia/vce-online-tutoring": { priority: 0.85, changeFrequency: "weekly" },
   "/australia/hsc-online-tutoring": { priority: 0.85, changeFrequency: "weekly" },
   "/australia/qce-online-tutoring": { priority: 0.85, changeFrequency: "weekly" },

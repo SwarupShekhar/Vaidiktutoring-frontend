@@ -109,6 +109,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   "https://facebook.com/studyhours",
                   "https://linkedin.com/company/studyhours",
                 ],
+                areaServed: [
+                  { "@type": "Country", name: "United Kingdom" },
+                  { "@type": "Country", name: "Australia" },
+                  { "@type": "Country", name: "Singapore" },
+                  { "@type": "Country", name: "United Arab Emirates" },
+                ],
                 contactPoint: {
                   "@type": "ContactPoint",
                   contactType: "customer service",

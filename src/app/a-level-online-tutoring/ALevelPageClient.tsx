@@ -200,6 +200,9 @@ export default function ALevelTutoringPage({
             <h2 className="text-4xl md:text-5xl font-black text-deep-navy dark:text-white tracking-tighter uppercase leading-none mb-6">
               Why Students Choose Our <span className="text-sapphire">Online A-Level Tutors</span>
             </h2>
+            <p className="text-xl text-text-secondary dark:text-slate-400 leading-relaxed font-medium max-w-3xl mx-auto">
+              Our online A-Level tutors support students across the UK — from Year 12 through Year 13 — covering every major exam board including AQA, Edexcel, OCR, and Cambridge International (CAIE). Whether you're aiming for Russell Group offers or need to strengthen predicted grades, our subject specialists deliver flexible online sessions around your school timetable.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
@@ -414,6 +417,15 @@ export default function ALevelTutoringPage({
             subjects={["A-Level French", "A-Level Spanish", "A-Level German", "A-Level Chinese", "A-Level Italian"]}
             icon={Languages}
           />
+        </div>
+
+        <div className="max-w-7xl mx-auto mt-16 mb-16">
+          <p className="text-xl text-text-secondary dark:text-slate-400 mb-6 leading-relaxed font-medium">
+            Our most requested A-Level tutors are in Maths, Further Maths, Chemistry, Biology, Physics, and Economics. For A-Level Maths, our tutors cover Pure Maths (proof, algebra, calculus, trigonometry) alongside Statistics and Mechanics papers — with sessions tailored to AQA, Edexcel, or OCR specification. A-Level Chemistry tutors focus on organic mechanisms, quantitative chemistry, and spectroscopy — the topics students consistently find hardest in Year 13.
+          </p>
+          <p className="text-xl text-text-secondary dark:text-slate-400 mb-10 leading-relaxed font-medium">
+            Beyond core sciences, StudyHours offers specialist A-Level tutors for Psychology (AQA paper 1, 2, 3), History (source analysis and essay technique), Economics (macro/microeconomics model application), and Computer Science (algorithms, data structures, theory of computation). Every tutor is matched to your exact exam board and specification.
+          </p>
         </div>
 
         <div className="max-w-7xl mx-auto mt-16 text-center border-t border-border pt-12">
