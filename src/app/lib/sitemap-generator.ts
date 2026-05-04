@@ -244,23 +244,38 @@ export function generateSitemapEntries(
  * Fetch blog posts from backend
  */
 async function getBlogs(): Promise<BlogPost[]> {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_API_URL || "https://vaidiktutoring-backend.onrender.com";
+
+  // Use a very short timeout for sitemap generation to avoid blocking the build
+  const timeoutMs = 5000;
+  
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL || "https://vaidiktutoring-backend.onrender.com";
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 60000);
+    // Create a promise that resolves after the timeout
+    const timeoutPromise = new Promise<BlogPost[]>((resolve) =>
+      setTimeout(() => {
+        console.warn(`Sitemap: Blog fetch timed out after ${timeoutMs}ms. Using static pages only.`);
+        resolve([]);
+      }, timeoutMs)
+    );
 
-    const res = await fetch(`${baseUrl}/blogs?page=1&limit=100`, {
-      next: { revalidate: 3600 },
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
+    // Create the actual fetch promise
+    const fetchPromise = (async () => {
+      try {
+        const res = await fetch(`${baseUrl}/blogs?page=1&limit=100`, {
+          next: { revalidate: 3600 },
+        });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return Array.isArray(data) ? data : data.data || [];
+      } catch (e) {
+        return [];
+      }
+    })();
 
-    if (!res.ok) throw new Error("Failed to fetch blogs");
-    const data = await res.json();
-    return Array.isArray(data) ? data : data.data || [];
+    // Race them
+    return await Promise.race([fetchPromise, timeoutPromise]);
   } catch (error) {
-    console.error("Sitemap: Failed to fetch blogs", error);
     return [];
   }
 }
