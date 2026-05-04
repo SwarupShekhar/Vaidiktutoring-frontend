@@ -13,24 +13,24 @@ export default function TutorCommunication({ tutorName, currentUserId }: { tutor
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      setLoading(true);
-      try {
-        const res = await api.get('/messages');
-        setMessages(res.data);
-        
-        // Mark as read
-        if (res.data.some((m: any) => !m.is_read && m.sender_id !== currentUserId)) {
-          await api.post(`/messages/read/tutor`);
-        }
-      } catch (err) {
-        console.error('Failed to fetch messages:', err);
-      } finally {
-        setLoading(false);
+  const fetchMessages = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/messages');
+      setMessages(res.data);
+      
+      // Mark as read
+      if (res.data.some((m: any) => !m.is_read && m.sender_id !== currentUserId)) {
+        await api.post(`/messages/read/tutor`);
       }
-    };
+    } catch (err) {
+      console.error('Failed to fetch messages:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchMessages();
     const interval = setInterval(fetchMessages, 30000); // 30s interval
     return () => clearInterval(interval);
