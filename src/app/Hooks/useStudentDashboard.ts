@@ -48,17 +48,6 @@ export default function useStudentDashboard() {
 
   const now = new Date();
 
-  // DEBUG: Log details of each booking to see why they are filtered
-
-    "StudentDashboard: Raw Bookings",
-    bookings.map((b: Booking) => ({
-      id: b.id,
-      start: b.start_time,
-      reqStart: b.requested_start,
-      end: b.end_time,
-      status: b.status,
-    })),
-  );
 
   // Upcoming: start_time > now, status != cancelled
   const upcomingSessions = sortedBookings.filter((b: Booking) => {

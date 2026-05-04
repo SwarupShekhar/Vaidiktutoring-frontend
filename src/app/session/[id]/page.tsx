@@ -13,8 +13,7 @@ import AttentionFrameworkPanel from '@/app/components/session/AttentionFramework
 import { vaultApi, VaultAsset } from '@/app/lib/vault';
 import { io, Socket } from 'socket.io-client';
 import confetti from 'canvas-confetti';
-// @ts-ignore
-import * as pdfjsLib from 'pdfjs-dist';
+
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 import {
@@ -44,9 +43,7 @@ import { MANIPULATIVES_DATA, DICE_FACES } from '../manipulatives-data';
 import { throttle } from '@/app/lib/utils';
 import { Rnd } from 'react-rnd';
 
-if (typeof window !== 'undefined') {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
-}
+
 
 interface BookingDetails {
     id: string;
@@ -942,6 +939,10 @@ export default function SessionPage({ params }: SessionProps) {
         const fileReader = new FileReader();
         fileReader.onload = async function () {
             try {
+                // Dynamically import pdfjsLib to avoid SSR DOMMatrix reference errors
+                const pdfjsLib = await import('pdfjs-dist');
+                pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+
                 const typedarray = new Uint8Array(this.result as ArrayBuffer);
                 const pdf = await pdfjsLib.getDocument(typedarray).promise;
                 const newSlides: string[] = [];
