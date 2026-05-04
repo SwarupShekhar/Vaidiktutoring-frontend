@@ -3,16 +3,20 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
-import { useUser } from '@clerk/nextjs';
+import { useUser, useAuth } from '@clerk/nextjs';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import api from '@/app/lib/api';
 import { toast } from 'sonner';
+import HCaptcha from '@hcaptcha/react-hcaptcha';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function VerifyPhonePage() {
   const router = useRouter();
   const { user } = useAuthContext();
   const { user: clerkUser } = useUser();
+  const { getToken } = useAuth();
+  const hcaptchaRef = React.useRef<HCaptcha>(null);
 
   const [phone, setPhone] = useState<string>('');
   const [channel, setChannel] = useState<'sms' | 'whatsapp'>('sms');
@@ -21,6 +25,8 @@ export default function VerifyPhonePage() {
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [expiryTime, setExpiryTime] = useState<number | null>(null);
 
   // Countdown timer for resend
   useEffect(() => {
@@ -34,33 +40,76 @@ export default function VerifyPhonePage() {
       toast.error('Please enter a valid phone number');
       return;
     }
+    if (!captchaToken) {
+      toast.error('Please complete the captcha');
+      return;
+    }
     setSending(true);
     try {
-      await api.post('/phone-verification/send', { phone, channel });
+      await api.post('/phone-verification/send', { phone, channel, captchaToken });
       setStep('otp');
       setResendCooldown(60);
+      setExpiryTime(Date.now() + 600000); // 10 minutes
       toast.success(`Code sent via ${channel === 'sms' ? 'SMS' : 'WhatsApp'}`);
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Failed to send code');
+      hcaptchaRef.current?.resetCaptcha();
+      setCaptchaToken(null);
     } finally {
       setSending(false);
     }
   };
 
   const handleVerify = async () => {
-    if (!code.trim()) {
-      toast.error('Please enter the verification code');
+    if (!code.trim() || code.length < 6) {
+      toast.error('Please enter the 6-digit verification code');
       return;
     }
     setVerifying(true);
     try {
       await api.post('/phone-verification/verify', { phone, code: code.trim() });
       toast.success('Phone verified!');
-      // Force Clerk to re-read updated publicMetadata on next navigation
+      
       if (clerkUser) {
         await clerkUser.reload();
       }
-      router.push('/onboarding');
+
+      // Refresh logic to ensure backend state is synced
+      let attempts = 0;
+      const checkSync = async () => {
+          try {
+              const response = await api.get('/users/me');
+              const updatedUser = response.data;
+              if (updatedUser?.phone_verified) {
+                  // Force refresh Clerk token to update session claims for middleware
+              try {
+                  await getToken({ skipCache: true });
+              } catch (e) {
+                  console.warn('Failed to force refresh Clerk token:', e);
+              }
+              
+              toast.success('Phone verified successfully!');
+              router.push('/onboarding');
+          } else if (attempts < 5) {
+              attempts++;
+              setTimeout(checkSync, 1500); // Poll every 1.5s
+          } else {
+              // Final fallback
+              toast.success('Phone verified successfully!');
+              router.push('/onboarding');
+          }
+          } catch (e) {
+              if (attempts < 5) {
+                  attempts++;
+                  setTimeout(checkSync, 1500);
+              } else {
+                  toast.success('Phone verified successfully!');
+                  router.push('/onboarding');
+              }
+          }
+      };
+      
+      await checkSync();
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Incorrect or expired code');
     } finally {
@@ -72,6 +121,8 @@ export default function VerifyPhonePage() {
     if (resendCooldown > 0) return;
     setStep('enter');
     setCode('');
+    setCaptchaToken(null);
+    hcaptchaRef.current?.resetCaptcha();
   };
 
   return (
@@ -111,7 +162,6 @@ export default function VerifyPhonePage() {
                   className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-sm focus-within:ring-2 focus-within:ring-blue-500"
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Send code via
@@ -132,10 +182,24 @@ export default function VerifyPhonePage() {
                   ))}
                 </div>
               </div>
+              <div className="flex justify-center py-2">
+                  <HCaptcha
+                      sitekey={(() => {
+                          const key = process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY;
+                          if (!key && process.env.NODE_ENV === 'production') {
+                              throw new Error('NEXT_PUBLIC_HCAPTCHA_SITE_KEY is missing');
+                          }
+                          return key || "10000000-ffff-ffff-ffff-000000000001";
+                      })()}
+                      onVerify={(token) => setCaptchaToken(token)}
+                      onExpire={() => setCaptchaToken(null)}
+                      ref={hcaptchaRef}
+                  />
+              </div>
 
               <button
                 onClick={handleSend}
-                disabled={sending || !phone}
+                disabled={sending || !phone || !captchaToken}
                 className="w-full py-3.5 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/20"
               >
                 {sending ? 'Sending...' : 'Send Code'}
