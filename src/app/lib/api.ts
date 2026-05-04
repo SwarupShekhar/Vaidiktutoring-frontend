@@ -6,7 +6,7 @@ const API_URL =
     process.env.NEXT_PUBLIC_API_BASE_URL ||
     'https://vaidiktutoring-backend.onrender.com').replace(/\/$/, '');
 
-console.log('[API] Connected to:', API_URL);
+
 
 // Add better error handling for network issues
 export const api = axios.create({
@@ -44,7 +44,6 @@ api.interceptors.request.use(async (config) => {
         config.headers['Authorization'] = `Bearer ${token}`;
       }
     } catch (e) {
-      console.error('[API] Failed to get fresh token', e);
     }
   }
   return config;
@@ -88,8 +87,6 @@ api.interceptors.response.use(
           // optional: show message here (toast)
           // window.location.href = '/login';
           // window.location.href = '/login'; // Force redirect to refresh session
-          console.warn('401 Unauthorized - redirect DISABLED for debugging');
-          console.warn('401 Unauthorized - would redirect to login');
         }
       } catch { }
       return Promise.reject(err);

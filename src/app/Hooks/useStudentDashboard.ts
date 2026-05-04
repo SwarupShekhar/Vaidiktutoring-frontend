@@ -24,7 +24,7 @@ export default function useStudentDashboard() {
     queryFn: async () => {
       const res = await api.get("/bookings/student");
       const rawBookings = res.data || [];
-      console.log("useStudentDashboard: raw bookings:", rawBookings);
+
 
       // Normalize data structure
       return rawBookings.map((b: Booking) => ({
@@ -49,8 +49,7 @@ export default function useStudentDashboard() {
   const now = new Date();
 
   // DEBUG: Log details of each booking to see why they are filtered
-  console.log("StudentDashboard: Current Time", now.toISOString());
-  console.log(
+
     "StudentDashboard: Raw Bookings",
     bookings.map((b: Booking) => ({
       id: b.id,
@@ -70,7 +69,7 @@ export default function useStudentDashboard() {
     const debugId = `[${b.id.substring(0, 4)}...]:`;
 
     if (!startStr) {
-      console.log(debugId, "Discarded: No start time");
+
       return false;
     }
 
@@ -90,11 +89,11 @@ export default function useStudentDashboard() {
         "<",
         now.toISOString(),
       );
-    if (!isValidStatus) console.log(debugId, "Discarded: Status", b.status);
+
 
     return isFuture && isValidStatus;
   });
-  console.log("StudentDashboard: Upcoming Filtered", upcomingSessions);
+
 
   // Past: end_time < now OR status is completed
   const pastSessions = sortedBookings

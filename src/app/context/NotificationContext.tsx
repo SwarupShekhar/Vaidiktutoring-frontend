@@ -66,7 +66,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
         const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://vaidiktutoring-backend.onrender.com';
         
-        console.log('[Notification] Attempting to connect to:', API_URL);
+
         
         // Connecting to root namespace with better error handling
         const socketInstance = io(API_URL, {
@@ -80,7 +80,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         setSocket(socketInstance);
 
         socketInstance.on('connect', () => {
-            console.log('[Notification] Connected to global socket:', socketInstance.id);
+
             // Join a personal room based on user ID for targeted alerts
             socketInstance.emit('join_personal_room', { userId: user.sub || user.id });
         });
@@ -91,23 +91,23 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             
             // Try polling fallback if websocket fails
             if (err.message?.includes('websocket')) {
-                console.log('[Notification] WebSocket failed, trying polling fallback...');
+
                 socketInstance.io.opts.transports = ['polling'];
                 socketInstance.connect();
             }
         });
 
         socketInstance.on('disconnect', (reason) => {
-            console.log('[Notification] Socket disconnected:', reason);
+
         });
 
         // Add polling fallback check
         socketInstance.on('ping', () => {
-            console.log('[Notification] Socket ping received');
+
         });
 
         socketInstance.on('pong', () => {
-            console.log('[Notification] Socket pong received');
+
         });
 
         // Debug: Log any event received (wildcard not standard in client, but we can log specific ones)

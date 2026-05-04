@@ -76,7 +76,7 @@ export default function SessionPage({ params }: SessionProps) {
     // Protect the route - redirect if not authenticated
     useEffect(() => {
         if (!authLoading && !user) {
-            console.log('[Session] No user found, redirecting to login');
+
             router.push('/login');
         }
     }, [user, authLoading, router]);
@@ -341,7 +341,7 @@ export default function SessionPage({ params }: SessionProps) {
                         'https://vaidiktutoring-backend.onrender.com').replace(/\/$/, '');
         const SOCKET_URL = `${API_URL}/sessions`;
 
-        console.log('[Attention] Connecting to socket:', SOCKET_URL, 'API_URL:', API_URL);
+
 
         const newSocket = io(SOCKET_URL, {
             query: { sessionId, userId: user.id },
@@ -353,7 +353,7 @@ export default function SessionPage({ params }: SessionProps) {
 
         newSocket.on('connect', () => {
             newSocket.emit('joinSession', { sessionId, userId: user.id }, (response: any) => {
-                console.log('[Session] Joined session room:', response);
+
                 if (response.success) {
                     sessionStartRef.current = response.sessionStartTime;
                     sessionDurationRef.current = response.sessionDuration;
@@ -388,7 +388,7 @@ export default function SessionPage({ params }: SessionProps) {
 
         // 4. Listen for stickers
         newSocket.on('sticker:received', (payload: { stickerType: string; studentName: string }) => {
-            console.log('[Session] Sticker received:', payload.stickerType);
+
 
             // Show animation
             const id = Math.random().toString();
@@ -498,7 +498,7 @@ export default function SessionPage({ params }: SessionProps) {
         if (sessionId) {
             api.get(`/bookings/${sessionId}`)
                 .then(res => {
-                    console.log('[Session] Booking details raw:', res.data);
+
                     setBooking(res.data);
                 })
                 .catch(err => {
@@ -1261,12 +1261,12 @@ export default function SessionPage({ params }: SessionProps) {
         socket.on('whiteboard.receiveUpdate', handleReceiveUpdate);
         socket.on('whiteboard.receiveFiles', handleRemoteFiles);
         socket.on('whiteboard.receiveSlides', (slidesArray: string[]) => {
-            console.log('[Slides] Received slides:', slidesArray.length);
+
             setSlides(slidesArray);
 
             // If we were waiting for a specific slide, switch to it now
             if (pendingSlideIndexRef.current !== null && slidesArray[pendingSlideIndexRef.current]) {
-                console.log('[Slides] Applying pending slide transition:', pendingSlideIndexRef.current);
+
                 switchSlide(pendingSlideIndexRef.current);
             }
         });
@@ -1298,7 +1298,7 @@ export default function SessionPage({ params }: SessionProps) {
 
         // Attention Events
         socket.on('session.attentionEvent.created', (event) => {
-            console.log('[Socket] Attention event created:', event);
+
             // No flash needed, summary update handles the UI
         });
 
@@ -1381,7 +1381,7 @@ export default function SessionPage({ params }: SessionProps) {
     // Students/parents request the current whiteboard state when their canvas is ready.
     const forceResync = useCallback(() => {
         if (!socket || !sessionId) return;
-        console.log('[Whiteboard] Forcing manual resync...');
+
         socket.emit('whiteboard.requestSync', { sessionId });
         toast.info('Syncing whiteboard state...');
     }, [socket, sessionId]);
@@ -1495,11 +1495,11 @@ export default function SessionPage({ params }: SessionProps) {
     useEffect(() => {
         const handleDailyMessage = (event: MessageEvent) => {
             // FIX 2: Log all events to verify Daily.co's actual postMessage format
-            console.log('[Daily Event]', event.data);
+
 
             // Check if the message is from Daily.co iframe
             if (event.data?.action === 'left-meeting' || event.data?.action === 'meeting-left') {
-                console.log('[Daily.co] User left meeting via Daily button');
+
                 handleEndSession();
             }
         };
@@ -2047,7 +2047,7 @@ export default function SessionPage({ params }: SessionProps) {
             )}
 
             {/* 3. OVERLAY LAYER: CHAT SIDEBAR (Elevated z-index to stay above video panel) */}
-            <div className={`absolute bottom-24 z-[1000] w-80 pointer-events-auto transition-all duration-300 ${isPanelExpanded ? 'right-[464px]' : 'right-4'}`}>
+            <div className={`absolute bottom-24 z-1000 w-80 pointer-events-auto transition-all duration-300 ${isPanelExpanded ? 'right-[464px]' : 'right-4'}`}>
                 <SessionChat
                     key={sessionId}
                     sessionId={booking?.sessions?.[0]?.id || sessionId}

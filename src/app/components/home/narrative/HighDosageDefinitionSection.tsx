@@ -47,8 +47,8 @@ export default function HighDosageDefinitionSection() {
                 <br /> of Learning
               </h2>
               <p className="text-base text-text-secondary font-medium leading-relaxed mb-8">
-                What research defines as high-impact tutoring isn't just
-                about showing up - it's about frequency, ratio, and
+                What research defines as high-impact tutoring isn&apos;t just
+                about showing up - it&apos;s about frequency, ratio, and
                 training.
               </p>
 

@@ -38,24 +38,24 @@ export default function OnboardingPage() {
     }
     
     // Debug: Check what role is being detected
-    console.log('Onboarding - User role:', user?.role);
+
     
     if (user?.role === 'admin') {
       // Admins go to admin dashboard
-      console.log('Detected admin, redirecting to /admin/dashboard');
+
       router.push('/admin/dashboard');
     } else if (user?.role === 'parent') {
       // Parents go to parent dashboard
-      console.log('Detected parent, redirecting to /parent/dashboard');
+
       router.push('/parent/dashboard');
     } else if (user?.role === 'tutor') {
       // Tutors go to tutor dashboard
-      console.log('Detected tutor, redirecting to /tutor/dashboard');
+
       router.push('/tutor/dashboard');
     } else if (user?.role === 'student' && user?.id) {
       // If student and NOT a fresh signup (id exists), go to dashboard.
       if (clerkUser?.publicMetadata?.role) {
-        console.log('Detected student, redirecting to /students/dashboard');
+
         router.push('/students/dashboard');
       }
     }

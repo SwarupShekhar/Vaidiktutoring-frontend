@@ -39,6 +39,7 @@ export default function ShiftSection() {
                                 alt="Personalized Learning Background | StudyHours" 
                                 fill 
                                 className="object-cover object-center"
+                                sizes="(max-width: 1024px) 100vw, 50vw"
                             />
                         </div>
 

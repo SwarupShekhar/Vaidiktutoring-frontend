@@ -5,18 +5,44 @@ import { usePathname } from "next/navigation";
 import SHLogo from "./SHLogo";
 import InstagramButton from "./InstagramButton";
 import LinkedInButton from "./LinkedInButton";
+import Galaxy from "./home/narrative/galaxy/Galaxy";
 
 export default function Footer() {
   const pathname = usePathname();
   const [year, setYear] = useState(2026);
+  const [hasMounted, setHasMounted] = useState(false);
+
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setYear(new Date().getFullYear());
+    setHasMounted(true);
   }, []);
+
   if (pathname?.startsWith("/session")) return null;
 
   return (
-    <footer className="relative bg-white/40 dark:bg-black/40 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 pt-16 pb-32 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="relative bg-black text-white border-t border-white/10 pt-16 pb-32 transition-colors duration-300 overflow-hidden">
+      {/* Interactive Galaxy Background - Only rendered on client to avoid hydration mismatch */}
+      {hasMounted && (
+        <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
+          <Galaxy 
+            mouseRepulsion
+            mouseInteraction
+            density={0.65} // Reduced particles by 35%
+            glowIntensity={0.5}
+            saturation={0.8}
+            hueShift={260}
+            twinkleIntensity={0.5}
+            rotationSpeed={0.08}
+            repulsionStrength={2}
+            autoCenterRepulsion={0}
+            starSpeed={0.4}
+            speed={1}
+          />
+        </div>
+      )}
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
           {/* Brand Column */}
           <div className="space-y-4">
@@ -24,11 +50,11 @@ export default function Footer() {
               <div className="w-10 h-10 rounded-lg">
                 <SHLogo className="w-full h-full" />
               </div>
-              <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300">
+              <span className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-gray-400">
                 StudyHours
               </span>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+            <p className="text-gray-400 text-sm leading-relaxed">
               Empowering students across Grades K-12 with personalized,
               world-class tutoring. Unlock your full potential today.
             </p>
@@ -36,14 +62,14 @@ export default function Footer() {
 
           {/* Product Column */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Product
             </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/subjects"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Subjects
                 </Link>
@@ -51,7 +77,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/experts"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Find Experts
                 </Link>
@@ -59,7 +85,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/pricing"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Pricing
                 </Link>
@@ -67,7 +93,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/onboarding"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Join as Student
                 </Link>
@@ -77,14 +103,14 @@ export default function Footer() {
 
           {/* Programs Column */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Programs
             </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/k-12-online-tutoring"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   K-12 Tutoring
                 </Link>
@@ -92,7 +118,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/ib-online-tutoring"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   IB Tutoring
                 </Link>
@@ -100,7 +126,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/a-level-online-tutoring"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   A-Level Tutoring
                 </Link>
@@ -108,7 +134,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/igcse-online-tutoring"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   IGCSE Tutoring
                 </Link>
@@ -116,7 +142,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/gcse-online-tutoring"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   GCSE Tutoring
                 </Link>
@@ -124,7 +150,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/online-tutoring-uk"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Online Tutoring UK
                 </Link>
@@ -134,14 +160,14 @@ export default function Footer() {
 
           {/* Company Column */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Company
             </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/about"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   About Us
                 </Link>
@@ -149,7 +175,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/careers"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Careers
                 </Link>
@@ -157,7 +183,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/blogs"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Blog
                 </Link>
@@ -165,7 +191,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/methodology"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Methodology
                 </Link>
@@ -173,7 +199,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/contact"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Contact
                 </Link>
@@ -183,14 +209,14 @@ export default function Footer() {
 
           {/* Legal Column */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               Legal
             </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/legal/privacy"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Privacy Policy
                 </Link>
@@ -198,7 +224,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/legal/terms"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Terms of Service
                 </Link>
@@ -206,7 +232,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/legal/aup"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Acceptable Use
                 </Link>
@@ -214,7 +240,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/legal/refunds"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Refund Policy
                 </Link>
@@ -222,7 +248,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/legal/cookies"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Cookie Policy
                 </Link>
@@ -230,7 +256,7 @@ export default function Footer() {
               <li>
                 <button
                   onClick={() => window.dispatchEvent(new CustomEvent('open-cookie-banner'))}
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm text-left"
+                  className="text-gray-400 hover:text-white transition-colors text-sm text-left"
                 >
                   Cookie Preferences
                 </button>
@@ -241,13 +267,13 @@ export default function Footer() {
 
         {/* Locations Section */}
         <div className="mb-16">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-6">
+          <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-6">
             Tutoring by Location
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {/* Australia */}
             <div>
-              <Link href="/australia" className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-widest mb-3 block hover:text-primary dark:hover:text-primary transition-colors">
+              <Link href="/australia" className="text-xs font-bold text-white uppercase tracking-widest mb-3 block hover:text-primary transition-colors">
                 Australia
               </Link>
               <ul className="space-y-2">
@@ -260,7 +286,7 @@ export default function Footer() {
                   { href: "/australia/curriculum-tutoring", label: "Australian Curriculum" },
                 ].map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">
+                    <Link href={link.href} className="text-gray-400 hover:text-white transition-colors text-sm">
                       {link.label}
                     </Link>
                   </li>
@@ -269,7 +295,7 @@ export default function Footer() {
             </div>
             {/* Singapore */}
             <div>
-              <Link href="/singapore" className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-widest mb-3 block hover:text-primary dark:hover:text-primary transition-colors">
+              <Link href="/singapore" className="text-xs font-bold text-white uppercase tracking-widest mb-3 block hover:text-primary transition-colors">
                 Singapore
               </Link>
               <ul className="space-y-2">
@@ -282,7 +308,7 @@ export default function Footer() {
                   { href: "/singapore/primary-school-tutors-singapore", label: "Primary School Tutors" },
                 ].map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">
+                    <Link href={link.href} className="text-gray-400 hover:text-white transition-colors text-sm">
                       {link.label}
                     </Link>
                   </li>
@@ -291,7 +317,7 @@ export default function Footer() {
             </div>
             {/* UAE */}
             <div>
-              <Link href="/uae" className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-widest mb-3 block hover:text-primary dark:hover:text-primary transition-colors">
+              <Link href="/uae" className="text-xs font-bold text-white uppercase tracking-widest mb-3 block hover:text-primary transition-colors">
                 UAE &amp; Middle East
               </Link>
               <ul className="space-y-2">
@@ -304,7 +330,7 @@ export default function Footer() {
                   { href: "/uae/physics-maths-tutor", label: "Physics & Maths Tutor UAE" },
                 ].map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors text-sm">
+                    <Link href={link.href} className="text-gray-400 hover:text-white transition-colors text-sm">
                       {link.label}
                     </Link>
                   </li>
@@ -314,8 +340,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-gray-500 dark:text-gray-500">
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 relative z-10">
+          <p className="text-sm text-gray-500">
             &copy; {year} StudyHours. All rights reserved.
           </p>
           <div className="flex gap-4 items-center">

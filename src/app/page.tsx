@@ -47,11 +47,26 @@ export default function Home() {
     logo: "https://studyhours.com/hero_calm_education.png",
     description:
       "Expert-guided K-12 tutoring for Math, Science, English and more. Personalized 1-on-1 sessions aligned with IB, IGCSE, and US curricula.",
+    sameAs: [
+      "https://twitter.com/studyhours",
+      "https://facebook.com/studyhours",
+      "https://linkedin.com/company/studyhours",
+    ],
+    areaServed: [
+      { "@type": "Country", name: "United Kingdom" },
+      { "@type": "Country", name: "Australia" },
+      { "@type": "Country", name: "Singapore" },
+      { "@type": "Country", name: "United Arab Emirates" },
+    ],
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer service",
+      email: "support@studyhours.com",
+    },
     address: {
       "@type": "PostalAddress",
       addressCountry: "Global",
     },
-    sameAs: [],
   };
 
   const websiteSchema = {
@@ -70,12 +85,12 @@ export default function Home() {
   return (
     <>
       <Script
-        id="org-schema"
+        id="org-schema-home"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
       <Script
-        id="website-schema"
+        id="website-schema-home"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
       />
