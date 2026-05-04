@@ -1,6 +1,8 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import api from '@/app/lib/api';
+import StudentDetailModal from './StudentDetailModal';
+import { ExternalLink } from 'lucide-react';
 
 interface Student {
     id: string;
@@ -44,6 +46,8 @@ export default function StudentListModal({ isOpen, onClose }: StudentListModalPr
                 .finally(() => setLoading(false));
         }
     }, [isOpen]);
+
+    const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
     if (!isOpen) return null;
 
@@ -101,6 +105,7 @@ export default function StudentListModal({ isOpen, onClose }: StudentListModalPr
                                     <th className="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Credits</th>
                                     <th className="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Grade</th>
                                     <th className="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Email</th>
+                                    <th className="p-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -127,12 +132,27 @@ export default function StudentListModal({ isOpen, onClose }: StudentListModalPr
                                         </td>
                                         <td className="p-4 text-gray-600 dark:text-gray-400 font-medium text-sm">Grade {student.grade || 'N/A'}</td>
                                         <td className="p-4 text-gray-500 dark:text-gray-400 font-mono text-[10px] truncate max-w-[150px]">{student.email || 'N/A'}</td>
+                                        <td className="p-4 text-right">
+                                            <button 
+                                                onClick={() => setSelectedStudentId(student.id)}
+                                                className="p-2 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 text-indigo-600 rounded-lg transition-all"
+                                                title="View Detailed Profile"
+                                            >
+                                                <ExternalLink size={16} />
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     )}
                 </div>
+
+                <StudentDetailModal 
+                    studentId={selectedStudentId} 
+                    onClose={() => setSelectedStudentId(null)} 
+                />
+
 
                 <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 flex justify-end">
                     <button onClick={onClose} className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium transition-colors">

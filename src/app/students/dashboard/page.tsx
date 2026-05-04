@@ -36,8 +36,10 @@ import {
   Video,
   Shield,
   Book,
+  User,
 } from 'lucide-react';
 import { differenceInMinutes, format, isToday, isTomorrow, addDays, startOfWeek } from 'date-fns';
+import TutorCommunication from './TutorCommunication';
 import { api } from '@/app/lib/api';
 import { EditStudentProfileModal } from '@/app/components/dashboard/EditStudentProfileModal';
 import RatingModal from '@/app/components/RatingModal';
@@ -223,13 +225,22 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
           </h1>
           <p className="text-text-secondary text-sm">Welcome back — your classes are pre-scheduled.</p>
         </div>
-        <button
-          onClick={() => scheduleRef.current?.scrollIntoView({ behavior: 'smooth' })}
-          className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 hover:scale-[1.03] active:scale-95 transition-all text-sm"
-        >
-          <Calendar size={16} />
-          View My Schedule
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/students/profile"
+            className="flex items-center gap-2 px-4 py-2.5 bg-surface text-foreground font-bold rounded-2xl border border-border shadow-sm hover:bg-muted transition-all text-sm"
+          >
+            <User size={16} />
+            My Profile
+          </Link>
+          <button
+            onClick={() => scheduleRef.current?.scrollIntoView({ behavior: 'smooth' })}
+            className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20 hover:scale-[1.03] active:scale-95 transition-all text-sm"
+          >
+            <Calendar size={16} />
+            View My Schedule
+          </button>
+        </div>
       </motion.header>
 
       {/* Next class hero */}
@@ -339,34 +350,35 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
               const counts: Record<string, number> = {};
               progressSummary.stickers.forEach((s: string) => { counts[s] = (counts[s] || 0) + 1; });
               
-              const STICKER_MAP: Record<string, { emoji: string; label: string }> = {
-                // Session stickers (normalized: lowercase, no spaces, no extension)
-                crown: { emoji: '👑', label: 'Crown' },
-                diamond: { emoji: '💎', label: 'Diamond' },
-                dinosaur: { emoji: '🦕', label: 'Dino' },
-                flame: { emoji: '🔥', label: 'Flame' },
-                rainbow: { emoji: '🌈', label: 'Rainbow' },
-                rocket: { emoji: '🚀', label: 'Rocket' },
-                shiningstar: { emoji: '🌟', label: 'Shining Star' },
-                star: { emoji: '⭐', label: 'Star' },
-                trophy: { emoji: '🏆', label: 'Trophy' },
-                unicorn: { emoji: '🦄', label: 'Unicorn' },
-                // Legacy keys (in case older records exist)
-                heart: { emoji: '❤️', label: 'Heart' },
-                fire: { emoji: '🔥', label: 'Fire' },
-                brain: { emoji: '🧠', label: 'Genius' },
-                clap: { emoji: '👏', label: 'Bravo' },
-                sparkle: { emoji: '✨', label: 'Sparkle' },
-                thumbsup: { emoji: '👍', label: 'Thumbs Up' },
-                lightbulb: { emoji: '💡', label: 'Bright Idea' },
-                100: { emoji: '💯', label: 'Perfect' },
+              const STICKER_MAP: Record<string, { emoji: string; label: string; image: string }> = {
+                crown: { emoji: '👑', label: 'Crown', image: '/stickers/crown.png' },
+                diamond: { emoji: '💎', label: 'Diamond', image: '/stickers/Diamond.png' },
+                dinosaur: { emoji: '🦕', label: 'Dino', image: '/stickers/Dinosaur.png' },
+                flame: { emoji: '🔥', label: 'Flame', image: '/stickers/Flame.png' },
+                rainbow: { emoji: '🌈', label: 'Rainbow', image: '/stickers/Rainbow.png' },
+                rocket: { emoji: '🚀', label: 'Rocket', image: '/stickers/Rocket.png' },
+                shiningstar: { emoji: '🌟', label: 'Shining Star', image: '/stickers/Shining Star.png' },
+                star: { emoji: '⭐', label: 'Star', image: '/stickers/Star.png' },
+                trophy: { emoji: '🏆', label: 'Trophy', image: '/stickers/Trophy.png' },
+                unicorn: { emoji: '🦄', label: 'Unicorn', image: '/stickers/Unicorn.png' },
+                heart: { emoji: '❤️', label: 'Heart', image: '' },
+                fire: { emoji: '🔥', label: 'Fire', image: '/stickers/Flame.png' },
+                brain: { emoji: '🧠', label: 'Brilliant', image: '' },
+                clap: { emoji: '👏', label: 'Great Job', image: '' },
+                sparkle: { emoji: '✨', label: 'Sparkle', image: '' },
+                thumbsup: { emoji: '👍', label: 'Well Done', image: '' },
+                lightbulb: { emoji: '💡', label: 'Great Idea', image: '' },
               };
 
               return Object.entries(counts).map(([type, count]) => {
-                const info = STICKER_MAP[type] || { emoji: '🏅', label: type };
+                const info = STICKER_MAP[type.toLowerCase()] || STICKER_MAP[type.toLowerCase().replace(' ', '')] || { emoji: '🏅', label: type, image: null };
                 return (
                   <div key={type} className="group relative flex flex-col items-center p-3 rounded-2xl bg-surface border border-yellow-100 dark:border-yellow-900/30 hover:shadow-md transition-all min-w-[72px]">
-                    <span className="text-3xl group-hover:scale-125 transition-transform">{info.emoji}</span>
+                    {info.image ? (
+                      <img src={info.image} alt={info.label} className="w-10 h-10 object-contain group-hover:scale-125 transition-transform" />
+                    ) : (
+                      <span className="text-3xl group-hover:scale-125 transition-transform">{info.emoji}</span>
+                    )}
                     <span className="text-[10px] font-bold text-foreground mt-1">{info.label}</span>
                     {count > 1 && (
                       <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-yellow-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">
@@ -573,8 +585,16 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
           )}
         </motion.div>
 
+      </div>
+
+      {/* Communication & Rewards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <motion.div variants={itemVariants}>
+          <TutorCommunication tutorName={tutorName} currentUserId={user?.id} />
+        </motion.div>
+
         {/* Sticker rewards */}
-        <motion.div variants={itemVariants} className="bg-surface rounded-3xl p-6 border border-border shadow-sm">
+        <motion.div variants={itemVariants} className="bg-surface rounded-3xl p-6 border border-border shadow-sm h-full">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
               <Star size={18} className="text-yellow-500" /> Sticker Rewards
@@ -583,12 +603,32 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
               {stickers.length} earned
             </span>
           </div>
-          <div className="grid grid-cols-6 gap-2">
-            {stickers.map((s: string, i: number) => (
-              <div key={i} className="aspect-square rounded-xl bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/20 flex items-center justify-center text-xl">
-                {s}
-              </div>
-            ))}
+          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2">
+            {stickers.map((s: string, i: number) => {
+              const type = s.toLowerCase().replace(' ', '');
+              const STICKER_MAP: Record<string, { image: string }> = {
+                crown: { image: '/stickers/crown.png' },
+                diamond: { image: '/stickers/Diamond.png' },
+                dinosaur: { image: '/stickers/Dinosaur.png' },
+                flame: { image: '/stickers/Flame.png' },
+                rainbow: { image: '/stickers/Rainbow.png' },
+                rocket: { image: '/stickers/Rocket.png' },
+                shiningstar: { image: '/stickers/Shining Star.png' },
+                star: { image: '/stickers/Star.png' },
+                trophy: { image: '/stickers/Trophy.png' },
+                unicorn: { image: '/stickers/Unicorn.png' },
+              };
+              const img = STICKER_MAP[type]?.image;
+              return (
+                <div key={i} className="aspect-square rounded-xl bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/20 flex items-center justify-center p-2">
+                  {img ? (
+                    <img src={img} alt={s} className="w-full h-full object-contain" />
+                  ) : (
+                    <span className="text-xl">{s}</span>
+                  )}
+                </div>
+              );
+            })}
             {Array.from({ length: placeholders }).map((_, i) => (
               <div key={`ph-${i}`} className="aspect-square rounded-xl bg-gray-100 dark:bg-white/5 border border-dashed border-gray-300 dark:border-white/10 flex items-center justify-center text-gray-300 dark:text-white/20 text-xl">
                 ⭐
@@ -940,19 +980,19 @@ export default function StudentDashboardPage() {
                     const counts: Record<string, number> = {};
                     progressSummary.stickers.forEach((s: string) => { counts[s] = (counts[s] || 0) + 1; });
                     
-                    const STICKER_MAP: Record<string, { emoji: string; label: string }> = {
-                      crown: { emoji: '👑', label: 'Crown' },
-                      diamond: { emoji: '💎', label: 'Diamond' },
-                      dinosaur: { emoji: '🦕', label: 'Dino' },
-                      flame: { emoji: '🔥', label: 'Flame' },
-                      rainbow: { emoji: '🌈', label: 'Rainbow' },
-                      rocket: { emoji: '🚀', label: 'Rocket' },
-                      shiningstar: { emoji: '🌟', label: 'Shining Star' },
-                      star: { emoji: '⭐', label: 'Star' },
-                      trophy: { emoji: '🏆', label: 'Trophy' },
-                      unicorn: { emoji: '🦄', label: 'Unicorn' },
+                    const STICKER_MAP: Record<string, { emoji: string; label: string; image?: string }> = {
+                      crown: { emoji: '👑', label: 'Crown', image: '/stickers/crown.png' },
+                      diamond: { emoji: '💎', label: 'Diamond', image: '/stickers/Diamond.png' },
+                      dinosaur: { emoji: '🦕', label: 'Dino', image: '/stickers/Dinosaur.png' },
+                      flame: { emoji: '🔥', label: 'Flame', image: '/stickers/Flame.png' },
+                      rainbow: { emoji: '🌈', label: 'Rainbow', image: '/stickers/Rainbow.png' },
+                      rocket: { emoji: '🚀', label: 'Rocket', image: '/stickers/Rocket.png' },
+                      shiningstar: { emoji: '🌟', label: 'Shining Star', image: '/stickers/Shining Star.png' },
+                      star: { emoji: '⭐', label: 'Star', image: '/stickers/Star.png' },
+                      trophy: { emoji: '🏆', label: 'Trophy', image: '/stickers/Trophy.png' },
+                      unicorn: { emoji: '🦄', label: 'Unicorn', image: '/stickers/Unicorn.png' },
                       heart: { emoji: '❤️', label: 'Heart' },
-                      fire: { emoji: '🔥', label: 'Fire' },
+                      fire: { emoji: '🔥', label: 'Fire', image: '/stickers/Flame.png' },
                       brain: { emoji: '🧠', label: 'Genius' },
                       clap: { emoji: '👏', label: 'Bravo' },
                       sparkle: { emoji: '✨', label: 'Sparkle' },
@@ -962,10 +1002,15 @@ export default function StudentDashboardPage() {
                     };
 
                     return Object.entries(counts).map(([type, count]) => {
-                      const info = STICKER_MAP[type] || { emoji: '🏅', label: type };
+                      const normalizedType = type.toLowerCase().replace(' ', '');
+                      const info = STICKER_MAP[normalizedType] || { emoji: '🏅', label: type };
                       return (
                         <div key={type} className="group relative flex flex-col items-center p-3 rounded-2xl bg-surface border border-yellow-100 dark:border-yellow-900/30 hover:shadow-md transition-all min-w-[72px]">
-                          <span className="text-3xl group-hover:scale-125 transition-transform">{info.emoji}</span>
+                          {info.image ? (
+                            <img src={info.image} alt={info.label} className="w-10 h-10 object-contain group-hover:scale-125 transition-transform" />
+                          ) : (
+                            <span className="text-3xl group-hover:scale-125 transition-transform">{info.emoji}</span>
+                          )}
                           <span className="text-[10px] font-bold text-foreground mt-1">{info.label}</span>
                           {count > 1 && (
                             <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-yellow-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">

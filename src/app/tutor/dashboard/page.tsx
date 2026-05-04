@@ -26,8 +26,11 @@ import {
   X,
   Upload,
   Loader2,
+  MessageSquare,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import TutorStudentMessages from './TutorStudentMessages';
+import TutorRecentReviews from './TutorRecentReviews';
 
 // ─── Share Notes Modal ───
 function ShareNotesModal({ sessionId, onClose }: { sessionId: string; onClose: () => void }) {
@@ -385,6 +388,26 @@ export default function TutorDashboardPage() {
                 </div>
               </section>
 
+              {/* COMMUNICATION CENTER */}
+              <section className="bg-white/70 dark:bg-slate-900/40 backdrop-blur-2xl border border-white dark:border-white/10 rounded-[3rem] shadow-2xl overflow-hidden">
+                <div className="p-8 md:p-10 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-white/5">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600">
+                      <MessageSquare size={24} />
+                    </div>
+                    <div>
+                      <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                        Communication Center
+                      </h2>
+                      <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Student Inquiries & Feedback</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4 md:p-8">
+                  <TutorStudentMessages currentUserId={user?.id} />
+                </div>
+              </section>
+
               {/* UPCOMING SESSIONS LIST */}
               <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[3rem] p-10">
                 <div className="flex items-center justify-between mb-8">
@@ -497,6 +520,13 @@ export default function TutorDashboardPage() {
                       />
                     </div>
                   </div>
+                </div>
+
+                <div className="mt-10">
+                  <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-6 border-b border-slate-100 dark:border-slate-800 pb-2">
+                    Recent Student Feedback
+                  </h4>
+                  <TutorRecentReviews />
                 </div>
               </section>
 
