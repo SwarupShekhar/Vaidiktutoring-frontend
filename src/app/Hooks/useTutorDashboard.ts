@@ -61,8 +61,7 @@ export function useTutorDashboard() {
     // Normalize "today" to verify calendar date match
     const todayString = now.toDateString();
 
-    console.log('[useTutorDashboard] Today:', todayString);
-    console.log('[useTutorDashboard] All bookings:', bookings);
+
 
     const todaySessions = bookings?.filter((b: any) => {
         const bookingDate = getBookingDate(b);
@@ -84,14 +83,6 @@ export function useTutorDashboard() {
         // If sessionEnd < now, it's expired.
         const hasNotEnded = sessionEnd > now;
 
-        console.log('[useTutorDashboard] Booking:', {
-            id: b.id,
-            date: bookingDate.toDateString(),
-            isSameCalendarDay,
-            hasNotEnded,
-            subject: b.subject_name
-        });
-
         return isSameCalendarDay && hasNotEnded;
     }) || [];
 
@@ -107,12 +98,6 @@ export function useTutorDashboard() {
 
         return isFuture && isNotToday;
     }) || [];
-
-    console.log('[useTutorDashboard] Filtered results:', {
-        todayCount: todaySessions.length,
-        upcomingCount: upcomingBookings.length,
-        totalCount: bookings?.length || 0
-    });
 
     return {
         todaySessions,

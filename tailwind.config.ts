@@ -19,6 +19,8 @@ const config: Config = {
             },
             fontFamily: {
                 luckiest: ['var(--font-luckiest-guy)'],
+                heading: ['var(--font-space-grotesk)', 'sans-serif'],
+                body: ['var(--font-dm-sans)', 'sans-serif'],
             },
             zIndex: {
                 '60': '60',

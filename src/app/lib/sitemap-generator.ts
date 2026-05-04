@@ -248,7 +248,7 @@ async function getBlogs(): Promise<BlogPost[]> {
     const baseUrl =
       process.env.NEXT_PUBLIC_API_URL || "https://vaidiktutoring-backend.onrender.com";
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     const res = await fetch(`${baseUrl}/blogs?page=1&limit=100`, {
       next: { revalidate: 3600 },

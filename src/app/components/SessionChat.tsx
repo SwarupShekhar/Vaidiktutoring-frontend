@@ -95,7 +95,7 @@ export default function SessionChat({ sessionId: propSessionId, socket }: Sessio
         setIsConnected(socket.connected);
 
         const handleNewMessage = (payload: any) => {
-            console.log('[Chat] Message received:', payload);
+
 
             const senderId = payload.senderId || payload.user_id || payload.from_id;
             const isMe = String(senderId) === String(user.sub || user.id);
@@ -180,7 +180,7 @@ export default function SessionChat({ sessionId: propSessionId, socket }: Sessio
 
             if (socket && socket.connected) {
                 socket.emit('sendMessage', payload, (response: any) => {
-                    console.log('[Chat] Socket Ack:', response);
+
                 });
             } else {
                 console.warn('[Chat] Socket not connected, falling back to API');

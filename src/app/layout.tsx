@@ -15,15 +15,28 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import CookieConsentBanner from "./components/CookieConsentBanner";
 import GoogleAnalytics from "./components/GoogleAnalytics";
+import Script from "next/script";
 
 import { ClerkProvider } from "@clerk/nextjs";
-import { Luckiest_Guy } from "next/font/google";
+import { Luckiest_Guy, Space_Grotesk, DM_Sans } from "next/font/google";
 import { Metadata } from "next";
 
 const luckiestGuy = Luckiest_Guy({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-luckiest-guy",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  weight: ["500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+});
+
+const dmSans = DM_Sans({
+  weight: ["400", "500"],
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
 });
 
 export const metadata: Metadata = {
@@ -42,8 +55,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-  // Log Clerk publishable key presence for debugging
-  console.log("[Clerk] Publishable key present:", !!clerkPublishableKey);
 
   // If Clerk key is missing, show a fallback layout without Clerk
   if (!clerkPublishableKey) {
@@ -52,7 +63,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     );
     return (
       <html lang="en" suppressHydrationWarning>
-        <body suppressHydrationWarning className={`${luckiestGuy.variable}`}>
+        <body suppressHydrationWarning className={`${luckiestGuy.variable} ${spaceGrotesk.variable} ${dmSans.variable}`}>
           <StyledComponentsRegistry>
             <QueryProvider>
               <AuthProvider>
@@ -76,7 +87,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider publishableKey={clerkPublishableKey}>
       <html lang="en" suppressHydrationWarning>
-        <body suppressHydrationWarning className={`${luckiestGuy.variable}`}>
+        <body suppressHydrationWarning className={`${luckiestGuy.variable} ${spaceGrotesk.variable} ${dmSans.variable}`}>
           <StyledComponentsRegistry>
             <QueryProvider>
               <AuthProvider>
@@ -92,37 +103,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </AuthProvider>
             </QueryProvider>
           </StyledComponentsRegistry>
-          {/* Server-rendered org schema — plain <script> so Google sees it in Wave 1 HTML */}
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "Organization",
-                name: "StudyHours",
-                url: "https://studyhours.com",
-                logo: "https://studyhours.com/Studuhourslogo.svg",
-                description:
-                  "StudyHours is a structured, outcome-driven K-12 tutoring platform that blends expert educators with intelligent learning systems.",
-                sameAs: [
-                  "https://twitter.com/studyhours",
-                  "https://facebook.com/studyhours",
-                  "https://linkedin.com/company/studyhours",
-                ],
-                areaServed: [
-                  { "@type": "Country", name: "United Kingdom" },
-                  { "@type": "Country", name: "Australia" },
-                  { "@type": "Country", name: "Singapore" },
-                  { "@type": "Country", name: "United Arab Emirates" },
-                ],
-                contactPoint: {
-                  "@type": "ContactPoint",
-                  contactType: "customer service",
-                  email: "support@studyhours.com",
-                },
-              }),
-            }}
-          />
+
           <Analytics />
           <SpeedInsights />
           <CookieConsentBanner />

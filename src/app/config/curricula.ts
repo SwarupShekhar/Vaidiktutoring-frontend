@@ -1,57 +1,63 @@
 export const CURRICULA = [
   {
     id: 'global', flag: '🌍', country: 'Global / Other',
-    hero: 'World-class 1-on-1 tutoring for K-12 students',
-    subline: 'Expert-guided personalized attention for IB, IGCSE, and national curricula worldwide.',
-    gradeLabel: 'Grade', gradeRange: 'KG–Grade 12',
+    hero: 'Your child deserves a tutor who truly understands them',
+    subline: 'Expert 1-on-1 sessions for IB, IGCSE, A-Levels & national curricula, online, any timezone.',
+    gradeLabel: 'Grade', gradeRange: 'KG-Grade 12',
     exams: ['IB', 'IGCSE', 'A-Levels', 'SAT', 'AP'],
     subjects: ['Mathematics', 'English', 'Science', 'Biology', 'Chemistry', 'Physics', 'Languages', 'Humanities'],
-    subjectNote: 'We adapt to any international or national syllabus'
+    subjectNote: 'We adapt to any international or national syllabus',
+    pricingHint: '3 Free Premium Sessions',
   },
   {
     id: 'uk', flag: '🇬🇧', country: 'United Kingdom',
-    hero: 'Expert tutoring aligned to the UK National Curriculum',
-    subline: 'GCSE and A-Level specialists for Years 1–13',
-    gradeLabel: 'Year', gradeRange: 'Year 1–13',
+    hero: 'Expert tutors for GCSE & A-Level: results you can measure',
+    subline: 'Specialist tutors for Years 1-13 who focus on your child\'s gaps, not a generic lesson plan.',
+    gradeLabel: 'Year', gradeRange: 'Year 1-13',
     exams: ['GCSEs', 'A-Levels', 'SATs'],
     subjects: ['Maths', 'English', 'Science', 'History', 'Geography', 'Biology', 'Chemistry', 'Physics', 'French', 'Spanish'],
-    subjectNote: null
+    subjectNote: null,
+    pricingHint: '3 Free Premium Sessions',
   },
   {
     id: 'australia', flag: '🇦🇺', country: 'Australia',
-    hero: 'ACARA-aligned tutoring for Australian students',
-    subline: 'Foundation to Year 10 across all 8 learning areas — NAPLAN, HSC, VCE and ATAR preparation',
-    gradeLabel: 'Year', gradeRange: 'Foundation–Year 10',
+    hero: 'NAPLAN, HSC & VCE prep with tutors who know the curriculum',
+    subline: 'Foundation to Year 10 across all 8 learning areas: real progress, not just homework help.',
+    gradeLabel: 'Year', gradeRange: 'Foundation-Year 10',
     exams: ['NAPLAN', 'HSC', 'VCE', 'ATAR'],
     subjects: ['Maths', 'English', 'Science', 'HASS', 'Biology', 'Chemistry', 'Physics', 'Digital Technologies'],
-    subjectNote: 'Aligned to the Australian Curriculum Version 9.0'
+    subjectNote: 'Aligned to the Australian Curriculum Version 9.0',
+    pricingHint: '3 Free Premium Sessions',
   },
   {
     id: 'singapore', flag: '🇸🇬', country: 'Singapore',
-    hero: 'MOE-aligned tutoring for Singapore students',
-    subline: 'PSLE and O-Level specialists — Primary 1 to Secondary 5 with 21st Century Competency focus',
-    gradeLabel: 'Primary/Secondary', gradeRange: 'Primary 1–Secondary 5',
+    hero: 'PSLE & O-Level specialists who build confidence, not just grades',
+    subline: 'Primary 1 to Secondary 5: structured sessions aligned to MOE syllabuses.',
+    gradeLabel: 'Primary/Secondary', gradeRange: 'Primary 1-Secondary 5',
     exams: ['PSLE', 'O-Levels', 'N-Levels', 'A-Levels'],
     subjects: ['English', 'Maths', 'Science', 'Mother Tongue', 'Social Studies', 'Additional Maths', 'Combined Science', 'Geography', 'History'],
-    subjectNote: 'Aligned to MOE Singapore syllabuses'
+    subjectNote: 'Aligned to MOE Singapore syllabuses',
+    pricingHint: '3 Free Premium Sessions',
   },
   {
     id: 'middleeast', flag: '🇦🇪', country: 'UAE / Middle East',
-    hero: 'Multi-curriculum tutoring for UAE and GCC students',
-    subline: 'Supporting UAE-MoE, IGCSE, IB, American, and Indian curricula across KG to Grade 12',
-    gradeLabel: 'Grade', gradeRange: 'KG–Grade 12',
+    hero: 'IGCSE, IB & CBSE tutors who match your school\'s syllabus exactly',
+    subline: 'KG to Grade 12 across UAE-MoE, American, British & Indian curricula: one platform, every board.',
+    gradeLabel: 'Grade', gradeRange: 'KG-Grade 12',
     exams: ['IGCSE', 'A-Levels', 'IB', 'CBSE', 'AP', 'UAE-MoE'],
     subjects: ['Maths', 'English', 'Science', 'Arabic', 'Physics', 'Chemistry', 'Biology', 'Social Studies', 'Islamic Studies'],
-    subjectNote: 'Curriculum-agnostic — we map to your school syllabus'
+    subjectNote: 'Curriculum-agnostic: we map to your school syllabus',
+    pricingHint: '3 Free Premium Sessions',
   },
   {
     id: 'southafrica', flag: '🇿🇦', country: 'South Africa',
-    hero: 'CAPS-aligned tutoring for South African students',
-    subline: 'Grade R to Matric — NSC and IEB specialists',
-    gradeLabel: 'Grade', gradeRange: 'Grade R–Grade 12',
+    hero: 'From Grade R to Matric: tutors who know CAPS inside out',
+    subline: 'NSC and IEB specialists who close gaps and build exam-ready confidence.',
+    gradeLabel: 'Grade', gradeRange: 'Grade R-Grade 12',
     exams: ['Matric', 'NSC', 'IEB'],
     subjects: ['Maths', 'English', 'Physical Sciences', 'Life Sciences', 'Geography', 'History', 'Accounting', 'Business Studies'],
-    subjectNote: 'Aligned to the CAPS curriculum'
+    subjectNote: 'Aligned to the CAPS curriculum',
+    pricingHint: '3 Free Premium Sessions',
   }
 ]
 export const DEFAULT_CURRICULUM = 'global'

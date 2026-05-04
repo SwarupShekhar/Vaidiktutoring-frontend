@@ -236,9 +236,6 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
             }
         } catch (e: any) {
             console.error('Booking Error:', e);
-            if (e.response && e.response.data) {
-                console.error('Validation Errors:', JSON.stringify(e.response.data, null, 2));
-            }
             const msg = e.response?.data?.message || 'Failed to book session. Please try again.';
             setError(msg);
             setSubmitting(false);
