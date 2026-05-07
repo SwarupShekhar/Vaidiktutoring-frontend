@@ -1,9 +1,11 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Mail, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function ContactPage() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
   return (
     <main className="min-h-screen pt-40 pb-32 px-6 bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background">
       {/* Header Section */}
@@ -36,6 +38,58 @@ export default function ContactPage() {
           <p className="mt-6 text-text-secondary dark:text-slate-400 font-medium opacity-60 text-center">
             We typically respond within 12–24 hours.
           </p>
+        </div>
+      </div>
+
+      {/* FAQ Section */}
+      <div className="max-w-3xl mx-auto mb-24 px-4">
+        <h2 className="text-3xl md:text-5xl font-black text-center text-deep-navy dark:text-white mb-12 tracking-tight">
+          Frequently Asked <span className="text-sapphire">Questions</span>
+        </h2>
+        <div className="space-y-4">
+          {[
+            {
+              question: "How fast does StudyHours reply to support emails?",
+              answer: "We typically respond to all support emails within 12 to 24 hours. For enrolled students and parents, we also provide direct real-time communication channels with their dedicated tutoring coordinators."
+            },
+            {
+              question: "Can I schedule a free diagnostic consultation before enrolling?",
+              answer: "Yes, absolutely! We offer a free, no-obligation academic diagnostic call. During this call, our experienced advisors assess your child's current level, identify learning gaps, and structure a custom learning plan paired with the perfect tutor."
+            },
+            {
+              question: "What curriculums and school systems do you support?",
+              answer: "StudyHours offers specialized 1-on-1 tutoring for K-12. We support regional and international systems including the Australian Curriculum (VCE, HSC, QCE, WACE), Singapore MOE, UAE MOE, Saudi Ministry Curriculum, as well as IB, IGCSE, GCSE, and A-Levels."
+            },
+            {
+              question: "How do your online tutoring sessions work?",
+              answer: "All tutoring sessions are conducted on our custom-built, secure learning classroom. Tutors and students collaborate via an interactive whiteboard, real-time shared document editors, and high-fidelity video/audio feeds optimized for a premium educational experience."
+            }
+          ].map((faq, idx) => (
+            <div 
+              key={idx}
+              className="border border-gray-100 dark:border-white/5 rounded-2xl bg-white dark:bg-slate-900 overflow-hidden shadow-sm transition-all hover:border-sapphire/30"
+            >
+              <button
+                onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
+                className="w-full text-left px-8 py-6 flex justify-between items-center font-bold text-lg md:text-xl text-deep-navy dark:text-white hover:text-sapphire transition-colors gap-4"
+              >
+                <span>{faq.question}</span>
+                <span className="text-2xl text-sapphire transition-transform duration-300 select-none">
+                  {openIndex === idx ? "−" : "+"}
+                </span>
+              </button>
+              
+              <div 
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  openIndex === idx ? "max-h-[500px] border-t border-gray-100 dark:border-white/5 opacity-100" : "max-h-0 opacity-0"
+                }`}
+              >
+                <p className="px-8 py-6 text-sm md:text-base text-text-secondary dark:text-slate-400 font-medium leading-relaxed bg-slate-50/50 dark:bg-slate-900/50">
+                  {faq.answer}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

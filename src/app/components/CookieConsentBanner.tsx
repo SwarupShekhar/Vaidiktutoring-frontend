@@ -67,7 +67,7 @@ export default function CookieConsentBanner() {
                         We use essential cookies to keep the platform running and analytics cookies to understand how you use StudyHours so we can improve it. We do not use advertising cookies.
                     </p>
                     <p className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-widest font-black">
-                        Learn more in our <Link href="/cookies" className="underline text-primary hover:text-sapphire transition-colors">Cookie Policy</Link>
+                        Learn more in our <Link href="/legal/cookies" className="underline text-primary hover:text-sapphire transition-colors">Cookie Policy</Link>
                     </p>
                 </div>
                 
