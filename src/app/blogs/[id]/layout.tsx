@@ -12,7 +12,7 @@ export async function generateMetadata(props: BlogLayoutProps): Promise<Metadata
   const { id: slug } = params;
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://vaidiktutoring-backend.onrender.com';
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.studyhours.com';
     const res = await fetch(`${baseUrl}/blogs/${slug}`, {
       next: { revalidate: 3600 }, // Revalidate hourly
     });

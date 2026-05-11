@@ -335,7 +335,7 @@ export default function SessionPage({ params }: SessionProps) {
 
         const API_URL = (process.env.NEXT_PUBLIC_API_URL || 
                         process.env.NEXT_PUBLIC_API_BASE_URL || 
-                        'https://vaidiktutoring-backend.onrender.com').replace(/\/$/, '');
+                        'https://api.studyhours.com').replace(/\/$/, '');
         const SOCKET_URL = `${API_URL}/sessions`;
 
 

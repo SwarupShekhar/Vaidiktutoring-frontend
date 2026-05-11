@@ -245,7 +245,7 @@ export function generateSitemapEntries(
  */
 async function getBlogs(): Promise<BlogPost[]> {
   const baseUrl =
-    process.env.NEXT_PUBLIC_API_URL || "https://vaidiktutoring-backend.onrender.com";
+    process.env.NEXT_PUBLIC_API_URL || "https://api.studyhours.com";
 
   // Use a very short timeout for sitemap generation to avoid blocking the build
   const timeoutMs = 5000;

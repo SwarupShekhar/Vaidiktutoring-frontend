@@ -12,7 +12,7 @@ test.describe('Tutoring Session PDF sharing', () => {
             },
             {
                 name: 'user_role',
-                value: 'admin',
+                value: 'tutor',
                 domain: 'localhost',
                 path: '/',
             }
@@ -24,11 +24,11 @@ test.describe('Tutoring Session PDF sharing', () => {
                 status: 200,
                 contentType: 'application/json',
                 body: JSON.stringify({
-                    id: 'mock-admin-id',
-                    email: 'admin@vaidiktutoring.com',
-                    role: 'admin',
+                    id: 'mock-tutor-id',
+                    email: 'tutor@vaidiktutoring.com',
+                    role: 'tutor',
                     first_name: 'Mock',
-                    last_name: 'Admin'
+                    last_name: 'Tutor'
                 }),
             });
         });
@@ -56,7 +56,7 @@ test.describe('Tutoring Session PDF sharing', () => {
         await page.goto('/session/test-session-id');
 
         // Check if session page loaded
-        await expect(page.locator('h1, h2, div')).toContainText(/Session|Meeting|Whiteboard/i);
+        await expect(page.locator('body')).toContainText(/Session|Meeting|Whiteboard/i);
 
         // Simulate taking a snapshot/sharing PDF
         // Based on previous logs, the button might have "Share PDF" or "Snapshot" text
