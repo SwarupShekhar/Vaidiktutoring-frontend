@@ -54,7 +54,7 @@ export default function TutorCommunication({ tutorName, currentUserId }: { tutor
   };
 
   return (
-    <div className="bg-surface rounded-3xl border border-border shadow-sm flex flex-col h-[500px]">
+    <div id="tutor-chat-section" className="bg-surface rounded-3xl border border-border shadow-sm flex flex-col h-[500px]">
       {/* Header */}
       <div className="p-6 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -114,6 +114,7 @@ export default function TutorCommunication({ tutorName, currentUserId }: { tutor
       <div className="p-4 bg-muted/30 border-t border-border">
         <form onSubmit={handleSend} className="relative">
           <textarea
+            id="tutor-chat-textarea"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Type your question..."

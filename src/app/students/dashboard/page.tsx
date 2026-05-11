@@ -569,7 +569,15 @@ function EnrolledDashboard({ studentProfile, enrollment, upcomingSessions, pastS
                 <p className="font-bold text-foreground">{assignedTutor.name}</p>
                 <p className="text-xs text-text-secondary">Your assigned tutor</p>
               </div>
-              <button className="flex items-center gap-1.5 px-4 py-2 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 rounded-xl text-sm font-medium hover:bg-indigo-200 dark:hover:bg-indigo-500/30 transition-all">
+              <button 
+                onClick={() => {
+                  document.getElementById('tutor-chat-section')?.scrollIntoView({ behavior: 'smooth' });
+                  setTimeout(() => {
+                    document.getElementById('tutor-chat-textarea')?.focus();
+                  }, 400);
+                }}
+                className="flex items-center gap-1.5 px-4 py-2 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 rounded-xl text-sm font-medium hover:bg-indigo-200 dark:hover:bg-indigo-500/30 transition-all"
+              >
                 <MessageCircle size={14} /> Message
               </button>
             </div>
