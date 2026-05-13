@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata, ResolvingMetadata } from 'next';
 import Link from 'next/link';
+import { draftMode } from 'next/headers';
 import BlogPostRenderer from './BlogPostRenderer';
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.studyhours.com').replace(/\/$/, '');
@@ -13,9 +14,18 @@ export async function generateMetadata(
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     const { id } = await params;
+    const isDraft = (await draftMode()).isEnabled;
+    const previewSecret = process.env.PREVIEW_SECRET || 'vaidikeduservicespvtltd_preview_2026_key';
+    
+    const fetchOptions: RequestInit = isDraft
+        ? { 
+            cache: 'no-store', 
+            headers: { 'x-preview-secret': previewSecret } 
+          }
+        : { next: { revalidate: 60 } };
     
     try {
-        const res = await fetch(`${API_URL}/blogs/${id}`, { next: { revalidate: 60 } });
+        const res = await fetch(`${API_URL}/blogs/${id}`, fetchOptions);
         if (!res.ok) return { 
             title: 'Blog Not Found | StudyHours',
             robots: { index: false, follow: true },
@@ -65,12 +75,21 @@ export async function generateMetadata(
 
 export default async function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
+    const isDraft = (await draftMode()).isEnabled;
+    const previewSecret = process.env.PREVIEW_SECRET || 'vaidikeduservicespvtltd_preview_2026_key';
+    
+    const fetchOptions: RequestInit = isDraft
+        ? { 
+            cache: 'no-store', 
+            headers: { 'x-preview-secret': previewSecret } 
+          }
+        : { next: { revalidate: 60 } };
 
     let blog = null;
     let error = false;
 
     try {
-        const res = await fetch(`${API_URL}/blogs/${id}`, { next: { revalidate: 60 } }); // revalidate every 60s
+        const res = await fetch(`${API_URL}/blogs/${id}`, fetchOptions);
         if (res.ok) {
             blog = await res.json();
 

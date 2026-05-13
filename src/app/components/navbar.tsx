@@ -336,6 +336,19 @@ export default function Navbar() {
               </Link>
             ))}
 
+            <Link
+              key="Explore Hub"
+              href="/subjects"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`px-3 py-2.5 rounded-lg text-sm font-extrabold tracking-wide transition-all flex items-center gap-2 bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500/20 border border-indigo-500/20`}
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              </span>
+              Explore Hub
+            </Link>
+
             {/* Mobile Resources Submenu - Tiered Accordion Style */}
             <div className="py-2 space-y-1">
               {resourceGroups.map((group) => (

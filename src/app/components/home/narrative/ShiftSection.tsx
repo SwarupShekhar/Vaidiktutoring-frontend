@@ -14,11 +14,10 @@ export default function ShiftSection() {
                     <div className="lg:w-1/2">
                         <FadeUpSection>
                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-4 block">Our Difference</span>
-                            <h2 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter mb-8 leading-[0.9]">
+                            <h2 className="text-4xl md:text-6xl font-black text-foreground tracking-tighter mb-8 leading-[1.1] md:leading-[0.95]">
                                 In most classrooms, children wait to be noticed.<br />
                                 <span className="text-text-secondary/50">In our system, they are always seen.</span>
                             </h2>
-
                             <div className="space-y-6 max-w-lg">
                                 <p className="text-lg text-foreground/80 font-medium leading-relaxed">
                                     Real learning happens in a loop<br />
@@ -115,10 +114,10 @@ export default function ShiftSection() {
 
                         {/* Floating Metric */}
                         <motion.div
-                            initial={{ x: 20, opacity: 0 }}
-                            whileInView={{ x: 0, opacity: 1 }}
-                            transition={{ delay: 1, duration: 0.8 }}
-                            className="absolute -right-8 -bottom-8 bg-foreground text-background p-6 rounded-3xl shadow-2xl z-20"
+                             initial={{ x: 20, opacity: 0 }}
+                             whileInView={{ x: 0, opacity: 1 }}
+                             transition={{ delay: 1, duration: 0.8 }}
+                             className="absolute right-4 bottom-4 lg:-right-8 lg:-bottom-8 bg-foreground text-background p-6 rounded-3xl shadow-2xl z-20"
                         >
                             <p className="text-3xl font-black tracking-tighter">4.2x</p>
                             <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">Higher student engagement</p>

@@ -54,6 +54,14 @@ export default clerkMiddleware(async (auth, req) => {
             return NextResponse.redirect(url, 301);
         }
 
+        // Fast-path bypass for guest users visiting public routes.
+        // If there are no active Clerk session or manual login cookies, we can safely bypass Clerk auth() overhead.
+        const cookies = req.headers.get("cookie") || "";
+        const hasClerkCookie = cookies.includes("__session") || cookies.includes("clerk") || cookies.includes("manual_auth_token");
+        if (!hasClerkCookie && isPublicRoute(req)) {
+            return NextResponse.next();
+        }
+
         const authObject = await auth();
         const { userId, sessionClaims, redirectToSignIn } = authObject;
 
