@@ -4,16 +4,17 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import HeroSection from './HeroSection';
-import HighDosageIntroStrip from './HighDosageIntroStrip';
-import ProblemSection from './ProblemSection';
-import ShiftSection from './ShiftSection';
-import HowItWorksSection from './HowItWorksSection';
-import SessionOutputs from './SessionOutputs';
-import TrustSection from './TrustSection';
-import ResultsSection from './ResultsSection';
-import ResultsProofSection from './ResultsProofSection';
-import ReviewCarousel from './ReviewCarousel';
-import FinalCTASection from './FinalCTASection';
+
+const ProblemSection = dynamic(() => import('./ProblemSection'), { ssr: true });
+const ShiftSection = dynamic(() => import('./ShiftSection'), { ssr: true });
+const TrustSection = dynamic(() => import('./TrustSection'), { ssr: true });
+const ResultsSection = dynamic(() => import('./ResultsSection'), { ssr: true });
+const ResultsProofSection = dynamic(() => import('./ResultsProofSection'), { ssr: true });
+const ReviewCarousel = dynamic(() => import('./ReviewCarousel'), { ssr: true });
+const FinalCTASection = dynamic(() => import('./FinalCTASection'), { ssr: true });
+const HighDosageIntroStrip = dynamic(() => import('./HighDosageIntroStrip'), { ssr: true });
+const HowItWorksSection = dynamic(() => import('./HowItWorksSection'), { ssr: true });
+const SessionOutputs = dynamic(() => import('./SessionOutputs'), { ssr: true });
 
 const HighDosageDefinitionSection = dynamic(
   () => import('./HighDosageDefinitionSection'),

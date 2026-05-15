@@ -3,19 +3,22 @@ import "./globals.css";
 import { ReactNode } from "react";
 import QueryProvider from "./providers";
 import { AuthProvider } from "./context/AuthContext";
-import Navbar from "./components/navbar";
-import Footer from "./components/Footer";
-import AuthRoleRedirect from "./components/AuthRoleRedirect";
-import StyledComponentsRegistry from "./lib/registry";
-import { NotificationProvider } from "./context/NotificationContext";
-import GlobalNotification from "./components/GlobalNotification";
-import VerificationModal from "./components/auth/VerificationModal";
-import VerificationBanner from "./components/auth/VerificationBanner";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import CookieConsentBanner from "./components/CookieConsentBanner";
-import GoogleAnalytics from "./components/GoogleAnalytics";
-import Script from "next/script";
+import dynamic from "next/dynamic";
+import StyledComponentsRegistry from "./lib/registry";
+import { NotificationProvider } from "./context/NotificationContext";
+
+const Navbar = dynamic(() => import("./components/navbar"), { ssr: true });
+const Footer = dynamic(() => import("./components/Footer"), { ssr: true });
+const CookieConsentBanner = dynamic(() => import("./components/CookieConsentBanner"), { ssr: false });
+const GoogleAnalytics = dynamic(() => import("./components/GoogleAnalytics"), { ssr: false });
+const GlobalNotification = dynamic(() => import("./components/GlobalNotification"), { ssr: false });
+const VerificationModal = dynamic(() => import("./components/auth/VerificationModal"), { ssr: false });
+const VerificationBanner = dynamic(() => import("./components/auth/VerificationBanner"), { ssr: false });
+const AuthRoleRedirect = dynamic(() => import("./components/AuthRoleRedirect"), { ssr: false });
+
+
 
 import { ClerkProvider } from "@clerk/nextjs";
 import { Luckiest_Guy, Space_Grotesk, DM_Sans } from "next/font/google";
