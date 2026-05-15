@@ -284,7 +284,7 @@ export default function HeroSection() {
                   alt="Student learning"
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 33vw"
+                  sizes="150px"
                 />
               </motion.div>
 
@@ -301,7 +301,7 @@ export default function HeroSection() {
                   alt="Online tutoring session"
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 33vw"
+                  sizes="150px"
                 />
               </motion.div>
 

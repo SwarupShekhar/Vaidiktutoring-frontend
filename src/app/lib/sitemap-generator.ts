@@ -262,7 +262,7 @@ async function getBlogs(): Promise<BlogPost[]> {
     // Create the actual fetch promise
     const fetchPromise = (async () => {
       try {
-        const res = await fetch(`${baseUrl}/blogs?page=1&limit=100`, {
+        const res = await fetch(`${baseUrl}/blogs?page=1&limit=100&status=PUBLISHED`, {
           next: { revalidate: 3600 },
         });
         if (!res.ok) return [];

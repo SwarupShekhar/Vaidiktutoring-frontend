@@ -69,7 +69,7 @@ export const blogsApi = {
     // Get all published blogs (Public)
     getAll: async (page = 1, limit = 9, category?: string) => {
         try {
-            const params: any = { page, limit };
+            const params: any = { page, limit, status: 'PUBLISHED' };
             if (category && category !== 'All') params.category = category;
 
             console.log('[Blogs API] Fetching blogs with params:', params);
