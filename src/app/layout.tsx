@@ -9,14 +9,9 @@ import dynamic from "next/dynamic";
 import StyledComponentsRegistry from "./lib/registry";
 import { NotificationProvider } from "./context/NotificationContext";
 
-const Navbar = dynamic(() => import("./components/navbar"), { ssr: true });
-const Footer = dynamic(() => import("./components/Footer"), { ssr: true });
-const CookieConsentBanner = dynamic(() => import("./components/CookieConsentBanner"), { ssr: false });
-const GoogleAnalytics = dynamic(() => import("./components/GoogleAnalytics"), { ssr: false });
-const GlobalNotification = dynamic(() => import("./components/GlobalNotification"), { ssr: false });
-const VerificationModal = dynamic(() => import("./components/auth/VerificationModal"), { ssr: false });
-const VerificationBanner = dynamic(() => import("./components/auth/VerificationBanner"), { ssr: false });
-const AuthRoleRedirect = dynamic(() => import("./components/AuthRoleRedirect"), { ssr: false });
+import { ClientSideComponents } from "./components/ClientSideComponents";
+import Navbar from "./components/navbar";
+import Footer from "./components/Footer";
 
 
 
@@ -71,6 +66,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <QueryProvider>
               <AuthProvider>
                 <NotificationProvider>
+                  <ClientSideComponents />
                   <Navbar />
                   {children}
                   <Footer />
@@ -80,8 +76,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </StyledComponentsRegistry>
           <Analytics />
           <SpeedInsights />
-          <CookieConsentBanner />
-          <GoogleAnalytics />
         </body>
       </html>
     );
@@ -94,12 +88,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <StyledComponentsRegistry>
             <QueryProvider>
               <AuthProvider>
-                <AuthRoleRedirect />
                 <NotificationProvider>
+                  <ClientSideComponents />
                   <Navbar />
-                  <VerificationBanner />
-                  <GlobalNotification />
-                  <VerificationModal />
                   {children}
                   <Footer />
                 </NotificationProvider>
@@ -109,8 +100,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
           <Analytics />
           <SpeedInsights />
-          <CookieConsentBanner />
-          <GoogleAnalytics />
         </body>
       </html>
     </ClerkProvider>
