@@ -249,10 +249,11 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
     };
 
     const steps = [
-        { title: 'Context', subtitle: 'Program & details' },
-        { title: 'Schedule', subtitle: 'Select Time' },
-        { title: 'Review', subtitle: 'Confirm Request' }
+        { title: 'Details', subtitle: 'Assessment focus' },
+        { title: 'Time', subtitle: 'Select slot' },
+        { title: 'Confirm', subtitle: 'Ready to go' }
     ];
+
 
     return (
         <div className="w-full max-w-xl mx-auto">
@@ -260,9 +261,10 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
             <div className="mb-10 flex flex-col items-center justify-between gap-6">
                 <div className="text-center">
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-400 to-violet-400">
-                        New Session
+                        Schedule Your Diagnostic
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Request a session in 3 simple steps.</p>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Set up your assessment in 3 simple steps.</p>
+
                 </div>
 
                 {/* Steps Visual */}
@@ -322,8 +324,9 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                         >
                             <div className="max-w-xl mx-auto space-y-6">
                                 <h2 className="text-xl font-bold flex items-center gap-2 mb-6 text-gray-900 dark:text-white">
-                                    <Layers className="text-blue-500 dark:text-blue-400" size={20} /> Session Configuration
+                                    <Layers className="text-blue-500 dark:text-blue-400" size={20} /> Assessment Focus
                                 </h2>
+
 
                                 {/* Program Dropdown */}
                                 <GlassSelect
@@ -404,7 +407,8 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                             className="max-w-2xl mx-auto space-y-8 relative z-10"
                         >
                             <div className="text-center mb-8">
-                                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Ready to Book?</h2>
+                                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Ready for your Diagnostic?</h2>
+
                                 <p className="text-gray-500 dark:text-gray-400">Please review session details before confirming.</p>
                             </div>
 
@@ -504,7 +508,8 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                         disabled={submitting}
                         className="px-8 py-3 rounded-xl bg-linear-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 text-white font-bold shadow-lg shadow-green-900/40 transform hover:scale-105 transition-all text-lg flex items-center gap-2 disabled:opacity-50"
                     >
-                        {submitting ? 'Creating Session...' : 'Confirm & Book'} <CheckCircle size={20} />
+                        {submitting ? 'Creating Session...' : 'Confirm Assessment'} <CheckCircle size={20} />
+
                     </button>
                 )}
             </div>

@@ -141,9 +141,10 @@ export default clerkMiddleware(async (auth, req) => {
                 (role === 'parent' || role === 'student') &&
                 !pathname.startsWith('/verify-phone') &&
                 !pathname.startsWith('/api/') &&
-                !pathname.startsWith('/onboarding') &&
                 pathname !== '/login' &&
                 pathname !== '/signup';
+
+
 
             if (needsPhoneGate) {
                 return NextResponse.redirect(new URL('/verify-phone', req.url));
