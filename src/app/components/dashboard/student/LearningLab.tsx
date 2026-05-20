@@ -194,18 +194,16 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
                   </p>
                 </div>
               )}
-
-              {iframeUrl && (
-                <iframe
-                  src={iframeUrl}
-                  title={activeTool.title}
-                  loading="lazy"
-                  onLoad={() => setIframeLoading(false)}
-                  allow="fullscreen; autoplay; xr-spatial-tracking; accelerometer; gyroscope"
-                  className="w-full h-full border-0 rounded-3xl"
-                  sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-                />
-              )}
+              
+              <iframe
+                src={activeTool.url}
+                title={activeTool.title}
+                loading="lazy"
+                onLoad={() => setIframeLoading(false)}
+                allow="fullscreen; autoplay; xr-spatial-tracking; accelerometer; gyroscope"
+                className="w-full h-full border-0 rounded-3xl"
+                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+              />
             </div>
           </motion.div>
         )}
