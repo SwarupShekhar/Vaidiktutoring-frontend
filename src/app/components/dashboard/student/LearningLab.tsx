@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Atom, Microscope, X, Loader2, PlayCircle, ExternalLink, Lock, CheckCircle2 } from 'lucide-react';
@@ -19,6 +17,7 @@ const itemVariants = {
 export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isTutor = false }) => {
   const router = useRouter();
   const [activeTool, setActiveTool] = useState<InteractiveTool | null>(null);
+  const [iframeUrl, setIframeUrl] = useState<string | null>(null);
   const [iframeLoading, setIframeLoading] = useState(true);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
@@ -27,6 +26,7 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setActiveTool(null);
+        setIframeUrl(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -40,6 +40,10 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
     }
     setActiveTool(tool);
     setIframeLoading(true);
+    // Defer loading the iframe URL to let the modal animate in smoothly
+    setTimeout(() => {
+      setIframeUrl(tool.url);
+    }, 400);
   };
 
   const getIcon = (iconName: string) => {
@@ -65,8 +69,8 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
             Studyhours Learning Lab
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            {isTutor 
-              ? 'Use these interactive models to demonstrate concepts live during lessons.' 
+            {isTutor
+              ? 'Use these interactive models to demonstrate concepts live during lessons.'
               : 'Immersive 3D modules and interactive tools to master complex scientific concepts.'}
           </p>
         </div>
@@ -86,8 +90,8 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
             className="group relative rounded-3xl bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-400 dark:hover:border-indigo-800/80 transition-all duration-300 p-6 flex flex-col justify-between overflow-hidden"
           >
             {/* Background dynamic blur glow on hover */}
-            <div className="absolute -top-16 -right-16 w-32 h-32 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-            
+            <div className="absolute -top-16 -right-16 w-32 h-32 bg-indigo-500/5 dark:bg-indigo-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500 will-change-transform" />
+
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center border border-slate-200/50 dark:border-slate-700/50 group-hover:scale-110 transition-transform duration-300">
@@ -102,7 +106,7 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
                   </p>
                 </div>
               </div>
-              
+
               <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
                 {tool.description}
                 {isTutor && (
@@ -121,7 +125,7 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
                 {!isEnrolled && <Lock size={12} />}
                 <PlayCircle size={14} /> Launch Lab
               </button>
-              
+
               <a
                 href={tool.url}
                 target="_blank"
@@ -142,7 +146,7 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col bg-slate-950/95 backdrop-blur-md p-4 sm:p-6"
+            className="fixed inset-0 z-50 flex flex-col bg-slate-950 p-4 sm:p-6"
           >
             {/* Header controls inside fullscreen portal */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-4 shrink-0">
@@ -169,9 +173,9 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
                 >
                   <ExternalLink size={14} /> Open in New Tab
                 </a>
-                
+
                 <button
-                  onClick={() => setActiveTool(null)}
+                  onClick={() => { setActiveTool(null); setIframeUrl(null); }}
                   className="p-2 bg-slate-800 hover:bg-slate-700 hover:text-red-500 rounded-xl text-slate-400 transition-colors"
                 >
                   <X size={20} />
