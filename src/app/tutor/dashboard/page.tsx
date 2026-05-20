@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { useAuthContext } from '@/app/context/AuthContext';
@@ -31,6 +32,11 @@ import {
 import { toast } from 'sonner';
 import TutorStudentMessages from './TutorStudentMessages';
 import TutorRecentReviews from './TutorRecentReviews';
+
+const LearningLab = dynamic(
+  () => import('@/app/components/dashboard/student/LearningLab').then(mod => mod.LearningLab),
+  { ssr: false }
+);
 
 // ─── Share Notes Modal ───
 function ShareNotesModal({ sessionId, onClose }: { sessionId: string; onClose: () => void }) {
@@ -386,6 +392,11 @@ export default function TutorDashboardPage() {
                     </div>
                   )}
                 </div>
+              </section>
+
+              {/* LEARNING LAB WIDGET */}
+              <section className="bg-white/70 dark:bg-slate-900/40 backdrop-blur-2xl border border-white dark:border-white/10 rounded-[3rem] shadow-2xl p-8 md:p-10">
+                <LearningLab isEnrolled={true} isTutor={true} />
               </section>
 
               {/* COMMUNICATION CENTER */}

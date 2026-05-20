@@ -6,6 +6,8 @@ import { X, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { addDays, startOfWeek, isToday, isTomorrow, format } from 'date-fns';
 
+import dynamic from 'next/dynamic';
+
 // Modular Components
 import { DashboardHeader } from './DashboardHeader';
 import { SessionHero } from './SessionHero';
@@ -15,6 +17,11 @@ import { StickerRewards } from './StickerRewards';
 import { TutorCommunicationSection } from './TutorCommunicationSection';
 import { MaterialsVaultSection } from './MaterialsVaultSection';
 import { WeeklySchedule } from './WeeklySchedule';
+
+const LearningLab = dynamic(
+  () => import('./LearningLab').then(mod => mod.LearningLab),
+  { ssr: false }
+);
 
 interface EnrolledDashboardProps {
   studentProfile: any;
@@ -177,6 +184,10 @@ export const EnrolledDashboard: React.FC<EnrolledDashboardProps> = ({
         streak={streak}
         sessionsRemaining={enrollment?.sessionsRemaining}
       />
+
+      <motion.div variants={itemVariants}>
+        <LearningLab isEnrolled={isEnrolled} />
+      </motion.div>
 
       {/* Topics covered this month */}
       {progressSummary?.topicsThisMonth && progressSummary.topicsThisMonth.length > 0 && (

@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
+import dynamic from 'next/dynamic';
+
 // Modular Components
 import { DashboardHeader } from './DashboardHeader';
 import { SessionHero } from './SessionHero';
@@ -17,6 +19,11 @@ import { UpcomingSchedule } from './UpcomingSchedule';
 import { PastSessionsSidebar } from './PastSessionsSidebar';
 import { TrialBanner } from '@/app/components/dashboard/TrialBanner';
 import { UpgradeNudge } from '@/app/components/dashboard/UpgradeNudge';
+
+const LearningLab = dynamic(
+  () => import('./LearningLab').then(mod => mod.LearningLab),
+  { ssr: false }
+);
 
 interface TrialDashboardProps {
   user: any;
@@ -168,6 +175,10 @@ export const TrialDashboard: React.FC<TrialDashboardProps> = ({
             totalHours={stats.totalHours}
             streak={progressSummary?.streakWeeks || 0}
           />
+
+          <motion.div variants={itemVariants}>
+            <LearningLab isEnrolled={false} />
+          </motion.div>
 
           <AchievementSection progress={progressSummary} />
 
