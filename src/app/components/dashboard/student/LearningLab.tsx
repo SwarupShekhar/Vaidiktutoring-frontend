@@ -125,7 +125,7 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
               <a
                 href={tool.url}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-bold transition-all text-center flex items-center gap-1.5"
               >
                 <ExternalLink size={12} /> External
@@ -164,7 +164,7 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
                 <a
                   href={activeTool.url}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="hidden sm:flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-bold transition-all"
                 >
                   <ExternalLink size={14} /> Open in New Tab
