@@ -196,7 +196,7 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
                 title={activeTool.title}
                 loading="lazy"
                 onLoad={() => setIframeLoading(false)}
-                allow="fullscreen; autoplay; xr-spatial-tracking"
+                allow="fullscreen; autoplay; xr-spatial-tracking; accelerometer; gyroscope"
                 className="w-full h-full border-0 rounded-3xl"
                 sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
               />
