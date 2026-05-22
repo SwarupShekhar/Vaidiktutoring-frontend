@@ -42,6 +42,7 @@ const isPublicRoute = createRouteMatcher([
     '/australia(.*)',
     '/saudi(.*)',
     '/resources(.*)',
+    '/studio(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {

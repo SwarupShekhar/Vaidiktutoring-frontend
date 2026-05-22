@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'api.clerk.com' },
       // Mixkit media domains
       { protocol: 'https', hostname: 'assets.mixkit.co' },
+      // Sanity image CDN
+      { protocol: 'https', hostname: 'cdn.sanity.io' },
     ],
   },
   // Redirects
@@ -75,12 +77,12 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://*.clerk.accounts.dev https://clerk.studyhours.com https://js.clerk.com https://challenges.cloudflare.com https://turnstile.cloudflare.com https://*.daily.co https://www.googletagmanager.com https://www.google-analytics.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://*.clerk.accounts.dev https://clerk.studyhours.com https://js.clerk.com https://challenges.cloudflare.com https://turnstile.cloudflare.com https://*.daily.co https://www.googletagmanager.com https://www.google-analytics.com https://*.sanity.io",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.daily.co",
               "img-src 'self' data: blob: https: https://*.daily.co",
               "font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com https://*.daily.co data:",
-              "connect-src 'self' data: blob: https://api.razorpay.com https://*.clerk.accounts.dev https://clerk.studyhours.com https://api.clerk.com https://challenges.cloudflare.com https://turnstile.cloudflare.com https://api.studyhours.com wss://api.studyhours.com https://va.vercel-scripts.com https://*.daily.co wss://*.daily.co https://placehold.co https://ipapi.co https://www.google-analytics.com https://*.sentry.io https://ip-api.com https://*.blob.core.windows.net https://*.northflank.app wss://*.northflank.app https://zperiod.studyhours.com https://cellstudio.studyhours.com https://zperiod-alpha.vercel.app",
-              "frame-src 'self' https://checkout.razorpay.com https://api.razorpay.com https://*.clerk.accounts.dev https://clerk.studyhours.com https://challenges.cloudflare.com https://turnstile.cloudflare.com https://*.daily.co https://zperiod.studyhours.com https://cellstudio.studyhours.com https://zperiod-alpha.vercel.app",
+              "connect-src 'self' data: blob: https://api.razorpay.com https://*.clerk.accounts.dev https://clerk.studyhours.com https://api.clerk.com https://challenges.cloudflare.com https://turnstile.cloudflare.com https://api.studyhours.com wss://api.studyhours.com https://va.vercel-scripts.com https://*.daily.co wss://*.daily.co https://placehold.co https://ipapi.co https://www.google-analytics.com https://*.sentry.io https://ip-api.com https://*.blob.core.windows.net https://*.northflank.app wss://*.northflank.app https://zperiod.studyhours.com https://cellstudio.studyhours.com https://zperiod-alpha.vercel.app https://*.sanity.io https://cdn.sanity.io wss://*.sanity.io",
+              "frame-src 'self' https://checkout.razorpay.com https://api.razorpay.com https://*.clerk.accounts.dev https://clerk.studyhours.com https://challenges.cloudflare.com https://turnstile.cloudflare.com https://*.daily.co https://zperiod.studyhours.com https://cellstudio.studyhours.com https://zperiod-alpha.vercel.app https://*.sanity.io",
               "media-src 'self' data: blob: https://assets.mixkit.co https://commondatastorage.googleapis.com https://*.daily.co https://*.blob.core.windows.net",
               "worker-src 'self' blob:",
             ].join('; '),
