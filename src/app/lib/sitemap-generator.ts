@@ -281,6 +281,46 @@ async function getBlogs(): Promise<BlogPost[]> {
 }
 
 /**
+ * Fetch dynamic PDF resource lead magnets from backend
+ */
+interface SitemapResource {
+  slug: string;
+}
+
+async function getResources(): Promise<SitemapResource[]> {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_API_URL || "https://api.studyhours.com";
+
+  const timeoutMs = 5000;
+  
+  try {
+    const timeoutPromise = new Promise<SitemapResource[]>((resolve) =>
+      setTimeout(() => {
+        console.warn(`Sitemap: Resource fetch timed out after ${timeoutMs}ms. Skipping dynamic resources.`);
+        resolve([]);
+      }, timeoutMs)
+    );
+
+    const fetchPromise = (async () => {
+      try {
+        const res = await fetch(`${baseUrl}/cms/resources`, {
+          next: { revalidate: 3600 },
+        });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
+      } catch (e) {
+        return [];
+      }
+    })();
+
+    return await Promise.race([fetchPromise, timeoutPromise]);
+  } catch (error) {
+    return [];
+  }
+}
+
+/**
  * Get all sitemap entries combining manual, auto-generated, and blog entries
  */
 export async function getAllSitemapEntries(): Promise<MetadataRoute.Sitemap> {
@@ -313,8 +353,9 @@ async function getAllSitemapEntriesWithUrl(baseUrl: string): Promise<MetadataRou
 
   const now = new Date().toISOString();
 
-  // 1. Get blog posts from backend
+  // 1. Get blog posts and programmatic landing pages from backend
   const blogs = await getBlogs();
+  const resources = await getResources();
 
   // 2. Generate auto-entries from app directory
   const autoEntries = generateSitemapEntries(baseUrl, now);
@@ -339,7 +380,17 @@ async function getAllSitemapEntriesWithUrl(baseUrl: string): Promise<MetadataRou
       priority: 0.8,
     }));
 
-  // 5. Combine: manual entries override auto-entries for the same URL
+  // 5. Create dynamic resource entries
+  const resourceEntries: MetadataRoute.Sitemap = resources
+    .filter((res: SitemapResource) => res.slug)
+    .map((res: SitemapResource) => ({
+      url: `${baseUrl}/resources/${res.slug}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+
+  // 6. Combine: manual entries override auto-entries for the same URL
   const sitemapMap = new Map<string, SitemapEntry>();
 
   // First add auto-entries
@@ -355,5 +406,5 @@ async function getAllSitemapEntriesWithUrl(baseUrl: string): Promise<MetadataRou
   // Convert to array
   const staticPages = Array.from(sitemapMap.values());
 
-  return [...staticPages, ...blogEntries];
+  return [...staticPages, ...blogEntries, ...resourceEntries];
 }

@@ -8,6 +8,22 @@ const API_URL = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_
 
 export const revalidate = 3600; // Cache page statically on server, refresh in background at most hourly
 
+// Pre-render the top blog pages at build time
+export async function generateStaticParams() {
+    try {
+        const res = await fetch(`${API_URL}/blogs?page=1&limit=20&status=PUBLISHED`);
+        if (!res.ok) return [];
+        const result = await res.json();
+        const blogs = Array.isArray(result) ? result : (result.data || []);
+        return blogs.map((blog: { id: string | number }) => ({
+            id: String(blog.id),
+        }));
+    } catch (e) {
+        console.warn("Failed to generate static params for blogs:", e);
+        return [];
+    }
+}
+
 // Generate SEO Metadata dynamically on the Server
 export async function generateMetadata(
     { params }: { params: Promise<{ id: string }> },

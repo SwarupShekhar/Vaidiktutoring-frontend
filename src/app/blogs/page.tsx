@@ -2,8 +2,7 @@ import { Metadata } from "next";
 import BlogsPageClient from "./BlogsPageClient";
 import { blogsApi } from "@/app/lib/blogs";
 
-export const dynamic = 'force-dynamic'; // Never pre-render at build time — backend may be cold
-export const revalidate = 0;
+export const revalidate = 3600; // Cache on edge for 1 hour, re-compile in background
 
 export const metadata: Metadata = {
   title: "Educational Insights & Study Tips | StudyHours Blog",
