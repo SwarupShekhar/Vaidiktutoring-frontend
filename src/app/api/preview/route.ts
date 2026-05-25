@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const secret = searchParams.get('secret');
     const slug = searchParams.get('slug');
+    const type = searchParams.get('type') || 'blogPost';
 
     // Verify the secret against environment variable
     const previewSecret = process.env.PREVIEW_SECRET || 'vaidikeduservicespvtltd_preview_2026_key';
@@ -21,6 +22,7 @@ export async function GET(request: NextRequest) {
     const draft = await draftMode();
     draft.enable();
 
-    // Redirect to the dynamic blog path
-    redirect(`/blogs/${slug}`);
+    // Dynamically route to correct visual template
+    const redirectPath = type === 'landingPage' ? `/resources/${slug}` : `/blogs/${slug}`;
+    redirect(redirectPath);
 }

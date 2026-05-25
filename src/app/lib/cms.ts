@@ -93,9 +93,9 @@ export interface ReferralStatus {
 
 export const cmsApi = {
   // Fetch programmatic landing page details
-  getLandingPage: async (slug: string): Promise<LandingPage> => {
+  getLandingPage: async (slug: string, preview = false): Promise<LandingPage> => {
     try {
-      const res = await api.get(`/cms/landing-pages/${slug}`);
+      const res = await api.get(`/cms/landing-pages/${slug}${preview ? '?preview=true' : ''}`);
       return res.data;
     } catch (error: any) {
       console.error(`[CMS API] Failed to fetch landing page for slug '${slug}':`, error);

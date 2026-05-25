@@ -3,6 +3,7 @@
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
 import { visionTool } from '@sanity/vision'
+import { presentationTool } from 'sanity/presentation'
 
 import { blogPostSchema } from './src/sanity/schemas/blogPost'
 import { pdfResourceSchema } from './src/sanity/schemas/pdfResource'
@@ -39,6 +40,13 @@ export default defineConfig({
               .title('Authors')
               .child(S.documentTypeList('author').title('Authors')),
           ]),
+    }),
+    presentationTool({
+      previewUrl: {
+        previewMode: {
+          enable: '/api/preview?secret=vaidikeduservicespvtltd_preview_2026_key',
+        },
+      },
     }),
     visionTool(),
   ],

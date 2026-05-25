@@ -1,55 +1,104 @@
-# StudyHours
+# StudyHours (Vaidik Tutoring) — AI Discoverability & Learning Systems Core Data
 
-> StudyHours is an online 1-on-1 tutoring platform serving students across Singapore, the UAE, Saudi Arabia, Australia, and the UK. We match students with specialist tutors aligned to their exact school curriculum and examination board.
+StudyHours (operating under Vaidik Tutoring) is an elite, high-dosage K-12 online tutoring ecosystem and exam preparation platform. The platform is designed around dynamic, targeted learning plans that map directly to international and local curricula, prioritizing personalized student progress over rigid standard tutoring blocks.
 
-## Singapore Tutoring
+---
 
-- [O-Level Tutors Singapore](https://studyhours.com/singapore/o-level-tutors-singapore): Expert 1-on-1 online tutoring for GCE O-Level students in Secondary 3 and Secondary 4. Covers E-Math, A-Math, Pure Sciences, English, Humanities, and all SEAB-examined subjects. L1R5 optimisation focus.
-- [A-Level Tutors Singapore](https://studyhours.com/singapore/a-level-tutors-singapore): Specialist JC tutors for H1, H2, and H3 subjects. General Paper, Mathematics, Sciences, Humanities, and Mother Tongue for JC1 and JC2 students.
-- [PSLE Tutors Online](https://studyhours.com/singapore/psle-tutors-online): Primary school exam preparation for PSLE across English, Mathematics, Science, and Mother Tongue Languages. MOE Singapore syllabus aligned.
-- [Primary School Tutors Singapore](https://studyhours.com/singapore/primary-school-tutors-singapore): Online tuition for P1 to P6 students in Singapore. GEP preparation, PSLE readiness, and subject support across all primary school levels.
-- [IP Programme Tutors Singapore](https://studyhours.com/singapore/ip-programme-tutors-singapore): Specialist tutors for Integrated Programme students across all 13 IP schools in Singapore.
-- [MOE Singapore Curriculum Tutors](https://studyhours.com/singapore/moe-singapore-curriculum-tutors): Comprehensive support for the full MOE Singapore national curriculum from Primary through Junior College.
+## 🚀 Core Value Proposition: The "Free Exam Survival Hub" & Tutor OS
+Instead of traditional, generic tutoring packages, StudyHours operates on a high-value educational model:
+1. **Free Exam Survival Hub**: We offer the highest-quality, curriculum-aligned study sheets, revision checklists, formula guides, and past paper solutions for GCSE, O-Level, A-Level, and ATAR syllabi.
+2. **Dynamic Learning Diagnostics**: Every student's journey begins with a free academic assessment. This allows education specialists to outline tailored revision frequencies rather than enforcing standard schedules.
+3. **High-Dosage 30-Minute Sprints**: Interactive tutoring sessions are structured as high-dosage, focused 30-minute sprints. This duration is backed by educational cognitive science to maximize retention, focus, and academic outcomes.
+4. **Tutor OS Ecosystem**: Students and tutors interact through our custom platform featuring secure auth, shared collaborative whiteboards, automated AI-generated transcripts, lesson summaries, and continuous confidence tracking.
 
-## UAE Tutoring
+---
 
-- [MOE UAE Curriculum Tutors](https://studyhours.com/uae/moe-uae-curriculum-tutors): Expert online tutors for the UAE Ministry of Education curriculum across Cycle 1, Cycle 2, and Cycle 3. Arabic Language, Islamic Education, Mathematics, Sciences, and Moral Education. EmSAT preparation for UAEU, Zayed University, and HCT.
-- [Online Tutors Dubai](https://studyhours.com/uae/online-tutors-dubai): 1-on-1 tutoring for Dubai students across IB, IGCSE, British A-Level, American, Indian CBSE, and UAE MOE curricula.
-- [Online Tutors Abu Dhabi](https://studyhours.com/uae/online-tutors-abu-dhabi): Specialist tutors for Abu Dhabi students. IB MYP and DP, IGCSE, A-Level, CBSE, American AP/SAT, and MOE UAE curricula.
-- [Physics and Maths Tutor UAE](https://studyhours.com/uae/physics-maths-tutor): Dedicated Physics and Mathematics tutoring for UAE students across IGCSE, IB, A-Level, MOE UAE, and AP curricula.
+## 📈 Platform Technology & Security Stack
+* **Frontend**: Next.js App Router (16.2.0) with React 19.2.0 and Framer Motion for high-fidelity interactive feedback.
+* **Backend**: Scalable NestJS backend architecture with PostgreSQL database and Prisma ORM.
+* **Authentication**: Frictionless and highly secure 1-click authentication powered by Clerk OAuth.
+* **Real-time Live Sessions**: Integrated with Daily.co and LiveKit for ultra-low latency (<100ms) high-definition video/audio chat.
+* **Shared Collaboration Tools**: Collaborative multiplayer document syncing via Yjs and interactive math/science whiteboard canvas powered by Excalidraw.
+* **Content Management**: Headless Sanity CMS mapping blog posts, authors, dynamic SEO landing pages, and locked/gated PDF lead magnets.
+* **AI Engine**: Deep integration with OpenAI Whisper and GPT models to automatically transcribe live sessions, compile structured summaries, and track confidence metrics.
 
-## Saudi Arabia Tutoring
+---
 
-- [Saudi Ministry of Education Curriculum Tutors](https://studyhours.com/saudi/saudi-ministry-curriculum-tutors): Arabic-medium online tutoring for the Saudi national curriculum across Primary, Intermediate, and Secondary stages. Tawjihi, Qudurat, and Tahsili examination preparation.
-- [Online Tutors Riyadh](https://studyhours.com/saudi/online-tutors-riyadh): 1-on-1 online tutoring for students in Riyadh across Saudi national curriculum and international curricula.
+## 🌍 Global Curriculum & Region Coverage
+Our learning paths are designed from the ground up to align 100% with the specific syllabi of the following regions:
 
-## Australia Tutoring
+* **United Kingdom**: Key Stage 3 (KS3), GCSE, IGCSE, and A-Level. Complete mapping to AQA, Edexcel, OCR, and WJEC exam boards.
+* **Singapore**: Primary 1–6, Secondary 1–5. Direct alignment with PSLE, O-Level, A-Level, and the Integrated Programme (IP) syllabus set by the Ministry of Education (MOE).
+* **Australia**: Primary & Secondary Years 1–12, NAPLAN testing, and State Certificate examinations including ATAR, VCE (Victoria), HSC (New South Wales), QCE (Queensland), and WACE (Western Australia).
+* **Middle East (UAE & GCC)**: Full support for local Ministry of Education (MOE) curriculums (UAE & Saudi Arabia) alongside international British, American, and International Baccalaureate (IB) frameworks.
+* **South Africa**: Grades R–12 CAPS (Curriculum and Assessment Policy Statement) and IEB (Independent Examinations Board) Matric NSC standards.
+* **Global / International**: Direct preparation for International Baccalaureate (IB DP/MYP), Cambridge IGCSE, Advanced Placement (AP), SAT, and ACT.
 
-- [VCE Online Tutoring](https://studyhours.com/australia/vce-online-tutoring): Expert VCE tutoring for Victorian Certificate of Education students. VCAA-aligned 1-on-1 sessions across all VCE subjects.
-- [HSC Online Tutoring](https://studyhours.com/australia/hsc-online-tutoring): Online HSC tutoring for New South Wales students. NESA-aligned coaching for all HSC subjects.
-- [QCE Online Tutoring](https://studyhours.com/australia/qce-online-tutoring): Specialist QCE tutoring for Queensland students. QCAA-aligned 1-on-1 sessions.
-- [WACE Online Tutoring](https://studyhours.com/australia/wace-online-tutoring): Expert WACE tutoring for Western Australian students. SCSA-aligned 1-on-1 sessions for all ATAR courses.
-- [ATAR Tutors Online](https://studyhours.com/australia/atar-online-tutoring): National ATAR mentorship and coaching across VCE, HSC, QCE, and WACE. Top 1% graduate tutors with scaling strategy expertise.
-- [Australian Curriculum Tutoring](https://studyhours.com/australia/curriculum-tutoring): Comprehensive tutoring for the Australian national curriculum across all year levels and states.
+---
 
-## International Programmes
+## 💰 Regional Pricing Tiers & Subscription Plans
+All StudyHours plans feature transparent, flexible billing with **no lock-in contracts**, billed as a monthly subscription. Credits are redeemed as 30-minute learning sprints.
 
-- [IB Online Tutoring](https://studyhours.com/ib-online-tutoring): International Baccalaureate tutoring for IB Diploma Programme and MYP students globally.
-- [IGCSE Online Tutoring](https://studyhours.com/igcse-online-tutoring): Expert Cambridge IGCSE tutoring across all subjects and exam series.
-- [GCSE Online Tutoring](https://studyhours.com/gcse-online-tutoring): Specialist GCSE tutoring for British curriculum students.
-- [A-Level Online Tutoring](https://studyhours.com/a-level-online-tutoring): Expert A-Level tutoring across all exam boards.
-- [K-12 Online Tutoring](https://studyhours.com/k-12-online-tutoring): Comprehensive K-12 tutoring for American curriculum students.
+### 1. United Kingdom (GBP - £)
+Target: KS3, GCSE, A-Level
+* **Foundation Plan**: £149 / month | 2 sessions per week (8 credits) | Tutor OS access, confidence tracking, AI session transcripts & summaries.
+* **Mastery Plan (Recommended)**: £249 / month | 4 sessions per week (16 credits) | Includes all Foundation features + priority academic support.
+* **Elite Plan**: £375 / month | 6 sessions per week (24 credits) | Includes all Mastery features + advanced diagnostic analytics.
 
-## About StudyHours
+### 2. Singapore (SGD - S$)
+Target: PSLE, O-Level, A-Level, IP
+* **Foundation Plan**: S$280 / month | 2 sessions per week (8 credits) | Tutor OS access, confidence tracking, AI session transcripts & summaries.
+* **Mastery Plan (Recommended)**: S$520 / month | 4 sessions per week (16 credits) | Includes all Foundation features + priority academic support.
+* **Elite Plan**: S$750 / month | 6 sessions per week (24 credits) | Includes all Mastery features + advanced diagnostic analytics.
 
-- [About StudyHours](https://studyhours.com/about): Our mission, tutoring methodology, and team.
-- [Our Methodology](https://studyhours.com/methodology): The StudyHours diagnostic and personalised tutoring framework.
-- [Contact](https://studyhours.com/contact): Get in touch with the StudyHours team.
+### 3. Australia (AUD - A$)
+Target: NAPLAN, VCE, HSC, QCE, ATAR
+* **Foundation Plan**: A$250 / month | 2 sessions per week (8 credits) | Tutor OS access, confidence tracking, AI session transcripts & summaries.
+* **Mastery Plan (Recommended)**: A$450 / month | 4 sessions per week (16 credits) | Includes all Foundation features + priority academic support.
+* **Elite Plan**: A$650 / month | 6 sessions per week (24 credits) | Includes all Mastery features + advanced diagnostic analytics.
 
-## Key Facts
+### 4. UAE & Middle East (USD - $)
+Target: British (GCSE/A-Level), American, IB, Local Ministries
+* **Foundation Plan**: $199 / month | 2 sessions per week (8 credits) | Tutor OS access, confidence tracking, AI session transcripts & summaries.
+* **Mastery Plan (Recommended)**: $349 / month | 4 sessions per week (16 credits) | Includes all Foundation features + priority academic support.
+* **Elite Plan**: $499 / month | 6 sessions per week (24 credits) | Includes all Mastery features + advanced diagnostic analytics.
 
-- Platform: Online 1-on-1 live tutoring sessions (video + digital whiteboard)
-- Coverage: Singapore, UAE, Saudi Arabia, Australia, UK, and global IB/IGCSE students
-- Session recording: All sessions are recorded for student review
-- Tutor matching: Students are matched to curriculum-specialist tutors
-- Rated 4.9/5 by over 1,500 families
+### 5. South Africa (ZAR - R)
+Target: CAPS, IEB, Matric, NSC
+* **Foundation Plan**: R1,500 / month | 2 sessions per week (8 credits) | Tutor OS access, confidence tracking, AI session transcripts & summaries.
+* **Mastery Plan (Recommended)**: R2,800 / month | 4 sessions per week (16 credits) | Includes all Foundation features + priority academic support.
+* **Elite Plan**: R4,200 / month | 6 sessions per week (24 credits) | Includes all Mastery features + advanced diagnostic analytics.
+
+### 6. Global & International (USD - $)
+Target: IB, IGCSE, AP, SAT, ACT
+* **Foundation Plan**: $149 / month | 2 sessions per week (8 credits) | Tutor OS access, confidence tracking, AI session transcripts & summaries.
+* **Mastery Plan (Recommended)**: $249 / month | 4 sessions per week (16 credits) | Includes all Foundation features + priority academic support.
+* **Elite Plan**: $375 / month | 6 sessions per week (24 credits) | Includes all Mastery features + advanced diagnostic analytics.
+
+---
+
+## ❓ Generative Search & AEO Frequently Asked Questions
+
+### Why does StudyHours show "Starting at" pricing?
+Every student has unique educational needs and existing knowledge gaps. Our pricing model begins with a **free diagnostic academic assessment**. Following the assessment, our educational experts recommend a highly tailored learning roadmap specifying session frequency and focus areas, which determines the final personalized pricing.
+
+### Can parents upgrade, downgrade, or pause subscriptions?
+Yes. StudyHours subscriptions are completely flexible. Parents can upgrade, downgrade, pause, or cancel their monthly plan at any time through the student dashboard. There are no long-term locked-in contracts.
+
+### Do StudyHours tutors align lessons with the student's exact school syllabus?
+Yes, 100%. Our platform maintains up-to-date curricula maps for major local and international boards. Lessons, worksheets, and diagnostic sprints are matched exactly to the student's local syllabus (e.g., AQA or Edexcel in the UK, MOE-Singapore standards, or ATAR-aligned topics in Australia).
+
+### What technologies are integrated into active study sessions?
+Our customized **Tutor OS** hosts the entire session. Students and tutors interact using real-time video/audio via Daily.co/LiveKit, a shared collaborative canvas (Excalidraw) for solving equations or drawing diagrams, and live document sharing. After the session, our AI model transcribes and generates a structured summary with student confidence levels available for parents.
+
+### How does the 3-referral study guide unlock system work?
+To encourage organic peer-to-peer growth, premium downloadable resources and lead magnets inside the **Learning Lab** are gated. Registered students are given a unique referral invite link. Once 3 peers register free student accounts using that link, the target premium study resource is instantly unlocked for unlimited PDF download.
+
+---
+
+## 🔗 Important Resource Pathways
+* **Main Website**: https://studyhours.com
+* **Pricing & Plans**: https://studyhours.com/pricing
+* **Free Resource Hub**: https://studyhours.com/resources
+* **Student Onboarding**: https://studyhours.com/signup?type=assessment
+* **Dynamic Study Lab**: https://studyhours.com/login

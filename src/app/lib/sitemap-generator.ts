@@ -296,14 +296,14 @@ async function getResources(): Promise<SitemapResource[]> {
   try {
     const timeoutPromise = new Promise<SitemapResource[]>((resolve) =>
       setTimeout(() => {
-        console.warn(`Sitemap: Resource fetch timed out after ${timeoutMs}ms. Skipping dynamic resources.`);
+        console.warn(`Sitemap: Dynamic landing pages fetch timed out after ${timeoutMs}ms. Skipping dynamic resources.`);
         resolve([]);
       }, timeoutMs)
     );
 
     const fetchPromise = (async () => {
       try {
-        const res = await fetch(`${baseUrl}/cms/resources`, {
+        const res = await fetch(`${baseUrl}/cms/landing-pages`, {
           next: { revalidate: 3600 },
         });
         if (!res.ok) return [];

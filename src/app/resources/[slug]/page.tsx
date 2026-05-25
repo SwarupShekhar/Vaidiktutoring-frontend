@@ -2,6 +2,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Script from 'next/script';
+import { draftMode } from 'next/headers';
 import { cmsApi } from '@/app/lib/cms';
 import ResourceLandingClient from './ResourceLandingClient';
 
@@ -16,8 +17,10 @@ interface PageProps {
 // Generate dynamic metadata for search engines using HSL curated SEO fields
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
+  const draft = await draftMode();
+  const isPreview = draft.isEnabled;
   try {
-    const page = await cmsApi.getLandingPage(slug);
+    const page = await cmsApi.getLandingPage(slug, isPreview);
     if (!page) {
       return {
         title: 'Resource Not Found | StudyHours',
@@ -57,10 +60,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
+  const draft = await draftMode();
+  const isPreview = draft.isEnabled;
   let page = null;
 
   try {
-    page = await cmsApi.getLandingPage(slug);
+    page = await cmsApi.getLandingPage(slug, isPreview);
   } catch (error) {
     console.error(`Failed to fetch landing page for slug: ${slug}`, error);
     return notFound();
