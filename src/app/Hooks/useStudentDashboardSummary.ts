@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/app/lib/api';
+import { useAuthContext } from '@/app/context/AuthContext';
 import type { CreditStatus } from '@/app/types/credits';
 import type { ProgressSummary } from './useStudentProgress';
 
@@ -57,6 +58,11 @@ export interface DashboardSummaryData {
 }
 
 export function useStudentDashboardSummary() {
+  // Wait for auth to be bootstrapped before firing the API call.
+  // Without this, the query fires immediately with no token (401) and
+  // isLoading flips to false with no data — causing the blank white screen.
+  const { token, loading: authLoading } = useAuthContext();
+
   const {
     data,
     isLoading,
@@ -68,6 +74,7 @@ export function useStudentDashboardSummary() {
       const res = await api.get('/students/me/dashboard-summary');
       return res.data;
     },
+    enabled: !!token && !authLoading, // 🔑 Only run when auth is ready
     staleTime: 30_000, // Cache active data for 30 seconds
     refetchInterval: 60_000, // Auto-refetch in background every 60s
   });
@@ -137,7 +144,7 @@ export function useStudentDashboardSummary() {
     bookings: normalizedBookings,
     upcomingSessions,
     pastSessions,
-    isLoading,
+    isLoading: isLoading || authLoading, // Treat auth bootstrapping as a loading state too
     error,
     refetch,
   };
