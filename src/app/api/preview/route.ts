@@ -14,8 +14,11 @@ export async function GET(request: NextRequest) {
         return new Response('Invalid preview token', { status: 401 });
     }
 
+    // If no slug is specified, enable draft mode and redirect to home (allows visual editor connection)
     if (!slug) {
-        return new Response('Slug parameter is required', { status: 400 });
+        const draft = await draftMode();
+        draft.enable();
+        redirect('/');
     }
 
     // Enable Next.js Draft Mode
