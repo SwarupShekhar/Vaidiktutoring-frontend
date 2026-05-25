@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import api from '@/app/lib/api';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/app/lib/api';
+import { useAuthContext } from '@/app/context/AuthContext';
 import { Star, Quote } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -17,22 +18,17 @@ interface Review {
 }
 
 export default function TutorRecentReviews() {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user, loading: authLoading } = useAuthContext();
+  const isReady = !!user && !authLoading;
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const res = await api.get('/tutor/reviews');
-        setReviews(res.data);
-      } catch (err) {
-        console.error('Failed to fetch reviews:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchReviews();
-  }, []);
+  const { data: reviews = [], isLoading: loading } = useQuery<Review[]>({
+    queryKey: ['tutor-reviews', user?.id],
+    queryFn: async () => {
+      const res = await api.get('/tutor/reviews');
+      return Array.isArray(res.data) ? res.data : [];
+    },
+    enabled: isReady,
+  });
 
   if (loading) {
     return (
