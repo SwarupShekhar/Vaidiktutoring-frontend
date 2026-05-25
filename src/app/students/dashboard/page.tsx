@@ -5,10 +5,7 @@ import dynamic from 'next/dynamic';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { useAuthContext } from '@/app/context/AuthContext';
-import useStudentDashboard from '@/app/Hooks/useStudentDashboard';
-import { useCreditStatus } from '@/app/Hooks/useCreditStatus';
-import { useStudentProgress } from '@/app/Hooks/useStudentProgress';
-import { useQuery } from '@tanstack/react-query';
+import { useStudentDashboardSummary } from '@/app/Hooks/useStudentDashboardSummary';
 import { useRouter } from 'next/navigation';
 import { api } from '@/app/lib/api';
 import { toast } from 'sonner';
@@ -61,52 +58,45 @@ export default function StudentDashboardPage() {
   const { user } = useAuthContext();
   const router = useRouter();
   
-  // Data Fetching
-  const { upcomingSessions, pastSessions, bookings, loading: dashboardLoading } = useStudentDashboard();
-  const { status: creditStatus, refetch: refetchCredits } = useCreditStatus();
-  const { progressSummary, refetch: refetchProgress } = useStudentProgress();
+  // Data Fetching via the optimized parallelized backend summary query
+  const {
+    studentProfile,
+    creditStatus,
+    progressSummary,
+    enrollmentStatus: enrollment,
+    pendingRatings,
+    bookings,
+    upcomingSessions,
+    pastSessions,
+    isLoading: isGlobalLoading,
+    refetch,
+  } = useStudentDashboardSummary();
 
   // Local State
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
-  const [studentProfile, setStudentProfile] = useState<any>(null);
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
   const [showLearningWizard, setShowLearningWizard] = useState(false);
-  const [pendingRatings, setPendingRatings] = useState<any[]>([]);
   const [showRatingModal, setShowRatingModal] = useState(false);
   
   const prevBadgesRef = useRef<string[]>([]);
 
-  // Initial Data
+  // Initial Onboarding Dismiss State
   useEffect(() => {
-    api.get('/ratings/pending')
-      .then((res) => {
-        const data = Array.isArray(res.data) ? res.data : [];
-        if (data.length > 0) {
-          setPendingRatings(data);
-          setShowRatingModal(true);
-        }
-      })
-      .catch(() => {});
-
     const d = localStorage.getItem('onboarding_dismissed');
     if (d) setOnboardingDismissed(true);
   }, []);
+
+  // Show Rating Modal automatically if pending ratings exist
+  useEffect(() => {
+    if (pendingRatings && pendingRatings.length > 0) {
+      setShowRatingModal(true);
+    }
+  }, [pendingRatings]);
 
   // Redirect admin
   useEffect(() => {
     if (user?.role === 'admin') router.push('/admin/dashboard');
   }, [user?.role, router]);
-
-  const fetchProfile = useCallback(async () => {
-    try {
-      const res = await api.get('/students/me');
-      setStudentProfile(res.data);
-    } catch {}
-  }, []);
-
-  useEffect(() => {
-    if (user) fetchProfile();
-  }, [user, fetchProfile]);
 
   // Badge Celebration
   useEffect(() => {
@@ -130,17 +120,6 @@ export default function StudentDashboardPage() {
     }
   }, [progressSummary?.badges]);
 
-  // Enrollment Status
-  const { data: enrollment, isLoading: enrollmentLoading } = useQuery({
-    queryKey: ['enrollment-status', studentProfile?.id],
-    queryFn: async () => {
-      const res = await api.get(`/students/${studentProfile.id}/enrollment-status`);
-      return res.data;
-    },
-    enabled: !!studentProfile?.id,
-    staleTime: 60_000,
-  });
-
   const isEnrolled = enrollment?.status === 'learning';
 
   // Onboarding Logic
@@ -156,7 +135,6 @@ export default function StudentDashboardPage() {
     ];
   }, [studentProfile, progressSummary, upcomingSessions, pastSessions]);
 
-
   const showOnboarding = useMemo(() => {
     return !onboardingDismissed && 
            creditStatus?.mode === 'trial_active' && 
@@ -165,10 +143,7 @@ export default function StudentDashboardPage() {
 
   const completedStepsCount = onboardingSteps.filter(s => s.complete).length;
 
-  // Master Loading State
-  const isGlobalLoading = dashboardLoading || enrollmentLoading || !studentProfile;
-
-  if (isGlobalLoading) {
+  if (isGlobalLoading || !studentProfile) {
     return <DashboardLoadingSkeleton />;
   }
 
@@ -204,7 +179,7 @@ export default function StudentDashboardPage() {
               upcomingSessions={upcomingSessions}
               pastSessions={pastSessions}
               bookings={bookings}
-              loading={dashboardLoading}
+              loading={isGlobalLoading}
               user={user}
               progressSummary={progressSummary}
               isEnrolled={true}
@@ -217,7 +192,7 @@ export default function StudentDashboardPage() {
               progressSummary={progressSummary}
               upcomingSessions={upcomingSessions}
               pastSessions={pastSessions}
-              loading={dashboardLoading}
+              loading={isGlobalLoading}
               showOnboarding={showOnboarding}
               onboardingSteps={onboardingSteps}
               completedStepsCount={completedStepsCount}
@@ -228,7 +203,7 @@ export default function StudentDashboardPage() {
               onEditProfile={() => setIsEditProfileOpen(true)}
               onBookSession={() => router.push('/bookings/new')}
               onUpgrade={() => router.push('/pricing')}
-              refetchCredits={refetchCredits}
+              refetchCredits={refetch}
               setShowLearningWizard={setShowLearningWizard}
               isEnrolled={false}
             />
@@ -244,7 +219,7 @@ export default function StudentDashboardPage() {
             isOpen={isEditProfileOpen}
             onClose={() => setIsEditProfileOpen(false)}
             student={studentProfile}
-            onUpdate={fetchProfile}
+            onUpdate={refetch}
           />
         )}
         
