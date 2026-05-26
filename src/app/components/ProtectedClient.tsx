@@ -2,7 +2,8 @@
 
 import { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import useAuth from '@/app/Hooks/useAuth'; // adjust path if your hook lives elsewhere
+import useAuth from '@/app/Hooks/useAuth';
+import { DashboardLoadingSkeleton } from '@/app/components/dashboard/student/DashboardLoadingSkeleton';
 
 type Props = {
   children: ReactNode;
@@ -47,13 +48,8 @@ export default function ProtectedClient({ children, roles = [] }: Props) {
     // only run when loading/user/roles change
   }, [loading, user, roles, router]);
 
-  // While loading, show nothing or a spinner to avoid flicker
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div>Loading…</div>
-      </div>
-    );
+    return <DashboardLoadingSkeleton />;
   }
 
   // If not logged in (and we already attempted redirect in useEffect),

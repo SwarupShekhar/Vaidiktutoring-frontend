@@ -55,7 +55,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (savedToken) {
         setToken(savedToken);
         setAuthToken(savedToken);
-        // Ensure API always has a way to get the token even if defaults are lost
         setTokenGetter(async () => {
           try {
             return localStorage.getItem('auth_token');
@@ -63,21 +62,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return null;
           }
         });
-        
-        try {
-          const u = await authLib.getMe();
+
+        // Decode JWT immediately (no network) so ProtectedClient can unblock now.
+        // getMe() runs in the background to validate and replace with full profile.
+        const decoded = decodeToken<{ sub?: string; userId?: string; role?: string; email?: string }>(savedToken);
+        if (decoded) {
+          setBackendUser({ id: decoded.sub || decoded.userId, role: decoded.role, email: decoded.email } as User);
+        }
+        setLoading(false);
+        setInitialCheckDone(true);
+
+        // Background validation — clears session on 401, enriches user on success
+        authLib.getMe().then((u) => {
           setBackendUser(u);
           if (u.force_password_change) {
             router.push('/change-password');
           }
-        } catch (err) {
+        }).catch((err) => {
           console.error("Manual session invalid:", err);
           localStorage.removeItem('auth_token');
           setToken(null);
           setBackendUser(null);
-        }
-        setLoading(false);
-        setInitialCheckDone(true);
+        });
         return;
       }
 

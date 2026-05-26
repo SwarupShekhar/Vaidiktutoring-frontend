@@ -2,6 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { useAuthContext } from '../context/AuthContext';
 
+type TutorBooking = {
+    id: string;
+    start_time?: string;
+    end_time?: string;
+    requested_start?: string;
+    requested_end?: string;
+    date?: string;
+};
+
 export function useTutorDashboard() {
     const { user, loading: authLoading } = useAuthContext();
     const isReady = !!user && !authLoading;
@@ -14,7 +23,8 @@ export function useTutorDashboard() {
             return Array.isArray(res.data) ? res.data : [];
         },
         enabled: isReady,
-        refetchInterval: 5000, // Sync every 5 seconds
+        staleTime: 30_000,
+        refetchInterval: 30_000, // Keep dashboard fresh without constant request churn
     });
 
     // Fetch REAL-TIME Stats from backend
@@ -25,7 +35,8 @@ export function useTutorDashboard() {
             return res.data;
         },
         enabled: isReady,
-        refetchInterval: 5000,
+        staleTime: 30_000,
+        refetchInterval: 30_000,
     });
 
     // Fetch AVAILABLE (unclaimed) bookings matching tutor's subjects
@@ -41,11 +52,12 @@ export function useTutorDashboard() {
             }
         },
         enabled: isReady,
-        refetchInterval: 10000, // Poll every 10 seconds for new jobs
+        staleTime: 15_000,
+        refetchInterval: 30_000, // Real-time notifications cover urgent job alerts
     });
 
     // Helper function to extract date from booking
-    const getBookingDate = (booking: any): Date | null => {
+    const getBookingDate = (booking: TutorBooking): Date | null => {
         // Prioritize actual scheduled times. Avoid created_at as it doesn't represent the session time.
         const dateValue = booking.start_time || booking.requested_start || booking.date;
         if (!dateValue) return null;
@@ -63,7 +75,7 @@ export function useTutorDashboard() {
 
 
 
-    const todaySessions = bookings?.filter((b: any) => {
+    const todaySessions = bookings?.filter((b: TutorBooking) => {
         const bookingDate = getBookingDate(b);
         if (!bookingDate) {
             return false;
@@ -86,7 +98,7 @@ export function useTutorDashboard() {
         return isSameCalendarDay && hasNotEnded;
     }) || [];
 
-    const upcomingBookings = bookings?.filter((b: any) => {
+    const upcomingBookings = bookings?.filter((b: TutorBooking) => {
         const bookingDate = getBookingDate(b);
         if (!bookingDate) return false;
 

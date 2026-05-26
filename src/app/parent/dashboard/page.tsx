@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useMemo, useEffect, useState, Suspense, useCallback } from "react";
+import React, { useMemo, useState, Suspense } from "react";
 import Link from "next/link";
 import ProtectedClient from "@/app/components/ProtectedClient";
 import { ErrorBoundary } from "@/app/components/ErrorBoundary";
 import { useAuthContext } from "@/app/context/AuthContext";
 import { useParentDashboard } from "@/app/Hooks/useParentDashboard";
+import type { ParentDashboardSession, ParentDashboardStudent, PendingRating } from "@/app/Hooks/useParentDashboard";
 import { useSearchParams } from "next/navigation";
 import { StatCard } from "@/app/components/dashboard/StatCard";
 import { SessionCommandCard } from "@/app/components/dashboard/SessionCommandCard";
@@ -15,22 +16,15 @@ import {
   Calendar,
   Plus,
   Baby,
-  CreditCard,
   ChevronRight,
   Clock,
   TrendingUp,
   History,
   ArrowUpRight,
-  FileText,
   X,
-  Star,
   Layout,
-  AlertCircle,
-  TrendingDown,
-  Dot
+  AlertCircle
 } from "lucide-react";
-import { api } from "@/app/lib/api";
-import { ProgressSummary } from "@/app/Hooks/useStudentProgress";
 import RatingModal from "@/app/components/RatingModal";
 
 function DashboardContent() {
@@ -40,50 +34,15 @@ function DashboardContent() {
     loadingStudents,
     upcomingSessions,
     pastSessions,
-    allSessions,
     loadingSessions,
     students,
     loadingStudentList,
+    childSummaries,
+    pendingRatings,
   } = useParentDashboard();
 
-  const [childSummaries, setChildSummaries] = useState<Record<string, ProgressSummary>>({});
-  const [loadingSummaries, setLoadingSummaries] = useState(true);
-
-  const fetchSummaries = useCallback(async () => {
-    if (!students?.length) return;
-    setLoadingSummaries(true);
-    try {
-      const summaries: Record<string, ProgressSummary> = {};
-      await Promise.all(students.map(async (s: any) => {
-        const res = await api.get(`/students/${s.id}/progress-summary`);
-        summaries[s.id] = res.data;
-      }));
-      setChildSummaries(summaries);
-    } catch (err) {
-      console.error('Failed to fetch child summaries:', err);
-    } finally {
-      setLoadingSummaries(false);
-    }
-  }, [students]);
-
-  useEffect(() => {
-    if (students?.length) fetchSummaries();
-  }, [students, fetchSummaries]);
-
-  const [pendingRatings, setPendingRatings] = useState<any[]>([]);
-  const [showRatingModal, setShowRatingModal] = useState(false);
-
-  useEffect(() => {
-    api.get('/ratings/pending')
-      .then((res) => {
-        const data = Array.isArray(res.data) ? res.data : [];
-        if (data.length > 0) {
-          setPendingRatings(data);
-          setShowRatingModal(true);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const [ratingsDismissed, setRatingsDismissed] = useState(false);
+  const showRatingModal = pendingRatings.length > 0 && !ratingsDismissed;
 
   // DERIVE STATS
   const stats = useMemo(() => {
@@ -98,29 +57,20 @@ function DashboardContent() {
 
   const nextSession = upcomingSessions[0] || null;
 
-  // History State
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
-  const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
-  const [expandedNoteStudentId, setExpandedNoteStudentId] = useState<string | null>(null);
-
   const searchParams = useSearchParams();
+  const initialHistoryChildId = searchParams.get('showHistory') === 'true' ? searchParams.get('childId') : null;
 
-  useEffect(() => {
-    const childId = searchParams.get('childId');
-    const showHistory = searchParams.get('showHistory');
-
-    if (childId && showHistory === 'true') {
-      setSelectedChildId(childId);
-      setShowHistoryModal(true);
-    }
-  }, [searchParams]);
+  // History State
+  const [showHistoryModal, setShowHistoryModal] = useState(() => !!initialHistoryChildId);
+  const [selectedChildId, setSelectedChildId] = useState<string | null>(() => initialHistoryChildId);
+  const [expandedNoteStudentId, setExpandedNoteStudentId] = useState<string | null>(null);
 
   // Group past sessions by child
   const childPastSessions = useMemo(() => {
-    const map: Record<string, any[]> = {};
-    (students || []).forEach((s: any) => (map[s.id] = []));
-    (pastSessions || []).forEach((ps: any) => {
-      if (map[ps.student_id]) map[ps.student_id].push(ps);
+    const map: Record<string, ParentDashboardSession[]> = {};
+    (students || []).forEach((s: ParentDashboardStudent) => (map[s.id] = []));
+    (pastSessions || []).forEach((ps: ParentDashboardSession) => {
+      if (ps.student_id && map[ps.student_id]) map[ps.student_id].push(ps);
     });
     return map;
   }, [students, pastSessions]);
@@ -133,9 +83,9 @@ function DashboardContent() {
     const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
     const thisMonth = (pastSessions || []).filter(
-      (s: any) => new Date(s.requested_start) >= startOfMonth,
+      (s: ParentDashboardSession) => new Date(s.requested_start) >= startOfMonth,
     ).length;
-    const lastMonth = (pastSessions || []).filter((s: any) => {
+    const lastMonth = (pastSessions || []).filter((s: ParentDashboardSession) => {
       const date = new Date(s.requested_start);
       return date >= startOfLastMonth && date <= endOfLastMonth;
     }).length;
@@ -149,6 +99,8 @@ function DashboardContent() {
 
     return { growth: growthResult, thisMonthCount: thisMonth };
   }, [pastSessions]);
+
+  const selectedSummary = selectedChildId ? (childSummaries[selectedChildId] ?? null) : null;
 
   return (
       <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -181,7 +133,7 @@ function DashboardContent() {
               Welcome back, {user?.firstName || user?.first_name || "Parent"}
             </h1>
             <p className="text-text-secondary opacity-80">
-              Here is an overview of your family's learning progress.
+              Here is an overview of your family&apos;s learning progress.
             </p>
           </div>
           <div className="flex gap-3">
@@ -273,7 +225,7 @@ function DashboardContent() {
                       />
                     ))
                 ) : students.length > 0 ? (
-                  students.map((student: any) => {
+                  students.map((student: ParentDashboardStudent) => {
                     const childNext = upcomingSessions.find(
                       (s) => s.students?.id === student.id,
                     );
@@ -370,8 +322,8 @@ function DashboardContent() {
                                   )}
                                 </p>
                                 {childPastSessions[student.id][0].sessions?.[0]?.session_recordings?.[0]?.file_url && (
-                                  <a 
-                                    href={childPastSessions[student.id][0].sessions[0].session_recordings[0].file_url}
+                                  <a
+                                    href={childPastSessions[student.id][0].sessions![0].session_recordings![0].file_url ?? ''}
                                     target="_blank"
                                     className="inline-flex items-center gap-1 mt-2 text-[9px] font-black text-purple-500 hover:text-purple-700 bg-purple-50 px-2 py-1 rounded-lg uppercase tracking-wider transition-all"
                                   >
@@ -397,7 +349,7 @@ function DashboardContent() {
                 ) : (
                   <div className="col-span-full p-8 text-center bg-white/10 rounded-2xl border border-dashed border-white/20">
                     <p className="text-sm text-text-secondary mb-4">
-                      You haven't added any children yet.
+                      You haven&apos;t added any children yet.
                     </p>
                     <Link
                       href="/onboarding/student"
@@ -423,7 +375,7 @@ function DashboardContent() {
                     Loading sessions...
                   </div>
                 ) : upcomingSessions.length > 1 ? (
-                  upcomingSessions.slice(1).map((session: any) => (
+                  upcomingSessions.slice(1).map((session: ParentDashboardSession) => (
                     <div
                       key={session.id}
                       className="p-4 rounded-xl bg-white/40 border border-white/20 flex justify-between items-center group hover:bg-white/60 transition-all"
@@ -518,7 +470,7 @@ function DashboardContent() {
                 Recent Activity
               </h2>
               <div className="space-y-4">
-                {pastSessions.slice(0, 3).map((session: any) => (
+                {pastSessions.slice(0, 3).map((session: ParentDashboardSession) => (
                   <div key={session.id} className="flex gap-3">
                     <div className="w-1 h-8 bg-green-400 rounded-full mt-1" />
                     <div>
@@ -543,8 +495,8 @@ function DashboardContent() {
 
         {showRatingModal && pendingRatings.length > 0 && (
           <RatingModal
-            pending={pendingRatings}
-            onDone={() => setShowRatingModal(false)}
+            pending={pendingRatings as PendingRating[]}
+            onDone={() => setRatingsDismissed(true)}
           />
         )}
 
@@ -557,7 +509,7 @@ function DashboardContent() {
                 <div>
                   <h2 className="text-xl font-black text-gray-900">Session History</h2>
                   <p className="text-xs text-purple-600 font-bold uppercase tracking-widest mt-1">
-                    {students.find(s => s.id === selectedChildId)?.first_name}'s Progress Roadmap
+                    {students.find(s => s.id === selectedChildId)?.first_name}&apos;s Progress Roadmap
                   </p>
                 </div>
                 <button 
@@ -570,24 +522,24 @@ function DashboardContent() {
 
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 {/* Attendance Summary */}
-                {selectedChildId && childSummaries[selectedChildId] && (
+                {selectedSummary && (
                     <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-4">
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-bold text-blue-800 uppercase tracking-tight">Monthly Attendance</span>
-                            <span className="text-sm font-black text-blue-900">{childSummaries[selectedChildId].attendanceRate}% Rate</span>
+                            <span className="text-sm font-black text-blue-900">{selectedSummary.attendanceRate}% Rate</span>
                         </div>
                         <p className="text-[10px] text-blue-600 font-medium mt-1 uppercase tracking-widest">
-                            Attended {childSummaries[selectedChildId].sessionsThisMonth} sessions this month
+                            Attended {selectedSummary.sessionsThisMonth} sessions this month
                         </p>
                     </div>
                 )}
 
                 {/* Subject Progress indicators */}
-                {selectedChildId && childSummaries[selectedChildId]?.subjectProgress?.length > 0 && (
+                {selectedSummary?.subjectProgress && selectedSummary.subjectProgress.length > 0 && (
                     <div className="space-y-3 mb-6">
                         <h3 className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Subject Progress</h3>
                         <div className="flex flex-wrap gap-2">
-                            {childSummaries[selectedChildId].subjectProgress.map((sp, i) => (
+                            {selectedSummary.subjectProgress.map((sp, i) => (
                                 <div key={i} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border ${
                                     sp.level === 'improving' ? 'bg-green-50 border-green-100 text-green-700' :
                                     sp.level === 'steady' ? 'bg-amber-50 border-amber-100 text-amber-700' :
@@ -677,10 +629,10 @@ function DashboardContent() {
                           </div>
 
                           {/* Sticker Rewards display */}
-                          {booking.sessions?.[0]?.sticker_rewards?.length > 0 && (
+                          {(booking.sessions?.[0]?.sticker_rewards?.length ?? 0) > 0 && (
                             <div className="pt-2 flex flex-wrap gap-2 items-center">
                               <span className="text-[9px] font-black text-yellow-600 uppercase tracking-tighter">Gold Stars:</span>
-                              {booking.sessions[0].sticker_rewards.map((reward: any) => (
+                              {booking.sessions?.[0]?.sticker_rewards?.map((reward: { id: string; sticker: string }) => (
                                 <div key={reward.id} className="relative group/sticker">
                                   <div className="absolute -inset-1 bg-yellow-400 rounded-full blur opacity-20 group-hover/sticker:opacity-40 transition-opacity" />
                                   <img 

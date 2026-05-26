@@ -20,12 +20,14 @@ export const api = axios.create({
  * Helper to update token from AuthContext
  */
 let authTokenPromise: (() => Promise<string | null>) | null = null;
+let cachedAuthToken: string | null = null;
 
 export const setTokenGetter = (fn: () => Promise<string | null>) => {
   authTokenPromise = fn;
 };
 
 export const setAuthToken = (token: string | null) => {
+  cachedAuthToken = token;
   if (token) {
     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   } else {
@@ -37,13 +39,19 @@ export const setAuthToken = (token: string | null) => {
  * Request interceptor - ensures token is fresh if getter is provided
  */
 api.interceptors.request.use(async (config) => {
-  if (authTokenPromise) {
+  if (cachedAuthToken) {
+    config.headers['Authorization'] = `Bearer ${cachedAuthToken}`;
+    return config;
+  }
+
+  if (authTokenPromise && !config.headers?.Authorization) {
     try {
       const token = await authTokenPromise();
       if (token) {
+        cachedAuthToken = token;
         config.headers['Authorization'] = `Bearer ${token}`;
       }
-    } catch (e) {
+    } catch {
     }
   }
   return config;
@@ -57,7 +65,7 @@ api.interceptors.response.use(
   (err: AxiosError) => {
     // If unauthorized, remove token and redirect to login
     const status = err?.response?.status;
-    const data: any = err?.response?.data;
+    const data = err?.response?.data as { message?: unknown } | undefined;
 
     // Check for specific 403 regarding verification
     // Match leniently: "verify" and "email"

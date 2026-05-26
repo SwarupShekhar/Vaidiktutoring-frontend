@@ -1,29 +1,19 @@
 'use client';
 
-import React, { useMemo, useEffect, useState, useRef, useCallback } from 'react';
+import React, { useMemo, useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { EnrolledDashboard } from '@/app/components/dashboard/student/EnrolledDashboard';
+import { TrialDashboard } from '@/app/components/dashboard/student/TrialDashboard';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { useStudentDashboardSummary } from '@/app/Hooks/useStudentDashboardSummary';
 import { useRouter } from 'next/navigation';
-import { api } from '@/app/lib/api';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 
 // Loading Skeleton
 import { DashboardLoadingSkeleton } from '@/app/components/dashboard/student/DashboardLoadingSkeleton';
-
-// Dynamic Imports for Dashboards
-const EnrolledDashboard = dynamic(
-  () => import('@/app/components/dashboard/student/EnrolledDashboard').then(mod => mod.EnrolledDashboard),
-  { loading: () => <DashboardLoadingSkeleton />, ssr: false }
-);
-
-const TrialDashboard = dynamic(
-  () => import('@/app/components/dashboard/student/TrialDashboard').then(mod => mod.TrialDashboard),
-  { loading: () => <DashboardLoadingSkeleton />, ssr: false }
-);
 
 const BlogSection = dynamic(
   () => import('@/app/components/dashboard/student/BlogSection').then(mod => mod.BlogSection),
@@ -74,24 +64,15 @@ export default function StudentDashboardPage() {
 
   // Local State
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
-  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+  const [onboardingDismissed, setOnboardingDismissed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return !!localStorage.getItem('onboarding_dismissed');
+  });
   const [showLearningWizard, setShowLearningWizard] = useState(false);
-  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [ratingsDismissed, setRatingsDismissed] = useState(false);
+  const showRatingModal = pendingRatings.length > 0 && !ratingsDismissed;
   
   const prevBadgesRef = useRef<string[]>([]);
-
-  // Initial Onboarding Dismiss State
-  useEffect(() => {
-    const d = localStorage.getItem('onboarding_dismissed');
-    if (d) setOnboardingDismissed(true);
-  }, []);
-
-  // Show Rating Modal automatically if pending ratings exist
-  useEffect(() => {
-    if (pendingRatings && pendingRatings.length > 0) {
-      setShowRatingModal(true);
-    }
-  }, [pendingRatings]);
 
   // Redirect admin
   useEffect(() => {
@@ -226,7 +207,7 @@ export default function StudentDashboardPage() {
         {showRatingModal && pendingRatings.length > 0 && (
           <RatingModal
             pending={pendingRatings}
-            onDone={() => setShowRatingModal(false)}
+            onDone={() => setRatingsDismissed(true)}
           />
         )}
         

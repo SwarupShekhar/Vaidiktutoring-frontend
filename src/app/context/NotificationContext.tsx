@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuthContext } from './AuthContext';
 
@@ -21,10 +21,23 @@ interface NotificationContextType {
     socket: Socket | null;
 }
 
+type BookingCreatedPayload = { studentName?: string };
+type BookingAllocatedPayload = { tutorName?: string };
+type TutorAllocationPayload = { studentName?: string; scheduledTime?: string };
+type ParentSessionNotePayload = { childId?: string; studentName?: string; tutorName?: string };
+type BookingFallbackPayload = {
+    message?: string;
+    studentName?: string;
+    subjectName?: string;
+    claimUrl?: string;
+};
+
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
     const { user } = useAuthContext();
+    const userId = user?.sub || user?.id;
+    const role = user?.role;
     const [notifications, setNotifications] = useState<NotificationPayload[]>([]);
     const [socket, setSocket] = useState<Socket | null>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -35,14 +48,14 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         audioRef.current = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
     }, []);
 
-    const playSound = () => {
+    const playSound = useCallback(() => {
         if (audioRef.current) {
             audioRef.current.currentTime = 0;
             audioRef.current.play().catch(err => console.error("Audio play failed", err));
         }
-    };
+    }, []);
 
-    const addNotification = (notif: Omit<NotificationPayload, 'id' | 'timestamp'>) => {
+    const addNotification = useCallback((notif: Omit<NotificationPayload, 'id' | 'timestamp'>) => {
         const newNotif = {
             ...notif,
             id: Math.random().toString(36).substr(2, 9),
@@ -54,70 +67,50 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         if (notif.playAudio || notif.type === 'loud') {
             playSound();
         }
-    };
+    }, [playSound]);
 
-    const dismissNotification = (id: string) => {
+    const dismissNotification = useCallback((id: string) => {
         setNotifications(prev => prev.filter(n => n.id !== id));
-    };
+    }, []);
 
     // Socket Connection
     useEffect(() => {
-        if (!user) return;
+        if (!userId) return;
 
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.studyhours.com';
-        
+        const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://api.studyhours.com').replace(/\/$/, '');
 
-        
-        // Connecting to root namespace with better error handling
+        // Start with polling and let Socket.IO upgrade to websocket. This avoids
+        // browser-level websocket errors during auth hydration and proxy warmups.
         const socketInstance = io(API_URL, {
-            query: { userId: user.sub || user.id, role: user.role },
-            transports: ['websocket', 'polling'], // Allow fallback to polling
+            query: { userId, role },
+            transports: ['polling', 'websocket'],
+            upgrade: true,
             withCredentials: true,
-            timeout: 5000, // 5 second connection timeout
-            forceNew: true, // Force new connection
+            timeout: 10000,
         });
 
-        setSocket(socketInstance);
-
         socketInstance.on('connect', () => {
+            setSocket(socketInstance);
 
             // Join a personal room based on user ID for targeted alerts
-            socketInstance.emit('join_personal_room', { userId: user.sub || user.id });
+            socketInstance.emit('join_personal_room', { userId });
         });
 
         socketInstance.on('connect_error', (err) => {
             console.error('[Notification] Socket Connection Error:', err);
             console.error('[Notification] Failed to connect to:', API_URL);
-            
-            // Try polling fallback if websocket fails
-            if (err.message?.includes('websocket')) {
-
-                socketInstance.io.opts.transports = ['polling'];
-                socketInstance.connect();
-            }
         });
 
-        socketInstance.on('disconnect', (reason) => {
-
+        socketInstance.on('disconnect', () => {
+            setSocket(current => current === socketInstance ? null : current);
         });
-
-        // Add polling fallback check
-        socketInstance.on('ping', () => {
-
-        });
-
-        socketInstance.on('pong', () => {
-
-        });
-
-        // Debug: Log any event received (wildcard not standard in client, but we can log specific ones)
 
         // ---------------- EVENTS ----------------
 
         // 1. ADMIN: New Session Booking
         // Event: 'booking:created'
-        socketInstance.on('booking:created', (data: any) => {
-            if (user.role === 'admin') {
+        socketInstance.on('booking:created', (data: BookingCreatedPayload) => {
+            if (role === 'admin') {
                 addNotification({
                     type: 'info',
                     title: 'New Booking Received',
@@ -129,10 +122,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
         // 2. STUDENT: Tutor Allocated
         // Event: 'booking:allocated'
-        socketInstance.on('booking:allocated', (data: any) => {
+        socketInstance.on('booking:allocated', (data: BookingAllocatedPayload) => {
             // Check if this notification is for me (if broadcasted loosely)
             // Ideally backend sends to "student-userId" room.
-            if (user.role === 'student') {
+            if (role === 'student') {
                 addNotification({
                     type: 'success',
                     title: 'Tutor Assigned!',
@@ -144,8 +137,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
         // 3. TUTOR: Session Allocated (LOUD)
         // Event: 'booking:assigned_to_me' (more specific) or 'booking:allocated'
-        socketInstance.on('booking:assigned_to_me', (data: any) => {
-            if (user.role === 'tutor') {
+        socketInstance.on('booking:assigned_to_me', (data: TutorAllocationPayload) => {
+            if (role === 'tutor') {
                 addNotification({
                     type: 'loud', // Special generic type for modal
                     title: 'New Session Allocation',
@@ -156,8 +149,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         });
 
         // 4. PARENT: Session Note Added
-        socketInstance.on('session:note_added', (data: any) => {
-            if (user.role === 'parent') {
+        socketInstance.on('session:note_added', (data: ParentSessionNotePayload) => {
+            if (role === 'parent') {
                 addNotification({
                     type: 'success',
                     title: 'New Session Report!',
@@ -172,8 +165,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
         // 5. TUTOR: 15-Minute Fallback Notification (Unclaimed Booking)
         // Event: 'booking:unclaimed_fallback'
-        socketInstance.on('booking:unclaimed_fallback', (data: any) => {
-            if (user.role === 'tutor') {
+        socketInstance.on('booking:unclaimed_fallback', (data: BookingFallbackPayload) => {
+            if (role === 'tutor') {
                 addNotification({
                     type: 'warning',
                     title: '⏰ Unclaimed Session Available',
@@ -193,7 +186,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         return () => {
             socketInstance.disconnect();
         };
-    }, [user]);
+    }, [addNotification, userId, role]);
 
     return (
         <NotificationContext.Provider value={{ notifications, addNotification, dismissNotification, socket }}>

@@ -1,53 +1,103 @@
-
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { useAuthContext } from '../context/AuthContext';
+import type { ProgressSummary } from './useStudentProgress';
+
+export type ParentDashboardStudent = {
+    id: string;
+    first_name?: string;
+    last_name?: string;
+    grade?: string;
+    gender?: string;
+};
+
+export type PendingRating = {
+    sessionId: string;
+    tutorId: string;
+    tutorName: string;
+    studentName?: string;
+    sessionDate: string | null;
+    subjectName: string;
+};
+
+export type ParentDashboardSession = {
+    id: string;
+    student_id?: string;
+    requested_start: string;
+    requested_end: string;
+    subject?: { name?: string };
+    subjects?: { name?: string };
+    tutors?: { users?: { first_name?: string; last_name?: string } };
+    students?: { id?: string; first_name?: string; last_name?: string };
+    sessions?: Array<{
+        id: string;
+        duration?: number;
+        tutor_note?: string | null;
+        whiteboard_snapshot_url?: string | null;
+        session_recordings?: Array<{ file_url?: string | null }>;
+        sticker_rewards?: Array<{ id: string; sticker: string }>;
+    }>;
+};
+
+type ParentDashboardSummary = {
+    students: ParentDashboardStudent[];
+    bookings: ParentDashboardSession[];
+    pendingRatings: PendingRating[];
+    childSummaries: Record<string, ProgressSummary | null>;
+};
 
 export function useParentDashboard() {
-    const { user } = useAuthContext();
+    const { user, loading: authLoading } = useAuthContext();
     const userId = user?.id;
 
-    const { data: upcomingSessions, isLoading: loadingSessions, error: sessionsError } = useQuery({
-        queryKey: ['parent-upcoming-sessions', userId],
+    const { data, isLoading, error, refetch } = useQuery<ParentDashboardSummary>({
+        queryKey: ['parent-dashboard-summary', userId],
         queryFn: async () => {
-            if (!userId) return [];
-            const res = await api.get('/bookings/parent');
-            const data = Array.isArray(res.data) ? res.data : [];
-            return data;
+            const res = await api.get('/parent/dashboard-summary');
+            return {
+                students: Array.isArray(res.data?.students) ? res.data.students : [],
+                bookings: Array.isArray(res.data?.bookings) ? res.data.bookings : [],
+                pendingRatings: Array.isArray(res.data?.pendingRatings) ? res.data.pendingRatings : [],
+                childSummaries: res.data?.childSummaries || {},
+            };
         },
-        enabled: !!userId
+        enabled: !!userId && !authLoading,
+        staleTime: 60_000,
+        refetchInterval: 120_000,
     });
 
-    // Fetch full student list for the "My Children" column
-    const { data: students, isLoading: loadingStudentList, error: studentsError } = useQuery({
-        queryKey: ['parent-students-list', userId],
-        queryFn: async () => {
-            if (!userId) return [];
-            const res = await api.get('/students/parent');
-            const data = Array.isArray(res.data) ? res.data : [];
-            return data;
-        },
-        enabled: !!userId
-    });
+    const students = data?.students || [];
 
-    const allSessions = Array.isArray(upcomingSessions) ? upcomingSessions : [];
+    const { upcoming, past, sorted } = useMemo(() => {
+        const now = new Date();
+        const sessions = data?.bookings || [];
+        const sortedSessions = [...sessions].sort(
+            (a, b) => new Date(a.requested_start).getTime() - new Date(b.requested_start).getTime(),
+        );
 
-    const now = new Date();
-    const sorted = [...allSessions].sort((a, b) => new Date(a.requested_start).getTime() - new Date(b.requested_start).getTime());
+        return {
+            sorted: sortedSessions,
+            upcoming: sortedSessions.filter(s => new Date(s.requested_end) > now),
+            past: sortedSessions.filter(s => new Date(s.requested_end) <= now).reverse(),
+        };
+    }, [data?.bookings]);
 
-    const upcoming = sorted.filter(s => new Date(s.requested_end) > now);
-    const past = sorted.filter(s => new Date(s.requested_end) <= now).reverse();
+    const loading = isLoading || authLoading;
 
     return {
-        studentCount: students?.length || 0,
-        loadingStudents: loadingStudentList,
-        studentsError,
+        studentCount: students.length,
+        loadingStudents: loading,
+        studentsError: error,
         upcomingSessions: upcoming,
         pastSessions: past,
         allSessions: sorted,
-        loadingSessions,
-        sessionsError,
-        students: students || [],
-        loadingStudentList
+        loadingSessions: loading,
+        sessionsError: error,
+        students,
+        loadingStudentList: loading,
+        childSummaries: data?.childSummaries || {},
+        pendingRatings: data?.pendingRatings || [],
+        refetch,
     };
 }
