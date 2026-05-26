@@ -62,6 +62,7 @@ const MANUAL_PAGES: Record<
   "/singapore/ip-programme-tutors-singapore": { priority: 0.8, changeFrequency: "weekly" },
   "/singapore/moe-singapore-curriculum-tutors": { priority: 0.8, changeFrequency: "weekly" },
   "/singapore/primary-school-tutors-singapore": { priority: 0.8, changeFrequency: "weekly" },
+  "/singapore-jc-guide": { priority: 0.95, changeFrequency: "weekly" },
   "/uae/moe-uae-curriculum-tutors": { priority: 0.85, changeFrequency: "weekly" },
   "/saudi/saudi-ministry-curriculum-tutors": { priority: 0.85, changeFrequency: "weekly" },
   "/uae/online-tutors-dubai": { priority: 0.85, changeFrequency: "weekly" },

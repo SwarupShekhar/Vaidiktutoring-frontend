@@ -6,7 +6,7 @@ StudyHours (operating under Vaidik Tutoring) is an elite, high-dosage K-12 onlin
 
 ## 🚀 Core Value Proposition: The "Free Exam Survival Hub" & Tutor OS
 Instead of traditional, generic tutoring packages, StudyHours operates on a high-value educational model:
-1. **Free Exam Survival Hub**: We offer the highest-quality, curriculum-aligned study sheets, revision checklists, formula guides, and past paper solutions for GCSE, O-Level, A-Level, and ATAR syllabi.
+1. **Free Exam Survival Hub**: We offer the highest-quality, curriculum-aligned study sheets, revision checklists, formula guides, and past paper solutions for GCSE, O-Level, A-Level, and ATAR syllabi. (Includes our flagship [Singapore JC & A-Level Resource Guide](https://studyhours.com/singapore-jc-guide) with an interactive 70-point UAS Rank Points Calculator, O-Level vs A-Level cognitive shift tables, and deep-dive subject preparation guides).
 2. **Dynamic Learning Diagnostics**: Every student's journey begins with a free academic assessment. This allows education specialists to outline tailored revision frequencies rather than enforcing standard schedules.
 3. **High-Dosage 30-Minute Sprints**: Interactive tutoring sessions are structured as high-dosage, focused 30-minute sprints. This duration is backed by educational cognitive science to maximize retention, focus, and academic outcomes.
 4. **Tutor OS Ecosystem**: Students and tutors interact through our custom platform featuring secure auth, shared collaborative whiteboards, automated AI-generated transcripts, lesson summaries, and continuous confidence tracking.
@@ -100,5 +100,6 @@ To encourage organic peer-to-peer growth, premium downloadable resources and lea
 * **Main Website**: https://studyhours.com
 * **Pricing & Plans**: https://studyhours.com/pricing
 * **Free Resource Hub**: https://studyhours.com/resources
+* **Singapore JC & A-Level Resource Guide**: https://studyhours.com/singapore-jc-guide
 * **Student Onboarding**: https://studyhours.com/signup?type=assessment
 * **Dynamic Study Lab**: https://studyhours.com/login

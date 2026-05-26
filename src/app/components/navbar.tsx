@@ -65,6 +65,7 @@ export default function Navbar() {
         { name: "MOE Singapore Curriculum Tutors", href: "/singapore/moe-singapore-curriculum-tutors" },
         { name: "A-Level Tutors Singapore", href: "/singapore/a-level-tutors-singapore" },
         { name: "IP Programme Tutors Singapore", href: "/singapore/ip-programme-tutors-singapore" },
+        { name: "Singapore JC Guide", href: "/singapore-jc-guide" },
       ],
     },
     {

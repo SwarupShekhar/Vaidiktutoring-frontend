@@ -306,6 +306,7 @@ export default function Footer() {
                   { href: "/singapore/ip-programme-tutors-singapore", label: "IP Programme Tutors" },
                   { href: "/singapore/moe-singapore-curriculum-tutors", label: "MOE Singapore Curriculum" },
                   { href: "/singapore/primary-school-tutors-singapore", label: "Primary School Tutors" },
+                  { href: "/singapore-jc-guide", label: "Singapore JC Guide" },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link href={link.href} className="text-gray-400 hover:text-white transition-colors text-sm">
