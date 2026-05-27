@@ -39,20 +39,24 @@ export const setAuthToken = (token: string | null) => {
  * Request interceptor - ensures token is fresh if getter is provided
  */
 api.interceptors.request.use(async (config) => {
-  if (cachedAuthToken) {
-    config.headers['Authorization'] = `Bearer ${cachedAuthToken}`;
-    return config;
-  }
-
-  if (authTokenPromise && !config.headers?.Authorization) {
+  // If a token getter function is registered (e.g. Clerk's getToken or manual local storage getter),
+  // always query it first to ensure we get a fresh, unexpired token.
+  if (authTokenPromise) {
     try {
       const token = await authTokenPromise();
       if (token) {
         cachedAuthToken = token;
         config.headers['Authorization'] = `Bearer ${token}`;
+        return config;
       }
-    } catch {
+    } catch (err) {
+      console.error('[API Interceptor] Failed to fetch token via getter:', err);
     }
+  }
+
+  // Fallback to cached token if the getter is not available or returned null
+  if (cachedAuthToken) {
+    config.headers['Authorization'] = `Bearer ${cachedAuthToken}`;
   }
   return config;
 });
@@ -90,6 +94,7 @@ api.interceptors.response.use(
 
     if (status === 401) {
       try {
+        cachedAuthToken = null;
         if (typeof window !== 'undefined') {
           localStorage.removeItem('auth_token');
           // optional: show message here (toast)

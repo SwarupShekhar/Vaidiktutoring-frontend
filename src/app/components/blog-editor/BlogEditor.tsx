@@ -83,6 +83,8 @@ function sanitizeMarkdown(raw: string): string {
     .replace(/\n{3,}/g, '\n\n')
     // Remove trailing backslashes on heading lines (TipTap artifact)
     .replace(/^(#{1,6}\s.*)\\$/gm, '$1')
+    // Remove trailing backslashes on markdown image lines (TipTap artifact)
+    .replace(/(!\[[^\]]*\]\([^)]+\))\\+/g, '$1')
     .trim();
 
   return cleaned;
@@ -328,7 +330,8 @@ export default function BlogEditor({
   useEffect(() => {
     if (editor && !isInternalChange.current) {
       const currentMarkdown = (editor.storage as any).markdown.getMarkdown();
-      if (content !== currentMarkdown) {
+      const sanitizedCurrent = sanitizeMarkdown(currentMarkdown);
+      if (content !== sanitizedCurrent) {
         editor.commands.setContent(content || '');
         // Update preview HTML when content loaded externally
         previewHtml.current = editor.getHTML();
