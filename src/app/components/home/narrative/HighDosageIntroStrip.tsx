@@ -6,10 +6,10 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 
 const BADGES = [
-    { label: "3× per week", icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770623538/calendar_yjeieu.gif" },
-    { label: "30 mins/session", icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770623536/time_ieoruf.gif" },
-    { label: "4:1 or better", icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770623534/discussion_zoj9pq.gif" },
-    { label: "Trained educators", icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770623531/webinar_tyvnog.gif" }
+    { label: "3× per week", icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_40,h_40,c_limit/v1770623538/calendar_yjeieu.gif" },
+    { label: "30 mins/session", icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_40,h_40,c_limit/v1770623536/time_ieoruf.gif" },
+    { label: "4:1 or better", icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_40,h_40,c_limit/v1770623534/discussion_zoj9pq.gif" },
+    { label: "Trained educators", icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_40,h_40,c_limit/v1770623531/webinar_tyvnog.gif" }
 ];
 
 export default function HighDosageIntroStrip() {

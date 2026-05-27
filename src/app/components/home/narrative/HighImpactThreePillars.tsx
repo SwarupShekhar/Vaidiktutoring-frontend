@@ -8,17 +8,17 @@ const PILLARS = [
     {
         title: "Consistency",
         desc: "Regular, scheduled sessions build habit and momentum.",
-        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770624778/consistency_uerayp.gif"
+        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_112,h_112,c_limit/v1770624778/consistency_uerayp.gif"
     },
     {
         title: "Small Groups",
         desc: "Intimate 4:1 ratios ensure every student is heard.",
-        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770624780/team_m59vd5.gif"
+        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_112,h_112,c_limit/v1770624780/team_m59vd5.gif"
     },
     {
         title: "Measured Progress",
         desc: "Data-driven insights track growth over time.",
-        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770624776/success_q01hth.gif"
+        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_112,h_112,c_limit/v1770624776/success_q01hth.gif"
     }
 ];
 

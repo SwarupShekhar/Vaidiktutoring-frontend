@@ -9,19 +9,19 @@ const STEPS = [
     id: "01",
     title: "Free Assessment",
     desc: "Understand level, goals, curriculum",
-    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770626562/paper-document_bkf2l3.gif",
+    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_112,h_112,c_limit/v1770626562/paper-document_bkf2l3.gif",
   },
   {
     id: "02",
     title: "Structured Path",
     desc: "Right tutor + cadence",
-    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770626560/career_bnccex.gif",
+    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_112,h_112,c_limit/v1770626560/career_bnccex.gif",
   },
   {
     id: "03",
     title: "Measured Progress",
     desc: "Feedback, artifacts, confidence tracking",
-    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770626558/career-ladder_i6m9gl.gif",
+    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_112,h_112,c_limit/v1770626558/career-ladder_i6m9gl.gif",
   },
 ];
 

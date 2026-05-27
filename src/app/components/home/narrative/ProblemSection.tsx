@@ -9,22 +9,22 @@ const PROBLEMS = [
     {
         title: "The Silent Struggle",
         description: "“They say they understand… but they don’t.” Many students learn to mimic understanding to keep up with the class.",
-        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770624224/perseverance_aoy0rb.gif"
+        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_112,h_112,c_limit/v1770624224/perseverance_aoy0rb.gif"
     },
     {
         title: "Overlooked Gaps",
         description: "“They’re afraid to ask.” In a group, the fear of looking slow prevents the most important questions from being asked.",
-        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770624223/question_i8yvhk.gif"
+        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_112,h_112,c_limit/v1770624223/question_i8yvhk.gif"
     },
     {
         title: "Correction Delay",
         description: "“Mistakes go uncorrected.” Homework feedback that arrives days later is too late to fix cognitive misconceptions.",
-        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770624221/target_uhmfxn.gif"
+        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_112,h_112,c_limit/v1770624221/target_uhmfxn.gif"
     },
     {
         title: "Presence Decay",
         description: "“Confidence slowly drops.” Without personalized wins, students begin to define themselves as 'bad at math' or 'slow'.",
-        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770624219/hand-gesture_g3kcbf.gif"
+        icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_112,h_112,c_limit/v1770624219/hand-gesture_g3kcbf.gif"
     }
 ];
 

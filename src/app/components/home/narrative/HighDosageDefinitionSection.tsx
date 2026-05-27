@@ -9,22 +9,22 @@ const CRITERIA = [
   {
     title: "3× per week",
     desc: "Structured programs",
-    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770623538/calendar_yjeieu.gif",
+    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_96,h_96,c_limit/v1770623538/calendar_yjeieu.gif",
   },
   {
     title: "30 mins",
     desc: "Focused attention blocks",
-    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770623536/time_ieoruf.gif",
+    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_96,h_96,c_limit/v1770623536/time_ieoruf.gif",
   },
   {
     title: "4:1 or better",
     desc: "Small-group / 1:1 by design",
-    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770623534/discussion_zoj9pq.gif",
+    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_96,h_96,c_limit/v1770623534/discussion_zoj9pq.gif",
   },
   {
     title: "Trained tutors",
     desc: "Pedagogically trained",
-    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/v1770623531/webinar_tyvnog.gif",
+    icon: "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,w_96,h_96,c_limit/v1770623531/webinar_tyvnog.gif",
   },
 ];
 
