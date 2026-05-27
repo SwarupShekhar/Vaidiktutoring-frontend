@@ -15,14 +15,14 @@ export const metadata: Metadata = {
     description: "Start your success path with Australian Curriculum online tutoring. Gain confidence, improve marks, & enjoy smarter learning online.",
     url: "https://studyhours.com/australia/curriculum-tutoring",
     siteName: "StudyHours",
-    images: [{ url: "/australia_tutor_hero.png", width: 1200, height: 630, alt: "Australian Curriculum Tutoring ACARA Prep to Year 10" }],
+    images: [{ url: "/australia_tutor_hero.jpg", width: 1200, height: 630, alt: "Australian Curriculum Tutoring ACARA Prep to Year 10" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Australian Curriculum Online Tutoring For Success Path",
     description: "Start your success path with Australian Curriculum online tutoring. Gain confidence, improve marks, & enjoy smarter learning online.",
-    images: ["/australia_tutor_hero.png"],
+    images: ["/australia_tutor_hero.jpg"],
   },
 };
 

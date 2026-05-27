@@ -15,14 +15,14 @@ export const metadata: Metadata = {
     description: "Elite 1-on-1 ATAR coaching for Australian students. Top 1% tutors covering scaling strategy, subject selection, and exam mastery.",
     url: "https://studyhours.com/australia/atar-online-tutoring",
     siteName: "StudyHours",
-    images: [{ url: "/australia_tutor_hero.png", width: 1200, height: 630, alt: "ATAR Online Tutoring Australia" }],
+    images: [{ url: "/australia_tutor_hero.jpg", width: 1200, height: 630, alt: "ATAR Online Tutoring Australia" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "ATAR Tutors Online: 99+ Mentorship | StudyHours",
     description: "National ATAR tutoring across VCE, HSC, QCE, WACE. Top 1% graduate mentors. Scaling strategy and exam mastery.",
-    images: ["/australia_tutor_hero.png"],
+    images: ["/australia_tutor_hero.jpg"],
   },
   authors: [{ name: "StudyHours Academic Team" }],
 };

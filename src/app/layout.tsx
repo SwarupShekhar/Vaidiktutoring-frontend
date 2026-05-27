@@ -5,8 +5,6 @@ import QueryProvider from "./providers";
 import { AuthProvider } from "./context/AuthContext";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import dynamic from "next/dynamic";
-import StyledComponentsRegistry from "./lib/registry";
 import { NotificationProvider } from "./context/NotificationContext";
 
 import { ClientSideComponents } from "./components/ClientSideComponents";
@@ -62,8 +60,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     return (
       <html lang="en" suppressHydrationWarning>
         <body suppressHydrationWarning className={`${luckiestGuy.variable} ${spaceGrotesk.variable} ${dmSans.variable}`}>
-          <StyledComponentsRegistry>
-            <QueryProvider>
+          <QueryProvider>
               <AuthProvider>
                 <NotificationProvider>
                   <ClientSideComponents />
@@ -73,7 +70,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 </NotificationProvider>
               </AuthProvider>
             </QueryProvider>
-          </StyledComponentsRegistry>
           <Analytics />
           <SpeedInsights />
         </body>
@@ -84,9 +80,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider publishableKey={clerkPublishableKey}>
       <html lang="en" suppressHydrationWarning>
+        <head>
+          {/* ── Preconnect to critical third-party origins for faster resource loading ── */}
+          <link rel="preconnect" href="https://res.cloudinary.com" />
+          <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+          <link rel="dns-prefetch" href="https://clerk.studyhours.com" />
+          <link rel="dns-prefetch" href="https://cdn.sanity.io" />
+        </head>
         <body suppressHydrationWarning className={`${luckiestGuy.variable} ${spaceGrotesk.variable} ${dmSans.variable}`}>
-          <StyledComponentsRegistry>
-            <QueryProvider>
+          <QueryProvider>
               <AuthProvider>
                 <NotificationProvider>
                   <ClientSideComponents />
@@ -96,7 +100,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 </NotificationProvider>
               </AuthProvider>
             </QueryProvider>
-          </StyledComponentsRegistry>
 
           <Analytics />
           <SpeedInsights />

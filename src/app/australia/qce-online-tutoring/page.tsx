@@ -15,14 +15,14 @@ export const metadata: Metadata = {
     description: "At Study hours, join our best QCE online tutoring with skilled tutors. Enhance weak areas, boost marks & study confidently for upcoming exams.",
     url: "https://studyhours.com/australia/qce-online-tutoring",
     siteName: "StudyHours",
-    images: [{ url: "/australia_tutor_hero.png", width: 1200, height: 630, alt: "QCE Online Tutoring Queensland" }],
+    images: [{ url: "/australia_tutor_hero.jpg", width: 1200, height: 630, alt: "QCE Online Tutoring Queensland" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "QCE Online Tutoring for Higher Exam Results - Study Hours",
     description: "At Study hours, join our best QCE online tutoring with skilled tutors. Enhance weak areas, boost marks & study confidently for upcoming exams.",
-    images: ["/australia_tutor_hero.png"],
+    images: ["/australia_tutor_hero.jpg"],
   },
   authors: [{ name: "StudyHours Academic Team" }],
 };

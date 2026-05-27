@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
     styledComponents: true,
   },
   reactStrictMode: true,
+  // Optimize heavy library imports — only the components actually used are bundled
+  experimental: {
+    optimizePackageImports: [
+      'framer-motion',
+      'lucide-react',
+      '@tanstack/react-query',
+    ],
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [

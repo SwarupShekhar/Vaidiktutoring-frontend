@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
 import { useAuthContext } from './AuthContext';
 
 interface NotificationPayload {
@@ -77,114 +77,128 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     useEffect(() => {
         if (!userId) return;
 
-        const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://api.studyhours.com').replace(/\/$/, '');
+        let active = true;
+        let socketInstance: Socket | null = null;
 
-        // Start with polling and let Socket.IO upgrade to websocket. This avoids
-        // browser-level websocket errors during auth hydration and proxy warmups.
-        const socketInstance = io(API_URL, {
-            query: { userId, role },
-            transports: ['polling', 'websocket'],
-            upgrade: true,
-            withCredentials: true,
-            timeout: 10000,
-        });
+        const initSocket = async () => {
+            try {
+                const { io } = await import('socket.io-client');
+                if (!active) return;
 
-        socketInstance.on('connect', () => {
-            setSocket(socketInstance);
+                const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://api.studyhours.com').replace(/\/$/, '');
 
-            // Join a personal room based on user ID for targeted alerts
-            socketInstance.emit('join_personal_room', { userId });
-        });
-
-        socketInstance.on('connect_error', (err) => {
-            console.error('[Notification] Socket Connection Error:', err);
-            console.error('[Notification] Failed to connect to:', API_URL);
-        });
-
-        socketInstance.on('disconnect', () => {
-            setSocket(current => current === socketInstance ? null : current);
-        });
-
-        // ---------------- EVENTS ----------------
-
-        // 1. ADMIN: New Session Booking
-        // Event: 'booking:created'
-        socketInstance.on('booking:created', (data: BookingCreatedPayload) => {
-            if (role === 'admin') {
-                addNotification({
-                    type: 'info',
-                    title: 'New Booking Received',
-                    message: `${data.studentName || 'A student'} just booked a session!`,
-                    playAudio: true
+                // Start with polling and let Socket.IO upgrade to websocket. This avoids
+                // browser-level websocket errors during auth hydration and proxy warmups.
+                const inst = io(API_URL, {
+                    query: { userId, role },
+                    transports: ['polling', 'websocket'],
+                    upgrade: true,
+                    withCredentials: true,
+                    timeout: 10000,
                 });
-            }
-        });
+                socketInstance = inst;
 
-        // 2. STUDENT: Tutor Allocated
-        // Event: 'booking:allocated'
-        socketInstance.on('booking:allocated', (data: BookingAllocatedPayload) => {
-            // Check if this notification is for me (if broadcasted loosely)
-            // Ideally backend sends to "student-userId" room.
-            if (role === 'student') {
-                addNotification({
-                    type: 'success',
-                    title: 'Tutor Assigned!',
-                    message: `${data.tutorName || 'A Tutor'} is going to take your session.`,
-                    playAudio: true
+                inst.on('connect', () => {
+                    if (!active) return;
+                    setSocket(inst);
+
+                    // Join a personal room based on user ID for targeted alerts
+                    inst.emit('join_personal_room', { userId });
                 });
-            }
-        });
 
-        // 3. TUTOR: Session Allocated (LOUD)
-        // Event: 'booking:assigned_to_me' (more specific) or 'booking:allocated'
-        socketInstance.on('booking:assigned_to_me', (data: TutorAllocationPayload) => {
-            if (role === 'tutor') {
-                addNotification({
-                    type: 'loud', // Special generic type for modal
-                    title: 'New Session Allocation',
-                    message: `Please take session of ${data.studentName} at ${data.scheduledTime}.`,
-                    playAudio: true
+                inst.on('connect_error', (err) => {
+                    console.error('[Notification] Socket Connection Error:', err);
+                    console.error('[Notification] Failed to connect to:', API_URL);
                 });
-            }
-        });
 
-        // 4. PARENT: Session Note Added
-        socketInstance.on('session:note_added', (data: ParentSessionNotePayload) => {
-            if (role === 'parent') {
-                addNotification({
-                    type: 'success',
-                    title: 'New Session Report!',
-                    message: `Tutor ${data.tutorName || 'Your tutor'} has left a note for ${data.studentName || 'your child'}'s last session.`,
-                    playAudio: true,
-                    onClick: () => {
-                        window.location.href = `/parent/dashboard?childId=${data.childId}&showHistory=true`;
+                inst.on('disconnect', () => {
+                    setSocket(current => current === inst ? null : current);
+                });
+
+                // ---------------- EVENTS ----------------
+
+                // 1. ADMIN: New Session Booking
+                inst.on('booking:created', (data: BookingCreatedPayload) => {
+                    if (role === 'admin') {
+                        addNotification({
+                            type: 'info',
+                            title: 'New Booking Received',
+                            message: `${data.studentName || 'A student'} just booked a session!`,
+                            playAudio: true
+                        });
                     }
                 });
-            }
-        });
 
-        // 5. TUTOR: 15-Minute Fallback Notification (Unclaimed Booking)
-        // Event: 'booking:unclaimed_fallback'
-        socketInstance.on('booking:unclaimed_fallback', (data: BookingFallbackPayload) => {
-            if (role === 'tutor') {
-                addNotification({
-                    type: 'warning',
-                    title: '⏰ Unclaimed Session Available',
-                    message: data.message || `A session with ${data.studentName} (${data.subjectName}) is still available!`,
-                    playAudio: true,
-                    onClick: () => {
-                        if (data.claimUrl) {
-                            window.location.href = data.claimUrl;
-                        } else {
-                            window.location.href = '/tutor/dashboard';
-                        }
+                // 2. STUDENT: Tutor Allocated
+                inst.on('booking:allocated', (data: BookingAllocatedPayload) => {
+                    if (role === 'student') {
+                        addNotification({
+                            type: 'success',
+                            title: 'Tutor Assigned!',
+                            message: `${data.tutorName || 'A Tutor'} is going to take your session.`,
+                            playAudio: true
+                        });
                     }
                 });
+
+                // 3. TUTOR: Session Allocated (LOUD)
+                inst.on('booking:assigned_to_me', (data: TutorAllocationPayload) => {
+                    if (role === 'tutor') {
+                        addNotification({
+                            type: 'loud',
+                            title: 'New Session Allocation',
+                            message: `Please take session of ${data.studentName} at ${data.scheduledTime}.`,
+                            playAudio: true
+                        });
+                    }
+                });
+
+                // 4. PARENT: Session Note Added
+                inst.on('session:note_added', (data: ParentSessionNotePayload) => {
+                    if (role === 'parent') {
+                        addNotification({
+                            type: 'success',
+                            title: 'New Session Report!',
+                            message: `Tutor ${data.tutorName || 'Your tutor'} has left a note for ${data.studentName || 'your child'}'s last session.`,
+                            playAudio: true,
+                            onClick: () => {
+                                window.location.href = `/parent/dashboard?childId=${data.childId}&showHistory=true`;
+                            }
+                        });
+                    }
+                });
+
+                // 5. TUTOR: 15-Minute Fallback Notification (Unclaimed Booking)
+                inst.on('booking:unclaimed_fallback', (data: BookingFallbackPayload) => {
+                    if (role === 'tutor') {
+                        addNotification({
+                            type: 'warning',
+                            title: '⏰ Unclaimed Session Available',
+                            message: data.message || `A session with ${data.studentName} (${data.subjectName}) is still available!`,
+                            playAudio: true,
+                            onClick: () => {
+                                if (data.claimUrl) {
+                                    window.location.href = data.claimUrl;
+                                } else {
+                                    window.location.href = '/tutor/dashboard';
+                                }
+                            }
+                        });
+                    }
+                });
+
+            } catch (err) {
+                console.error('[Notification] Failed to load socket.io-client library:', err);
             }
-        });
+        };
+
+        initSocket();
 
         return () => {
-            socketInstance.disconnect();
+            active = false;
+            if (socketInstance) {
+                socketInstance.disconnect();
+            }
         };
     }, [addNotification, userId, role]);
 

@@ -15,14 +15,14 @@ export const metadata: Metadata = {
     description: "Connect with a skilled WACE online tutor for personalised guidance, flexible classes, and targeted support to improve confidence & grades.",
     url: "https://studyhours.com/australia/wace-online-tutoring",
     siteName: "StudyHours",
-    images: [{ url: "/australia_tutor_hero.png", width: 1200, height: 630, alt: "WACE Online Tutoring Western Australia" }],
+    images: [{ url: "/australia_tutor_hero.jpg", width: 1200, height: 630, alt: "WACE Online Tutoring Western Australia" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "WACE Online Tutor | One-to-One Learning Support",
     description: "Connect with a skilled WACE online tutor for personalised guidance, flexible classes, and targeted support to improve confidence & grades.",
-    images: ["/australia_tutor_hero.png"],
+    images: ["/australia_tutor_hero.jpg"],
   },
   authors: [{ name: "StudyHours Academic Team" }],
 };

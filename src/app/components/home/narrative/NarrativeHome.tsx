@@ -2,23 +2,22 @@
 
 import React from 'react';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
 import HeroSection from './HeroSection';
 import { useExitIntent } from '@/app/Hooks/useExitIntent';
 import ExitIntentPopup from '@/app/components/ui/ExitIntentPopup';
 
 
-const ProblemSection = dynamic(() => import('./ProblemSection'), { ssr: true });
-const ShiftSection = dynamic(() => import('./ShiftSection'), { ssr: true });
-const TrustSection = dynamic(() => import('./TrustSection'), { ssr: true });
-const ResultsSection = dynamic(() => import('./ResultsSection'), { ssr: true });
-const ResultsProofSection = dynamic(() => import('./ResultsProofSection'), { ssr: true });
-const ReviewCarousel = dynamic(() => import('./ReviewCarousel'), { ssr: true });
-const FinalCTASection = dynamic(() => import('./FinalCTASection'), { ssr: true });
-const HighDosageIntroStrip = dynamic(() => import('./HighDosageIntroStrip'), { ssr: true });
-const HowItWorksSection = dynamic(() => import('./HowItWorksSection'), { ssr: true });
-const SessionOutputs = dynamic(() => import('./SessionOutputs'), { ssr: true });
-const AssessmentJourney = dynamic(() => import('./AssessmentJourney'), { ssr: true });
+const ProblemSection = dynamic(() => import('./ProblemSection'), { ssr: false });
+const ShiftSection = dynamic(() => import('./ShiftSection'), { ssr: false });
+const TrustSection = dynamic(() => import('./TrustSection'), { ssr: false });
+const ResultsSection = dynamic(() => import('./ResultsSection'), { ssr: false });
+const ResultsProofSection = dynamic(() => import('./ResultsProofSection'), { ssr: false });
+const ReviewCarousel = dynamic(() => import('./ReviewCarousel'), { ssr: false });
+const FinalCTASection = dynamic(() => import('./FinalCTASection'), { ssr: false });
+const HighDosageIntroStrip = dynamic(() => import('./HighDosageIntroStrip'), { ssr: false });
+const HowItWorksSection = dynamic(() => import('./HowItWorksSection'), { ssr: false });
+const SessionOutputs = dynamic(() => import('./SessionOutputs'), { ssr: false });
+const AssessmentJourney = dynamic(() => import('./AssessmentJourney'), { ssr: false });
 
 
 const HighDosageDefinitionSection = dynamic(
@@ -48,7 +47,9 @@ export default function NarrativeHome() {
   React.useEffect(() => {
     if (isIntentTriggered) {
       setIsPopupOpen(true);
-      console.log('Analytics Event: popup_shown');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Analytics Event: popup_shown');
+      }
       if (typeof window !== 'undefined' && (window as any).gtag) {
         (window as any).gtag('event', 'popup_shown');
       }
@@ -58,14 +59,18 @@ export default function NarrativeHome() {
   const handleClose = () => {
     setIsPopupOpen(false);
     resetIntent();
-    console.log('Analytics Event: popup_dismissed');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Analytics Event: popup_dismissed');
+    }
     if (typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('event', 'popup_dismissed');
     }
   };
 
   const handleCtaClick = () => {
-    console.log('Analytics Event: popup_cta_clicked');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Analytics Event: popup_cta_clicked');
+    }
     if (typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('event', 'popup_cta_clicked');
     }
@@ -135,8 +140,7 @@ export default function NarrativeHome() {
       <FinalCTASection />
 
       {/* Shared Layout Background Elements for "Presence" */}
-      <motion.div
-        layoutId="presence-glow"
+      <div
         className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 bg-linear-to-tr from-purple-500/5 via-transparent to-indigo-50/5"
       />
 

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -20,17 +21,18 @@ import {
   Brain,
 } from "lucide-react";
 
-import UASCalculator from "../components/jc/UASCalculator";
-import BrainShift from "../components/jc/BrainShift";
-import ShockCurve from "../components/jc/ShockCurve";
-import DecisionTree from "../components/jc/DecisionTree";
-import ExamTimeline from "../components/jc/ExamTimeline";
-import DifficultyMatrix from "../components/jc/DifficultyMatrix";
-import SubjectDeepDives from "../components/jc/SubjectDeepDives";
-import StudentStories from "../components/jc/StudentStories";
-import ResourcesHub from "../components/jc/ResourcesHub";
-import SubjectFAQ from "../components/subjects/SubjectFAQ";
-import StickyCTA from "../components/subjects/StickyCTA";
+// Lazy-load all heavy below-the-fold sub-components to keep initial JS small
+const UASCalculator = dynamic(() => import("../components/jc/UASCalculator"), { ssr: true });
+const BrainShift = dynamic(() => import("../components/jc/BrainShift"), { ssr: true });
+const ShockCurve = dynamic(() => import("../components/jc/ShockCurve"), { ssr: true });
+const DecisionTree = dynamic(() => import("../components/jc/DecisionTree"), { ssr: true });
+const ExamTimeline = dynamic(() => import("../components/jc/ExamTimeline"), { ssr: true });
+const DifficultyMatrix = dynamic(() => import("../components/jc/DifficultyMatrix"), { ssr: true });
+const SubjectDeepDives = dynamic(() => import("../components/jc/SubjectDeepDives"), { ssr: true });
+const StudentStories = dynamic(() => import("../components/jc/StudentStories"), { ssr: true });
+const ResourcesHub = dynamic(() => import("../components/jc/ResourcesHub"), { ssr: true });
+const SubjectFAQ = dynamic(() => import("../components/subjects/SubjectFAQ"), { ssr: true });
+const StickyCTA = dynamic(() => import("../components/subjects/StickyCTA"), { ssr: false });
 
 // ─── Anchor nav ──────────────────────────────────────────────────────────────
 const NAV_LINKS = [
@@ -131,13 +133,9 @@ function UASBreakdownVisual() {
               <span className="font-heading font-bold">{r.total} pts</span>
             </div>
             <div className="h-2 bg-[oklch(0.35_0.06_250)] rounded-full overflow-hidden">
-              <motion.div
-                className="h-full rounded-full"
-                style={{ background: r.color }}
-                initial={{ width: 0 }}
-                whileInView={{ width: `${r.pct}%` }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              <div
+                className="h-full rounded-full jc-bar-fill"
+                style={{ background: r.color, width: `${r.pct}%` }}
               />
             </div>
           </div>
@@ -427,7 +425,7 @@ const JC_FAQS = [
   },
 ];
 
-// ─── Floating Doodles Component ─────────────────────────────────────────────
+// ─── Floating Doodles Component (pure CSS — no JS animation overhead) ────────
 interface DoodleProps {
   icon: React.ReactNode;
   top: string;
@@ -435,8 +433,6 @@ interface DoodleProps {
   color: string;
   duration?: number;
   delay?: number;
-  yRange?: [number, number];
-  rotateRange?: [number, number];
 }
 
 function FloatingDoodle({
@@ -446,30 +442,20 @@ function FloatingDoodle({
   color,
   duration = 5,
   delay = 0,
-  yRange = [0, -15],
-  rotateRange = [-10, 10],
 }: DoodleProps) {
   return (
-    <motion.div
-      className="absolute pointer-events-none select-none z-0 flex items-center justify-center"
-      style={{ top, left, color }}
-      initial={{ y: 0, opacity: 0, scale: 0.8 }}
-      animate={{
-        y: [0, yRange[1]],
-        rotate: [rotateRange[0], rotateRange[1]],
-        opacity: [0.25, 0.65],
-        scale: [0.9, 1.05],
-      }}
-      transition={{
-        duration,
-        delay,
-        repeat: Infinity,
-        repeatType: "reverse",
-        ease: "easeInOut",
+    <span
+      className="absolute pointer-events-none select-none z-0 flex items-center justify-center jc-float-doodle"
+      style={{
+        top,
+        left,
+        color,
+        animationDuration: `${duration}s`,
+        animationDelay: `${delay}s`,
       }}
     >
       {icon}
-    </motion.div>
+    </span>
   );
 }
 
@@ -493,11 +479,8 @@ export default function JCSingaporePageClient() {
 
         <div className="max-w-6xl mx-auto px-4 md:px-8 pt-16 pb-16">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
-            <motion.div
-              className="lg:col-span-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+            <div
+              className="lg:col-span-6 jc-hero-text-enter"
             >
               <p className="text-xs font-semibold uppercase tracking-widest text-[oklch(0.75_0.04_220)] mb-4">
                 Singapore JC &amp; A-Level Guide 2026
@@ -544,13 +527,10 @@ export default function JCSingaporePageClient() {
                   Free diagnostic test →
                 </a>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div 
-              className="lg:col-span-6 flex justify-center items-end relative"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
+            <div 
+              className="lg:col-span-6 flex justify-center items-end relative jc-hero-image-enter"
             >
               <div className="relative w-full max-w-[650px] h-[690px] lg:h-[770px] flex items-end">
                 {/* Decorative circular element behind cutout */}
@@ -622,13 +602,17 @@ export default function JCSingaporePageClient() {
                   delay={0.4}
                 />
 
-                <img 
-                  src="https://res.cloudinary.com/de8vvmpip/image/upload/v1779800130/High-achieving_Singapore_JC_student_in_202605261824-Photoroom_vy0ywh.png" 
-                  alt="High-achieving Singapore JC Student" 
-                  className="w-full h-auto max-h-[100%] object-contain z-10 filter drop-shadow-[0_20px_50px_rgba(59,130,246,0.3)]"
+                <Image
+                  src="https://res.cloudinary.com/de8vvmpip/image/upload/v1779800130/High-achieving_Singapore_JC_student_in_202605261824-Photoroom_vy0ywh.png"
+                  alt="High-achieving Singapore JC Student"
+                  width={650}
+                  height={770}
+                  priority
+                  fetchPriority="high"
+                  className="w-full h-auto max-h-[100%] object-contain z-10 drop-shadow-[0_20px_50px_rgba(59,130,246,0.3)]"
                 />
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>
@@ -1034,13 +1018,10 @@ export default function JCSingaporePageClient() {
               tagBg: "oklch(0.96 0.01 230)",
             },
           ].map((a, i) => (
-            <motion.div
+            <div
               key={i}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.07, duration: 0.4 }}
-              className="bg-white dark:bg-[oklch(0.14_0.01_240)] border border-[oklch(0.90_0.02_230)] dark:border-[oklch(0.22_0.02_240)] rounded-xl p-5 hover:shadow-sm transition-shadow group cursor-pointer"
+              className="bg-white dark:bg-[oklch(0.14_0.01_240)] border border-[oklch(0.90_0.02_230)] dark:border-[oklch(0.22_0.02_240)] rounded-xl p-5 hover:shadow-sm transition-shadow group cursor-pointer jc-card-enter"
+              style={{ animationDelay: `${i * 0.07}s` }}
             >
               <span
                 className="inline-block text-xs font-semibold rounded-full px-2.5 py-1 mb-3"
@@ -1054,7 +1035,7 @@ export default function JCSingaporePageClient() {
               <p className="text-sm text-[oklch(0.5_0.01_230)] dark:text-[oklch(0.65_0.01_230)] leading-relaxed">
                 {a.desc}
               </p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </Section>
@@ -1244,17 +1225,14 @@ export default function JCSingaporePageClient() {
                 primary: false,
               },
             ].map((item, i) => (
-              <motion.div
+              <div
                 key={i}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.45 }}
-                className={`rounded-2xl p-6 flex flex-col ${
+                className={`rounded-2xl p-6 flex flex-col jc-card-enter ${
                   item.primary
                     ? "bg-white dark:bg-[oklch(0.14_0.01_240)] text-[oklch(0.2_0.01_240)] dark:text-[oklch(0.92_0.01_230)]"
                     : "bg-[oklch(0.32_0.09_250)] text-white"
                 }`}
+                style={{ animationDelay: `${i * 0.1}s` }}
               >
                 <div
                   className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${
@@ -1288,7 +1266,7 @@ export default function JCSingaporePageClient() {
                   {item.cta}
                   <ArrowRight size={15} />
                 </Link>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

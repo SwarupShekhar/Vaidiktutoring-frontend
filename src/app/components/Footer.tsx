@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import SHLogo from "./SHLogo";
 import InstagramButton from "./InstagramButton";
 import LinkedInButton from "./LinkedInButton";
-import Galaxy from "./home/narrative/galaxy/Galaxy";
+import dynamic from "next/dynamic";
+
+const Galaxy = dynamic(() => import("./home/narrative/galaxy/Galaxy"), { ssr: false });
 
 export default function Footer() {
   const pathname = usePathname();

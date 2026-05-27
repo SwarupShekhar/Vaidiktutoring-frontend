@@ -15,14 +15,14 @@ export const metadata: Metadata = {
     description: "At Study Hours, join the best online HSC tutoring for one-to-one support, stronger study habits & higher scores in exams & helping you learn faster.",
     url: "https://studyhours.com/australia/hsc-online-tutoring",
     siteName: "StudyHours",
-    images: [{ url: "/australia_tutor_hero.png", width: 1200, height: 630, alt: "HSC Online Tutoring NSW" }],
+    images: [{ url: "/australia_tutor_hero.jpg", width: 1200, height: 630, alt: "HSC Online Tutoring NSW" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Online HSC Tutoring, Higher Marks & Confidence - Study Hours",
     description: "At Study Hours, join the best online HSC tutoring for one-to-one support, stronger study habits & higher scores in exams & helping you learn faster.",
-    images: ["/australia_tutor_hero.png"],
+    images: ["/australia_tutor_hero.jpg"],
   },
   authors: [{ name: "StudyHours Academic Team" }],
 };

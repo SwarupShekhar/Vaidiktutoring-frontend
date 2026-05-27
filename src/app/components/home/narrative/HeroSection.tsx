@@ -26,20 +26,6 @@ const HERO_IMAGES = [
   "https://res.cloudinary.com/de8vvmpip/image/upload/c_crop,g_north_west,h_1373,w_2816/c_crop,g_north_west,h_1536,w_2816/Gemini_Generated_Image_shisp6shisp6shis_hdvdyh.png",
 ];
 
-/* ─── Word-by-word headline animation ─── */
-const wordVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.07,
-      duration: 0.6,
-      ease: [0.21, 0.47, 0.32, 0.98] as [number, number, number, number],
-    },
-  }),
-};
-
 /* ─── Trust bar stats ─── */
 const TRUST_STATS = [
   { icon: Users, label: "200+ Vetted Tutors", color: "text-primary" },
@@ -67,7 +53,6 @@ export default function HeroSection() {
   const headline = activeCurriculum.hero;
   const words = headline.split(" ");
 
-
   const handleScroll = () => {
     const howSection = document.getElementById("how-it-works");
     if (howSection) {
@@ -80,16 +65,12 @@ export default function HeroSection() {
       {/* Gradient background */}
       <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-background to-indigo-50/30 dark:from-primary/10 dark:via-background dark:to-indigo-950/20" />
 
-      {/* Floating ambient orbs */}
-      <motion.div
-        animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
-        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-20 left-10 w-72 h-72 bg-primary/10 dark:bg-primary/5 rounded-full blur-3xl"
+      {/* Floating ambient orbs — CSS only, no JS animation loop */}
+      <div
+        className="absolute top-20 left-10 w-72 h-72 bg-primary/10 dark:bg-primary/5 rounded-full blur-3xl hero-orb-left"
       />
-      <motion.div
-        animate={{ x: [0, -25, 0], y: [0, 25, 0] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-20 right-10 w-96 h-96 bg-indigo-300/10 dark:bg-indigo-700/5 rounded-full blur-3xl"
+      <div
+        className="absolute bottom-20 right-10 w-96 h-96 bg-indigo-300/10 dark:bg-indigo-700/5 rounded-full blur-3xl hero-orb-right"
       />
 
       {/* Main content */}
@@ -98,12 +79,7 @@ export default function HeroSection() {
           {/* ─── Left: Copy + CTA ─── */}
           <div className="flex flex-col justify-center">
             {/* Geo-detection banner */}
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="mb-6"
-            >
+            <div className="mb-6 hero-fade-down">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 dark:bg-primary/15 border border-primary/20">
                 <Sparkles size={14} className="text-primary" />
                 <span className="text-xs font-semibold text-primary">
@@ -116,74 +92,55 @@ export default function HeroSection() {
                   Change
                 </button>
               </div>
-            </motion.div>
+            </div>
 
             {/* Curriculum selector (expandable) */}
-            <AnimatePresence>
-              {isCurriculumOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="mb-6 overflow-hidden"
-                >
-                  <div className="flex flex-wrap gap-2 p-4 rounded-2xl bg-surface border border-border/50 shadow-lg">
-                    {CURRICULA.map((c) => (
-                      <button
-                        key={c.id}
-                        onClick={() => {
-                          setCurriculum(c.id);
-                          setIsCurriculumOpen(false);
-                        }}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer ${
-                          activeCurriculum.id === c.id
-                            ? "bg-primary text-white shadow-md shadow-primary/25"
-                            : "bg-background hover:bg-primary/10 text-foreground border border-border/50 hover:border-primary/30"
-                        }`}
-                      >
-                        <span>{c.flag}</span>
-                        <span>{c.country}</span>
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {isCurriculumOpen && (
+              <div className="mb-6 overflow-hidden">
+                <div className="flex flex-wrap gap-2 p-4 rounded-2xl bg-surface border border-border/50 shadow-lg">
+                  {CURRICULA.map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => {
+                        setCurriculum(c.id);
+                        setIsCurriculumOpen(false);
+                      }}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                        activeCurriculum.id === c.id
+                          ? "bg-primary text-white shadow-md shadow-primary/25"
+                          : "bg-background hover:bg-primary/10 text-foreground border border-border/50 hover:border-primary/30"
+                      }`}
+                    >
+                      <span>{c.flag}</span>
+                      <span>{c.country}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
-            {/* Animated headline */}
             <h1 className="mb-6 flex flex-wrap gap-x-3 gap-y-1">
               {words.map((word, i) => (
-                <motion.span
+                <span
                   key={`${activeCurriculum.id}-${i}`}
-                  custom={i}
-                  initial="hidden"
-                  animate="visible"
-                  variants={wordVariants}
-                  className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4.25rem] font-black tracking-tighter leading-[1.08] text-foreground"
+                  className="text-4xl sm:text-5xl lg:text-6xl xl:text-[4.25rem] font-black tracking-tighter leading-[1.08] text-foreground hero-word-enter"
+                  style={{ animationDelay: `${i * 0.07}s` }}
                 >
                   {word}
-                </motion.span>
+                </span>
               ))}
             </h1>
 
-            {/* Subtitle */}
-            <motion.p
+            <p
               key={`sub-${activeCurriculum.id}`}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.7 }}
-              className="text-lg md:text-xl text-text-secondary font-medium leading-relaxed max-w-lg mb-8"
+              className="text-lg md:text-xl text-text-secondary font-medium leading-relaxed max-w-lg mb-8 hero-fade-up"
             >
               {activeCurriculum.subline}
-            </motion.p>
+            </p>
 
-            {/* CTA group */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.1, duration: 0.6 }}
-              className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4"
+            <div
+              className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4 hero-fade-up"
+              style={{ animationDelay: '0.3s' }}
             >
               <Link
                 href={user ? "/bookings/new" : "/login?redirect=/bookings/new"}
@@ -201,14 +158,11 @@ export default function HeroSection() {
               >
                 Speak with an Advisor
               </Link>
-            </motion.div>
+            </div>
 
-            {/* Micro-copy reassurance */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.4, duration: 0.8 }}
-              className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-secondary/70"
+            <div
+              className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-secondary/70 hero-fade-up"
+              style={{ animationDelay: '0.5s' }}
             >
               <span className="flex items-center gap-1">
                 <BadgeCheck size={13} className="text-emerald-500" />
@@ -217,30 +171,17 @@ export default function HeroSection() {
               <span className="hidden sm:inline text-border">•</span>
               <span>Vetted Professional Tutors</span>
               <span className="hidden sm:inline text-border">•</span>
-              <motion.span 
-                animate={{ 
-                  scale: [1, 1.05, 1],
-                  filter: ["brightness(1)", "brightness(1.3)", "brightness(1)"],
-                }}
-                transition={{ 
-                  duration: 2, 
-                  repeat: Infinity, 
-                  ease: "easeInOut" 
-                }}
-                className="flex items-center gap-1.5 font-bold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 shadow-[0_0_20px_rgba(79,70,229,0.25)] dark:shadow-[0_0_20px_rgba(129,140,248,0.3)] cursor-default"
+              <span
+                className="flex items-center gap-1.5 font-bold text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 shadow-[0_0_20px_rgba(79,70,229,0.25)] dark:shadow-[0_0_20px_rgba(129,140,248,0.3)] cursor-default hero-pulse"
               >
                 <Sparkles size={12} className="text-primary animate-pulse" />
                 {activeCurriculum.pricingHint}
-              </motion.span>
-            </motion.div>
+              </span>
+            </div>
           </div>
 
-          {/* ─── Right: Image showcase ─── */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4, duration: 0.9, ease: "easeOut" }}
-            className="relative flex items-center justify-center w-full"
+          <div
+            className="relative flex items-center justify-center w-full hero-fade-right"
           >
             <div className="relative w-full">
               {/* Glow behind image */}
@@ -271,13 +212,8 @@ export default function HeroSection() {
                 <div className="absolute inset-0 bg-linear-to-t from-black/10 via-transparent to-transparent pointer-events-none" />
               </div>
 
-              {/* Floating thumbnail — top left */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8, rotate: 0 }}
-                animate={{ opacity: 1, scale: 1, rotate: -3 }}
-                whileHover={{ scale: 1.08, rotate: 0, zIndex: 40 }}
-                transition={{ delay: 1.0, duration: 0.7 }}
-                className="absolute -top-10 -left-6 w-32 h-24 md:w-36 md:h-28 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/90 dark:border-slate-800/90 z-20 hidden md:block cursor-pointer"
+              <div
+                className="absolute -top-10 -left-6 w-32 h-24 md:w-36 md:h-28 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/90 dark:border-slate-800/90 z-20 hidden md:block cursor-pointer hero-thumbnail-tl"
               >
                 <Image
                   src="https://res.cloudinary.com/de8vvmpip/image/upload/v1776075731/Photorealistic_photo_of_202604131551_met4fe.jpg"
@@ -286,15 +222,10 @@ export default function HeroSection() {
                   className="object-cover"
                   sizes="150px"
                 />
-              </motion.div>
+              </div>
 
-              {/* Floating thumbnail — bottom right */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8, rotate: 0 }}
-                animate={{ opacity: 1, scale: 1, rotate: 3 }}
-                whileHover={{ scale: 1.08, rotate: 0, zIndex: 40 }}
-                transition={{ delay: 1.3, duration: 0.7 }}
-                className="absolute bottom-8 -right-10 w-32 h-24 md:w-36 md:h-28 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/90 dark:border-slate-800/90 z-20 hidden md:block cursor-pointer"
+              <div
+                className="absolute bottom-8 -right-10 w-32 h-24 md:w-36 md:h-28 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/90 dark:border-slate-800/90 z-20 hidden md:block cursor-pointer hero-thumbnail-br"
               >
                 <Image
                   src="https://res.cloudinary.com/de8vvmpip/image/upload/v1776076443/Real_photograph_style__202604131603_quzpl2.jpg"
@@ -303,14 +234,11 @@ export default function HeroSection() {
                   className="object-cover"
                   sizes="150px"
                 />
-              </motion.div>
+              </div>
 
-              {/* Exam badge pills */}
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.5, duration: 0.6 }}
-                className="absolute -bottom-5 left-6 hidden md:flex items-center gap-2 z-30"
+              <div
+                className="absolute -bottom-5 left-6 hidden md:flex items-center gap-2 z-30 hero-fade-up"
+                style={{ animationDelay: '0.6s' }}
               >
                 {activeCurriculum.exams.slice(0, 4).map((exam) => (
                   <span
@@ -325,7 +253,7 @@ export default function HeroSection() {
                     +{activeCurriculum.exams.length - 4} more
                   </span>
                 )}
-              </motion.div>
+              </div>
 
               {/* Image nav dots */}
               <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex gap-2 z-20">
@@ -343,16 +271,13 @@ export default function HeroSection() {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 
-      {/* ─── Trust Bar ─── */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.8, duration: 0.8 }}
-        className="relative z-10 max-w-5xl mx-auto px-6 pb-12"
+      <div
+        className="relative z-10 max-w-5xl mx-auto px-6 pb-12 hero-fade-up"
+        style={{ animationDelay: '0.8s' }}
       >
         <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 py-6 px-8 rounded-2xl bg-surface/80 dark:bg-surface/60 backdrop-blur-md border border-border/30 shadow-lg">
           {TRUST_STATS.map((stat, i) => (
@@ -370,21 +295,18 @@ export default function HeroSection() {
             </div>
           ))}
         </div>
-      </motion.div>
+      </div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2.2, duration: 1.5 }}
+      <div
         onClick={handleScroll}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity z-20"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity z-20 hero-fade-up"
+        style={{ animationDelay: '1s' }}
       >
         <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-text-secondary/50">
           See how it works
         </span>
         <ChevronDown size={16} className="text-text-secondary/40 animate-bounce" />
-      </motion.div>
+      </div>
     </section>
   );
 }

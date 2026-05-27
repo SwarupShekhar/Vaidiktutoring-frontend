@@ -15,14 +15,14 @@ export const metadata: Metadata = {
     description: "Get expert VCE tutoring online with personalised lessons, exam strategies, and qualified tutors to improve grades, confidence, and results fast.",
     url: "https://studyhours.com/australia/vce-online-tutoring",
     siteName: "StudyHours",
-    images: [{ url: "/australia_tutor_hero.png", width: 1200, height: 630, alt: "VCE Online Tutoring Victoria" }],
+    images: [{ url: "/australia_tutor_hero.jpg", width: 1200, height: 630, alt: "VCE Online Tutoring Victoria" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "VCE Tutoring Online | Expert Tutors & Better Results",
     description: "Get expert VCE tutoring online with personalised lessons, exam strategies, and qualified tutors to improve grades, confidence, and results fast.",
-    images: ["/australia_tutor_hero.png"],
+    images: ["/australia_tutor_hero.jpg"],
   },
   authors: [{ name: "StudyHours Academic Team" }],
 };
