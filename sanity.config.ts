@@ -10,8 +10,8 @@ import { pdfResourceSchema } from './src/sanity/schemas/pdfResource'
 import { landingPageSchema } from './src/sanity/schemas/landingPage'
 import { authorSchema } from './src/sanity/schemas/author'
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
+const projectId = 'rh6hnlmk'
+const dataset = 'production'
 
 export default defineConfig({
   name: 'studyhours-cms',
