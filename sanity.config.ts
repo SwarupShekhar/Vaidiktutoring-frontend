@@ -55,11 +55,11 @@ export default defineConfig({
         mainDocuments: defineDocuments([
           {
             route: '/resources/:slug',
-            filter: `_type == "landingPage" && slug.current == $slug`,
+            filter: `_type == "landingPage" && (slug.current == $slug || string::trim(slug.current) == $slug)`,
           },
           {
             route: '/blogs/:slug',
-            filter: `_type == "blogPost" && slug.current == $slug`,
+            filter: `_type == "blogPost" && (slug.current == $slug || string::trim(slug.current) == $slug)`,
           },
         ]),
         locations: {
