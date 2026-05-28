@@ -13,6 +13,9 @@ import { authorSchema } from './src/sanity/schemas/author'
 const projectId = 'rh6hnlmk'
 const dataset = 'production'
 
+const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+const previewOrigin = isLocalhost ? 'http://localhost:3000' : 'https://studyhours.com'
+
 export default defineConfig({
   name: 'studyhours-cms',
   title: 'StudyHours CMS',
@@ -44,7 +47,7 @@ export default defineConfig({
     presentationTool({
       previewUrl: {
         previewMode: {
-          enable: '/api/preview?secret=vaidikeduservicespvtltd_preview_2026_key',
+          enable: `${previewOrigin}/api/preview?secret=vaidikeduservicespvtltd_preview_2026_key`,
         },
       },
       resolve: {
@@ -68,7 +71,7 @@ export default defineConfig({
               locations: [
                 {
                   title: doc?.title || 'Untitled Landing Page',
-                  href: `/resources/${doc?.slug}`,
+                  href: `/resources/${doc?.slug ? doc.slug.trim() : ''}`,
                 },
               ],
             }),
@@ -82,7 +85,7 @@ export default defineConfig({
               locations: [
                 {
                   title: doc?.title || 'Untitled Blog Post',
-                  href: `/blogs/${doc?.slug}`,
+                  href: `/blogs/${doc?.slug ? doc.slug.trim() : ''}`,
                 },
               ],
             }),
