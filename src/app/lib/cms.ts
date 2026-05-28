@@ -71,13 +71,26 @@ export interface FaqBlock {
   faqs: FaqItem[];
 }
 
-export type PageBlock = FeaturesBlock | TestimonialsBlock | FaqBlock;
+export interface CustomHtmlBlock {
+  _type: 'customHtmlBlock';
+  heading?: string;
+  html?: string;
+  css?: string;
+}
+
+export interface RichTextBlock {
+  _type: 'richTextBlock';
+  content?: any;
+}
+
+export type PageBlock = FeaturesBlock | TestimonialsBlock | FaqBlock | CustomHtmlBlock | RichTextBlock;
 
 export interface LandingPage {
   _id: string;
   title: string;
   slug: string;
   targetKeywords?: string[];
+  addToFooter?: boolean;
   seo?: SeoMetadata;
   heroSection: HeroSection;
   featuredResource?: PdfResource;

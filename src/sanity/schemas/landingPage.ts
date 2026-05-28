@@ -98,10 +98,39 @@ export const landingPageSchema = defineType({
       description: 'The main downloadable resource this landing page promotes.',
     }),
     defineField({
+      name: 'addToFooter',
+      title: 'Show in Footer Links?',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Toggle this on if you want this landing page to appear dynamically in the website footer.',
+    }),
+    defineField({
       name: 'pageBlocks',
       title: 'Page Content Blocks',
       type: 'array',
       of: [
+        {
+          name: 'customHtmlBlock',
+          title: 'Custom HTML & CSS Block',
+          type: 'object',
+          fields: [
+            defineField({ name: 'heading', title: 'Block Admin Heading', type: 'string', description: 'Internal label for this custom block' }),
+            defineField({
+              name: 'html',
+              title: 'Custom HTML Code',
+              type: 'text',
+              rows: 10,
+              description: 'Write raw HTML here. You can include forms, embeds, etc.',
+            }),
+            defineField({
+              name: 'css',
+              title: 'Custom CSS Code',
+              type: 'text',
+              rows: 10,
+              description: 'Write CSS styles for this block. Use unique container classes to scope your CSS.',
+            }),
+          ],
+        },
         {
           name: 'featuresBlock',
           title: 'Features / Benefits Block',

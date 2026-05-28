@@ -13,11 +13,24 @@ export default function Footer() {
   const pathname = usePathname();
   const [year, setYear] = useState(2026);
   const [hasMounted, setHasMounted] = useState(false);
+  const [featuredResources, setFeaturedResources] = useState<{ title: string; slug: string; addToFooter?: boolean }[]>([]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setYear(new Date().getFullYear());
     setHasMounted(true);
+
+    // Fetch dynamic landing pages that should be featured in the footer
+    const API_URL = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.studyhours.com').replace(/\/$/, '');
+    fetch(`${API_URL}/cms/landing-pages`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const featured = data.filter((page: any) => page.addToFooter === true);
+          setFeaturedResources(featured);
+        }
+      })
+      .catch((err) => console.warn("[Footer] Failed to fetch featured landing pages:", err));
   }, []);
 
   if (pathname?.startsWith("/session")) return null;
@@ -45,7 +58,7 @@ export default function Footer() {
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+        <div className={`grid grid-cols-1 md:grid-cols-3 ${featuredResources.length > 0 ? 'lg:grid-cols-6' : 'lg:grid-cols-5'} gap-12 mb-16`}>
           {/* Brand Column */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -159,6 +172,31 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+
+          {/* Resources Column (Dynamic) */}
+          {featuredResources.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+                Resources
+              </h3>
+              <ul className="space-y-3">
+                {featuredResources.map((res) => (
+                  <li key={res.slug}>
+                    <Link
+                      href={`/resources/${res.slug}`}
+                      className="text-gray-400 hover:text-white transition-colors text-sm"
+                    >
+                      {res.title
+                        .replace(/\s*\|\s*StudyHours/gi, '')
+                        .replace(/\s*—\s*Free Download/gi, '')
+                        .replace(/\s*Prep\s*&\s*Resources/gi, '')
+                        .trim()}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Company Column */}
           <div>

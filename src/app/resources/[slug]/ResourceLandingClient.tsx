@@ -24,6 +24,7 @@ import { useAuth } from '@clerk/nextjs';
 import { toast } from 'sonner';
 import Link_Next from 'next/link';
 import { LandingPage, cmsApi, ReferralStatus } from '@/app/lib/cms';
+import { PortableText } from 'next-sanity';
 
 interface ResourceLandingClientProps {
   landingPage: LandingPage;
@@ -480,6 +481,41 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
                       })}
                     </div>
                   </div>
+                </section>
+              );
+            }
+
+            // 4. Custom HTML & CSS Block Render
+            if (block._type === 'customHtmlBlock') {
+              const hasCss = !!block.css;
+              const hasHtml = !!block.html;
+              const blockId = `custom-html-block-${idx}`;
+              
+              return (
+                <section key={idx} id={blockId} className="w-full relative">
+                  {hasCss && (
+                    <style dangerouslySetInnerHTML={{ __html: block.css || '' }} />
+                  )}
+                  {hasHtml ? (
+                    <div 
+                      dangerouslySetInnerHTML={{ __html: block.html || '' }} 
+                    />
+                  ) : (
+                    <div className="py-12 px-6 text-center text-xs text-text-secondary bg-slate-50/50 dark:bg-slate-900/10 border border-dashed border-border dark:border-white/5 rounded-3xl max-w-7xl mx-auto my-8">
+                      [Empty Custom HTML & CSS Block]
+                    </div>
+                  )}
+                </section>
+              );
+            }
+
+            // 5. Rich Text Block Render
+            if (block._type === 'richTextBlock') {
+              return (
+                <section key={idx} className="py-16 px-6 bg-background prose max-w-3xl mx-auto dark:prose-invert text-left font-medium">
+                  {block.content && (
+                    <PortableText value={block.content} />
+                  )}
                 </section>
               );
             }
