@@ -16,6 +16,8 @@ import Footer from "./components/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Luckiest_Guy, Space_Grotesk, DM_Sans } from "next/font/google";
 import { Metadata } from "next";
+import { draftMode } from "next/headers";
+import { VisualEditing } from "next-sanity/visual-editing";
 
 const luckiestGuy = Luckiest_Guy({
   weight: "400",
@@ -48,9 +50,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
   const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-
+  const isDraftMode = (await draftMode()).isEnabled;
 
   // If Clerk key is missing, show a fallback layout without Clerk
   if (!clerkPublishableKey) {
@@ -66,6 +68,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   <ClientSideComponents />
                   <Navbar />
                   {children}
+                  {isDraftMode && <VisualEditing />}
                   <Footer />
                 </NotificationProvider>
               </AuthProvider>
@@ -96,6 +99,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   <ClientSideComponents />
                   <Navbar />
                   {children}
+                  {isDraftMode && <VisualEditing />}
                   <Footer />
                 </NotificationProvider>
               </AuthProvider>
