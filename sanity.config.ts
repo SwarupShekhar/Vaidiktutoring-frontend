@@ -50,6 +50,7 @@ export default defineConfig({
           enable: `${previewOrigin}/api/preview?secret=vaidikeduservicespvtltd_preview_2026_key`,
         },
       },
+      allowOrigins: ['http://localhost:3000', 'https://studyhours.com'],
       resolve: {
         mainDocuments: defineDocuments([
           {
