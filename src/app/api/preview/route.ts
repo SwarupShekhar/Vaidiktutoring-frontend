@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
     draft.enable();
 
     // Dynamically route to correct visual template
-    const redirectPath = type === 'landingPage' ? `/resources/${slug}` : `/blogs/${slug}`;
+    const cleanSlug = slug.trim();
+    const redirectPath = type === 'landingPage' ? `/resources/${cleanSlug}` : `/blogs/${cleanSlug}`;
     redirect(redirectPath);
 }
