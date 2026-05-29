@@ -1205,7 +1205,7 @@ export default function JCSingaporePageClient() {
                 title: "Free diagnostic test",
                 desc: "10 minutes. Identifies your specific weak topics by subject. No tutor call. Just clarity.",
                 cta: "Take the diagnostic",
-                href: "/diagnostic",
+                href: "/contact?subject=diagnostic",
                 primary: true,
               },
               {
@@ -1213,15 +1213,15 @@ export default function JCSingaporePageClient() {
                 title: "Free trial lesson",
                 desc: "One full session, no commitment. See if the approach actually works before you pay anything.",
                 cta: "Book a free session",
-                href: "/book-trial",
+                href: "/contact?subject=trial",
                 primary: false,
               },
               {
                 icon: <MessageCircle size={22} />,
                 title: "Ask us anything",
                 desc: "Subject combination questions, UAS score interpretation, Promos strategy. WhatsApp us directly.",
-                cta: "WhatsApp us",
-                href: "https://wa.me/6512345678",
+                cta: "Contact us",
+                href: "/contact?subject=general",
                 primary: false,
               },
             ].map((item, i) => (

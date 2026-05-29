@@ -141,11 +141,11 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
               </div>
               
               <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-deep-navy dark:text-white leading-tight">
-                {heroSection.heading}
+                {heroSection?.heading || title}
               </h1>
               
               <p className="mt-6 text-lg md:text-xl text-text-secondary dark:text-slate-300 max-w-2xl leading-relaxed font-medium">
-                {heroSection.subheading}
+                {heroSection?.subheading}
               </p>
               
               {/* Exam Boards Bullet Tags */}
@@ -344,9 +344,9 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
                   <div className="max-w-7xl mx-auto">
                     <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
                       <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy dark:text-white tracking-tight">
-                        {block.heading}
+                        {block?.heading}
                       </h2>
-                      {block.subheading && (
+                      {block?.subheading && (
                         <p className="text-text-secondary dark:text-slate-400 font-medium">
                           {block.subheading}
                         </p>
@@ -385,7 +385,7 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
                   <div className="max-w-7xl mx-auto">
                     <div className="text-center max-w-3xl mx-auto mb-16">
                       <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy dark:text-white tracking-tight">
-                        {block.heading}
+                        {block?.heading}
                       </h2>
                     </div>
 
@@ -435,7 +435,7 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
                   <div className="max-w-3xl mx-auto">
                     <div className="text-center mb-16">
                       <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy dark:text-white tracking-tight">
-                        {block.heading}
+                        {block?.heading}
                       </h2>
                     </div>
 
