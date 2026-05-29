@@ -11,6 +11,7 @@ import { authorSchema } from './src/sanity/schemas/author'
 
 const projectId = 'rh6hnlmk'
 const dataset = 'production'
+const apiVersion = '2024-01-01'
 
 const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost'
 const previewOrigin = isLocalhost ? 'http://localhost:3000' : 'https://studyhours.com'
@@ -21,6 +22,7 @@ export default defineConfig({
 
   projectId,
   dataset,
+  apiVersion,
 
   plugins: [
     structureTool({
@@ -46,12 +48,13 @@ export default defineConfig({
           enable: `${previewOrigin}/api/preview?secret=vaidikeduservicespvtltd_preview_2026_key`,
         },
       },
-      allowOrigins: ['http://localhost:3000', 'https://studyhours.com'],
+      // Only connect to the current environment — not both localhost and prod simultaneously
+      allowOrigins: [previewOrigin],
       resolve: {
         mainDocuments: defineDocuments([
           {
             route: '/resources/:slug',
-            filter: `_type == "landingPage" && (slug.current == $slug || slug.current == " " + $slug || slug.current == $slug + " " || slug.current == " " + $slug + " ")`,
+            filter: `_type == "landingPage" && slug.current == $slug`,
           },
         ]),
         locations: {
@@ -72,7 +75,8 @@ export default defineConfig({
         },
       },
     }),
-    visionTool(),
+    // Vision tool only in local dev — GROQ IDE has a non-trivial memory footprint
+    ...(isLocalhost ? [visionTool()] : []),
   ],
 
   schema: {

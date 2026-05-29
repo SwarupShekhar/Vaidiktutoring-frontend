@@ -40,13 +40,15 @@ export interface FeaturesBlock {
   _type: 'featuresBlock';
   heading: string;
   subheading?: string;
+  layout?: 'grid-3' | 'grid-2' | 'list';
   features: Feature[];
 }
 
 export interface Testimonial {
   quote: string;
-  author: string;
-  role?: string;
+  name: string;        // was 'author' — schema field is 'name'
+  examBoard?: string;  // was 'role' — schema field is 'examBoard'
+  grade?: string;
   avatar?: {
     asset: {
       url: string;
@@ -74,6 +76,10 @@ export interface FaqBlock {
 export interface CustomHtmlBlock {
   _type: 'customHtmlBlock';
   heading?: string;
+  scopeClass?: string;
+  sectionBackground?: 'none' | 'surface' | 'light' | 'navy' | 'gradient';
+  sectionPadding?: 'none' | 'sm' | 'md' | 'lg';
+  maxWidth?: 'full' | '7xl' | '5xl' | '3xl';
   html?: string;
   css?: string;
 }
@@ -83,7 +89,48 @@ export interface RichTextBlock {
   content?: any;
 }
 
-export type PageBlock = FeaturesBlock | TestimonialsBlock | FaqBlock | CustomHtmlBlock | RichTextBlock;
+export interface Stat {
+  value: string;
+  label: string;
+  icon?: string;
+}
+
+export interface StatsBlock {
+  _type: 'statsBlock';
+  heading?: string;
+  stats: Stat[];
+}
+
+export interface TwoColumnBlock {
+  _type: 'twoColumnBlock';
+  heading?: string;
+  body?: string;
+  ctaText?: string;
+  ctaUrl?: string;
+  image?: {
+    asset: { url: string };
+    alt?: string;
+  };
+  imagePosition?: 'left' | 'right';
+}
+
+export interface CtaBlock {
+  _type: 'ctaBlock';
+  heading?: string;
+  subheading?: string;
+  ctaText?: string;
+  ctaUrl?: string;
+  variant?: 'primary' | 'dark' | 'light';
+}
+
+export interface VideoEmbedBlock {
+  _type: 'videoEmbedBlock';
+  heading?: string;
+  url?: string;
+  caption?: string;
+}
+
+export type PageBlock = FeaturesBlock | TestimonialsBlock | FaqBlock | CustomHtmlBlock | RichTextBlock | StatsBlock | TwoColumnBlock | CtaBlock | VideoEmbedBlock;
 
 export interface LandingPage {
   _id: string;

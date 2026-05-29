@@ -31,6 +31,11 @@ interface ResourceLandingClientProps {
 }
 
 const getIcon = (name?: string) => {
+  if (!name) return <BookOpen className="text-primary dark:text-secondary shrink-0" size={24} />;
+  // Emoji: 4 characters or fewer (handles single emoji which may be 1–2 JS chars, or short strings)
+  if ([...name].length <= 4) {
+    return <span className="text-2xl">{name}</span>;
+  }
   switch (name) {
     case 'GraduationCap':
       return <GraduationCap className="text-primary dark:text-secondary shrink-0" size={24} />;
@@ -339,6 +344,14 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
             
             // 1. Features Block Render
             if (block._type === 'featuresBlock') {
+              const isList = block.layout === 'list';
+              const isGrid2 = block.layout === 'grid-2';
+              const gridClass = isList
+                ? 'flex flex-col gap-6'
+                : isGrid2
+                  ? 'grid grid-cols-1 md:grid-cols-2 gap-8'
+                  : 'grid grid-cols-1 md:grid-cols-3 gap-8';
+
               return (
                 <section key={idx} className="py-24 px-6 bg-surface dark:bg-[#000926]/40 border-y border-border dark:border-white/5">
                   <div className="max-w-7xl mx-auto">
@@ -353,13 +366,13 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
                       )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className={gridClass}>
                       {block.features.map((feat, fidx) => (
                         <div
                           key={fidx}
-                          className="p-8 rounded-3xl bg-glass border border-border dark:border-white/10 card-hover flex flex-col items-start gap-5 shadow-sm text-left"
+                          className={`p-8 rounded-3xl bg-glass border border-border dark:border-white/10 card-hover shadow-sm text-left ${isList ? 'flex flex-row items-start gap-5' : 'flex flex-col items-start gap-5'}`}
                         >
-                          <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-900/30">
+                          <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-900/30 shrink-0">
                             {getIcon(feat.icon)}
                           </div>
                           <div className="space-y-2">
@@ -378,7 +391,77 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
               );
             }
 
-            // 2. Testimonials Block Render
+            // 2. Stats Block Render
+            if (block._type === 'statsBlock') {
+              return (
+                <section key={idx} className="py-16 px-6 bg-surface dark:bg-[#000926]/60 border-y border-border dark:border-white/5">
+                  <div className="max-w-7xl mx-auto">
+                    {block.heading && (
+                      <h2 className="text-center text-2xl font-extrabold text-deep-navy dark:text-white mb-10 tracking-tight">{block.heading}</h2>
+                    )}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                      {(block.stats || []).map((stat: any, sidx: number) => (
+                        <div key={sidx} className="text-center space-y-2 p-6 rounded-2xl bg-white/50 dark:bg-white/5 border border-border dark:border-white/10">
+                          {stat.icon && <div className="text-3xl mb-1">{stat.icon}</div>}
+                          <div className="text-4xl md:text-5xl font-extrabold text-gradient-primary leading-none">
+                            {stat.value}
+                          </div>
+                          <div className="text-sm font-semibold text-text-secondary dark:text-slate-400 uppercase tracking-wide">
+                            {stat.label}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              );
+            }
+
+            // 3. Two Column Block Render
+            if (block._type === 'twoColumnBlock') {
+              const reversed = block.imagePosition === 'right';
+              return (
+                <section key={idx} className="py-24 px-6">
+                  <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    {/* Text side */}
+                    <div className={reversed ? 'lg:order-1' : ''}>
+                      {block.heading && (
+                        <h2 className="text-3xl md:text-4xl font-extrabold text-deep-navy dark:text-white tracking-tight mb-6 leading-tight">
+                          {block.heading}
+                        </h2>
+                      )}
+                      {block.body && (
+                        <p className="text-base text-text-secondary dark:text-slate-300 leading-relaxed font-medium mb-8">
+                          {block.body}
+                        </p>
+                      )}
+                      {block.ctaText && (
+                        <a
+                          href={block.ctaUrl || '#'}
+                          className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-primary hover:bg-sapphire text-white font-bold transition-all shadow-lg shadow-blue-500/20 hover:scale-[1.02]"
+                        >
+                          {block.ctaText}
+                        </a>
+                      )}
+                    </div>
+                    {/* Image side */}
+                    <div className={reversed ? 'lg:order-0' : ''}>
+                      {block.image?.asset?.url ? (
+                        <img
+                          src={block.image.asset.url}
+                          alt={block.image.alt || block.heading || ''}
+                          className="w-full rounded-3xl shadow-xl border border-border dark:border-white/10 object-cover"
+                        />
+                      ) : (
+                        <div className="w-full aspect-video rounded-3xl bg-gradient-to-br from-ice-blue to-powder-blue dark:from-blue-950/40 dark:to-sapphire/20 border border-border dark:border-white/10" />
+                      )}
+                    </div>
+                  </div>
+                </section>
+              );
+            }
+
+            // 4. Testimonials Block Render
             if (block._type === 'testimonialsBlock') {
               return (
                 <section key={idx} className="py-24 px-6 relative">
@@ -409,14 +492,16 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
                             {test.avatar?.asset?.url && (
                               <img
                                 src={test.avatar.asset.url}
-                                alt={test.author}
+                                alt={test.name}
                                 className="h-12 w-12 rounded-full object-cover border border-primary/20 shadow-sm"
                               />
                             )}
                             <div>
-                              <h4 className="text-sm font-bold text-deep-navy dark:text-white">{test.author}</h4>
-                              {test.role && (
-                                <p className="text-xs text-text-secondary dark:text-slate-400 font-semibold">{test.role}</p>
+                              <h4 className="text-sm font-bold text-deep-navy dark:text-white">{test.name}</h4>
+                              {(test.examBoard || test.grade) && (
+                                <p className="text-xs text-text-secondary dark:text-slate-400 font-semibold">
+                                  {[test.examBoard, test.grade].filter(Boolean).join(' • ')}
+                                </p>
                               )}
                             </div>
                           </div>
@@ -428,7 +513,7 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
               );
             }
 
-            // 3. FAQ Block Render
+            // 5. FAQ Block Render
             if (block._type === 'faqBlock') {
               return (
                 <section key={idx} className="py-24 px-6 bg-slate-50 dark:bg-[#00061a] border-t border-border dark:border-white/5">
@@ -485,31 +570,150 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
               );
             }
 
-            // 4. Custom HTML & CSS Block Render
+            // 6. CTA Block Render
+            if (block._type === 'ctaBlock') {
+              const isDark = block.variant === 'dark';
+              const isGradient = !block.variant || block.variant === 'primary';
+              const isLight = block.variant === 'light';
+
+              return (
+                <section key={idx} className="py-16 px-6">
+                  <div className="max-w-5xl mx-auto">
+                    <div className={`
+                      p-12 rounded-[2rem] text-center relative overflow-hidden
+                      ${isGradient ? 'bg-gradient-to-r from-primary to-sapphire text-white shadow-2xl shadow-blue-500/20' : ''}
+                      ${isDark ? 'bg-[#000926] text-white border border-white/10' : ''}
+                      ${isLight ? 'bg-white dark:bg-white/5 border border-border dark:border-white/10 shadow-sm' : ''}
+                    `}>
+                      {isGradient && (
+                        <>
+                          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+                          <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-400/20 rounded-full blur-3xl -ml-24 -mb-24 pointer-events-none" />
+                        </>
+                      )}
+                      <div className="relative z-10 space-y-6">
+                        {block.heading && (
+                          <h2 className={`text-3xl md:text-4xl font-extrabold tracking-tight ${isLight ? 'text-deep-navy dark:text-white' : 'text-white'}`}>
+                            {block.heading}
+                          </h2>
+                        )}
+                        {block.subheading && (
+                          <p className={`text-base md:text-lg font-medium max-w-2xl mx-auto leading-relaxed ${isGradient ? 'text-blue-100' : isLight ? 'text-text-secondary' : 'text-slate-300'}`}>
+                            {block.subheading}
+                          </p>
+                        )}
+                        {block.ctaText && (
+                          <a
+                            href={block.ctaUrl || '#'}
+                            className={`
+                              inline-flex items-center gap-3 px-8 py-4 rounded-full font-black text-lg transition-all hover:scale-105 hover:shadow-xl
+                              ${isGradient ? 'bg-white text-primary' : 'bg-primary text-white shadow-lg shadow-blue-500/20'}
+                            `}
+                          >
+                            {block.ctaText}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              );
+            }
+
+            // 7. Video Embed Block Render
+            if (block._type === 'videoEmbedBlock') {
+              let embedUrl = '';
+              if (block.url) {
+                const ytMatch = block.url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+                const vimeoMatch = block.url.match(/vimeo\.com\/(\d+)/);
+                if (ytMatch) embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}?rel=0&modestbranding=1`;
+                else if (vimeoMatch) embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+                else embedUrl = block.url;
+              }
+
+              return (
+                <section key={idx} className="py-16 px-6 bg-slate-50 dark:bg-[#000926]/30 border-y border-border dark:border-white/5">
+                  <div className="max-w-4xl mx-auto">
+                    {block.heading && (
+                      <h2 className="text-center text-3xl font-extrabold text-deep-navy dark:text-white mb-10 tracking-tight">
+                        {block.heading}
+                      </h2>
+                    )}
+                    {embedUrl ? (
+                      <div className="aspect-video rounded-3xl overflow-hidden shadow-2xl border border-border dark:border-white/10">
+                        <iframe
+                          src={embedUrl}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title={block.heading || 'Embedded video'}
+                        />
+                      </div>
+                    ) : (
+                      <div className="aspect-video rounded-3xl bg-slate-200 dark:bg-white/5 border border-dashed border-border dark:border-white/10 flex items-center justify-center text-text-secondary text-sm">
+                        No video URL set
+                      </div>
+                    )}
+                    {block.caption && (
+                      <p className="text-center text-sm text-text-secondary dark:text-slate-400 font-medium mt-4">
+                        {block.caption}
+                      </p>
+                    )}
+                  </div>
+                </section>
+              );
+            }
+
+            // 8. Custom HTML & CSS Block Render
             if (block._type === 'customHtmlBlock') {
               const hasCss = !!block.css;
               const hasHtml = !!block.html;
               const blockId = `custom-html-block-${idx}`;
-              
+
+              const bgMap: Record<string, string> = {
+                none:     '',
+                surface:  'bg-white dark:bg-slate-900/60',
+                light:    'bg-[#F5F8FF] dark:bg-[#0D1117]',
+                navy:     'bg-[#000926] text-white',
+                gradient: 'bg-gradient-to-r from-primary to-sapphire text-white',
+              };
+              const padMap: Record<string, string> = {
+                none: '',
+                sm:   'py-8 px-6',
+                md:   'py-16 px-6',
+                lg:   'py-24 px-6',
+              };
+              const mwMap: Record<string, string> = {
+                full: 'w-full',
+                '7xl': 'max-w-7xl mx-auto px-6',
+                '5xl': 'max-w-5xl mx-auto px-6',
+                '3xl': 'max-w-3xl mx-auto px-6',
+              };
+
+              const sectionBg  = bgMap[block.sectionBackground  || 'none'] ?? '';
+              const sectionPad = padMap[block.sectionPadding     || 'md']   ?? 'py-16 px-6';
+              const innerMw    = mwMap[block.maxWidth            || '7xl']  ?? 'max-w-7xl mx-auto px-6';
+
               return (
-                <section key={idx} id={blockId} className="w-full relative">
+                <section key={idx} id={blockId} className={`w-full relative ${sectionBg} ${sectionPad}`}>
                   {hasCss && (
                     <style dangerouslySetInnerHTML={{ __html: block.css || '' }} />
                   )}
                   {hasHtml ? (
-                    <div 
-                      dangerouslySetInnerHTML={{ __html: block.html || '' }} 
+                    <div
+                      className={innerMw}
+                      dangerouslySetInnerHTML={{ __html: block.html || '' }}
                     />
                   ) : (
                     <div className="py-12 px-6 text-center text-xs text-text-secondary bg-slate-50/50 dark:bg-slate-900/10 border border-dashed border-border dark:border-white/5 rounded-3xl max-w-7xl mx-auto my-8">
-                      [Empty Custom HTML & CSS Block]
+                      [Empty Custom HTML & CSS Block — add HTML in the CMS]
                     </div>
                   )}
                 </section>
               );
             }
 
-            // 5. Rich Text Block Render
+            // 9. Rich Text Block Render
             if (block._type === 'richTextBlock') {
               return (
                 <section key={idx} className="py-16 px-6 bg-background prose max-w-3xl mx-auto dark:prose-invert text-left font-medium">
