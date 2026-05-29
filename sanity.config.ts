@@ -5,7 +5,6 @@ import { structureTool } from 'sanity/structure'
 import { visionTool } from '@sanity/vision'
 import { presentationTool, defineLocations, defineDocuments } from 'sanity/presentation'
 
-import { blogPostSchema } from './src/sanity/schemas/blogPost'
 import { pdfResourceSchema } from './src/sanity/schemas/pdfResource'
 import { landingPageSchema } from './src/sanity/schemas/landingPage'
 import { authorSchema } from './src/sanity/schemas/author'
@@ -29,9 +28,6 @@ export default defineConfig({
         S.list()
           .title('StudyHours Content')
           .items([
-            S.listItem()
-              .title('Blog Posts')
-              .child(S.documentTypeList('blogPost').title('Blog Posts')),
             S.listItem()
               .title('PDF Resources & Lead Magnets')
               .child(S.documentTypeList('pdfResource').title('PDF Resources')),
@@ -57,10 +53,6 @@ export default defineConfig({
             route: '/resources/:slug',
             filter: `_type == "landingPage" && (slug.current == $slug || slug.current == " " + $slug || slug.current == $slug + " " || slug.current == " " + $slug + " ")`,
           },
-          {
-            route: '/blogs/:slug',
-            filter: `_type == "blogPost" && (slug.current == $slug || slug.current == " " + $slug || slug.current == $slug + " " || slug.current == " " + $slug + " ")`,
-          },
         ]),
         locations: {
           landingPage: defineLocations({
@@ -77,20 +69,6 @@ export default defineConfig({
               ],
             }),
           }),
-          blogPost: defineLocations({
-            select: {
-              title: 'title',
-              slug: 'slug.current',
-            },
-            resolve: (doc) => ({
-              locations: [
-                {
-                  title: doc?.title || 'Untitled Blog Post',
-                  href: `/blogs/${doc?.slug ? doc.slug.trim() : ''}`,
-                },
-              ],
-            }),
-          }),
         },
       },
     }),
@@ -98,7 +76,7 @@ export default defineConfig({
   ],
 
   schema: {
-    types: [blogPostSchema, pdfResourceSchema, landingPageSchema, authorSchema],
+    types: [pdfResourceSchema, landingPageSchema, authorSchema],
   },
 
   basePath: '/studio',

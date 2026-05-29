@@ -26,14 +26,10 @@ export default function BlogManagementSection({ filterOnlyMyBlogs = false }: Blo
             setLoading(true);
             const res = await blogsApi.getAdminAll(page, 10);
             
-            let filteredData = Array.isArray(res.data) ? res.data : [];
-            if (filterOnlyMyBlogs && user) {
-                const currentUserId = user.userId || user.id;
-                filteredData = filteredData.filter((b: BlogPost) => b.author_id === currentUserId);
-            }
+            const filteredData = Array.isArray(res.data) ? res.data : [];
             
             setBlogs(filteredData);
-            setTotal(filterOnlyMyBlogs ? filteredData.length : res.total);
+            setTotal(res.total);
         } catch (error) {
             console.error('Failed to fetch blogs', error);
         } finally {
@@ -59,11 +55,23 @@ export default function BlogManagementSection({ filterOnlyMyBlogs = false }: Blo
 
     const handleStatusUpdate = async (id: string, status: 'PUBLISHED' | 'REJECTED') => {
         if (!isAdmin) return;
-        if (!confirm(`Are you sure you want to mark this post as ${status}?`)) return;
+        
+        let reason = undefined;
+        if (status === 'REJECTED') {
+            const result = window.prompt('Please enter a reason for rejecting this blog post:');
+            if (result === null) return; // User cancelled
+            if (!result.trim()) {
+                alert('A rejection reason is required.');
+                return;
+            }
+            reason = result.trim();
+        } else {
+            if (!window.confirm(`Are you sure you want to mark this post as ${status}?`)) return;
+        }
 
         try {
             setProcessingId(id);
-            await blogsApi.updateStatus(id, status);
+            await blogsApi.updateStatus(id, status, reason);
             // Optimistic update or refresh
             setBlogs(prev => prev.map(b => b.id === id ? { ...b, status } : b));
             alert(`Blog ${status.toLowerCase()} successfully!`);
@@ -239,7 +247,7 @@ export default function BlogManagementSection({ filterOnlyMyBlogs = false }: Blo
             </div>
 
             {/* Pagination Controls */}
-            {!filterOnlyMyBlogs && total > 10 && (
+            {total > 10 && (
                 <div className="mt-4 flex justify-end gap-2">
                     <button
                         disabled={page === 1}
@@ -250,7 +258,7 @@ export default function BlogManagementSection({ filterOnlyMyBlogs = false }: Blo
                     </button>
                     <div className="px-3 py-1 bg-surface rounded-lg text-sm">{page}</div>
                     <button
-                        disabled={blogs.length < 10} 
+                        disabled={page * 10 >= total} 
                         onClick={() => setPage(p => p + 1)}
                         className="px-3 py-1 rounded-lg border border-border disabled:opacity-50 text-sm"
                     >

@@ -18,6 +18,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
     const [lastSaved, setLastSaved] = useState<string | null>(null);
     const [showHistory, setShowHistory] = useState(false);
     const [summary, setSummary] = useState('');
+    const [isDirty, setIsDirty] = useState(false);
 
     // Permission state
     const [canEdit, setCanEdit] = useState(false);
@@ -105,11 +106,24 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
         if (id) fetchBlog();
     }, [id, router]);
 
+    // Warn on accidental navigation with unsaved changes
+    useEffect(() => {
+        if (!isDirty) return;
+        const handler = (e: BeforeUnloadEvent) => {
+            e.preventDefault();
+            e.returnValue = '';
+        };
+        window.addEventListener('beforeunload', handler);
+        return () => window.removeEventListener('beforeunload', handler);
+    }, [isDirty]);
+
     const handleChange = (field: string, value: any) => {
+        setIsDirty(true);
         setForm(prev => ({ ...prev, [field]: value }));
     };
 
     const handleContentChange = (html: string) => {
+        setIsDirty(true);
         setForm(prev => ({ ...prev, content: html }));
     };
 
@@ -118,7 +132,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
         setSaving(true);
 
         try {
-            await blogsApi.update(id, {
+            const payload: any = {
                 title: form.title,
                 category: form.category,
                 imageUrl: form.imageUrl,
@@ -132,8 +146,17 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                 publishedAt: form.publishedAt,
                 related_blog_ids: form.related_blog_ids,
                 summary: summary || 'Content update'
-            });
+            };
+            
+            // Re-submit logic: if it was rejected, return to pending queue upon edit
+            if (form.status === 'REJECTED') {
+                payload.status = 'PENDING';
+            }
+
+            await blogsApi.update(id, payload);
+            localStorage.removeItem(`blog_draft_${id}`);
             setLastSaved(new Date().toISOString());
+            setIsDirty(false);
             setSummary('');
             alert('Blog updated successfully!');
             router.push('/admin/dashboard');

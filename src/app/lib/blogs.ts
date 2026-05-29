@@ -115,7 +115,7 @@ export const blogsApi = {
     },
 
     // Create new blog (Protected: Admin/Tutor)
-    create: async (data: Partial<BlogPost>) => {
+    create: async (data: Partial<BlogPost> & { summary?: string }) => {
         // Map camelCase to snake_case for backend
         const payload = {
             ...data,
@@ -139,8 +139,8 @@ export const blogsApi = {
     },
 
     // Admin: Approve/Reject
-    updateStatus: async (id: string, status: 'PUBLISHED' | 'PENDING' | 'REJECTED') => {
-        const res = await api.patch(`/admin/blogs/${id}/status`, { status });
+    updateStatus: async (id: string, status: 'PUBLISHED' | 'PENDING' | 'REJECTED', reason?: string) => {
+        const res = await api.patch(`/admin/blogs/${id}/status`, { status, reason });
         return normalizeBlog(res.data);
     },
 

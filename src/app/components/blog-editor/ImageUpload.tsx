@@ -68,6 +68,10 @@ export default function ImageUpload({
               alt={alt} 
               style={filterStyle}
               className="w-full h-full object-cover" 
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = 'https://placehold.co/600x400?text=Image+Not+Found';
+              }}
             />
             {editable && (
               <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">

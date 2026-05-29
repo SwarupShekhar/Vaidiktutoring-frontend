@@ -21,6 +21,7 @@ import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
 import { useRef } from 'react';
+import DOMPurify from 'dompurify';
 
 interface BlogEditorProps {
   content: string;
@@ -118,6 +119,13 @@ function processPreviewHtml(html: string): string {
     .replace(/<h3>/g, '<h3 class="text-xl font-black mt-10 mb-5 tracking-tight">')
     .replace(/<h4>/g, '<h4 class="text-lg font-black mt-8 mb-4">')
     .replace(/<blockquote>/g, '<blockquote class="border-l-4 border-primary bg-primary/5 py-8 px-10 rounded-3xl italic my-16 font-serif">');
+    
+  if (typeof window !== 'undefined') {
+    return DOMPurify.sanitize(processed, {
+      ADD_TAGS: ['img', 'blockquote', 'hr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+      ADD_ATTR: ['target', 'class', 'src', 'alt']
+    });
+  }
   return processed;
 }
 
@@ -136,7 +144,7 @@ export default function BlogEditor({
   excerpt,
   authorName = 'Vaidik Author'
 }: BlogEditorProps) {
-  const [mode, setMode] = useState<'edit' | 'preview'>('edit');
+  const [mode, setMode] = useState<'edit' | 'preview' | 'text'>('edit');
   const [isRawMode, setIsRawMode] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [showLinkInput, setShowLinkInput] = useState(false);
@@ -224,7 +232,10 @@ export default function BlogEditor({
     });
 
     if (linkCount > 0) {
+      if (!confirm(`Apply ${linkCount} internal links? This will clear the undo history for this action. You can restore via Version History if needed.`)) return;
+      isInternalChange.current = true;
       editor.commands.setContent(newContent);
+      onChange(sanitizeMarkdown(newContent));
       setSuggestedLinks([]);
       setShowScanner(false);
       toast.success(`✨ Magic Complete! Added ${linkCount} links.`, {
@@ -328,7 +339,8 @@ export default function BlogEditor({
   });
 
   useEffect(() => {
-    if (editor && !isInternalChange.current) {
+    // Only sync back to TipTap if we are in Visual Mode to prevent heavy parsing lag
+    if (editor && !isInternalChange.current && mode === 'edit' && !isRawMode) {
       const currentMarkdown = (editor.storage as any).markdown.getMarkdown();
       const sanitizedCurrent = sanitizeMarkdown(currentMarkdown);
       if (content !== sanitizedCurrent) {
@@ -338,7 +350,7 @@ export default function BlogEditor({
       }
     }
     isInternalChange.current = false;
-  }, [content, editor]);
+  }, [content, editor, mode, isRawMode]);
 
   const setLink = () => {
     if (isRawMode) {
@@ -461,7 +473,7 @@ export default function BlogEditor({
             </button>
           )}
 
-          {/* Edit/Preview Toggle */}
+          {/* Edit/Preview/Text Toggle */}
           <div className="flex bg-white/10 dark:bg-white/5 rounded-lg p-1 border border-white/20 dark:border-white/10">
             <button
               type="button"
@@ -502,6 +514,26 @@ export default function BlogEditor({
               )}
               <span className="text-[10px] relative z-10">#</span> 
               <span className="relative z-10">Markdown</span>
+            </button>
+            <button
+              type="button"
+              aria-label="Switch to Plain Text"
+              aria-pressed={mode === 'text'}
+              onClick={() => {
+                setMode('text');
+                setIsRawMode(false);
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all relative ${
+                mode === 'text'
+                  ? 'text-white' 
+                  : 'text-text-secondary hover:text-(--color-text-primary)'
+              }`}
+            >
+              {mode === 'text' && (
+                <motion.div layoutId="mode-bg" className="absolute inset-0 bg-emerald-600 rounded-md z-0" />
+              )}
+              <FileText size={14} className="relative z-10" /> 
+              <span className="relative z-10">Plain Text</span>
             </button>
             <button
               type="button"
@@ -901,6 +933,7 @@ export default function BlogEditor({
                     aria-label="Raw Markdown Editor"
                     value={content}
                     onChange={(e) => {
+                      isInternalChange.current = true;
                       onChange(e.target.value);
                     }}
                     className="w-full min-h-[600px] p-10 bg-black/5 dark:bg-black/40 text-(--color-text-primary) font-mono text-sm leading-relaxed focus:bg-white/5 outline-none transition-all resize-none border-b border-white/5"
@@ -912,6 +945,31 @@ export default function BlogEditor({
                     className={`min-h-[500px] ${!editable ? 'pointer-events-none opacity-70' : ''}`}
                   />
                 )}
+              </motion.div>
+            ) : mode === 'text' ? (
+              <motion.div
+                key="text-view"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.2 }}
+                className="w-full"
+              >
+                {!editable && (
+                  <div className="absolute top-4 right-4 z-20 px-3 py-1.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-bold rounded-full flex items-center gap-1.5 border border-yellow-200 dark:border-yellow-800">
+                    <Eye size={12} /> Read-Only Mode
+                  </div>
+                )}
+                <textarea
+                  aria-label="Plain Text Editor"
+                  value={content}
+                  onChange={(e) => {
+                    isInternalChange.current = true;
+                    onChange(e.target.value);
+                  }}
+                  className="w-full min-h-[600px] p-10 bg-white/5 dark:bg-black/80 text-(--color-text-primary) font-sans text-base leading-relaxed focus:bg-white/10 outline-none transition-all resize-none border-b border-emerald-500/20"
+                  placeholder="Write pure text here... It will automatically be formatted as paragraphs."
+                />
               </motion.div>
             ) : (
               <motion.div 
@@ -931,7 +989,7 @@ export default function BlogEditor({
                     <div className="space-y-8">
                       <div className="flex flex-col items-center gap-4">
                         <p className="font-bold text-gray-500 dark:text-gray-400 text-sm">
-                          By <span className="text-primary font-black uppercase tracking-tight">StudyHours Editorial</span>
+                          By <span className="text-primary font-black uppercase tracking-tight">{authorName || 'StudyHours Editorial'}</span>
                           <span className="mx-3 opacity-20">•</span>
                           <span className="uppercase tracking-[0.2em] text-[10px] font-black">{new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                         </p>
@@ -1014,12 +1072,12 @@ export default function BlogEditor({
                           {content || '*Start writing to see the preview...*'}
                         </ReactMarkdown>
                       ) : (
-                        <div 
-                          dangerouslySetInnerHTML={{ 
-                            __html: processPreviewHtml(
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(processPreviewHtml(
                               previewHtml.current || editor?.getHTML() || '<p style="opacity:0.5;font-style:italic">Start writing to see the preview...</p>'
-                            )
-                          }} 
+                            ), { ADD_ATTR: ['class', 'style'] })
+                          }}
                         />
                       )}
                     </div>

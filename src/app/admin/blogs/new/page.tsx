@@ -12,6 +12,7 @@ export default function NewBlogPage() {
     const { user } = useAuthContext();
     const [saving, setSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<string | null>(null);
+    const [summary, setSummary] = useState('');
 
     // Permission state
     const isAdmin = user?.role?.toLowerCase() === 'admin';
@@ -99,7 +100,8 @@ export default function NewBlogPage() {
                 targetKeyword: form.targetKeyword,
                 slug: form.slug,
                 publishedAt: form.publishedAt,
-                related_blog_ids: form.related_blog_ids
+                related_blog_ids: form.related_blog_ids,
+                summary: summary || 'Initial version'
             });
             
             // Clear saved draft
@@ -185,11 +187,21 @@ export default function NewBlogPage() {
                                 />
 
                                 {/* Save/Create Button */}
-                                <div className="mt-6 flex justify-end">
+                                <div className="mt-8 p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md flex flex-col md:flex-row items-center gap-4">
+                                    <div className="flex-1 w-full">
+                                        <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] mb-2 block">Creation Summary (Optional)</label>
+                                        <input 
+                                            type="text"
+                                            value={summary}
+                                            onChange={(e) => setSummary(e.target.value)}
+                                            placeholder="What is this post about? (e.g. Initial draft on math tips)"
+                                            className="w-full px-4 py-3 rounded-xl bg-black/20 border border-white/10 text-sm italic focus:ring-2 focus:ring-primary outline-none transition-all"
+                                        />
+                                    </div>
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className={`px-10 py-4 rounded-2xl text-white font-black text-lg shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-3 bg-linear-to-r from-purple-600 to-indigo-600 shadow-purple-500/25 ${saving ? 'opacity-70 cursor-wait' : ''}`}
+                                        className={`w-full md:w-auto px-10 py-4 rounded-xl text-white font-black text-lg shadow-2xl hover:scale-[1.05] active:scale-[0.95] transition-all flex items-center justify-center gap-3 bg-linear-to-r from-purple-600 to-indigo-600 shadow-purple-500/25 ${saving ? 'opacity-70 cursor-wait' : ''}`}
                                     >
                                         {saving ? (
                                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

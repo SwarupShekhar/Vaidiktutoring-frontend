@@ -139,6 +139,7 @@ export default function BlogSidebar({
             onChange={(e) => onTitleChange(e.target.value)}
             disabled={!editable}
             placeholder="Enter blog title..."
+            maxLength={100}
             className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-black/30 border border-white/20 dark:border-white/10 text-(--color-text-primary) text-sm font-medium focus:ring-2 focus:ring-primary outline-none disabled:opacity-50"
           />
         </motion.div>
@@ -412,6 +413,7 @@ export default function BlogSidebar({
                   onChange={(e) => onSeoTitleChange(e.target.value)}
                   disabled={!editable}
                   placeholder={title || 'SEO Title'}
+                  maxLength={60}
                   className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-black/30 border border-white/20 dark:border-white/10 text-(--color-text-primary) text-sm focus:ring-2 focus:ring-primary outline-none disabled:opacity-50"
                 />
               </div>
@@ -422,6 +424,7 @@ export default function BlogSidebar({
                   onChange={(e) => onSeoDescriptionChange(e.target.value)}
                   disabled={!editable}
                   rows={2}
+                  maxLength={160}
                   placeholder={excerpt || 'Meta description'}
                   className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-black/30 border border-white/20 dark:border-white/10 text-(--color-text-primary) text-sm focus:ring-2 focus:ring-primary outline-none resize-none disabled:opacity-50"
                 />
