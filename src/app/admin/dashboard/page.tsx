@@ -169,7 +169,7 @@ export default function AdminDashboardPage() {
 
     return (
         <ProtectedClient roles={['admin']}>
-            <div className="dark min-h-screen p-4 md:p-8 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-top-4 duration-700 text-slate-100">
+            <div className="min-h-screen p-4 md:p-8 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-top-4 duration-700 text-(--color-text-primary)">
                 <div className="flex justify-between items-end mb-4">
                     <div>
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-1">Control Plane</p>
@@ -188,7 +188,7 @@ export default function AdminDashboardPage() {
                 <div className="grid grid-cols-12 gap-6 pb-20">
                     
                     {/* 1. WELCOME & IDENTITY TILE (Col 1-5, Row 1) */}
-                    <div className="col-span-full lg:col-span-5 bg-slate-900 rounded-4xl p-10 text-white relative overflow-hidden shadow-2xl flex flex-col justify-center min-h-[260px] group border border-white/5">
+                    <div className="col-span-full lg:col-span-5 bg-glass dark:bg-slate-900 rounded-4xl p-10 text-(--color-text-primary) dark:text-white relative overflow-hidden shadow-sm dark:shadow-2xl flex flex-col justify-center min-h-[260px] group border border-border dark:border-white/5">
                         {/* Dynamic Background Noise */}
                         <div className="absolute inset-0 opacity-/5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
                         <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-600/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:bg-indigo-600/30 transition-colors duration-1000" />
@@ -199,7 +199,7 @@ export default function AdminDashboardPage() {
                                     <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
                                     <span className="text-[9px] font-mono font-black uppercase tracking-[0.2em] text-indigo-400">System_Live</span>
                                 </div>
-                                <span className="text-[10px] font-mono text-white/20 uppercase tracking-widest">v4.2.0-STABLE</span>
+                                <span className="text-[10px] font-mono text-slate-500 dark:text-white/20 uppercase tracking-widest">v4.2.0-STABLE</span>
                             </div>
 
                             <h1 className="text-4xl md:text-6xl font-black tracking-tighter leading-[0.9] mb-6">
@@ -209,12 +209,12 @@ export default function AdminDashboardPage() {
 
                             <div className="flex items-center gap-6 pt-4 border-t border-white/5">
                                 <div>
-                                    <p className="text-[8px] font-mono text-white/30 uppercase tracking-[0.2em] mb-1">Active Core</p>
-                                    <p className="text-sm font-black text-white/90 uppercase tracking-widest">{stats.activeNow} Node Clusters</p>
+                                    <p className="text-[8px] font-mono text-slate-500 dark:text-white/30 uppercase tracking-[0.2em] mb-1">Active Core</p>
+                                    <p className="text-sm font-black text-slate-800 dark:text-white/90 uppercase tracking-widest">{stats.activeNow} Node Clusters</p>
                                 </div>
                                 <div>
-                                    <p className="text-[8px] font-mono text-white/30 uppercase tracking-[0.2em] mb-1">Uptime</p>
-                                    <p className="text-sm font-black text-white/90 uppercase tracking-widest">99.98%</p>
+                                    <p className="text-[8px] font-mono text-slate-500 dark:text-white/30 uppercase tracking-[0.2em] mb-1">Uptime</p>
+                                    <p className="text-sm font-black text-slate-800 dark:text-white/90 uppercase tracking-widest">99.98%</p>
                                 </div>
                             </div>
                         </div>
@@ -259,17 +259,17 @@ export default function AdminDashboardPage() {
                             <div 
                                 key={idx} 
                                 onClick={stat.onclick}
-                                className={`bg-slate-900 rounded-4xl p-6 border border-white/5 hover:border-${stat.color}-500/30 transition-all group relative cursor-pointer overflow-hidden shadow-sm`}
+                                className={`bg-glass dark:bg-slate-900 rounded-4xl p-6 border border-border dark:border-white/5 hover:border-${stat.color}-500/30 transition-all group relative cursor-pointer overflow-hidden shadow-sm`}
                             >
                                 <div className="flex flex-col h-full justify-between relative z-10">
                                     <div className={`w-10 h-10 rounded-xl bg-${stat.color}-500/10 flex items-center justify-center text-${stat.color}-500 mb-4 group-hover:scale-110 transition-transform`}>
                                         <stat.icon size={20} />
                                     </div>
                                     <div>
-                                        <p className="text-xl font-black text-white tracking-tighter mb-1 truncate">{stat.value}</p>
+                                        <p className="text-xl font-black text-(--color-text-primary) dark:text-white tracking-tighter mb-1 truncate">{stat.value}</p>
                                         <div className="flex flex-col">
-                                            <p className="text-[9px] uppercase font-mono font-black tracking-[0.2em] text-white/30">{stat.label}</p>
-                                            <p className={`text-[8px] font-bold ${stat.color === 'rose' ? 'text-rose-500' : 'text-white/20'} uppercase tracking-widest mt-1`}>
+                                            <p className="text-[9px] uppercase font-mono font-black tracking-[0.2em] text-slate-500 dark:text-white/30">{stat.label}</p>
+                                            <p className={`text-[8px] font-bold ${stat.color === 'rose' ? 'text-rose-500' : 'text-slate-400 dark:text-white/20'} uppercase tracking-widest mt-1`}>
                                                 {stat.detail}
                                             </p>
                                         </div>
@@ -278,7 +278,7 @@ export default function AdminDashboardPage() {
                                 {/* Technical Detail: Dotted Visual Indicator */}
                                 <div className="absolute bottom-4 right-4 flex gap-0.5">
                                     {[1, 2, 3].map(i => (
-                                        <div key={i} className={`w-1 h-3 rounded-full ${i <= 2 ? `bg-${stat.color}-500/40` : 'bg-white/5'}`} />
+                                        <div key={i} className={`w-1 h-3 rounded-full ${i <= 2 ? `bg-${stat.color}-500/40` : 'bg-slate-200 dark:bg-white/5'}`} />
                                     ))}
                                 </div>
                             </div>
@@ -298,7 +298,7 @@ export default function AdminDashboardPage() {
                     {/* 4. MAIN OPERATIONAL HUB (Col 1-8, Row 3-4) */}
                     <div className="col-span-full lg:col-span-8 flex flex-col gap-6">
                         {/* BOOKINGS TILE */}
-                        <div className="bg-glass rounded-4xl p-6 border border-white/10 shadow-sm flex-1">
+                        <div className="bg-glass rounded-4xl p-6 border border-border dark:border-white/10 shadow-sm flex-1">
                             <div className="flex items-center justify-between mb-6 px-2">
                                 <div className="flex items-center gap-3">
                                     <h2 className="text-lg font-black uppercase tracking-tighter text-(--color-text-primary) flex items-center gap-2">
@@ -317,7 +317,7 @@ export default function AdminDashboardPage() {
                         </div>
 
                         {/* BLOG MANAGEMENT TILE */}
-                        <div className="bg-glass rounded-4xl p-6 border border-white/10 shadow-sm">
+                        <div className="bg-glass rounded-4xl p-6 border border-border dark:border-white/10 shadow-sm">
                             <div className="flex items-center justify-between mb-6 px-2">
                                 <h2 className="text-lg font-black uppercase tracking-tighter text-(--color-text-primary) flex items-center gap-2">
                                     <PenTool size={18} className="text-pink-500" />
@@ -335,15 +335,15 @@ export default function AdminDashboardPage() {
                     <div className="col-span-full lg:col-span-4 flex flex-col gap-6">
                         
                         {/* COMMAND CONSOLE (Executive Actions) */}
-                        <div className="bg-slate-900 rounded-4xl p-8 border border-white/5 shadow-2xl relative overflow-hidden group">
+                        <div className="bg-glass dark:bg-slate-900 rounded-4xl p-8 border border-border dark:border-white/5 shadow-sm dark:shadow-2xl relative overflow-hidden group">
                             {/* Technical Grid Overlay */}
-                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] bg-size-[20px_20px]" />
-                            <div className="absolute top-0 right-0 p-4 font-mono text-[8px] text-white/20 tracking-tighter uppercase">
+                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] dark:bg-[radial-gradient(#fff_1px,transparent_1px)] bg-size-[20px_20px]" />
+                            <div className="absolute top-0 right-0 p-4 font-mono text-[8px] text-slate-400 dark:text-white/20 tracking-tighter uppercase">
                                 Console_v4.2 // SYS_AUTH_LVL_0
                             </div>
                             
                             <div className="relative z-10">
-                                <h2 className="text-xl font-black text-white mb-8 flex items-center gap-3">
+                                <h2 className="text-xl font-black text-(--color-text-primary) dark:text-white mb-8 flex items-center gap-3">
                                     <Zap className="text-indigo-400" size={20} />
                                     Executive Modules
                                 </h2>
@@ -370,39 +370,39 @@ export default function AdminDashboardPage() {
 
                                     {/* SECONDARY CLUSTER */}
                                     <div className="grid grid-cols-2 gap-4">
-                                        <Link href="/admin/tutors/new" className="p-5 bg-white/5 border border-white/5 rounded-[1.8rem] hover:bg-white/10 hover:border-white/20 transition-all group/sub text-left">
+                                        <Link href="/admin/tutors/new" className="p-5 bg-black/5 dark:bg-white/5 border border-border dark:border-white/5 rounded-[1.8rem] hover:bg-black/10 dark:hover:bg-white/10 transition-all group/sub text-left">
                                             <div className="flex justify-between items-start mb-4">
-                                                <div className="p-2 bg-blue-500/10 rounded-xl text-blue-400">
+                                                <div className="p-2 bg-blue-500/10 rounded-xl text-blue-500 dark:text-blue-400">
                                                     <Plus size={18} />
                                                 </div>
                                                 <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                                             </div>
-                                            <p className="text-white font-bold text-sm">Add Tutor</p>
-                                            <p className="text-[9px] text-white/40 font-mono uppercase mt-1">Onboarding</p>
+                                            <p className="text-(--color-text-primary) dark:text-white font-bold text-sm">Add Tutor</p>
+                                            <p className="text-[9px] text-slate-500 dark:text-white/40 font-mono uppercase mt-1">Onboarding</p>
                                         </Link>
 
-                                        <Link href="/admin/vault" className="p-5 bg-white/5 border border-white/5 rounded-[1.8rem] hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all group/sub text-left">
+                                        <Link href="/admin/vault" className="p-5 bg-black/5 dark:bg-white/5 border border-border dark:border-white/5 rounded-[1.8rem] hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all group/sub text-left">
                                             <div className="flex justify-between items-start mb-4">
-                                                <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-400">
+                                                <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-500 dark:text-emerald-400">
                                                     <Shield size={18} />
                                                 </div>
                                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/40" />
                                             </div>
-                                            <p className="text-white font-bold text-sm">Vault</p>
-                                            <p className="text-[9px] text-white/40 font-mono uppercase mt-1">Archival Access</p>
+                                            <p className="text-(--color-text-primary) dark:text-white font-bold text-sm">Vault</p>
+                                            <p className="text-[9px] text-slate-500 dark:text-white/40 font-mono uppercase mt-1">Archival Access</p>
                                         </Link>
                                     </div>
                                     
                                     {/* SYSTEM UTILITY BUTTON */}
                                     <button 
                                         onClick={() => (document.getElementById('support-section') as HTMLElement)?.scrollIntoView({behavior: 'smooth'})}
-                                        className="w-full py-4 px-6 border border-white/5 rounded-2xl flex items-center justify-between hover:bg-white/5 hover:border-pink-500/30 transition-all group/btn mb-2"
+                                        className="w-full py-4 px-6 border border-border dark:border-white/5 rounded-2xl flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-all group/btn mb-2"
                                     >
                                         <div className="flex items-center gap-3">
                                             <LifeBuoy size={16} className="text-pink-500" />
-                                            <span className="text-xs font-bold text-white/70">Support Operations</span>
+                                            <span className="text-xs font-bold text-slate-600 dark:text-white/70">Support Operations</span>
                                         </div>
-                                        <ChevronRight size={14} className="text-white/20 group-hover/btn:text-pink-500 transition-colors" />
+                                        <ChevronRight size={14} className="text-slate-400 dark:text-white/20 group-hover/btn:text-pink-500 transition-colors" />
                                     </button>
 
                                     {/* INTELLIGENCE REPORTING (CSV) */}
@@ -422,13 +422,13 @@ export default function AdminDashboardPage() {
                                                 toast.error('Failed to generate report');
                                             }
                                         }}
-                                        className="w-full py-4 px-6 border border-white/5 rounded-2xl flex items-center justify-between hover:bg-white/5 hover:border-amber-500/30 transition-all group/btn"
+                                        className="w-full py-4 px-6 border border-border dark:border-white/5 rounded-2xl flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-all group/btn"
                                     >
                                         <div className="flex items-center gap-3">
                                             <FileText size={16} className="text-amber-500" />
-                                            <span className="text-xs font-bold text-white/70">Export Finance Ledger</span>
+                                            <span className="text-xs font-bold text-slate-600 dark:text-white/70">Export Finance Ledger</span>
                                         </div>
-                                        <ChevronRight size={14} className="text-white/20 group-hover/btn:text-amber-500 transition-colors" />
+                                        <ChevronRight size={14} className="text-slate-400 dark:text-white/20 group-hover/btn:text-amber-500 transition-colors" />
                                     </button>
                                 </div>
                             </div>
@@ -455,7 +455,7 @@ export default function AdminDashboardPage() {
                     {/* 6. TECHNICAL HEALTH & SYSTEM ANALYTICS (Col 1-12, Row 5) */}
                     <div className="col-span-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         
-                        <div className="bg-glass rounded-4xl p-6 border border-white/10 flex items-center justify-between group">
+                        <div className="bg-glass rounded-4xl p-6 border border-border dark:border-white/10 flex items-center justify-between group">
                             <div className="flex items-center gap-4">
                                 <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-2xl group-hover:rotate-12 transition-transform">
                                     <ShieldCheck size={20} />
@@ -470,7 +470,7 @@ export default function AdminDashboardPage() {
                             </div>
                         </div>
 
-                        <div className="bg-glass rounded-4xl p-6 border border-white/10 flex items-center justify-between group">
+                        <div className="bg-glass rounded-4xl p-6 border border-border dark:border-white/10 flex items-center justify-between group">
                             <div className="flex items-center gap-4">
                                 <div className="p-3 bg-blue-500/10 text-blue-500 rounded-2xl group-hover:rotate-12 transition-transform">
                                     <Activity size={20} />
