@@ -44,7 +44,7 @@ const BADGES = [
   { id: 'star_student', label: 'Star Student', description: '4 week streak' },
 ];
 
-export default function StudentDashboardPage() {
+function StudentDashboardContent() {
   const { user } = useAuthContext();
   const router = useRouter();
   
@@ -129,98 +129,104 @@ export default function StudentDashboardPage() {
   }
 
   return (
+    <ErrorBoundary>
+      <div className="space-y-8 pb-12">
+        {user && user.phone_verified !== true && (
+            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <span className="text-2xl">📱</span>
+                    <div>
+                        <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                            Verify your phone number
+                        </p>
+                        <p className="text-xs text-amber-700 dark:text-amber-400">
+                            Please verify your phone number to receive session reminders and updates.
+                        </p>
+                    </div>
+                </div>
+                <a
+                    href="/verify-phone"
+                    className="shrink-0 px-4 py-2 rounded-xl bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition-colors"
+                >
+                    Verify now →
+                </a>
+            </div>
+        )}
+        {isEnrolled ? (
+          <EnrolledDashboard 
+            studentProfile={studentProfile}
+            enrollment={enrollment}
+            upcomingSessions={upcomingSessions}
+            pastSessions={pastSessions}
+            bookings={bookings}
+            loading={isGlobalLoading}
+            user={user}
+            progressSummary={progressSummary}
+            isEnrolled={true}
+          />
+        ) : (
+          <TrialDashboard 
+            user={user}
+            studentProfile={studentProfile}
+            creditStatus={creditStatus}
+            progressSummary={progressSummary}
+            upcomingSessions={upcomingSessions}
+            pastSessions={pastSessions}
+            loading={isGlobalLoading}
+            showOnboarding={showOnboarding}
+            onboardingSteps={onboardingSteps}
+            completedStepsCount={completedStepsCount}
+            onDismissOnboarding={() => {
+              localStorage.setItem('onboarding_dismissed', 'true');
+              setOnboardingDismissed(true);
+            }}
+            onEditProfile={() => setIsEditProfileOpen(true)}
+            onBookSession={() => router.push('/bookings/new')}
+            onUpgrade={() => router.push('/pricing')}
+            refetchCredits={refetch}
+            setShowLearningWizard={setShowLearningWizard}
+            isEnrolled={false}
+          />
+        )}
+
+        {/* Blogs are at the bottom of both dashboards */}
+        <BlogSection />
+      </div>
+
+      {/* Modals */}
+      {studentProfile && (
+        <EditStudentProfileModal
+          isOpen={isEditProfileOpen}
+          onClose={() => setIsEditProfileOpen(false)}
+          student={studentProfile}
+          onUpdate={refetch}
+        />
+      )}
+      
+      {showRatingModal && pendingRatings.length > 0 && (
+        <RatingModal
+          pending={pendingRatings}
+          onDone={() => setRatingsDismissed(true)}
+        />
+      )}
+      
+      {showLearningWizard && studentProfile && (
+        <LearningModeWizard
+          studentId={studentProfile.id}
+          programId={studentProfile.program_id || ''}
+          packageId={studentProfile.package_id || ''}
+          curriculumId={studentProfile.curriculum_preference}
+          onComplete={() => setShowLearningWizard(false)}
+        />
+      )}
+    </ErrorBoundary>
+  );
+}
+
+export default function StudentDashboardPage() {
+  return (
     <ProtectedClient roles={['student']}>
-      <ErrorBoundary>
-        <div className="space-y-8 pb-12">
-          {user && user.phone_verified !== true && (
-              <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                      <span className="text-2xl">📱</span>
-                      <div>
-                          <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-                              Verify your phone number
-                          </p>
-                          <p className="text-xs text-amber-700 dark:text-amber-400">
-                              Please verify your phone number to receive session reminders and updates.
-                          </p>
-                      </div>
-                  </div>
-                  <a
-                      href="/verify-phone"
-                      className="shrink-0 px-4 py-2 rounded-xl bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition-colors"
-                  >
-                      Verify now →
-                  </a>
-              </div>
-          )}
-          {isEnrolled ? (
-            <EnrolledDashboard 
-              studentProfile={studentProfile}
-              enrollment={enrollment}
-              upcomingSessions={upcomingSessions}
-              pastSessions={pastSessions}
-              bookings={bookings}
-              loading={isGlobalLoading}
-              user={user}
-              progressSummary={progressSummary}
-              isEnrolled={true}
-            />
-          ) : (
-            <TrialDashboard 
-              user={user}
-              studentProfile={studentProfile}
-              creditStatus={creditStatus}
-              progressSummary={progressSummary}
-              upcomingSessions={upcomingSessions}
-              pastSessions={pastSessions}
-              loading={isGlobalLoading}
-              showOnboarding={showOnboarding}
-              onboardingSteps={onboardingSteps}
-              completedStepsCount={completedStepsCount}
-              onDismissOnboarding={() => {
-                localStorage.setItem('onboarding_dismissed', 'true');
-                setOnboardingDismissed(true);
-              }}
-              onEditProfile={() => setIsEditProfileOpen(true)}
-              onBookSession={() => router.push('/bookings/new')}
-              onUpgrade={() => router.push('/pricing')}
-              refetchCredits={refetch}
-              setShowLearningWizard={setShowLearningWizard}
-              isEnrolled={false}
-            />
-          )}
-
-          {/* Blogs are at the bottom of both dashboards */}
-          <BlogSection />
-        </div>
-
-        {/* Modals */}
-        {studentProfile && (
-          <EditStudentProfileModal
-            isOpen={isEditProfileOpen}
-            onClose={() => setIsEditProfileOpen(false)}
-            student={studentProfile}
-            onUpdate={refetch}
-          />
-        )}
-        
-        {showRatingModal && pendingRatings.length > 0 && (
-          <RatingModal
-            pending={pendingRatings}
-            onDone={() => setRatingsDismissed(true)}
-          />
-        )}
-        
-        {showLearningWizard && studentProfile && (
-          <LearningModeWizard
-            studentId={studentProfile.id}
-            programId={studentProfile.program_id || ''}
-            packageId={studentProfile.package_id || ''}
-            curriculumId={studentProfile.curriculum_preference}
-            onComplete={() => setShowLearningWizard(false)}
-          />
-        )}
-      </ErrorBoundary>
+      <StudentDashboardContent />
     </ProtectedClient>
   );
 }

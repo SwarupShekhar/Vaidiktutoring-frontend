@@ -169,7 +169,7 @@ export default function AdminDashboardPage() {
 
     return (
         <ProtectedClient roles={['admin']}>
-            <div className="min-h-screen p-4 md:p-8 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="dark min-h-screen p-4 md:p-8 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-top-4 duration-700 text-slate-100">
                 <div className="flex justify-between items-end mb-4">
                     <div>
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-400 mb-1">Control Plane</p>
@@ -286,7 +286,7 @@ export default function AdminDashboardPage() {
                     </div>
 
                     {/* 3. ACTIVE MONITOR TILE (Full Width, Row 2) */}
-                    <div className="col-span-full bg-glass rounded-4xl p-2 border border-blue-500/20 shadow-2xl overflow-hidden min-h-[140px]">
+                    <div className="col-span-full">
                         <ActiveSessionsMonitor />
                     </div>
 
