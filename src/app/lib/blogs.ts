@@ -116,14 +116,26 @@ export const blogsApi = {
 
     // Create new blog (Protected: Admin/Tutor)
     create: async (data: Partial<BlogPost> & { summary?: string }) => {
+        const cleanData = { ...data };
+        if (cleanData.publishedAt === '') {
+            delete cleanData.publishedAt;
+        }
+        
         // Map camelCase to snake_case for backend
-        const payload = {
-            ...data,
-            image_url: data.imageUrl,
-            image_alt: data.imageAlt,
-            published_at: data.publishedAt,
-            created_at: data.createdAt
+        const payload: any = {
+            ...cleanData,
+            image_url: cleanData.imageUrl,
+            image_alt: cleanData.imageAlt,
+            published_at: cleanData.publishedAt,
+            created_at: cleanData.createdAt
         };
+
+        // Ensure both fields are deleted if they are not provided
+        if (payload.publishedAt === undefined || payload.publishedAt === '') {
+            delete payload.publishedAt;
+            delete payload.published_at;
+        }
+
         const res = await api.post('/admin/blogs', payload);
         return normalizeBlog(res.data);
     },
@@ -146,14 +158,26 @@ export const blogsApi = {
 
     // Update blog (Protected: Admin/Tutor)
     update: async (id: string, data: Partial<BlogPost> & { summary?: string }) => {
-        const payload = {
-            ...data,
-            image_url: data.imageUrl,
-            image_alt: data.imageAlt,
-            published_at: data.publishedAt,
-            created_at: data.createdAt,
-            summary: data.summary
+        const cleanData = { ...data };
+        if (cleanData.publishedAt === '') {
+            delete cleanData.publishedAt;
+        }
+
+        const payload: any = {
+            ...cleanData,
+            image_url: cleanData.imageUrl,
+            image_alt: cleanData.imageAlt,
+            published_at: cleanData.publishedAt,
+            created_at: cleanData.createdAt,
+            summary: cleanData.summary
         };
+
+        // Ensure both fields are deleted if they are not provided
+        if (payload.publishedAt === undefined || payload.publishedAt === '') {
+            delete payload.publishedAt;
+            delete payload.published_at;
+        }
+
         const res = await api.patch(`/admin/blogs/${id}`, payload);
         return normalizeBlog(res.data);
     },
