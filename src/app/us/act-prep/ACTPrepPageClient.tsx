@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, Variants } from "framer-motion";
 import Link from "next/link";
 import { 
   ArrowRight, ShieldCheck, Target, Award, Brain, 
@@ -21,8 +21,7 @@ const optimizeCloudinaryUrl = (url: string) => {
 
 const PLACEHOLDER_IMAGE = "https://res.cloudinary.com/de8vvmpip/image/upload/v1776668086/A_focused_one-on-one_202604201224_sairiv.jpg";
 
-// ─── Animations ────────────────────────────────────────────────────────
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -30,9 +29,9 @@ const staggerContainer = {
   }
 };
 
-const fadeInUp = {
+const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } }
 };
 
 // ─── Visual Components ────────────────────────────────────────────────────────
@@ -66,7 +65,7 @@ function SpeedometerVisual() {
             initial={{ pathLength: 0 }}
             whileInView={{ pathLength: 0.85 }}
             viewport={{ once: true }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
+            transition={{ duration: 1.5, ease: "easeOut" as const }}
           />
           <defs>
             <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -80,7 +79,7 @@ function SpeedometerVisual() {
             initial={{ rotate: -90 }}
             whileInView={{ rotate: 50 }} // Roughly 85% of 180 degrees
             viewport={{ once: true }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
+            transition={{ duration: 1.5, ease: "easeOut" as const }}
             style={{ transformOrigin: "50% 50%" }}
           >
             <line x1="50" y1="50" x2="50" y2="20" stroke="white" strokeWidth="2" strokeLinecap="round" />

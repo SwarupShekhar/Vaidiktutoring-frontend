@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, Variants } from "framer-motion";
 import Link from "next/link";
 import { 
   ArrowRight, ShieldCheck, Target, Award, Brain, 
@@ -22,7 +22,7 @@ const optimizeCloudinaryUrl = (url: string) => {
 const PLACEHOLDER_IMAGE = "https://res.cloudinary.com/de8vvmpip/image/upload/v1776668086/A_focused_one-on-one_202604201224_sairiv.jpg";
 
 // ─── Animations & Micro-Interactions ──────────────────────────────────────────
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
@@ -30,9 +30,9 @@ const staggerContainer = {
   }
 };
 
-const fadeInUp = {
+const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } }
 };
 
 // ─── Visual Components ────────────────────────────────────────────────────────
@@ -77,7 +77,7 @@ function AdaptiveAlgorithmVisual() {
             initial={{ pathLength: 0 }}
             whileInView={{ pathLength: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
+            transition={{ duration: 1.5, ease: "easeOut" as const }}
           />
           {/* Animated dot at the end */}
           <motion.circle
