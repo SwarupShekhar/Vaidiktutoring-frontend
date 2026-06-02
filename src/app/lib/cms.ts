@@ -153,13 +153,16 @@ export interface ReferralStatus {
 
 export const cmsApi = {
   // Fetch programmatic landing page details
-  getLandingPage: async (slug: string, preview = false): Promise<LandingPage> => {
+  getLandingPage: async (slug: string, preview = false): Promise<LandingPage | null> => {
     try {
       const res = await api.get(`/cms/landing-pages/${slug}${preview ? '?preview=true' : ''}`);
       return res.data;
     } catch (error: any) {
-      console.error(`[CMS API] Failed to fetch landing page for slug '${slug}':`, error);
-      throw new Error(error.response?.data?.message || 'Failed to load landing page.');
+      if (error.response?.status === 404) {
+        return null;
+      }
+      console.error(`[CMS API] Failed to fetch landing page for slug '${slug}':`, error.message || error);
+      return null;
     }
   },
 

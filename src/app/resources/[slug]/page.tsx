@@ -62,14 +62,7 @@ export default async function Page({ params }: PageProps) {
   const { slug } = await params;
   const draft = await draftMode();
   const isPreview = draft.isEnabled;
-  let page = null;
-
-  try {
-    page = await cmsApi.getLandingPage(slug, isPreview);
-  } catch (error) {
-    console.error(`Failed to fetch landing page for slug: ${slug}`, error);
-    return notFound();
-  }
+  const page = await cmsApi.getLandingPage(slug, isPreview);
 
   if (!page) {
     return notFound();
