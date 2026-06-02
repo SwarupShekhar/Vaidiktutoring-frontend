@@ -79,6 +79,15 @@ export default function Navbar() {
         { name: "Australian Curriculum Tutors", href: "/australia/curriculum-tutoring" },
       ],
     },
+    {
+      label: "US & AP Curriculum",
+      links: [
+        { name: "American Curriculum Tutors", href: "/us/american-curriculum" },
+        { name: "SAT Prep Tutors", href: "/us/sat-prep" },
+        { name: "ACT Prep Tutors", href: "/us/act-prep" },
+        { name: "AP Tutors Online", href: "/us/ap-tutoring" },
+      ],
+    },
   ];
 
   return (

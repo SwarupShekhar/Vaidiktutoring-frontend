@@ -58,6 +58,16 @@ export const CURRICULA = [
     subjects: ['Maths', 'English', 'Physical Sciences', 'Life Sciences', 'Geography', 'History', 'Accounting', 'Business Studies'],
     subjectNote: 'Aligned to the CAPS curriculum',
     pricingHint: '3 Free Premium Sessions',
+  },
+  {
+    id: 'us', flag: '🇺🇸', country: 'United States',
+    hero: 'Ivy League Caliber SAT, ACT & AP Mentorship',
+    subline: 'Elite test prep and GPA management to secure your spot at top US universities.',
+    gradeLabel: 'Grade', gradeRange: 'Grade K-12',
+    exams: ['SAT', 'ACT', 'AP', 'SSAT', 'ISEE'],
+    subjects: ['Math', 'English', 'Science', 'History', 'Calculus AB/BC', 'Physics 1/C', 'Chemistry', 'Biology'],
+    subjectNote: 'Aligned to Common Core & College Board standards',
+    pricingHint: '3 Free Premium Sessions',
   }
 ]
 export const DEFAULT_CURRICULUM = 'global'

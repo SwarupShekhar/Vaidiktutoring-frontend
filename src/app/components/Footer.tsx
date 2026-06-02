@@ -305,12 +305,31 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Locations Section */}
         <div className="mb-16">
           <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-6">
             Tutoring by Location
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+            {/* US */}
+            <div>
+              <Link href="/us/american-curriculum" className="text-xs font-bold text-white uppercase tracking-widest mb-3 block hover:text-primary transition-colors">
+                US &amp; AP
+              </Link>
+              <ul className="space-y-2">
+                {[
+                  { href: "/us/american-curriculum", label: "American Curriculum" },
+                  { href: "/us/sat-prep", label: "SAT Prep" },
+                  { href: "/us/act-prep", label: "ACT Prep" },
+                  { href: "/us/ap-tutoring", label: "AP Tutoring" },
+                ].map((link) => (
+                  <li key={link.href}>
+                    <Link href={link.href} className="text-gray-400 hover:text-white transition-colors text-sm">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
             {/* Australia */}
             <div>
               <Link href="/australia" className="text-xs font-bold text-white uppercase tracking-widest mb-3 block hover:text-primary transition-colors">
