@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const WEBHOOK_URL = process.env.DISCORD_LEADS_WEBHOOK_URL!;
-const resend = new Resend(process.env.RESEND_API_KEY);
+const WEBHOOK_URL = process.env.DISCORD_LEADS_WEBHOOK_URL;
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const FROM = process.env.EMAIL_FROM || 'StudyHours <hello@studyhours.com>';
 const BOOKING_URL = 'https://studyhours.com/bookings/new';
 const DISCORD_URL = 'https://discord.gg/7PYHxCPK';
@@ -54,7 +54,7 @@ function satQuizEmail(data: Record<string, string>) {
   const bottleneck = data.bottleneck || '';
 
   return emailWrapper(`
-    <h1 style="color:#fff;font-size:28px;font-weight:800;margin:0 0 4px">Your SAT ceiling: ${ceiling}</h1>
+    <h1 style="color:#fff;font-size:28px;font-weight:800;margin:0 0 4px">Here's what's limiting your SAT score</h1>
     <p style="color:#e11d48;font-size:14px;margin:0 0 28px">Based on your answers</p>
 
     <div style="background:#1a0a0a;border:1px solid #3f1111;border-radius:12px;padding:20px;margin:0 0 20px">
@@ -212,7 +212,7 @@ export async function POST(req: NextRequest) {
   };
 
   const subjectLines: Record<string, (d: Record<string, string>) => string> = {
-    sat_quiz:     (d) => `Your SAT score ceiling: ${d.ceiling ?? 'see inside'}`,
+    sat_quiz:     (d) => `Here's what's limiting your SAT score — ${d.score ?? 'your breakdown'}`,
     desmos_guide: (d) => `Your Desmos cheat sheet — ${(d.topics ?? '').split(', ').slice(0, 2).join(', ')}`,
     gcse_tracker: (d) => `Your GCSE Paper 3 focus list — ${(d.examBoard ?? '').toUpperCase()} ${d.tier ?? ''}`,
   };
@@ -220,7 +220,7 @@ export async function POST(req: NextRequest) {
   const template = emailTemplates[source];
   const subjectFn = subjectLines[source];
 
-  if (template && subjectFn) {
+  if (template && subjectFn && resend) {
     const stringFields = Object.fromEntries(Object.entries(fields).map(([k, v]) => [k, String(v ?? '')]));
     try {
       await resend.emails.send({
@@ -230,6 +230,8 @@ export async function POST(req: NextRequest) {
         html: template(stringFields),
       });
     } catch { /* non-fatal — lead already captured in Discord */ }
+  } else if (!resend) {
+    console.warn('RESEND_API_KEY is missing. Email not sent.');
   }
 
   return NextResponse.json({ ok: true });

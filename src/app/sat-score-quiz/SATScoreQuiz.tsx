@@ -321,12 +321,11 @@ export default function SATScoreQuiz() {
     return (
       <main className="min-h-screen bg-black flex items-start justify-center px-4 py-20">
         <div className="max-w-xl w-full">
-          <p className="text-sm text-gray-600 uppercase tracking-widest mb-2">Your score ceiling</p>
-          <div className="flex items-end gap-3 mb-2">
-            <span className="text-6xl md:text-7xl font-black text-white">{result.ceiling}</span>
-            <span className="text-gray-500 text-lg mb-3">/ 1600</span>
-          </div>
-          <p className="text-rose-400 font-semibold text-lg mb-10">{result.headline}</p>
+          <p className="text-sm text-rose-400 font-semibold uppercase tracking-widest mb-3">Your result</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 leading-tight">
+            Here's what's limiting your score
+          </h2>
+          <p className="text-gray-400 mb-10">{result.headline}</p>
 
           <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-7 mb-4">
             <p className="text-xs text-gray-500 uppercase tracking-widest mb-3">What your answers reveal</p>
