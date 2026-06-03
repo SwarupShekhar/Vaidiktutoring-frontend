@@ -88,6 +88,15 @@ export default function Navbar() {
         { name: "AP Tutors Online", href: "/us/ap-tutoring" },
       ],
     },
+    {
+      label: "Free Tools",
+      links: [
+        { name: "SAT Score Ceiling Quiz", href: "/sat-score-quiz" },
+        { name: "SAT Desmos Cheat Sheet", href: "/sat-desmos-guide" },
+        { name: "GCSE Maths Paper 3 Tracker", href: "/gcse-maths-paper-3-tracker" },
+        { name: "Join Free Discord", href: "https://discord.gg/7PYHxCPK" },
+      ],
+    },
   ];
 
   return (

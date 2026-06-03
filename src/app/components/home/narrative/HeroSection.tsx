@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { preload } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,6 +36,7 @@ const TRUST_STATS = [
 ];
 
 export default function HeroSection() {
+  preload("https://res.cloudinary.com/de8vvmpip/image/upload/v1772453122/Gemini_Generated_Image_9j0g679j0g679j0g_sptjdf.png", { as: "image", fetchPriority: "high" });
   const router = useRouter();
   const { user } = useAuthContext();
   const { activeCurriculum, setCurriculum } = useCurriculum();

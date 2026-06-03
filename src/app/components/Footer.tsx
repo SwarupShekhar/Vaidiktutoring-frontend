@@ -117,6 +117,35 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Free Tools Column */}
+          <div>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+              Free Tools
+            </h3>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/sat-score-quiz" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  SAT Score Ceiling Quiz
+                </Link>
+              </li>
+              <li>
+                <Link href="/sat-desmos-guide" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  SAT Desmos Cheat Sheet
+                </Link>
+              </li>
+              <li>
+                <Link href="/gcse-maths-paper-3-tracker" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  GCSE Paper 3 Tracker
+                </Link>
+              </li>
+              <li>
+                <Link href="https://discord.gg/7PYHxCPK" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  Free Discord Community
+                </Link>
+              </li>
+            </ul>
+          </div>
+
           {/* Programs Column */}
           <div>
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">

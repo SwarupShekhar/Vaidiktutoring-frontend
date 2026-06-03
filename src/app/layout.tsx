@@ -10,6 +10,7 @@ import { NotificationProvider } from "./context/NotificationContext";
 import { ClientSideComponents } from "./components/ClientSideComponents";
 import Navbar from "./components/navbar";
 import Footer from "./components/Footer";
+import AnnouncementBar from "./components/AnnouncementBar";
 
 
 
@@ -66,6 +67,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               <AuthProvider>
                 <NotificationProvider>
                   <ClientSideComponents />
+                  <AnnouncementBar />
                   <Navbar />
                   {children}
                   {isDraftMode && <VisualEditing />}

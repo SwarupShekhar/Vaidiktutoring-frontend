@@ -7,36 +7,23 @@ import { useExitIntent } from '@/app/Hooks/useExitIntent';
 import ExitIntentPopup from '@/app/components/ui/ExitIntentPopup';
 
 
-const ProblemSection = dynamic(() => import('./ProblemSection'), { ssr: false });
-const ShiftSection = dynamic(() => import('./ShiftSection'), { ssr: false });
-const TrustSection = dynamic(() => import('./TrustSection'), { ssr: false });
-const ResultsSection = dynamic(() => import('./ResultsSection'), { ssr: false });
-const ResultsProofSection = dynamic(() => import('./ResultsProofSection'), { ssr: false });
-const ReviewCarousel = dynamic(() => import('./ReviewCarousel'), { ssr: false });
-const FinalCTASection = dynamic(() => import('./FinalCTASection'), { ssr: false });
-const DiscordBanner = dynamic(() => import('./DiscordBanner'), { ssr: false });
-const HighDosageIntroStrip = dynamic(() => import('./HighDosageIntroStrip'), { ssr: false });
-const HowItWorksSection = dynamic(() => import('./HowItWorksSection'), { ssr: false });
-const SessionOutputs = dynamic(() => import('./SessionOutputs'), { ssr: false });
-const AssessmentJourney = dynamic(() => import('./AssessmentJourney'), { ssr: false });
+const ProblemSection = dynamic(() => import('./ProblemSection'));
+const ShiftSection = dynamic(() => import('./ShiftSection'));
+const TrustSection = dynamic(() => import('./TrustSection'));
+const ResultsSection = dynamic(() => import('./ResultsSection'));
+const ResultsProofSection = dynamic(() => import('./ResultsProofSection'));
+const ReviewCarousel = dynamic(() => import('./ReviewCarousel'));
+const FinalCTASection = dynamic(() => import('./FinalCTASection'));
+const DiscordBanner = dynamic(() => import('./DiscordBanner'));
+const HighDosageIntroStrip = dynamic(() => import('./HighDosageIntroStrip'));
+const HowItWorksSection = dynamic(() => import('./HowItWorksSection'));
+const SessionOutputs = dynamic(() => import('./SessionOutputs'));
+const AssessmentJourney = dynamic(() => import('./AssessmentJourney'));
 
-
-const HighDosageDefinitionSection = dynamic(
-  () => import('./HighDosageDefinitionSection'),
-  { ssr: false }
-);
-const OurApproachSection = dynamic(
-  () => import('./OurApproachSection'),
-  { ssr: false }
-);
-const HighDosageProcessFlow = dynamic(
-  () => import('./HighDosageProcessFlow'),
-  { ssr: false }
-);
-const PlaybookDashboard = dynamic(
-  () => import('./PlaybookDashboard'),
-  { ssr: false }
-);
+const HighDosageDefinitionSection = dynamic(() => import('./HighDosageDefinitionSection'));
+const OurApproachSection = dynamic(() => import('./OurApproachSection'));
+const HighDosageProcessFlow = dynamic(() => import('./HighDosageProcessFlow'));
+const PlaybookDashboard = dynamic(() => import('./PlaybookDashboard'));
 
 /**
  * NarrativeHome: Full Redesigned homepage with additions
