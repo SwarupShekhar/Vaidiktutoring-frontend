@@ -114,37 +114,131 @@ function desmosEmail(data: Record<string, string>) {
 }
 
 function gcseTrackerEmail(data: Record<string, string>) {
-  const board = (data.examBoard || '').toUpperCase();
-  const tier = (data.tier || '').charAt(0).toUpperCase() + (data.tier || '').slice(1);
-  const redTopics = (data.redTopics || 'None').split(', ').filter(t => t !== 'None');
-  const redItems = redTopics.length
-    ? redTopics.map(t => `<li style="color:#fca5a5;font-size:14px;padding:4px 0">${t}</li>`).join('')
-    : '<li style="color:#6b7280;font-size:14px;padding:4px 0">None marked yet</li>';
+  const board = (data.examBoard || 'edexcel').toLowerCase();
+  const tier = (data.tier || 'higher').toLowerCase();
+  const boardLabel = board.toUpperCase();
+  const tierLabel = tier.charAt(0).toUpperCase() + tier.slice(1);
+  const redTopics = (data.redTopics || '').split(', ').filter(t => t && t !== 'None');
 
-  return emailWrapper(`
-    <h1 style="color:#fff;font-size:26px;font-weight:800;margin:0 0 8px">Your GCSE Paper 3 revision focus</h1>
-    <p style="color:#5c9dff;font-size:14px;margin:0 0 28px">${board} · ${tier} · Paper 3 is Wednesday 10 June</p>
+  // Top predicted Paper 3 topics by board + tier
+  const predictedTopics: Record<string, Record<string, string[]>> = {
+    edexcel: {
+      higher: [
+        'Sine & Cosine Rules — area of triangle using ½ab sin C',
+        'Iteration — finding roots of equations numerically',
+        'Conditional Probability Trees — dependent events',
+        'Algebraic Fractions — simplifying and solving',
+        'Vector Geometric Proofs',
+      ],
+      foundation: [
+        'Compound Interest & Reverse Percentages',
+        'Probability Trees — independent events',
+        'Trigonometry (SOH CAH TOA) — finding angles and sides',
+        'Venn Diagrams & Set Notation',
+        'Compound Measures — Speed, Density, Pressure',
+      ],
+    },
+    aqa: {
+      higher: [
+        'Sine & Cosine Rules — ½ab sin C for triangle area',
+        'Circle Theorems & Geometric Proofs',
+        'Simultaneous Equations — one linear, one quadratic',
+        'Iteration Formulas',
+        'Histograms — frequency density',
+      ],
+      foundation: [
+        'Reverse Percentages',
+        'Compound Interest',
+        'Pythagoras\' Theorem',
+        'Venn Diagrams & Simple Probability',
+        'Scatter Graphs & Line of Best Fit',
+      ],
+    },
+    ocr: {
+      higher: [
+        'Bounds & Error Intervals',
+        'Advanced Trigonometry — Sine/Cosine Rules',
+        'Algebraic Fractions',
+        'Conditional Probability Trees',
+        'Vector Geometric Proof',
+      ],
+      foundation: [
+        'Ratio and Percentage Problems',
+        'Pythagoras\' Theorem',
+        'Circle Area & Circumference',
+        'Speed, Distance, Time',
+        'Standard Form Calculations',
+      ],
+    },
+  };
 
-    ${redTopics.length ? `
+  // Mark scheme keywords by board
+  const markSchemeNotes: Record<string, string> = {
+    edexcel: 'Edexcel mark schemes are strict about method marks (M marks). Show every step even if you get the final answer wrong — you can still earn 1–2 marks for correct working.',
+    aqa: 'AQA awards marks for correct method even with arithmetic errors. Circle your final answer clearly — examiners look for it. "Hence" questions require you to use the previous result.',
+    ocr: 'OCR often awards follow-through marks (FT) — even if you carried a wrong answer from part (a) into part (b), you can score full marks in (b) if the method is correct.',
+  };
+
+  // Casio ClassWiz tip — most common model
+  const casioTip = tier === 'higher'
+    ? '<strong>Casio fx-991EX tip:</strong> For quadratic equations, press MENU → 8 (Equation) → 2 (Polynomial) → 2 (Degree 2) → enter a, b, c → press =. Roots appear instantly. No quadratic formula needed.'
+    : '<strong>Casio tip:</strong> For any multiplication or division in compound measures (Speed = Distance ÷ Time), type it directly into the calculator as a fraction: press ÷, type the denominator, then = . Avoids rounding errors from doing it in steps.';
+
+  const predicted = predictedTopics[board]?.[tier] ?? predictedTopics.edexcel.higher;
+  const predictedItems = predicted.map(t =>
+    `<li style="color:#e5e5e5;font-size:14px;padding:8px 0;border-bottom:1px solid #1f1f1f;line-height:1.5">${t}</li>`
+  ).join('');
+
+  const redSection = redTopics.length ? `
     <div style="background:#1a0a0a;border:1px solid #7f1d1d;border-radius:12px;padding:20px;margin:0 0 20px">
-      <p style="color:#f87171;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 12px">Topics to focus on today</p>
-      <ul style="margin:0;padding:0 0 0 16px">${redItems}</ul>
-    </div>
-    ` : ''}
-
-    <div style="background:#111;border:1px solid #222;border-radius:12px;padding:20px;margin:0 0 24px">
-      <p style="color:#6b7280;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">Last-minute advice</p>
-      <p style="color:#e5e5e5;font-size:14px;line-height:1.6;margin:0">
-        For each topic you marked red: do one past paper question on it, mark it with the mark scheme, and write down the exact phrase the mark scheme uses. That's all you need — pattern recognition, not full revision.
+      <p style="color:#f87171;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px">Your weak topics from the tracker</p>
+      <p style="color:#6b7280;font-size:12px;margin:0 0 12px">These are the ones you marked as needing help.</p>
+      <ul style="margin:0;padding:0 0 0 16px">
+        ${redTopics.map(t => `<li style="color:#fca5a5;font-size:14px;padding:5px 0;line-height:1.5">${t}</li>`).join('')}
+      </ul>
+      <p style="color:#9ca3af;font-size:13px;margin:14px 0 0;line-height:1.6">
+        For each one: find one past paper question on that topic, work through it, then check the mark scheme. Write down the exact wording the mark scheme uses — that's the language the examiner wants to see.
       </p>
     </div>
+  ` : '';
 
-    <a href="${BOOKING_URL}?utm_source=email&utm_medium=gcse_tracker&utm_campaign=lead" style="display:block;background:#4c70f5;color:#fff;text-align:center;padding:14px;border-radius:50px;font-weight:700;font-size:14px;text-decoration:none;margin:0 0 12px">
-      Book a free GCSE session
+  return emailWrapper(`
+    <p style="color:#5c9dff;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 6px">${boardLabel} · ${tierLabel} · Paper 3 — Wednesday 10 June</p>
+    <h1 style="color:#fff;font-size:26px;font-weight:800;margin:0 0 6px;line-height:1.2">Your Paper 3 revision pack</h1>
+    <p style="color:#6b7280;font-size:14px;margin:0 0 28px">Based on what statistically appears in Paper 3 after Papers 1 and 2.</p>
+
+    ${redSection}
+
+    <div style="background:#0a0f1a;border:1px solid #1e3a5f;border-radius:12px;padding:20px;margin:0 0 20px">
+      <p style="color:#5c9dff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px">Top ${predicted.length} topics likely to appear in Paper 3</p>
+      <p style="color:#6b7280;font-size:12px;margin:0 0 12px">${boardLabel} ${tierLabel} — based on what hasn't appeared in Papers 1 & 2 historically.</p>
+      <ul style="margin:0;padding:0 0 0 16px">${predictedItems}</ul>
+    </div>
+
+    <div style="background:#0f0f0a;border:1px solid #3a3010;border-radius:12px;padding:20px;margin:0 0 20px">
+      <p style="color:#fbbf24;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">Calculator tip</p>
+      <p style="color:#e5e5e5;font-size:14px;line-height:1.6;margin:0">${casioTip}</p>
+    </div>
+
+    <div style="background:#111;border:1px solid #222;border-radius:12px;padding:20px;margin:0 0 24px">
+      <p style="color:#6b7280;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">${boardLabel} mark scheme — what examiners actually want</p>
+      <p style="color:#e5e5e5;font-size:14px;line-height:1.6;margin:0">${markSchemeNotes[board] ?? markSchemeNotes.edexcel}</p>
+    </div>
+
+    <p style="color:#9ca3af;font-size:14px;line-height:1.6;margin:0 0 24px">
+      If you're stuck on any of these topics tonight, reply to this email directly — we'll send you a worked example within the hour.
+    </p>
+
+    <a href="${BOOKING_URL}?utm_source=email&utm_medium=gcse_tracker&utm_campaign=lead" style="display:block;background:#4c70f5;color:#fff;text-align:center;padding:14px;border-radius:50px;font-weight:700;font-size:15px;text-decoration:none;margin:0 0 10px">
+      Book a free last-minute GCSE session
     </a>
     <a href="${DISCORD_URL}" style="display:block;background:#1f1f1f;border:1px solid #333;color:#fff;text-align:center;padding:14px;border-radius:50px;font-weight:600;font-size:14px;text-decoration:none">
-      Join free Discord
+      Join free Discord — GCSE students asking questions right now
     </a>
+
+    <p style="color:#444;font-size:13px;margin:24px 0 0;line-height:1.6">
+      Good luck on Wednesday. — The StudyHours team
+    </p>
   `);
 }
 
