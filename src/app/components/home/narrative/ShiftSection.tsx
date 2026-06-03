@@ -34,7 +34,7 @@ export default function ShiftSection() {
                         {/* Background Student Photo - 100% Visibility (Desktop only) */}
                         <div className="absolute inset-0 z-0 rounded-[3rem] overflow-hidden hidden lg:block">
                             <Image 
-                                src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774248455/Candid_photography_of_202603231216-Photoroom_efcj3m.png" 
+                                src="https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,q_auto/v1774248455/Candid_photography_of_202603231216-Photoroom_efcj3m.png" 
                                 alt="Personalized Learning Background | StudyHours" 
                                 fill 
                                 className="object-cover object-center"

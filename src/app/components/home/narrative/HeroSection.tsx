@@ -22,9 +22,9 @@ import {
 
 /* ─── Hero images: rotating showcase ─── */
 const HERO_IMAGES = [
-  "https://res.cloudinary.com/de8vvmpip/image/upload/v1772453122/Gemini_Generated_Image_9j0g679j0g679j0g_sptjdf.png",
-  "https://res.cloudinary.com/de8vvmpip/image/upload/v1772452861/Gemini_Generated_Image_nrmu60nrmu60nrmu_bemjk1.png",
-  "https://res.cloudinary.com/de8vvmpip/image/upload/c_crop,g_north_west,h_1373,w_2816/c_crop,g_north_west,h_1536,w_2816/Gemini_Generated_Image_shisp6shisp6shis_hdvdyh.png",
+  "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,q_auto/v1772453122/Gemini_Generated_Image_9j0g679j0g679j0g_sptjdf.png",
+  "https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,q_auto/v1772452861/Gemini_Generated_Image_nrmu60nrmu60nrmu_bemjk1.png",
+  "https://res.cloudinary.com/de8vvmpip/image/upload/c_crop,g_north_west,h_1373,w_2816/f_auto,q_auto/Gemini_Generated_Image_shisp6shisp6shis_hdvdyh.png",
 ];
 
 /* ─── Trust bar stats ─── */
@@ -36,7 +36,7 @@ const TRUST_STATS = [
 ];
 
 export default function HeroSection() {
-  preload("https://res.cloudinary.com/de8vvmpip/image/upload/v1772453122/Gemini_Generated_Image_9j0g679j0g679j0g_sptjdf.png", { as: "image", fetchPriority: "high" });
+  preload("https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,q_auto/v1772453122/Gemini_Generated_Image_9j0g679j0g679j0g_sptjdf.png", { as: "image", fetchPriority: "high" });
   const router = useRouter();
   const { user } = useAuthContext();
   const { activeCurriculum, setCurriculum } = useCurriculum();
@@ -218,7 +218,7 @@ export default function HeroSection() {
                 className="absolute -top-10 -left-6 w-32 h-24 md:w-36 md:h-28 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/90 dark:border-slate-800/90 z-20 hidden md:block cursor-pointer hero-thumbnail-tl"
               >
                 <Image
-                  src="https://res.cloudinary.com/de8vvmpip/image/upload/v1776075731/Photorealistic_photo_of_202604131551_met4fe.jpg"
+                  src="https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,q_auto/v1776075731/Photorealistic_photo_of_202604131551_met4fe.jpg"
                   alt="Student learning"
                   fill
                   className="object-cover"
@@ -230,7 +230,7 @@ export default function HeroSection() {
                 className="absolute bottom-8 -right-10 w-32 h-24 md:w-36 md:h-28 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/90 dark:border-slate-800/90 z-20 hidden md:block cursor-pointer hero-thumbnail-br"
               >
                 <Image
-                  src="https://res.cloudinary.com/de8vvmpip/image/upload/v1776076443/Real_photograph_style__202604131603_quzpl2.jpg"
+                  src="https://res.cloudinary.com/de8vvmpip/image/upload/f_auto,q_auto/v1776076443/Real_photograph_style__202604131603_quzpl2.jpg"
                   alt="Online tutoring session"
                   fill
                   className="object-cover"

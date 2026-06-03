@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-const WEBHOOK_URL = 'https://discord.com/api/webhooks/1511608449811611648/g5AOsrFpWuu_20NNuRb8Qc7rANvdsUQx4j09vNW-RaDhTtJGs157_e-8DTh3aRPxHtZx';
+const LEADS_API = '/api/leads';
 const BOOKING_URL = 'https://studyhours.com/bookings/new?utm_source=gcse_tracker&utm_medium=website&utm_campaign=gcse_paper3';
 const DISCORD_URL = 'https://discord.gg/7PYHxCPK';
 
@@ -152,30 +152,20 @@ export default function GCSEMathsTracker() {
     const greenList = topics.filter(t => t.status === 'unseen' && t.confidence === 'green').map(t => t.name);
 
     try {
-      await fetch(WEBHOOK_URL, {
+      await fetch(LEADS_API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          embeds: [{
-            title: '🇬🇧 New GCSE Paper 3 Lead',
-            color: 0x4c70f5,
-            fields: [
-              { name: 'Email', value: email, inline: false },
-              { name: 'Role', value: role, inline: true },
-              { name: 'Exam Board', value: examBoard.toUpperCase(), inline: true },
-              { name: 'Tier', value: tier.toUpperCase(), inline: true },
-              { name: '🔴 Need Help With', value: redList.length > 0 ? redList.join('\n') : 'None listed', inline: false },
-              { name: '🟡 Getting There', value: amberList.length > 0 ? amberList.join('\n') : 'None listed', inline: false },
-              { name: '🟢 Confident In', value: greenList.length > 0 ? greenList.join('\n') : 'None listed', inline: false },
-              { name: 'Unseen Remaining', value: `${unseenTopics.length} / ${topics.length} topics`, inline: true },
-            ],
-            footer: { text: 'studyhours.com/gcse-maths-paper-3-tracker' },
-          }],
+          source: 'gcse_tracker',
+          email,
+          role,
+          examBoard,
+          tier,
+          redTopics: redList.join(', ') || 'None',
+          amberTopics: amberList.join(', ') || 'None',
         }),
       });
-    } catch (err) {
-      console.error('Webhook error:', err);
-    }
+    } catch { /* don't block */ }
 
     setSubmitting(false);
     setStep(2); // Go to success screen

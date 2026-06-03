@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
-const WEBHOOK_URL = 'https://discord.com/api/webhooks/1511608449811611648/g5AOsrFpWuu_20NNuRb8Qc7rANvdsUQx4j09vNW-RaDhTtJGs157_e-8DTh3aRPxHtZx';
+const LEADS_API = '/api/leads';
 const BOOKING_URL = 'https://studyhours.com/bookings/new?utm_source=sat_quiz&utm_medium=website&utm_campaign=score_ceiling';
 const DISCORD_URL = 'https://discord.gg/7PYHxCPK';
 
@@ -180,24 +180,19 @@ export default function SATScoreQuiz() {
       QUESTIONS.find(q => q.id === qId)?.options.find(o => o.value === val)?.label ?? val;
 
     try {
-      await fetch(WEBHOOK_URL, {
+      await fetch(LEADS_API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          embeds: [{
-            title: '📊 New SAT Quiz Lead',
-            color: 0xe11d48,
-            fields: [
-              { name: 'Email', value: email, inline: false },
-              { name: 'Current score', value: labelFor('score', answers.score!), inline: true },
-              { name: 'Math weakness', value: labelFor('mathWeak', answers.mathWeak!), inline: true },
-              { name: 'Review habit', value: labelFor('reviewFinds', answers.reviewFinds!), inline: true },
-              { name: 'RW weakness', value: labelFor('rwWeak', answers.rwWeak!), inline: true },
-              { name: 'Ceiling shown', value: `${res.ceiling}`, inline: true },
-              { name: 'Priority fix', value: res.priority.slice(0, 100) + '...', inline: false },
-            ],
-            footer: { text: 'studyhours.com/sat-score-quiz' },
-          }],
+          source: 'sat_quiz',
+          email,
+          score: labelFor('score', answers.score!),
+          mathWeak: labelFor('mathWeak', answers.mathWeak!),
+          reviewFinds: labelFor('reviewFinds', answers.reviewFinds!),
+          rwWeak: labelFor('rwWeak', answers.rwWeak!),
+          ceiling: String(res.ceiling),
+          bottleneck: res.headline,
+          priority: res.priority,
         }),
       });
     } catch { /* don't block the user */ }

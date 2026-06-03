@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
-const WEBHOOK_URL = 'https://discord.com/api/webhooks/1511608449811611648/g5AOsrFpWuu_20NNuRb8Qc7rANvdsUQx4j09vNW-RaDhTtJGs157_e-8DTh3aRPxHtZx';
+const LEADS_API = '/api/leads';
 const BOOKING_URL = 'https://studyhours.com/bookings/new?utm_source=desmos_guide&utm_medium=website&utm_campaign=desmos_tool';
 const DISCORD_URL = 'https://discord.gg/7PYHxCPK';
 
@@ -227,20 +227,10 @@ export default function DesmosTool() {
     const topicLabels = selected.map(id => TOPICS.find(t => t.id === id)?.label).join(', ');
 
     try {
-      await fetch(WEBHOOK_URL, {
+      await fetch(LEADS_API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          embeds: [{
-            title: '📐 New Desmos Guide Lead',
-            color: 0x6366f1,
-            fields: [
-              { name: 'Email', value: email, inline: false },
-              { name: 'Topics selected', value: topicLabels, inline: false },
-            ],
-            footer: { text: 'studyhours.com/sat-desmos-guide' },
-          }],
-        }),
+        body: JSON.stringify({ source: 'desmos_guide', email, topics: topicLabels }),
       });
     } catch { /* don't block */ }
 
