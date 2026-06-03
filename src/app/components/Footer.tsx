@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import SHLogo from "./SHLogo";
 import InstagramButton from "./InstagramButton";
 import LinkedInButton from "./LinkedInButton";
+import DiscordButton from "./DiscordButton";
 import dynamic from "next/dynamic";
 
 const Galaxy = dynamic(() => import("./home/narrative/galaxy/Galaxy"), { ssr: false });
@@ -407,6 +408,7 @@ export default function Footer() {
           <div className="flex gap-4 items-center">
             <InstagramButton />
             <LinkedInButton />
+            <DiscordButton />
           </div>
         </div>
       </div>

@@ -14,6 +14,7 @@ const ResultsSection = dynamic(() => import('./ResultsSection'), { ssr: false })
 const ResultsProofSection = dynamic(() => import('./ResultsProofSection'), { ssr: false });
 const ReviewCarousel = dynamic(() => import('./ReviewCarousel'), { ssr: false });
 const FinalCTASection = dynamic(() => import('./FinalCTASection'), { ssr: false });
+const DiscordBanner = dynamic(() => import('./DiscordBanner'), { ssr: false });
 const HighDosageIntroStrip = dynamic(() => import('./HighDosageIntroStrip'), { ssr: false });
 const HowItWorksSection = dynamic(() => import('./HowItWorksSection'), { ssr: false });
 const SessionOutputs = dynamic(() => import('./SessionOutputs'), { ssr: false });
@@ -137,6 +138,7 @@ export default function NarrativeHome() {
         <HighDosageProcessFlow />
       </React.Suspense>
 
+      <DiscordBanner />
       <FinalCTASection />
 
       {/* Shared Layout Background Elements for "Presence" */}
