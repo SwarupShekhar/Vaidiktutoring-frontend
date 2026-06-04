@@ -191,7 +191,10 @@ export default function HeroSection() {
 
               {/* Main image container */}
               <div className="relative w-full aspect-4/3 rounded-3xl overflow-hidden shadow-2xl shadow-primary/10 dark:shadow-primary/5 z-10 border border-white/20 dark:border-white/5">
-                <AnimatePresence mode="wait">
+                {/* initial={false} → first (LCP) image mounts at its animate state,
+                    so it paints from SSR without waiting on hydration+framer.
+                    Rotation crossfade for index 1+ is preserved unchanged. */}
+                <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={currentImageIndex}
                     initial={{ opacity: 0, scale: 1.04 }}
