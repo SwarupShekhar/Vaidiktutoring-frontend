@@ -123,4 +123,14 @@ export default withSentryConfig(nextConfig, {
 
   // Automatically tree-shake Sentry logger statements to reduce bundle size
   disableLogger: true,
+
+  // Shrink the client-side Sentry bundle shipped to every visitor.
+  // Replay is not used in this app, so its code is excluded entirely.
+  // This reduces main-thread JS (TBT) on marketing pages with zero visual impact.
+  bundleSizeOptimizations: {
+    excludeDebugStatements: true,
+    excludeReplayShadowDom: true,
+    excludeReplayIframe: true,
+    excludeReplayWorker: true,
+  },
 });
