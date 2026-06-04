@@ -21,7 +21,7 @@ const topics = [
       "Depreciation multiplier = 1 − 0.18 = 0.82. A = 12000 × 0.82⁴ = 12000 × 0.452121… = £5,425.46 = £5,430 (3 s.f.).",
       "Solve 2000 × 1.06ⁿ > 3000. Test values: n = 6 → £2,837.04 (too low); n = 7 → £3,007.26 (exceeds £3,000). Answer: 7 years.",
     ],
-    marksLost: "Using simple interest (e.g. 4.5% × 3 = 13.5%) instead of compounding. For part (c), giving a decimal like 6.96 instead of rounding UP to the next whole year.",
+    marksLost: "The big one is applying simple interest (e.g. 4.5% × 3 = 13.5%) when the question is compound. On part (c), a decimal answer like 6.96 should round up to the next whole year — 7.",
     tip: "Common trap: students use simple interest (multiply by the rate each time). Always raise to the power of n.",
   },
   {
@@ -39,7 +39,7 @@ const topics = [
       "A 30% reduction leaves 70%, so new price = 0.70 × original. Original = 455 ÷ 0.70 = £650.",
       "Including 20% VAT means price = 1.20 × original. Original = 108 ÷ 1.20 = £90.",
     ],
-    marksLost: "Multiplying instead of dividing — e.g. £69 × 0.85 = £58.65 is wrong. The £69 is already the increased amount, so you DIVIDE to undo the change.",
+    marksLost: "The £69 is already the increased price, so you divide to undo it. A common slip is £69 × 0.85 = £58.65, which finds 85% of the wrong starting figure.",
     tip: "Write out: 'After increase, the price IS (1 + r)×original.' Then rearrange. Don't subtract the % from the answer.",
   },
   {
@@ -57,7 +57,7 @@ const topics = [
       "Relative to angle A: BC = 6 is opposite, AB = 8 is adjacent. tan A = O/A = 6/8. A = tan⁻¹(0.75) = 36.9° (1 d.p.).",
       "Angle R = 180 − 35 − 85 = 60°. QR is opposite P; PQ is opposite R. QR/sin 35° = 12/sin 60°. QR = 12 × sin 35° ÷ sin 60° = 7.95 cm (3 s.f.).",
     ],
-    marksLost: "Calculator left in RADIANS — gives a completely wrong angle. Press SHIFT → SETUP → Degree and check a small 'D' shows at the top of the screen. For the sine rule, pairing a side with the wrong opposite angle.",
+    marksLost: "A calculator left in radians gives a completely wrong angle. Press SHIFT → SETUP → Degree and check a small 'D' shows at the top of the screen. On sine rule questions, watch you pair each side with the angle opposite it.",
     tip: "Always draw and label the triangle. Identify O, A, H relative to the angle you know or want.",
   },
   {
@@ -75,7 +75,7 @@ const topics = [
       "Divide the numbers, subtract the powers: 8.4 ÷ 2.1 = 4 and 10⁶ ÷ 10² = 10⁴ → 4 × 10⁴.",
       "Time = distance ÷ speed = (1.5 × 10⁸) ÷ (3 × 10⁵) = 0.5 × 10³ = 5 × 10² seconds (500 s).",
     ],
-    marksLost: "Leaving the answer as 14.4 × 10⁷ or 0.5 × 10³ — these are NOT valid standard form, because the front number must be between 1 and 10.",
+    marksLost: "Answers like 14.4 × 10⁷ or 0.5 × 10³ score nothing for the final mark — the front number has to sit between 1 and 10. Always adjust it at the end.",
     tip: "After using your calculator, always check the answer is in correct standard form (1 ≤ a < 10).",
   },
   {
@@ -93,7 +93,7 @@ const topics = [
       "Upper bounds: p = 6.35, q = 4.15. Upper of a product uses both maxima: 6.35 × 4.15 = 26.3525.",
       "Upper speed = max distance ÷ MIN time. Upper distance = 120.5, min time = 8.45. 120.5 ÷ 8.45 = 14.3 m/s (3 s.f.).",
     ],
-    marksLost: "For the upper bound of a division, using the upper time instead of the LOWER time. Bigger top + smaller bottom = bigger answer — so the divisor takes its minimum.",
+    marksLost: "For the upper bound of a division, the divisor takes its minimum value, not its maximum. A bigger top and smaller bottom give the largest result, so use the lower bound of the time.",
     tip: "Max of a product → both values at max. Max of a quotient (A÷B) → A at max, B at min.",
   },
   {
@@ -111,7 +111,7 @@ const topics = [
       "Distance = speed × time. 60 × 2.5 = 150 miles; 40 × 0.75 = 30 miles. Total = 180 miles.",
       "Time stage 1 = 18 ÷ 9 = 2 h; stage 2 = 18 ÷ 18 = 1 h. Average speed = total distance ÷ total time = 36 ÷ 3 = 12 km/h. (Averaging the speeds would wrongly give 13.5.)",
     ],
-    marksLost: "Writing 45 minutes as 0.45 hours instead of 0.75. For average speed, taking the mean of the two speeds — you MUST use total distance ÷ total time.",
+    marksLost: "Writing 45 minutes as 0.45 hours when it should be 0.75. And for average speed, the mean of the two speeds is wrong — work out total distance ÷ total time instead.",
     tip: "For average speed over two stages: total distance ÷ total time. Do NOT average the two speeds.",
   },
   {
@@ -129,7 +129,7 @@ const topics = [
       "Diameter 8 → radius 4. SA = 2πrh + 2πr² = 2π(4)(15) + 2π(4²) = 120π + 32π = 152π = 478 cm² (3 s.f.).",
       "V = ⁴⁄₃πr³ = 288π → r³ = 288 × ¾ = 216 → r = ∛216 = 6 cm.",
     ],
-    marksLost: "Using the diameter (8) as the radius — always halve it first. For the sphere, forgetting to cancel π on both sides before solving.",
+    marksLost: "Putting the diameter (8) straight into the formula as the radius — halve it first. On the sphere question, students often forget to cancel π on both sides before solving for r.",
     tip: "Diameter ÷ 2 = radius. Easy mark lost if you forget to halve the diameter.",
   },
   {
@@ -147,7 +147,7 @@ const topics = [
       "Write y = k/x. Sub in: 15 = k/4 → k = 60. So y = 60/x. When y = 12: 12 = 60/x → x = 5.",
       "Write t = k/p. Sub in: 8 = k/3 → k = 24. With 6 pipes: t = 24 ÷ 6 = 4 hours.",
     ],
-    marksLost: "Treating inverse proportion as direct (so 'double the pipes = double the time'). More pipes = LESS time. Always find k first.",
+    marksLost: "Treating inverse proportion as if it were direct, so 'double the pipes' becomes 'double the time'. With more pipes the time goes down. Always find k first.",
     tip: "Always write the equation (y = kx²) before substituting. Don't try to do it mentally.",
   },
   {
@@ -165,7 +165,7 @@ const topics = [
       "Gradient = (75 − 45) ÷ (8 − 2) = 30 ÷ 6 = 5. Equation: y = 5x + 35. At x = 5: y = 5 × 5 + 35 = 60.",
       "20 hours is outside the plotted data range, so this is extrapolation — the pattern may not continue (and scores are capped at 100%), making the prediction unreliable.",
     ],
-    marksLost: "On part (c), just saying 'it's too far away' — examiners want the word extrapolation and the phrase 'outside the data range'.",
+    marksLost: "On part (c), 'it's too far away' won't get the mark on its own. Examiners want the word extrapolation and the phrase 'outside the data range'.",
     tip: "For interpolation vs extrapolation: predicting within the data range = interpolation (reliable). Outside = extrapolation (unreliable — say this in your answer).",
   },
   {
@@ -183,7 +183,7 @@ const topics = [
       "Without replacement there are TWO routes. P(red then blue) = 4/10 × 6/9 = 24/90; P(blue then red) = 6/10 × 4/9 = 24/90. Total = 48/90 = 8/15.",
       "P(A and B) = P(A) × P(B|A) = 0.4 × 0.3 = 0.12.",
     ],
-    marksLost: "Forgetting 'one of each' has TWO routes (red-blue AND blue-red) — counting only one halves the answer. And keeping the denominator at 10 on the second pick when there is no replacement.",
+    marksLost: "'One of each' has two routes (red-blue and blue-red), and counting only one halves the answer. Also remember the denominator drops from 10 to 9 on the second pick when there's no replacement.",
     tip: "Without replacement: second branch probabilities CHANGE. Without replacement means total reduces by 1.",
   },
 ];
@@ -378,7 +378,7 @@ function TopicCard({ topic }: { topic: Topic }) {
 
         {/* Where students lose marks */}
         <div className="flex gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-          <span className="text-red-600 text-xs font-bold mt-0.5 shrink-0">WHERE MARKS GO</span>
+          <span className="text-red-600 text-xs font-bold mt-0.5 shrink-0">EXAM TRAP</span>
           <p className="text-xs text-red-800">{topic.marksLost}</p>
         </div>
 
