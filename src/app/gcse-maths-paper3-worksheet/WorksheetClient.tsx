@@ -16,6 +16,12 @@ const topics = [
       "A car worth £12,000 depreciates by 18% each year. What is it worth after 4 years? Give your answer to 3 significant figures.",
       "[Higher] After how many years will £2,000 at 6% compound interest first exceed £3,000? Show your working.",
     ],
+    solutions: [
+      "Multiplier = 1.045. A = 3500 × 1.045³ = 3500 × 1.141166… = £3,994.08. Type 3500 × 1.045 ^ 3 in one go — don't round 1.045³ early.",
+      "Depreciation multiplier = 1 − 0.18 = 0.82. A = 12000 × 0.82⁴ = 12000 × 0.452121… = £5,425.46 = £5,430 (3 s.f.).",
+      "Solve 2000 × 1.06ⁿ > 3000. Test values: n = 6 → £2,837.04 (too low); n = 7 → £3,007.26 (exceeds £3,000). Answer: 7 years.",
+    ],
+    marksLost: "Using simple interest (e.g. 4.5% × 3 = 13.5%) instead of compounding. For part (c), giving a decimal like 6.96 instead of rounding UP to the next whole year.",
     tip: "Common trap: students use simple interest (multiply by the rate each time). Always raise to the power of n.",
   },
   {
@@ -28,18 +34,30 @@ const topics = [
       "After a 30% reduction, a laptop costs £455. Find the original price.",
       "VAT at 20% is added to an item. The price including VAT is £108. What is the price before VAT?",
     ],
+    solutions: [
+      "A 15% increase means new price = 1.15 × original. So original = 69 ÷ 1.15 = £60.",
+      "A 30% reduction leaves 70%, so new price = 0.70 × original. Original = 455 ÷ 0.70 = £650.",
+      "Including 20% VAT means price = 1.20 × original. Original = 108 ÷ 1.20 = £90.",
+    ],
+    marksLost: "Multiplying instead of dividing — e.g. £69 × 0.85 = £58.65 is wrong. The £69 is already the increased amount, so you DIVIDE to undo the change.",
     tip: "Write out: 'After increase, the price IS (1 + r)×original.' Then rearrange. Don't subtract the % from the answer.",
   },
   {
     id: 3,
-    title: "Trigonometry (SOHCAHTOA)",
+    title: "Trigonometry (SOHCAHTOA & Sine Rule)",
     tag: "AQA & Edexcel",
     theory: "sin θ = O/H, cos θ = A/H, tan θ = O/A. Check your calculator is in DEGREE mode before starting. For angles: use sin⁻¹, cos⁻¹, tan⁻¹.",
     questions: [
       "A ladder 5 m long leans against a wall. The base is 2 m from the wall. Find the angle the ladder makes with the ground. Give your answer to 1 decimal place.",
       "In triangle ABC, angle B = 90°. AB = 8 cm, BC = 6 cm. Find angle A to 1 decimal place.",
-      "[Higher] Triangle PQR has angle P = 35°, PQ = 12 cm, QR = 9 cm. Use the sine rule to find angle R.",
+      "[Higher] Triangle PQR has angle P = 35°, angle Q = 85° and side PQ = 12 cm. Use the sine rule to find the length of QR. Give your answer to 3 significant figures.",
     ],
+    solutions: [
+      "The 2 m base is adjacent to the ground angle; the 5 m ladder is the hypotenuse. cos θ = A/H = 2/5. θ = cos⁻¹(0.4) = 66.4° (1 d.p.).",
+      "Relative to angle A: BC = 6 is opposite, AB = 8 is adjacent. tan A = O/A = 6/8. A = tan⁻¹(0.75) = 36.9° (1 d.p.).",
+      "Angle R = 180 − 35 − 85 = 60°. QR is opposite P; PQ is opposite R. QR/sin 35° = 12/sin 60°. QR = 12 × sin 35° ÷ sin 60° = 7.95 cm (3 s.f.).",
+    ],
+    marksLost: "Calculator left in RADIANS — gives a completely wrong angle. Press SHIFT → SETUP → Degree and check a small 'D' shows at the top of the screen. For the sine rule, pairing a side with the wrong opposite angle.",
     tip: "Always draw and label the triangle. Identify O, A, H relative to the angle you know or want.",
   },
   {
@@ -52,6 +70,12 @@ const topics = [
       "Calculate (8.4 × 10⁶) ÷ (2.1 × 10²). Give your answer in standard form.",
       "The distance from Earth to the Sun is 1.5 × 10⁸ km. Light travels at 3 × 10⁵ km/s. How long does light take to reach Earth from the Sun? Give your answer in standard form.",
     ],
+    solutions: [
+      "Multiply the numbers, add the powers: 3.2 × 4.5 = 14.4 and 10⁴ × 10³ = 10⁷ → 14.4 × 10⁷. Fix the front number: = 1.44 × 10⁸.",
+      "Divide the numbers, subtract the powers: 8.4 ÷ 2.1 = 4 and 10⁶ ÷ 10² = 10⁴ → 4 × 10⁴.",
+      "Time = distance ÷ speed = (1.5 × 10⁸) ÷ (3 × 10⁵) = 0.5 × 10³ = 5 × 10² seconds (500 s).",
+    ],
+    marksLost: "Leaving the answer as 14.4 × 10⁷ or 0.5 × 10³ — these are NOT valid standard form, because the front number must be between 1 and 10.",
     tip: "After using your calculator, always check the answer is in correct standard form (1 ≤ a < 10).",
   },
   {
@@ -64,6 +88,12 @@ const topics = [
       "p = 6.3 (1 d.p.) and q = 4.1 (1 d.p.). Find the upper bound of p × q.",
       "A speed is calculated as distance ÷ time where distance = 120 m (3 s.f.) and time = 8.5 s (2 s.f.). Find the upper bound of the speed.",
     ],
+    solutions: [
+      "Rounded to 1 d.p., so half a unit is 0.05. Error interval: 7.35 ≤ length < 7.45.",
+      "Upper bounds: p = 6.35, q = 4.15. Upper of a product uses both maxima: 6.35 × 4.15 = 26.3525.",
+      "Upper speed = max distance ÷ MIN time. Upper distance = 120.5, min time = 8.45. 120.5 ÷ 8.45 = 14.3 m/s (3 s.f.).",
+    ],
+    marksLost: "For the upper bound of a division, using the upper time instead of the LOWER time. Bigger top + smaller bottom = bigger answer — so the divisor takes its minimum.",
     tip: "Max of a product → both values at max. Max of a quotient (A÷B) → A at max, B at min.",
   },
   {
@@ -74,8 +104,14 @@ const topics = [
     questions: [
       "A train travels 240 km in 1 hour 45 minutes. What is its average speed in km/h?",
       "A car travels at 60 mph for 2.5 hours, then at 40 mph for 45 minutes. What is the total distance?",
-      "A cyclist travels 18 km at 12 km/h, then 15 km at 10 km/h. What is the average speed for the whole journey?",
+      "A cyclist travels 18 km at 9 km/h, then 18 km at 18 km/h. What is the average speed for the whole journey?",
     ],
+    solutions: [
+      "1 h 45 min = 1.75 h (45 min = 0.75 h, NOT 0.45). Speed = 240 ÷ 1.75 = 137 km/h (3 s.f.).",
+      "Distance = speed × time. 60 × 2.5 = 150 miles; 40 × 0.75 = 30 miles. Total = 180 miles.",
+      "Time stage 1 = 18 ÷ 9 = 2 h; stage 2 = 18 ÷ 18 = 1 h. Average speed = total distance ÷ total time = 36 ÷ 3 = 12 km/h. (Averaging the speeds would wrongly give 13.5.)",
+    ],
+    marksLost: "Writing 45 minutes as 0.45 hours instead of 0.75. For average speed, taking the mean of the two speeds — you MUST use total distance ÷ total time.",
     tip: "For average speed over two stages: total distance ÷ total time. Do NOT average the two speeds.",
   },
   {
@@ -88,6 +124,12 @@ const topics = [
       "A cylindrical tin has diameter 8 cm and height 15 cm. Find the total surface area to 3 significant figures.",
       "[Higher] A sphere has volume 288π cm³. Find its radius.",
     ],
+    solutions: [
+      "V = πr²h = π × 4² × 10 = 160π cm³.",
+      "Diameter 8 → radius 4. SA = 2πrh + 2πr² = 2π(4)(15) + 2π(4²) = 120π + 32π = 152π = 478 cm² (3 s.f.).",
+      "V = ⁴⁄₃πr³ = 288π → r³ = 288 × ¾ = 216 → r = ∛216 = 6 cm.",
+    ],
+    marksLost: "Using the diameter (8) as the radius — always halve it first. For the sphere, forgetting to cancel π on both sides before solving.",
     tip: "Diameter ÷ 2 = radius. Easy mark lost if you forget to halve the diameter.",
   },
   {
@@ -100,6 +142,12 @@ const topics = [
       "y is inversely proportional to x. When x = 4, y = 15. Find x when y = 12.",
       "The time to fill a tank is inversely proportional to the number of pipes. With 3 pipes it takes 8 hours. How long with 6 pipes?",
     ],
+    solutions: [
+      "Write y = kx². Sub in: 36 = k × 3² → k = 4. So y = 4x². When x = 5: y = 4 × 25 = 100.",
+      "Write y = k/x. Sub in: 15 = k/4 → k = 60. So y = 60/x. When y = 12: 12 = 60/x → x = 5.",
+      "Write t = k/p. Sub in: 8 = k/3 → k = 24. With 6 pipes: t = 24 ÷ 6 = 4 hours.",
+    ],
+    marksLost: "Treating inverse proportion as direct (so 'double the pipes = double the time'). More pipes = LESS time. Always find k first.",
     tip: "Always write the equation (y = kx²) before substituting. Don't try to do it mentally.",
   },
   {
@@ -112,6 +160,12 @@ const topics = [
       "A line of best fit passes through (2, 45) and (8, 75). Estimate the score for 5 hours of revision.",
       "Explain why it would not be reliable to use the line of best fit to predict a score for 20 hours of revision.",
     ],
+    solutions: [
+      "Positive correlation — as the number of revision hours increases, the test score increases.",
+      "Gradient = (75 − 45) ÷ (8 − 2) = 30 ÷ 6 = 5. Equation: y = 5x + 35. At x = 5: y = 5 × 5 + 35 = 60.",
+      "20 hours is outside the plotted data range, so this is extrapolation — the pattern may not continue (and scores are capped at 100%), making the prediction unreliable.",
+    ],
+    marksLost: "On part (c), just saying 'it's too far away' — examiners want the word extrapolation and the phrase 'outside the data range'.",
     tip: "For interpolation vs extrapolation: predicting within the data range = interpolation (reliable). Outside = extrapolation (unreliable — say this in your answer).",
   },
   {
@@ -124,6 +178,12 @@ const topics = [
       "A bag has 4 red and 6 blue balls. One is drawn WITHOUT replacement, then another. Find P(one of each colour).",
       "[Higher] Given P(A) = 0.4 and P(B|A) = 0.3, find P(A and B).",
     ],
+    solutions: [
+      "With replacement, P(red) stays 3/8 each time. P(both red) = 3/8 × 3/8 = 9/64.",
+      "Without replacement there are TWO routes. P(red then blue) = 4/10 × 6/9 = 24/90; P(blue then red) = 6/10 × 4/9 = 24/90. Total = 48/90 = 8/15.",
+      "P(A and B) = P(A) × P(B|A) = 0.4 × 0.3 = 0.12.",
+    ],
+    marksLost: "Forgetting 'one of each' has TWO routes (red-blue AND blue-red) — counting only one halves the answer. And keeping the denominator at 10 on the second pick when there is no replacement.",
     tip: "Without replacement: second branch probabilities CHANGE. Without replacement means total reduces by 1.",
   },
 ];
@@ -167,10 +227,10 @@ export default function WorksheetClient() {
             Free Paper 3 Revision Worksheet
           </h1>
           <p className="text-lg text-blue-100 mb-2">
-            AQA & Edexcel Calculator Paper · 10 high-frequency topics · 30 practice questions
+            AQA & Edexcel Calculator Paper · 30 practice questions with full worked solutions
           </p>
           <p className="text-blue-200 text-sm">
-            Foundation + Higher · Printable · No signup required for higher tier students
+            Foundation + Higher · Printable · Plus the exact mistakes that lose marks on each topic
           </p>
         </div>
       </section>
@@ -233,7 +293,7 @@ export default function WorksheetClient() {
             <div className="flex items-center justify-between mb-8 print:hidden">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">Your Worksheet</h2>
-                <p className="text-gray-500 text-sm mt-1">10 topics · 30 questions · AQA & Edexcel Paper 3</p>
+                <p className="text-gray-500 text-sm mt-1">30 questions · worked solutions · mark-loss notes · AQA & Edexcel Paper 3</p>
               </div>
               <button
                 onClick={() => window.print()}
@@ -245,53 +305,7 @@ export default function WorksheetClient() {
 
             <div className="space-y-8">
               {topics.map((topic) => (
-                <div key={topic.id} className="border border-gray-200 rounded-2xl overflow-hidden">
-                  {/* Topic header */}
-                  <div className="bg-blue-50 border-b border-blue-100 px-6 py-4 flex items-start justify-between gap-4">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="w-6 h-6 bg-blue-600 text-white rounded-full text-xs font-bold flex items-center justify-center">
-                          {topic.id}
-                        </span>
-                        <h3 className="font-bold text-gray-900">{topic.title}</h3>
-                      </div>
-                      <span className="text-xs font-medium text-blue-600 bg-blue-100 rounded-full px-2 py-0.5">
-                        {topic.tag}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="px-6 py-5 space-y-5">
-                    {/* Theory box */}
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-                      <p className="text-xs font-semibold text-amber-700 mb-1">Key method</p>
-                      <p className="text-sm text-amber-900">{topic.theory}</p>
-                    </div>
-
-                    {/* Questions */}
-                    <div className="space-y-3">
-                      {topic.questions.map((q, i) => (
-                        <div key={i} className="flex gap-3">
-                          <span className="text-gray-400 text-sm font-medium min-w-[20px]">{String.fromCharCode(97 + i)})</span>
-                          <p className="text-sm text-gray-800">{q}</p>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Tip */}
-                    <div className="flex gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
-                      <span className="text-green-600 text-xs font-bold mt-0.5 shrink-0">TIP</span>
-                      <p className="text-xs text-green-800">{topic.tip}</p>
-                    </div>
-
-                    {/* Answer space */}
-                    <div className="print:block hidden">
-                      <div className="border-t border-dashed border-gray-300 mt-2 pt-2">
-                        <div className="h-24 border border-gray-200 rounded-lg" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <TopicCard key={topic.id} topic={topic} />
               ))}
             </div>
 
@@ -320,5 +334,82 @@ export default function WorksheetClient() {
         }
       `}</style>
     </main>
+  );
+}
+
+type Topic = (typeof topics)[number];
+
+function TopicCard({ topic }: { topic: Topic }) {
+  const [showSolutions, setShowSolutions] = useState(false);
+
+  return (
+    <div className="border border-gray-200 rounded-2xl overflow-hidden">
+      {/* Topic header */}
+      <div className="bg-blue-50 border-b border-blue-100 px-6 py-4 flex items-start justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-6 h-6 bg-blue-600 text-white rounded-full text-xs font-bold flex items-center justify-center">
+              {topic.id}
+            </span>
+            <h3 className="font-bold text-gray-900">{topic.title}</h3>
+          </div>
+          <span className="text-xs font-medium text-blue-600 bg-blue-100 rounded-full px-2 py-0.5">
+            {topic.tag}
+          </span>
+        </div>
+      </div>
+
+      <div className="px-6 py-5 space-y-5">
+        {/* Theory box */}
+        <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+          <p className="text-xs font-semibold text-amber-700 mb-1">Key method</p>
+          <p className="text-sm text-amber-900">{topic.theory}</p>
+        </div>
+
+        {/* Questions */}
+        <div className="space-y-3">
+          {topic.questions.map((q, i) => (
+            <div key={i} className="flex gap-3">
+              <span className="text-gray-400 text-sm font-medium min-w-[20px]">{String.fromCharCode(97 + i)})</span>
+              <p className="text-sm text-gray-800">{q}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Where students lose marks */}
+        <div className="flex gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          <span className="text-red-600 text-xs font-bold mt-0.5 shrink-0">WHERE MARKS GO</span>
+          <p className="text-xs text-red-800">{topic.marksLost}</p>
+        </div>
+
+        {/* Tip */}
+        <div className="flex gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+          <span className="text-green-600 text-xs font-bold mt-0.5 shrink-0">TIP</span>
+          <p className="text-xs text-green-800">{topic.tip}</p>
+        </div>
+
+        {/* Worked solutions — hidden until revealed, always shown in print */}
+        <div className="print:hidden">
+          <button
+            onClick={() => setShowSolutions((s) => !s)}
+            className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
+          >
+            {showSolutions ? "− Hide worked solutions" : "+ Reveal worked solutions"}
+          </button>
+        </div>
+
+        <div className={showSolutions ? "block" : "hidden print:block"}>
+          <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Worked solutions</p>
+            {topic.solutions.map((s, i) => (
+              <div key={i} className="flex gap-3">
+                <span className="text-blue-500 text-sm font-bold min-w-[20px]">{String.fromCharCode(97 + i)})</span>
+                <p className="text-sm text-gray-800">{s}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
