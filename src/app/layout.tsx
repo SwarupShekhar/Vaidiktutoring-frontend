@@ -83,14 +83,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   }
 
   return (
-    {/* `dynamic` → children render server-side without blocking on clerk-js;
-        auth state hydrates after. Cuts main-thread blocking (TBT) on every page.
-        Logged-out marketing visitors see no change; logged-in users may see a
-        brief navbar auth-state hydration on first paint. */}
+    // `dynamic` → children render server-side without blocking on clerk-js;
+    // auth state hydrates after. Cuts main-thread blocking (TBT) on every page.
+    // Logged-out marketing visitors see no change; logged-in users may see a
+    // brief navbar auth-state hydration on first paint.
     <ClerkProvider publishableKey={clerkPublishableKey} dynamic>
       <html lang="en" suppressHydrationWarning>
         <head>
-          {/* ── Preconnect to critical third-party origins for faster resource loading ── */}
+          {/* -- Preconnect to critical third-party origins for faster resource loading -- */}
           <link rel="preconnect" href="https://res.cloudinary.com" />
           <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
