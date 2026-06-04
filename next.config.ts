@@ -20,6 +20,9 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Next 16 requires whitelisting any non-default quality values used via <Image quality>.
+    // Lower qualities used on large decorative/content images to cut transfer bytes.
+    qualities: [60, 65, 75],
     remotePatterns: [
       { protocol: 'https', hostname: 'res.cloudinary.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
@@ -121,8 +124,13 @@ export default withSentryConfig(nextConfig, {
   // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
   tunnelRoute: "/monitoring",
 
-  // Automatically tree-shake Sentry logger statements to reduce bundle size
-  disableLogger: true,
+  // Automatically tree-shake Sentry debug logging to reduce bundle size
+  // (replaces the deprecated `disableLogger` option).
+  webpack: {
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
 
   // Shrink the client-side Sentry bundle shipped to every visitor.
   // Replay is not used in this app, so its code is excluded entirely.

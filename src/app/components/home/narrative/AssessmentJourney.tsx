@@ -72,6 +72,7 @@ export default function AssessmentJourney() {
               <div className="relative w-full h-36 mb-4 overflow-hidden rounded-xl border border-gray-100 dark:border-white/5">
                 <Image
                   src="https://res.cloudinary.com/de8vvmpip/image/upload/q_auto,f_auto/v1779096784/Minimalist_3D_isometric_illustration_of_202605181501_nh7if6.jpg"
+                  quality={60}
                   alt="Diagnostic Assessment"
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
@@ -111,6 +112,7 @@ export default function AssessmentJourney() {
               <div className="relative w-full h-36 mb-4 overflow-hidden rounded-xl border border-gray-100 dark:border-white/5">
                 <Image
                   src="https://res.cloudinary.com/de8vvmpip/image/upload/q_auto,f_auto/v1779096802/Minimalist_3D_isometric_illustration_of_202605181503_f2tcrx.jpg"
+                  quality={60}
                   alt="Concept Gap Fix"
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
@@ -162,6 +164,7 @@ export default function AssessmentJourney() {
               <div className="relative w-full h-36 mb-4 overflow-hidden rounded-xl border border-gray-100 dark:border-white/5">
                 <Image
                   src="https://res.cloudinary.com/de8vvmpip/image/upload/q_auto,f_auto/v1779096852/Minimalist_3D_isometric_illustration_of_202605181504_t3z55e.jpg"
+                  quality={60}
                   alt="Improvement Plan"
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"

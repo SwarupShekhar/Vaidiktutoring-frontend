@@ -209,6 +209,7 @@ export default function HeroSection() {
                       fill
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 50vw"
+                      quality={70}
                       priority={currentImageIndex === 0}
                     />
                   </motion.div>
@@ -226,6 +227,7 @@ export default function HeroSection() {
                   fill
                   className="object-cover"
                   sizes="150px"
+                  quality={60}
                 />
               </div>
 
@@ -238,6 +240,7 @@ export default function HeroSection() {
                   fill
                   className="object-cover"
                   sizes="150px"
+                  quality={60}
                 />
               </div>
 
