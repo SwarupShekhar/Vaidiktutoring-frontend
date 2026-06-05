@@ -269,6 +269,30 @@ function gcseHitlistEmail() {
   `);
 }
 
+function pure1SolutionsEmail() {
+  return emailWrapper(`
+    <h1 style="color:#fff;font-size:26px;font-weight:800;margin:0 0 6px;line-height:1.2">Your Edexcel Pure 1 Solutions are here</h1>
+    <p style="color:#e5e5e5;font-size:15px;line-height:1.6;margin:0 0 24px">
+      Here is the fully worked solution PDF for the Edexcel A-Level Pure Mathematics 1 June 2026 paper.
+    </p>
+
+    <a href="https://studyhours.com/Edexcel-A-Level-Pure1-2026-Worked-Solutions.html" style="display:block;background:#4c70f5;color:#fff;text-align:center;padding:14px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;margin:0 0 24px">
+      📥 View / Download: Pure 1 Solutions
+    </a>
+
+    <div style="background:#0a0f1a;border:1px solid #1e3a5f;border-radius:12px;padding:20px;margin:0 0 24px">
+      <p style="color:#5c9dff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">Share the wealth</p>
+      <p style="color:#e5e5e5;font-size:14px;line-height:1.6;margin:0">
+        If you found these worked solutions useful, forward this email to your classmates. We want to help as many A-Level mathematicians as possible properly mark their own scripts and understand exactly where the marks are awarded.
+      </p>
+    </div>
+
+    <a href="${BOOKING_URL}?utm_source=email&utm_medium=pure1_solutions&utm_campaign=lead" style="display:block;background:#e11d48;color:#fff;text-align:center;padding:14px;border-radius:50px;font-weight:700;font-size:14px;text-decoration:none;margin:0 0 10px">
+      Book a free A-Level session for Paper 2
+    </a>
+  `);
+}
+
 // ── Discord embeds ────────────────────────────────────────────────────────────
 
 function buildDiscordEmbed(source: string, email: string, fields: Record<string, string>) {
@@ -277,6 +301,7 @@ function buildDiscordEmbed(source: string, email: string, fields: Record<string,
     desmos_guide: { title: '📐 New Desmos Guide Lead',       color: 0x6366f1 },
     gcse_tracker: { title: '🇬🇧 New GCSE Paper 3 Lead',      color: 0x4c70f5 },
     'gcse-paper3-hitlist': { title: '📄 New Paper 3 Hitlist Lead', color: 0x4c70f5 },
+    pure1_solutions: { title: '📐 New Pure 1 Solutions Lead', color: 0x6366f1 },
   };
   const { title, color } = configs[source] ?? { title: 'New Lead', color: 0xffffff };
 
@@ -326,12 +351,12 @@ export async function POST(req: NextRequest) {
     } catch { /* non-fatal */ }
   }
 
-  // ── Send confirmation email ──
   const emailTemplates: Record<string, (d: Record<string, string>) => string> = {
     sat_quiz:     satQuizEmail,
     desmos_guide: desmosEmail,
     gcse_tracker: gcseTrackerEmail,
     'gcse-paper3-hitlist': gcseHitlistEmail,
+    pure1_solutions: pure1SolutionsEmail,
   };
 
   const subjectLines: Record<string, (d: Record<string, string>) => string> = {
@@ -339,6 +364,7 @@ export async function POST(req: NextRequest) {
     desmos_guide: (d) => `Your Desmos cheat sheet — ${(d.topics ?? '').split(', ').slice(0, 2).join(', ')}`,
     gcse_tracker: (d) => `Your GCSE Paper 3 focus list — ${(d.examBoard ?? '').toUpperCase()} ${d.tier ?? ''}`,
     'gcse-paper3-hitlist': () => 'Your Free GCSE Maths Paper 3 Hit-List & Formula Sheet',
+    pure1_solutions: () => 'Your Free Edexcel A-Level Pure 1 Worked Solutions',
   };
 
   const template = emailTemplates[source];
