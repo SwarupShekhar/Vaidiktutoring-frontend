@@ -276,7 +276,7 @@ function pure1SolutionsEmail() {
       Here is the fully worked solution PDF for the Edexcel A-Level Pure Mathematics 1 June 2026 paper.
     </p>
 
-    <a href="https://studyhours.com/Edexcel-A-Level-Pure1-2026-Worked-Solutions.html" style="display:block;background:#4c70f5;color:#fff;text-align:center;padding:14px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;margin:0 0 24px">
+    <a href="https://studyhours.com/Edexcel-A-Level-Pure1-2026-Worked-Solutions.pdf" style="display:block;background:#4c70f5;color:#fff;text-align:center;padding:14px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;margin:0 0 24px">
       📥 View / Download: Pure 1 Solutions
     </a>
 
