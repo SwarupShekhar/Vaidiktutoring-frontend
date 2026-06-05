@@ -73,7 +73,8 @@ export default function AdminDashboardPage() {
             try {
                 const { io } = await import('socket.io-client');
                 const token = document.cookie.match(/manual_auth_token=([^;]+)/)?.[1] || '';
-                socket = io(process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3001', {
+                const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://api.studyhours.com').replace(/\/$/, '');
+                socket = io(API_URL, {
                     auth: { token },
                     transports: ['websocket'],
                 });
