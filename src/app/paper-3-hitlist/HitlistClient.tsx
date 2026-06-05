@@ -134,34 +134,16 @@ export default function HitlistClient() {
                 </svg>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                Success! You're in.
+                Check your inbox!
               </h2>
-              <p className="text-gray-600 mb-8">
-                We've also emailed you a copy, but you can download your PDFs directly below right now:
+              <p className="text-gray-600 mb-8 text-lg">
+                We've just emailed both PDFs to <strong>{email}</strong>.
               </p>
               
-              <div className="space-y-4">
-                <a
-                  href="/GCSE-Maths-Paper3-Calc-Hitlist.pdf"
-                  download
-                  className="flex items-center justify-center gap-2 w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl py-4 transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  Download Paper 3 Hit-List
-                </a>
-                
-                <a
-                  href="/GCSE-Maths-Calc-Formula-CheatSheet.pdf"
-                  download
-                  className="flex items-center justify-center gap-2 w-full bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-900 font-semibold rounded-xl py-4 transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  Download Formula Sheet
-                </a>
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-6">
+                <p className="text-sm text-gray-600 mb-2">
+                  <strong>Can't find it?</strong> Make sure to check your spam or promotions folder. It should arrive in the next 60 seconds.
+                </p>
               </div>
               
               <p className="text-sm text-gray-500 mt-6">
