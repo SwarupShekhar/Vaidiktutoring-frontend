@@ -249,10 +249,10 @@ function gcseHitlistEmail() {
       Here are the two PDFs you requested for the GCSE Maths Paper 3 exam on Wednesday.
     </p>
 
-    <a href="https://studyhours.com/GCSE-Maths-Paper3-Calc-Hitlist.pdf" style="display:block;background:#4c70f5;color:#fff;text-align:center;padding:14px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;margin:0 0 10px">
+    <a href="https://studyhours.com/GCSE-Maths-Paper3-Calc-Hitlist-v3n7h.pdf" style="display:block;background:#4c70f5;color:#fff;text-align:center;padding:14px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;margin:0 0 10px">
       📥 Download: The Paper 3 Hit-List
     </a>
-    <a href="https://studyhours.com/GCSE-Maths-Calc-Formula-CheatSheet.pdf" style="display:block;background:#1f1f1f;border:1px solid #333;color:#fff;text-align:center;padding:14px;border-radius:12px;font-weight:600;font-size:14px;text-decoration:none;margin:0 0 24px">
+    <a href="https://studyhours.com/GCSE-Maths-Calc-Formula-CheatSheet-q8m4p.pdf" style="display:block;background:#1f1f1f;border:1px solid #333;color:#fff;text-align:center;padding:14px;border-radius:12px;font-weight:600;font-size:14px;text-decoration:none;margin:0 0 24px">
       📥 Download: Formula Cheat Sheet
     </a>
 
@@ -276,7 +276,7 @@ function pure1SolutionsEmail() {
       Here is the fully worked solution PDF for the Edexcel A-Level Pure Mathematics 1 June 2026 paper.
     </p>
 
-    <a href="https://studyhours.com/Edexcel-A-Level-Pure1-2026-Worked-Solutions.pdf" style="display:block;background:#4c70f5;color:#fff;text-align:center;padding:14px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;margin:0 0 24px">
+    <a href="https://studyhours.com/Edexcel-A-Level-Pure1-2026-Worked-Solutions-x9f2k.pdf" style="display:block;background:#4c70f5;color:#fff;text-align:center;padding:14px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;margin:0 0 24px">
       📥 View / Download: Pure 1 Solutions
     </a>
 
