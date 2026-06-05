@@ -391,6 +391,19 @@ export default function AdminDashboardPage() {
                                             <p className="text-(--color-text-primary) dark:text-white font-bold text-sm">Vault</p>
                                             <p className="text-[9px] text-slate-500 dark:text-white/40 font-mono uppercase mt-1">Archival Access</p>
                                         </Link>
+
+                                        <Link href="/admin/leads" className="col-span-2 p-5 bg-black/5 dark:bg-white/5 border border-border dark:border-white/5 rounded-[1.8rem] hover:bg-indigo-500/10 hover:border-indigo-500/30 transition-all group/sub text-left flex items-center justify-between">
+                                            <div>
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-500 dark:text-indigo-400">
+                                                        <Users size={18} />
+                                                    </div>
+                                                    <p className="text-(--color-text-primary) dark:text-white font-bold text-sm">Marketing Leads</p>
+                                                </div>
+                                                <p className="text-[9px] text-slate-500 dark:text-white/40 font-mono uppercase">View & Export Captured Leads</p>
+                                            </div>
+                                            <ChevronRight size={16} className="text-slate-400 dark:text-white/20 group-hover/sub:text-indigo-500 transition-colors" />
+                                        </Link>
                                     </div>
                                     
                                     {/* SYSTEM UTILITY BUTTON */}
