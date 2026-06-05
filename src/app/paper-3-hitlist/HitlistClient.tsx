@@ -17,12 +17,21 @@ export default function HitlistClient() {
     if (!email.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/leads/capture`, {
+      // 1. Send email to user via Next.js API
+      const res = await fetch('/api/leads', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), source: "gcse-paper3-hitlist" }),
       });
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) throw new Error("Failed email delivery");
+
+      // 2. Save lead to NestJS database
+      await fetch(`${API_URL}/leads/capture`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), source: "gcse-paper3-hitlist" }),
+      }).catch(err => console.error("DB save error", err));
+
       setSubmitted(true);
     } catch {
       setError("Something went wrong. Please try again.");
