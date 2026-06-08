@@ -2,14 +2,14 @@ import { Metadata } from "next";
 import HitlistClient from "./HitlistClient";
 
 export const metadata: Metadata = {
-  title: "Free GCSE Maths Paper 3 Hit-List & Formula Cheat Sheet 2025",
-  description: "Get the definitive Paper 3 Calculator Hit-List and Formula Cheat Sheet for Edexcel, AQA, and OCR. Exam on Wednesday 10 June.",
+  title: "GCSE Maths Paper 3: Final 48-Hour Plan, Hit-List & Calculator Traps",
+  description: "Your last-minute GCSE Maths Paper 3 plan for Edexcel, AQA & OCR: hour-by-hour revision schedule plus a free 3-PDF pack — topic Hit-List, Formula Cheat Sheet, and Calculator Setup & 10 Traps. Exam Wednesday 10 June.",
   alternates: {
     canonical: "https://studyhours.com/paper-3-hitlist",
   },
   openGraph: {
-    title: "Free GCSE Maths Paper 3 Hit-List | StudyHours",
-    description: "Download the definitive Paper 3 Calculator Hit-List and Formula Cheat Sheet for Wednesday's exam.",
+    title: "GCSE Maths Paper 3: Final 48-Hour Plan | StudyHours",
+    description: "Hour-by-hour last-minute plan plus a free 3-PDF pack — Hit-List, Formula Cheat Sheet & Calculator Traps — for Wednesday's Paper 3.",
     url: "https://studyhours.com/paper-3-hitlist",
     type: "website",
   },

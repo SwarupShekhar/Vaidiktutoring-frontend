@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCSE Maths Paper 3 - Calculator Setup & 10 Traps</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.55;
+            color: #1f2937;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #f9fafb;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #16a34a;
+            padding-bottom: 20px;
+            margin-bottom: 26px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #16a34a;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        h1 { color: #111827; font-size: 26px; margin: 6px 0; }
+        h2 {
+            color: #15803d;
+            font-size: 19px;
+            margin-top: 26px;
+            border-bottom: 1px solid #bbf7d0;
+            padding-bottom: 5px;
+        }
+        .sub { color: #6b7280; font-size: 14px; }
+        .setup {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 18px 22px;
+            margin-bottom: 20px;
+        }
+        .key {
+            display: inline-block;
+            background: #111827;
+            color: #fff;
+            font-family: monospace;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 1px 7px;
+            border-radius: 4px;
+            margin: 0 1px;
+        }
+        ol.traps { padding-left: 0; counter-reset: trap; list-style: none; }
+        ol.traps > li {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            padding: 14px 18px 14px 52px;
+            margin-bottom: 12px;
+            position: relative;
+            counter-increment: trap;
+            font-size: 14.5px;
+        }
+        ol.traps > li::before {
+            content: counter(trap);
+            position: absolute;
+            left: 14px;
+            top: 14px;
+            width: 24px;
+            height: 24px;
+            background: #16a34a;
+            color: #fff;
+            font-weight: 800;
+            font-size: 13px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+        }
+        .fix { color: #15803d; font-weight: 600; }
+        .bad { color: #b91c1c; font-weight: 600; }
+        .footer {
+            margin-top: 36px;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 18px;
+        }
+        .cta-box {
+            background: #eff6ff;
+            border: 2px dashed #60a5fa;
+            padding: 18px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        .cta-box h3 { color: #1e3a8a; margin-top: 0; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">StudyHours</div>
+        <h1>Calculator Setup &amp; 10 Traps</h1>
+        <p class="sub">GCSE Maths Paper 3 (Calculator) &middot; Wednesday 10 June 2026</p>
+    </div>
+
+    <p>Casio is the most common GCSE calculator (fx-83/85 GT and fx-991 ClassWiz). The keys below match those models &mdash; if yours differs, the menu names are the same. <strong>Do this 60-second setup before you start the paper.</strong></p>
+
+    <div class="setup">
+        <h2 style="margin-top:0;border:none;padding:0">⚙️ 60-Second Setup (do this first)</h2>
+        <ul style="padding-left:18px;margin:8px 0 0">
+            <li><strong>Reset to default:</strong> <span class="key">SHIFT</span> <span class="key">9</span> <span class="key">3</span> <span class="key">=</span> <span class="key">AC</span>. Clears any leftover STAT/TABLE mode from a previous user.</li>
+            <li><strong>Check it says DEGREES:</strong> look for a small <span class="key">D</span> at the top of the screen. If you see <span class="key">R</span> (radians) every trig answer will be wrong. Fix: <span class="key">SHIFT</span> <span class="key">MODE</span> &rarr; <span class="key">3</span> (Deg).</li>
+            <li><strong>Natural display on:</strong> <span class="key">SHIFT</span> <span class="key">MODE</span> &rarr; <span class="key">1</span> (MathIO) so fractions and surds show properly. Use <span class="key">S&harr;D</span> to flip any answer to a decimal.</li>
+        </ul>
+    </div>
+
+    <h2>🎯 The 10 Marks-Losing Traps</h2>
+    <ol class="traps">
+        <li><strong>Radians instead of degrees.</strong> The single most common Paper 3 error. No <span class="key">D</span> on screen &rarr; every sin/cos/tan answer is wrong. <span class="fix">Fix: check for the D before question 1.</span></li>
+
+        <li><strong>Squaring a negative.</strong> The calculator does the power before the minus, so <span class="bad">&minus;3&sup2; = &minus;9</span> but <span class="fix">(&minus;3)&sup2; = 9</span>. Always wrap a negative in brackets before squaring.</li>
+
+        <li><strong>Rounding too early.</strong> Round only the <em>final</em> answer. Keep the full value on screen and use <span class="key">Ans</span> for the next step, or store it: <span class="key">SHIFT</span> <span class="key">STO</span> <span class="key">A</span>. Early rounding loses the accuracy mark.</li>
+
+        <li><strong>Fractions over a sum.</strong> Typing <code>1 &divide; 2 + x</code> computes (1&divide;2)+x. For a fraction <em>over</em> a whole expression, bracket the bottom: <span class="fix">1 &divide; (2 + x)</span>.</li>
+
+        <li><strong>The quadratic / cosine-rule denominator.</strong> In the cosine rule and quadratic formula, put the <em>whole</em> top and the <em>whole</em> bottom in brackets, e.g. <span class="fix">(&minus;b + &radic;(b&sup2;&minus;4ac)) &divide; (2a)</span>.</li>
+
+        <li><strong>Standard form.</strong> Enter powers of ten with the <span class="key">&times;10ˣ</span> (or <span class="key">EXP</span>) button, <em>not</em> by typing &times; 10 ^. Typing 3 <span class="key">&times;10ˣ</span> 8 gives 3&times;10&#8312;.</li>
+
+        <li><strong>Wrong answer format.</strong> If a question says "give your answer to 2 decimal places" or "as a percentage", a fraction or surd on screen scores 0. Press <span class="key">S&harr;D</span> to convert, then round as asked.</li>
+
+        <li><strong>Inverse trig for angles.</strong> To find an angle use <span class="key">SHIFT</span> then sin/cos/tan (sin&#8315;&sup1;). Forgetting SHIFT gives you a side ratio, not the angle.</li>
+
+        <li><strong>Iteration without Ans.</strong> Type the formula once using <span class="key">Ans</span> where x&#8345; appears, press <span class="key">=</span>, then keep pressing <span class="key">=</span> &mdash; each press is the next iteration. Free marks if you know this.</li>
+
+        <li><strong>Trusting the screen over the working.</strong> "Show that" and method-mark questions need every line written down. The calculator gives the answer; the examiner pays for the <em>working</em>. Write it out even when the number is obvious.</li>
+    </ol>
+
+    <div class="cta-box">
+        <h3>One topic still not clicking before Wednesday?</h3>
+        <p>StudyHours runs last-minute 1-on-1 GCSE Maths sessions focused on exactly the topics and mark-scheme phrasing examiners reward.</p>
+        <p><strong>Book a free session at www.studyhours.com</strong></p>
+    </div>
+
+    <div class="footer">
+        <p>Produced by the StudyHours Mathematics Department. Calculator key sequences shown for Casio fx-83/85 GT &amp; fx-991 ClassWiz. Not affiliated with Casio or any exam board.</p>
+    </div>
+
+</body>
+</html>

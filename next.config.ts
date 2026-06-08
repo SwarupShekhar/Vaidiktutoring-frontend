@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
     styledComponents: true,
   },
   reactStrictMode: true,
+  // Bundle the gated Paper 3 PDFs (served as email attachments, not from /public)
+  // into the leads API route's serverless trace so readFile works in production.
+  outputFileTracingIncludes: {
+    '/api/leads': ['./private-assets/paper3/**'],
+  },
   // Optimize heavy library imports — only the components actually used are bundled
   experimental: {
     optimizePackageImports: [

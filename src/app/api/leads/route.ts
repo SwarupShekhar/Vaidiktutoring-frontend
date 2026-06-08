@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { readFile } from 'fs/promises';
+import path from 'path';
+import { PAPER3_PDFS, PAPER3_PDF_DIR } from '@/app/lib/paper3Pdfs';
 
 const WEBHOOK_URL = process.env.DISCORD_LEADS_WEBHOOK_URL;
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -245,16 +248,15 @@ function gcseTrackerEmail(data: Record<string, string>) {
 function gcseHitlistEmail() {
   return emailWrapper(`
     <h1 style="color:#fff;font-size:26px;font-weight:800;margin:0 0 6px;line-height:1.2">Your Paper 3 PDFs are here</h1>
-    <p style="color:#e5e5e5;font-size:15px;line-height:1.6;margin:0 0 24px">
-      Here are the two PDFs you requested for the GCSE Maths Paper 3 exam on Wednesday.
+    <p style="color:#e5e5e5;font-size:15px;line-height:1.6;margin:0 0 20px">
+      All three PDFs for the GCSE Maths Paper 3 exam on Wednesday are <strong>attached to this email</strong> — open or download them straight from your inbox.
     </p>
 
-    <a href="https://studyhours.com/GCSE-Maths-Paper3-Calc-Hitlist-v3n7h.pdf" style="display:block;background:#4c70f5;color:#fff;text-align:center;padding:14px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;margin:0 0 10px">
-      📥 Download: The Paper 3 Hit-List
-    </a>
-    <a href="https://studyhours.com/GCSE-Maths-Calc-Formula-CheatSheet-q8m4p.pdf" style="display:block;background:#1f1f1f;border:1px solid #333;color:#fff;text-align:center;padding:14px;border-radius:12px;font-weight:600;font-size:14px;text-decoration:none;margin:0 0 24px">
-      📥 Download: Formula Cheat Sheet
-    </a>
+    <div style="background:#0a0f1a;border:1px solid #1e3a5f;border-radius:12px;padding:18px 20px;margin:0 0 24px">
+      ${PAPER3_PDFS.map((pdf) =>
+        `<p style="color:#e5e5e5;font-size:14px;margin:6px 0">${pdf.icon}&nbsp;&nbsp;<strong>${pdf.label.replace(/&/g, '&amp;')}</strong></p>`
+      ).join('\n      ')}
+    </div>
 
     <div style="background:#0a0f1a;border:1px solid #1e3a5f;border-radius:12px;padding:20px;margin:0 0 24px">
       <p style="color:#5c9dff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">Want a massive favour?</p>
@@ -372,12 +374,29 @@ export async function POST(req: NextRequest) {
 
   if (template && subjectFn && resend) {
     const stringFields = Object.fromEntries(Object.entries(fields).map(([k, v]) => [k, String(v ?? '')]));
+
+    // Gated lead magnets: attach the PDFs directly so the files are never publicly hosted.
+    let attachments: { filename: string; content: Buffer }[] | undefined;
+    if (source === 'gcse-paper3-hitlist') {
+      try {
+        attachments = await Promise.all(
+          PAPER3_PDFS.map(async (pdf) => ({
+            filename: pdf.file,
+            content: await readFile(path.join(process.cwd(), PAPER3_PDF_DIR, pdf.file)),
+          }))
+        );
+      } catch (err) {
+        console.error('Failed to read Paper 3 PDFs for attachment', err);
+      }
+    }
+
     try {
       await resend.emails.send({
         from: FROM,
         to: sanitizedEmail,
         subject: subjectFn(stringFields),
         html: template(stringFields),
+        ...(attachments?.length ? { attachments } : {}),
       });
     } catch { /* non-fatal — lead already captured in Discord */ }
   } else if (!resend) {
