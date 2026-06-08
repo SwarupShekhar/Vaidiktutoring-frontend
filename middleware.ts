@@ -153,7 +153,11 @@ export default clerkMiddleware(async (auth, req) => {
         }
 
         return NextResponse.next();
-    } catch (error) {
+    } catch (error: any) {
+        // Clerk's redirectToSignIn throws a NEXT_REDIRECT error which we must re-throw to allow Next.js to handle the redirect
+        if (error?.message === 'NEXT_REDIRECT' || error?.digest?.startsWith('NEXT_REDIRECT') || error?.clerk_digest) {
+            throw error;
+        }
         console.error("Middleware Exception:", error);
         // Fail open or just pass through if Clerk fails to invoke 
         // to prevent hard 500 error cascade on Edge
