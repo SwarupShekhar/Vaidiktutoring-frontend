@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useRef, useEffect, useState } from 'react';
 import FadeUpSection from './FadeUpSection';
 import Image from 'next/image';
 
@@ -29,21 +28,25 @@ const PROBLEMS = [
 ];
 
 export default function ProblemSection() {
-    const sectionRef = useRef(null);
-    const { scrollYProgress } = useScroll({
-        target: sectionRef,
-        offset: ["start end", "end start"]
-    });
+    const innerRef = useRef<HTMLDivElement>(null);
+    const [clear, setClear] = useState(false);
 
-    const clarity = useTransform(scrollYProgress, [0.2, 0.5], [0.85, 1]);
+    useEffect(() => {
+        const el = innerRef.current;
+        if (!el) return;
+        const io = new IntersectionObserver(
+            ([entry]) => { if (entry.isIntersecting) { setClear(true); io.disconnect(); } },
+            { rootMargin: '0px 0px -100px 0px' }
+        );
+        io.observe(el);
+        return () => io.disconnect();
+    }, []);
 
     return (
-        <section id="problem-section" ref={sectionRef} className="py-32 bg-background relative overflow-hidden">
-            <motion.div
-                style={{
-                    filter: useTransform(clarity, (v) => `contrast(${v}) brightness(${v}) saturate(${v})`)
-                }}
-                className="container mx-auto px-6 text-foreground"
+        <section id="problem-section" className="py-32 bg-background relative overflow-hidden">
+            <div
+                ref={innerRef}
+                className={`container mx-auto px-6 text-foreground nh-clarity ${clear ? 'is-visible' : ''}`}
             >
                 <FadeUpSection className="text-center mb-24">
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-4 block">The Context</span>
@@ -97,7 +100,7 @@ export default function ProblemSection() {
                         </div>
                     </div>
                 </FadeUpSection>
-            </motion.div>
+            </div>
         </section>
     );
 }

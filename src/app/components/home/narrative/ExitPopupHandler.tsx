@@ -1,15 +1,25 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useExitIntent } from '@/app/Hooks/useExitIntent';
-import ExitIntentPopup from '@/app/components/ui/ExitIntentPopup';
+
+// Lazy: pulls framer-motion out of the initial homepage bundle.
+// Only downloads once the exit-intent actually fires.
+const ExitIntentPopup = dynamic(
+  () => import('@/app/components/ui/ExitIntentPopup'),
+  { ssr: false },
+);
 
 export default function ExitPopupHandler() {
   const { isIntentTriggered, resetIntent } = useExitIntent();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  // Stays true once fired so the popup remains mounted for its close animation.
+  const [hasTriggered, setHasTriggered] = useState(false);
 
   useEffect(() => {
     if (isIntentTriggered) {
+      setHasTriggered(true);
       setIsPopupOpen(true);
       if (process.env.NODE_ENV === 'development') {
         console.log('Analytics Event: popup_shown');
@@ -40,6 +50,8 @@ export default function ExitPopupHandler() {
     }
     window.location.href = '/signup';
   };
+
+  if (!hasTriggered) return null;
 
   return (
     <ExitIntentPopup

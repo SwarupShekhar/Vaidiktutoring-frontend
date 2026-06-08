@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import Reveal from './Reveal';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
 import FadeUpSection from './FadeUpSection';
@@ -86,16 +86,10 @@ export default function HowItWorksSection() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 relative z-10">
             {STEPS.map((step, i) => (
-              <motion.div
+              <Reveal
                 key={i}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: i * 0.2,
-                  duration: 1,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                viewport={{ once: true }}
+                variant="up"
+                delay={i * 0.2}
                 className="group"
               >
                 <div className="relative h-full flex flex-col items-center text-center">
@@ -131,7 +125,7 @@ export default function HowItWorksSection() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </Reveal>
             ))}
           </div>
         </div>

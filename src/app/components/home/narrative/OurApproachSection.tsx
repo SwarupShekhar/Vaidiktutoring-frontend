@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import Reveal from './Reveal';
 import FadeUpSection from './FadeUpSection';
 import {
   Search,
@@ -79,16 +79,10 @@ export default function OurApproachSection() {
           {/* Right — 3 pillars */}
           <div className="space-y-5">
             {PILLARS.map((pillar, i) => (
-              <motion.div
+              <Reveal
                 key={i}
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{
-                  delay: i * 0.12,
-                  duration: 0.6,
-                  ease: [0.21, 0.47, 0.32, 0.98],
-                }}
-                viewport={{ once: true }}
+                variant="right"
+                delay={i * 0.12}
                 className={`flex items-start gap-5 p-6 rounded-2xl bg-surface border ${pillar.borderColor} hover:shadow-lg transition-all duration-300 cursor-pointer group`}
               >
                 <div
@@ -104,7 +98,7 @@ export default function OurApproachSection() {
                     {pillar.description}
                   </p>
                 </div>
-              </motion.div>
+              </Reveal>
             ))}
           </div>
         </div>

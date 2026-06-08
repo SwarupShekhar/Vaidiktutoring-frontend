@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
 import FadeUpSection from './FadeUpSection';
 import { useCurriculum } from '@/app/context/CurriculumContext';
 import { Star, Quote } from 'lucide-react';
@@ -146,14 +145,9 @@ export default function ReviewCarousel() {
           <div className="absolute right-0 top-0 bottom-0 w-24 bg-linear-to-l from-surface/50 dark:from-surface/30 to-transparent z-20 pointer-events-none" />
 
           <div className="flex w-fit">
-            <motion.div
-              className="flex gap-6 pr-6"
-              animate={{ x: ['0%', '-50%'] }}
-              transition={{
-                repeat: Infinity,
-                ease: 'linear',
-                duration: filteredReviews.length * 5,
-              }}
+            <div
+              className="flex gap-6 pr-6 nh-marquee"
+              style={{ ['--nh-marquee-dur' as string]: `${filteredReviews.length * 5}s` }}
             >
               {duplicated.map((review, i) => (
                 <div key={i} className="shrink-0 w-[340px] md:w-[380px]">
@@ -197,7 +191,7 @@ export default function ReviewCarousel() {
                   </div>
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import Reveal from './Reveal';
 import { Check, AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -29,11 +29,8 @@ export default function AssessmentJourney() {
         </div>
 
         {/* Live Dashboard Container */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        <Reveal
+          variant="up"
           className="relative bg-white/90 dark:bg-surface/90 border border-border/40 rounded-[2.5rem] p-8 md:p-12 shadow-2xl backdrop-blur-xl overflow-hidden"
         >
           {/* Dashboard Header Bar */}
@@ -226,7 +223,7 @@ export default function AssessmentJourney() {
             </Link>
 
           </div>
-        </motion.div>
+        </Reveal>
       </div>
     </section>
   );

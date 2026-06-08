@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import Reveal from './Reveal';
 
 import Image from 'next/image';
 
@@ -18,10 +18,8 @@ export default function HighDosageIntroStrip() {
             <div className="absolute inset-0 bg-linear-to-r from-deep-navy dark:from-slate-950 via-sapphire/5 to-deep-navy dark:to-slate-950 pointer-events-none opacity-50" />
 
             <div className="container mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
-                <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6 }}
+                <Reveal
+                    variant="left"
                     className="flex items-center gap-3"
                 >
                     <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.3)]">
@@ -30,15 +28,14 @@ export default function HighDosageIntroStrip() {
                         </svg>
                     </div>
                     <span className="text-base font-luckiest text-white tracking-widest uppercase shadow-black drop-shadow-md">High-Dosage Standard</span>
-                </motion.div>
+                </Reveal>
 
                 <div className="flex flex-wrap justify-center md:justify-end gap-2">
                     {BADGES.map((badge, i) => (
-                        <motion.div
+                        <Reveal
                             key={i}
-                            initial={{ opacity: 0, y: 10 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.1 + 0.3, duration: 0.5 }}
+                            variant="up"
+                            delay={i * 0.1 + 0.3}
                             className="px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-2 hover:bg-white/10 transition-colors"
                         >
                             <div className="relative w-5 h-5">
@@ -51,7 +48,7 @@ export default function HighDosageIntroStrip() {
                                 />
                             </div>
                             <span className="text-xs font-medium text-slate-200">{badge.label}</span>
-                        </motion.div>
+                        </Reveal>
                     ))}
                 </div>
             </div>

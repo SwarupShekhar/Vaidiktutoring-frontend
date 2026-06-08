@@ -219,6 +219,67 @@ h1, h2, h3, h4, h5, h6 {
   transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ── Narrative homepage scroll-reveal (replaces framer-motion whileInView/useInView) ── */
+@keyframes nhRevealUp    { from { opacity: 0; transform: translateY(40px); }  to { opacity: 1; transform: translateY(0); } }
+@keyframes nhRevealLeft  { from { opacity: 0; transform: translateX(-100px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes nhRevealRight { from { opacity: 0; transform: translateX(100px); }  to { opacity: 1; transform: translateX(0); } }
+@keyframes nhRevealFade  { from { opacity: 0; }                                to { opacity: 1; } }
+@keyframes nhRevealScale { from { opacity: 0; transform: scale(0.8); }         to { opacity: 1; transform: scale(1); } }
+@keyframes nhPulseX      { 0%, 100% { transform: translateX(0); }              50% { transform: translateX(40px); } }
+
+/* Hidden until JS (IntersectionObserver) adds .is-visible — matches framer initial state. */
+.nh-reveal { opacity: 0; }
+.nh-reveal.is-visible        { animation: nhRevealUp 0.8s cubic-bezier(0.21, 0.47, 0.32, 0.98) both; }
+.nh-reveal-left.is-visible   { animation: nhRevealLeft 0.8s cubic-bezier(0.21, 0.47, 0.32, 0.98) both; }
+.nh-reveal-right.is-visible  { animation: nhRevealRight 0.8s cubic-bezier(0.21, 0.47, 0.32, 0.98) both; }
+.nh-reveal-fade.is-visible   { animation: nhRevealFade 0.8s cubic-bezier(0.21, 0.47, 0.32, 0.98) both; }
+.nh-reveal-scale.is-visible  { animation: nhRevealScale 0.5s cubic-bezier(0.21, 0.47, 0.32, 0.98) both; }
+/* Continuous connector pulse (replaces framer infinite x-oscillation). */
+.nh-pulse-x { animation: nhPulseX 4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .nh-pulse-x { animation: none; } }
+
+/* Bar fill that grows once its revealed ancestor becomes visible
+   (replaces framer width 0 → N%). Target width via --nh-bar-w. */
+@keyframes nhGrowBar { from { width: 0; } to { width: var(--nh-bar-w, 70%); } }
+.nh-bar { width: 0; }
+.is-visible .nh-bar { animation: nhGrowBar 1s cubic-bezier(0.21, 0.47, 0.32, 0.98) both; }
+@media (prefers-reduced-motion: reduce) { .nh-bar { width: var(--nh-bar-w, 70%); } .is-visible .nh-bar { animation: none; } }
+
+/* PlaybookDashboard step transitions (replaces framer AnimatePresence + infinite scanner). */
+@keyframes nhStepEnter { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes nhMountUp   { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes nhScan      { 0% { transform: translateX(-80px); } 100% { transform: translateX(80px); } }
+.nh-step-enter { animation: nhStepEnter 0.45s cubic-bezier(0.21, 0.47, 0.32, 0.98) both; }
+.nh-mount-up   { animation: nhMountUp 0.5s ease-out both; }
+.nh-scan       { animation: nhScan 3s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .nh-step-enter, .nh-mount-up { animation: none; }
+  .nh-scan { animation: none; }
+}
+
+/* "Comes into clarity" ramp on scroll-in (replaces framer scroll-linked filter). */
+.nh-clarity { filter: contrast(0.85) brightness(0.85) saturate(0.85); transition: filter 0.9s ease-out; }
+.nh-clarity.is-visible { filter: contrast(1) brightness(1) saturate(1); }
+@media (prefers-reduced-motion: reduce) { .nh-clarity { filter: none; transition: none; } }
+
+/* Floating ambient nodes (replaces framer infinite y/x/opacity/scale loop).
+   Per-node target offsets via --nx/--ny; duration/delay set inline. */
+@keyframes nhNodeFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.1; }
+  50%      { transform: translate(var(--nx, 0px), var(--ny, -40px)) scale(1.5); opacity: 0.4; }
+}
+.nh-node { animation: nhNodeFloat var(--nh-node-dur, 8s) ease-in-out infinite; animation-delay: var(--nh-node-delay, 0s); }
+@media (prefers-reduced-motion: reduce) { .nh-node { animation: none; opacity: 0.25; } }
+
+/* Infinite review marquee (replaces framer animate x 0% → -50% on duplicated list). */
+@keyframes nhMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.nh-marquee { animation: nhMarquee var(--nh-marquee-dur, 40s) linear infinite; }
+@media (prefers-reduced-motion: reduce) { .nh-marquee { animation: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .nh-reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
+}
+
 /* Custom Scrollbar for cleaner sidebars */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;

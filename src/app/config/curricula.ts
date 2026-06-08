@@ -68,6 +68,16 @@ export const CURRICULA = [
     subjects: ['Math', 'English', 'Science', 'History', 'Calculus AB/BC', 'Physics 1/C', 'Chemistry', 'Biology'],
     subjectNote: 'Aligned to Common Core & College Board standards',
     pricingHint: '3 Free Premium Sessions',
+  },
+  {
+    id: 'test-prep', flag: '🎓', country: 'Test Prep',
+    hero: 'Elite Test Preparation for Maximum Scores',
+    subline: 'Custom learning pathways for SAT, ACT, AP and more, guided by expert mentors.',
+    gradeLabel: 'Grade', gradeRange: 'High School',
+    exams: ['SAT', 'ACT', 'AP', '11+', 'BMAT', 'UCAT'],
+    subjects: ['Reading', 'Writing', 'Math', 'Science', 'Subject Tests'],
+    subjectNote: 'Bespoke test-taking strategies',
+    pricingHint: 'Custom Pricing',
   }
 ]
 export const DEFAULT_CURRICULUM = 'global'

@@ -1,14 +1,12 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import Reveal from './Reveal';
 
 export default function HighDosageBadge() {
     return (
-        <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
+        <Reveal
+            variant="scale"
             className="mt-12 flex justify-center"
         >
             <div className="relative group cursor-default inline-block">
@@ -31,6 +29,6 @@ export default function HighDosageBadge() {
                     </div>
                 </div>
             </div>
-        </motion.div>
+        </Reveal>
     );
 }

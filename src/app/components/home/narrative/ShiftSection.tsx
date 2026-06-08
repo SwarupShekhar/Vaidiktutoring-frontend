@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import Reveal from './Reveal';
 import Image from 'next/image';
 import FadeUpSection from './FadeUpSection';
 import HighImpactThreePillars from './HighImpactThreePillars';
@@ -53,11 +53,7 @@ export default function ShiftSection() {
                                     </p>
                                     <div className="flex items-center gap-4">
                                         <div className="px-5 py-2.5 bg-background dark:bg-slate-800 rounded-xl text-xs font-black text-text-secondary shadow-xl border border-border/50">Tutor Talks</div>
-                                        <motion.div
-                                            animate={{ x: [0, 40, 0] }}
-                                            transition={{ repeat: Infinity, duration: 4 }}
-                                            className="w-12 h-1 bg-border/40 rounded-full shadow-inner"
-                                        />
+                                        <div className="nh-pulse-x w-12 h-1 bg-border/40 rounded-full shadow-inner" />
                                         <div className="px-5 py-2.5 bg-background/95 dark:bg-slate-800/95 rounded-xl text-xs font-black text-text-secondary opacity-60 shadow-xl border border-border/50">Student Listens</div>
                                     </div>
                                 </div>
@@ -72,39 +68,36 @@ export default function ShiftSection() {
                                     <div className="relative flex flex-wrap gap-4">
                                         {['Explain', 'Respond', 'Correct', 'Improve'].map((step, i) => (
                                             <React.Fragment key={step}>
-                                                <motion.div
-                                                    initial={{ scale: 0.8, opacity: 0 }}
-                                                    whileInView={{ scale: 1, opacity: 1 }}
-                                                    transition={{ delay: i * 0.4, duration: 0.5 }}
+                                                <Reveal
+                                                    variant="scale"
+                                                    delay={i * 0.4}
                                                     className={`px-5 py-2.5 rounded-2xl text-xs font-black uppercase tracking-tight shadow-xl flex items-center justify-center min-w-[100px] ${i === 0 ? 'bg-primary text-white' : 'bg-white dark:bg-slate-800 text-primary border border-primary/20'}`}
                                                 >
                                                     {step}
-                                                </motion.div>
+                                                </Reveal>
                                                 {i < 3 && (
-                                                    <motion.div
-                                                        initial={{ width: 0 }}
-                                                        whileInView={{ width: 24 }}
-                                                        transition={{ delay: i * 0.4 + 0.2, duration: 0.3 }}
-                                                        className="h-4 flex items-center"
+                                                    <Reveal
+                                                        variant="fade"
+                                                        delay={i * 0.4 + 0.2}
+                                                        className="h-4 w-6 flex items-center"
                                                     >
                                                         <svg className="w-full text-primary drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5-5 5" /></svg>
-                                                    </motion.div>
+                                                    </Reveal>
                                                 )}
                                             </React.Fragment>
                                         ))}
 
                                         {/* Loop Arrow */}
-                                        <motion.div
-                                            initial={{ pathLength: 0, opacity: 0 }}
-                                            whileInView={{ pathLength: 1, opacity: 1 }}
-                                            transition={{ delay: 1.8, duration: 1 }}
+                                        <Reveal
+                                            variant="fade"
+                                            delay={1.8}
                                             className="absolute -bottom-8 left-0 right-0 h-8"
                                         >
                                             <svg className="w-full h-full text-primary/40" viewBox="0 0 300 40" fill="none">
                                                 <path d="M280 10C280 30 20 30 20 10" stroke="currentColor" strokeWidth="2" strokeDasharray="5 5" />
                                                 <path d="M15 10L20 5L25 10" stroke="currentColor" strokeWidth="2" />
                                             </svg>
-                                        </motion.div>
+                                        </Reveal>
                                     </div>
                                     <p className="text-[10px] font-bold text-text-secondary mt-10 italic">
                                         <span className="bg-white/95 dark:bg-slate-900/95 px-3 py-1.5 rounded-lg inline-block shadow-lg border border-border/50">The attention loop repeats until mastery is achieved.</span>
@@ -114,15 +107,14 @@ export default function ShiftSection() {
                         </FadeUpSection>
 
                         {/* Floating Metric */}
-                        <motion.div
-                             initial={{ x: 20, opacity: 0 }}
-                             whileInView={{ x: 0, opacity: 1 }}
-                             transition={{ delay: 1, duration: 0.8 }}
+                        <Reveal
+                             variant="right"
+                             delay={1}
                              className="absolute right-4 bottom-4 lg:-right-8 lg:-bottom-8 bg-foreground text-background p-6 rounded-3xl shadow-2xl z-20"
                         >
                             <p className="text-3xl font-black tracking-tighter">4.2x</p>
                             <p className="text-[10px] font-bold uppercase tracking-widest opacity-50">Higher student engagement</p>
-                        </motion.div>
+                        </Reveal>
                     </div>
                 </div>
 

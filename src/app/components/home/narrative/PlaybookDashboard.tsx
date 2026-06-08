@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import FadeUpSection from './FadeUpSection';
 import HighDosageBadge from './HighDosageBadge';
 
@@ -94,22 +93,25 @@ const STEPS = [
 
 export default function PlaybookDashboard() {
     const containerRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start start", "end end"]
-    });
-
     const [activeIndex, setActiveIndex] = useState(0);
 
+    // Scroll-driven step progression (replaces framer useScroll).
+    // Mirrors offset ["start start", "end end"]: 0 when the section top hits the
+    // viewport top, 1 when its bottom hits the viewport bottom.
     useEffect(() => {
-        return scrollYProgress.on("change", (latest) => {
-            const index = Math.min(
-                Math.floor(latest * STEPS.length),
-                STEPS.length - 1
-            );
+        const onScroll = () => {
+            const el = containerRef.current;
+            if (!el) return;
+            const total = el.offsetHeight - window.innerHeight;
+            if (total <= 0) return;
+            const latest = Math.min(Math.max(-el.getBoundingClientRect().top, 0), total) / total;
+            const index = Math.min(Math.floor(latest * STEPS.length), STEPS.length - 1);
             setActiveIndex(index);
-        });
-    }, [scrollYProgress]);
+        };
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
 
     const activeStep = STEPS[activeIndex];
 
@@ -164,14 +166,9 @@ export default function PlaybookDashboard() {
 
                             {/* 2. The Active Content Stage */}
                             <div className="flex-1 relative h-fit pt-2">
-                                <AnimatePresence mode="wait">
-                                    <motion.div
+                                    <div
                                         key={activeIndex}
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -20 }}
-                                        transition={{ duration: 0.4, ease: "easeOut" }}
-                                        className="space-y-6"
+                                        className="space-y-6 nh-step-enter"
                                     >
                                         {/* Header Tags */}
                                         <div className="flex flex-wrap items-center gap-3">
@@ -205,8 +202,7 @@ export default function PlaybookDashboard() {
                                                 </div>
                                             </div>
                                         </div>
-                                    </motion.div>
-                                </AnimatePresence>
+                                    </div>
                             </div>
                         </div>
 
@@ -248,14 +244,9 @@ export default function PlaybookDashboard() {
 
                                         {/* Main Workspace */}
                                         <div className="grow min-h-0 overflow-y-auto custom-scrollbar">
-                                            <AnimatePresence mode="wait">
-                                                <motion.div
+                                                <div
                                                     key={activeStep.id}
-                                                    initial={{ opacity: 0, x: 20 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    exit={{ opacity: 0, x: -20 }}
-                                                    transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
-                                                    className="space-y-6 h-full flex flex-col"
+                                                    className="space-y-6 h-full flex flex-col nh-step-enter"
                                                 >
                                                     <div className="p-6 bg-white/5 border border-white/10 rounded-4xl backdrop-blur-sm shrink-0">
                                                         <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-2">{activeStep.mock.status}</p>
@@ -264,19 +255,17 @@ export default function PlaybookDashboard() {
 
                                                     <div className="grid grid-cols-1 gap-3 grow content-start">
                                                         {activeStep.mock.elements.map((el, i) => (
-                                                            <motion.div
+                                                            <div
                                                                 key={i}
-                                                                initial={{ opacity: 0, y: 10 }}
-                                                                animate={{ opacity: 1, y: 0 }}
-                                                                transition={{ delay: 0.2 + i * 0.1 }}
-                                                                className="bg-white/5 border border-white/5 p-4 rounded-2xl flex items-center justify-between group hover:bg-white/10 transition-all"
+                                                                className="bg-white/5 border border-white/5 p-4 rounded-2xl flex items-center justify-between group hover:bg-white/10 transition-all nh-mount-up"
+                                                                style={{ animationDelay: `${0.2 + i * 0.1}s` }}
                                                             >
                                                                 <div className="flex items-center gap-4">
                                                                     <div className="w-2 h-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors" />
                                                                     <span className="text-xs font-bold text-white/60 group-hover:text-white transition-colors uppercase tracking-widest">{el}</span>
                                                                 </div>
                                                                 <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
-                                                            </motion.div>
+                                                            </div>
                                                         ))}
                                                     </div>
 
@@ -290,15 +279,10 @@ export default function PlaybookDashboard() {
                                                             <span className="text-[9px] font-bold text-white/30 uppercase tracking-widest">Active Stream</span>
                                                         </div>
                                                         <div className="w-20 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                                            <motion.div
-                                                                animate={{ x: [-80, 80] }}
-                                                                transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
-                                                                className="w-1/2 h-full bg-primary/50"
-                                                            />
+                                                            <div className="w-1/2 h-full bg-primary/50 nh-scan" />
                                                         </div>
                                                     </div>
-                                                </motion.div>
-                                            </AnimatePresence>
+                                                </div>
                                         </div>
                                     </div>
                                     {/* Grid Overlay removed as per user feedback */}

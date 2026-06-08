@@ -2,7 +2,7 @@
 
 import React from 'react';
 import FadeUpSection from './FadeUpSection';
-import { motion } from 'framer-motion';
+import Reveal from './Reveal';
 
 const VETTING_STEPS = [
     { label: "Academic Screening", side: -1 },
@@ -27,12 +27,10 @@ export default function TrustSection() {
                 <div className="relative">
                     <div className="space-y-4">
                         {VETTING_STEPS.map((step, i) => (
-                            <motion.div
+                            <Reveal
                                 key={i}
-                                initial={{ x: step.side * 100, opacity: 0 }}
-                                whileInView={{ x: 0, opacity: 1 }}
-                                transition={{ delay: i * 0.1, duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] as [number, number, number, number] }}
-                                viewport={{ once: true }}
+                                variant={step.side === -1 ? 'left' : 'right'}
+                                delay={i * 0.1}
                                 className={`flex ${step.side === -1 ? 'justify-start' : 'justify-end'}`}
                             >
                                 <div className={`
@@ -44,7 +42,7 @@ export default function TrustSection() {
                                     </div>
                                     <span className="text-lg font-black tracking-tight">{step.label}</span>
                                 </div>
-                            </motion.div>
+                            </Reveal>
                         ))}
                     </div>
 

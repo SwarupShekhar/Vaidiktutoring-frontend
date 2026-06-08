@@ -2,84 +2,81 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import FadeUpSection from './FadeUpSection';
-import { motion, useSpring, useMotionValue, useTransform, useInView, animate } from 'framer-motion';
+import Reveal from './Reveal';
 
-// 3D Tilt Card Component
+// 3D Tilt Card — vanilla mouse-follow tilt (replaces framer motion values/spring).
+// Outer <Reveal> handles the scroll fade-up; inner div handles the 3D tilt so the
+// two transforms don't collide.
 function TiltCard({ children, delay = 0 }: { children: React.ReactNode, delay?: number }) {
     const ref = useRef<HTMLDivElement>(null);
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-
-    const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
-    const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
-
-    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["15deg", "-15deg"]);
-    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-15deg", "15deg"]);
+    const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!ref.current) return;
         const rect = ref.current.getBoundingClientRect();
-        const width = rect.width;
-        const height = rect.height;
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        const xPct = mouseX / width - 0.5;
-        const yPct = mouseY / height - 0.5;
-        x.set(xPct);
-        y.set(yPct);
+        const xPct = (e.clientX - rect.left) / rect.width - 0.5;
+        const yPct = (e.clientY - rect.top) / rect.height - 0.5;
+        // matches old framer mapping: rotateX [-0.5,0.5]→[15,-15], rotateY [-0.5,0.5]→[-15,15]
+        setTilt({ rx: -yPct * 30, ry: xPct * 30 });
     };
 
-    const handleMouseLeave = () => {
-        x.set(0);
-        y.set(0);
-    };
+    const handleMouseLeave = () => setTilt({ rx: 0, ry: 0 });
 
     return (
-        <motion.div
-            ref={ref}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            style={{
-                rotateX,
-                rotateY,
-                transformStyle: "preserve-3d",
-                perspective: 1000
-            }}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, delay, ease: "easeOut" }}
-            className="relative w-full"
-        >
-            <div className="absolute inset-0 bg-linear-to-br from-primary/15 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-[3rem] blur-2xl pointer-events-none" style={{ transform: "translateZ(-50px)" }} />
-            
-            <div 
-                className="p-12 md:p-16 bg-surface rounded-[3rem] border border-border/50 shadow-lg hover:border-primary/30 transition-colors duration-500 relative z-10 overflow-hidden flex flex-col items-center justify-center min-h-[300px]"
-                style={{ transform: "translateZ(30px)" }}
+        <Reveal variant="up" delay={delay} className="relative w-full">
+            <div
+                ref={ref}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                style={{
+                    transform: `perspective(1000px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
+                    transformStyle: "preserve-3d",
+                    transition: "transform 0.2s ease-out",
+                }}
             >
-                {/* Subtle inner glow */}
-                <div className="absolute top-0 left-0 w-full h-full bg-linear-to-br from-white/5 to-transparent pointer-events-none" />
-                {children}
+                <div className="absolute inset-0 bg-linear-to-br from-primary/15 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 rounded-[3rem] blur-2xl pointer-events-none" style={{ transform: "translateZ(-50px)" }} />
+
+                <div
+                    className="p-12 md:p-16 bg-surface rounded-[3rem] border border-border/50 shadow-lg hover:border-primary/30 transition-colors duration-500 relative z-10 overflow-hidden flex flex-col items-center justify-center min-h-[300px]"
+                    style={{ transform: "translateZ(30px)" }}
+                >
+                    {/* Subtle inner glow */}
+                    <div className="absolute top-0 left-0 w-full h-full bg-linear-to-br from-white/5 to-transparent pointer-events-none" />
+                    {children}
+                </div>
             </div>
-        </motion.div>
+        </Reveal>
     );
 }
 
 function ScrollCounter({ value, suffix = '' }: { value: number; suffix?: string }) {
     const ref = useRef<HTMLSpanElement>(null);
-    const inView = useInView(ref, { once: true, margin: "-100px" });
     const [display, setDisplay] = useState(0);
 
     useEffect(() => {
-        if (inView) {
-            const controls = animate(0, value, {
-                duration: 2.5,
-                ease: [0.16, 1, 0.3, 1], // Custom spring-like ease
-                onUpdate: (latest) => setDisplay(Math.round(latest))
-            });
-            return () => controls.stop();
-        }
-    }, [value, inView]);
+        const el = ref.current;
+        if (!el) return;
+        let raf = 0;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (!entry.isIntersecting) return;
+                observer.disconnect();
+                // rAF count-up with the same easeOutExpo-ish curve (replaces framer animate()).
+                const duration = 2500;
+                const start = performance.now();
+                const tick = (now: number) => {
+                    const t = Math.min((now - start) / duration, 1);
+                    const eased = 1 - Math.pow(1 - t, 3);
+                    setDisplay(Math.round(eased * value));
+                    if (t < 1) raf = requestAnimationFrame(tick);
+                };
+                raf = requestAnimationFrame(tick);
+            },
+            { rootMargin: '0px 0px -100px 0px' }
+        );
+        observer.observe(el);
+        return () => { observer.disconnect(); cancelAnimationFrame(raf); };
+    }, [value]);
 
     return (
         <span ref={ref} className="text-7xl md:text-8xl lg:text-9xl font-heading text-foreground tracking-tighter drop-shadow-sm inline-block" style={{ transform: "translateZ(50px)" }}>
@@ -109,29 +106,21 @@ export default function ResultsSection() {
             {/* Background Architecture */}
             <div className="absolute inset-0 z-0 pointer-events-none">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 blur-[120px] rounded-full" />
-                
+
                 {/* Floating Motion Nodes - Only render on client to avoid hydration mismatch from Math.random() */}
                 {nodes.map((node, i) => (
-                    <motion.div
+                    <div
                         key={i}
-                        animate={{
-                            y: [0, node.y, 0],
-                            x: [0, node.x, 0],
-                            opacity: [0.1, 0.4, 0.1],
-                            scale: [1, 1.5, 1]
-                        }}
-                        transition={{
-                            duration: node.duration,
-                            repeat: Infinity,
-                            delay: node.delay,
-                            ease: "easeInOut"
-                        }}
-                        className="absolute rounded-full bg-primary/30 blur-[1px]"
+                        className="absolute rounded-full bg-primary/30 blur-[1px] nh-node"
                         style={{
                             width: `${node.width}px`,
                             height: `${node.height}px`,
                             top: `${node.top}%`,
-                            left: `${node.left}%`
+                            left: `${node.left}%`,
+                            ['--nx' as string]: `${node.x}px`,
+                            ['--ny' as string]: `${node.y}px`,
+                            ['--nh-node-dur' as string]: `${node.duration}s`,
+                            ['--nh-node-delay' as string]: `${node.delay}s`,
                         }}
                     />
                 ))}
@@ -150,15 +139,15 @@ export default function ResultsSection() {
                     <TiltCard delay={0.1}>
                         <ScrollCounter value={95} suffix="%" />
                         <p className="text-sm font-body font-bold uppercase tracking-widest text-text-secondary opacity-60 mt-6" style={{ transform: "translateZ(20px)" }}>Higher Student Confidence</p>
-                        
+
                         {/* Decorative accent */}
                         <div className="absolute bottom-0 right-0 w-48 h-48 bg-primary/5 rounded-tl-full blur-3xl transform translate-x-1/4 translate-y-1/4 pointer-events-none" />
                     </TiltCard>
-                    
+
                     <TiltCard delay={0.3}>
                         <ScrollCounter value={72} suffix="%" />
                         <p className="text-sm font-body font-bold uppercase tracking-widest text-text-secondary opacity-60 mt-6" style={{ transform: "translateZ(20px)" }}>Average Grade Improvement</p>
-                        
+
                         {/* Decorative accent */}
                         <div className="absolute top-0 left-0 w-48 h-48 bg-secondary/5 rounded-br-full blur-3xl transform -translate-x-1/4 -translate-y-1/4 pointer-events-none" />
                     </TiltCard>
@@ -169,7 +158,7 @@ export default function ResultsSection() {
                         {/* Quote marks decorative */}
                         <div className="absolute -top-8 -left-4 text-9xl text-primary/10 font-heading select-none group-hover:text-primary/20 transition-colors duration-500">"</div>
                         <div className="absolute -bottom-20 -right-4 text-9xl text-primary/10 font-heading select-none group-hover:text-primary/20 transition-colors duration-500 rotate-180">"</div>
-                        
+
                         <p className="text-2xl md:text-3xl lg:text-4xl text-foreground font-heading tracking-tight relative z-10 leading-relaxed">
                             <span className="italic">When children feel understood, they start to understand.</span>
                         </p>

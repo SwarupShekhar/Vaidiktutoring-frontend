@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion, animate } from 'framer-motion';
+import Reveal from './Reveal';
 import FadeUpSection from './FadeUpSection';
 import {
   TrendingUp,
@@ -21,12 +21,18 @@ function Counter({ value, suffix = '' }: { value: number; suffix?: string }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           setHasAnimated(true);
-          const controls = animate(0, value, {
-            duration: 2.2,
-            ease: 'easeOut',
-            onUpdate: (latest) => setDisplay(Math.round(latest)),
-          });
-          return () => controls.stop();
+          // rAF count-up with easeOut (replaces framer animate()).
+          const duration = 2200;
+          const start = performance.now();
+          let raf = 0;
+          const tick = (now: number) => {
+            const t = Math.min((now - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - t, 3);
+            setDisplay(Math.round(eased * value));
+            if (t < 1) raf = requestAnimationFrame(tick);
+          };
+          raf = requestAnimationFrame(tick);
+          return () => cancelAnimationFrame(raf);
         }
       },
       { threshold: 0.5 }
@@ -129,12 +135,10 @@ export default function ResultsProofSection() {
         {/* Stats row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
           {STATS.map((stat, i) => (
-            <motion.div
+            <Reveal
               key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1, duration: 0.6 }}
-              viewport={{ once: true }}
+              variant="up"
+              delay={i * 0.1}
               className="text-center p-8 rounded-3xl bg-surface border border-border/40 hover:border-primary/20 hover:shadow-xl transition-all duration-400 group"
             >
               <div className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center mx-auto mb-5 group-hover:scale-105 transition-transform`}>
@@ -147,7 +151,7 @@ export default function ResultsProofSection() {
               <p className="text-[11px] text-text-secondary/50 mt-2 italic">
                 {stat.source}
               </p>
-            </motion.div>
+            </Reveal>
           ))}
         </div>
 
@@ -160,12 +164,10 @@ export default function ResultsProofSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {CASE_STUDIES.map((study, i) => (
-            <motion.div
+            <Reveal
               key={i}
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.12, duration: 0.6 }}
-              viewport={{ once: true }}
+              variant="up"
+              delay={i * 0.12}
               className="p-7 rounded-3xl bg-surface border border-border/40 hover:border-primary/20 hover:shadow-xl transition-all duration-400 flex flex-col justify-between group"
             >
               <div>
@@ -197,7 +199,7 @@ export default function ResultsProofSection() {
                   </p>
                 </div>
               </div>
-            </motion.div>
+            </Reveal>
           ))}
         </div>
       </div>

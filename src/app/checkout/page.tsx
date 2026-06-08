@@ -23,6 +23,26 @@ const CheckoutContent = () => {
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [orderDetails, setOrderDetails] = useState<any>(null);
     const [enrollingStudentId, setEnrollingStudentId] = useState<string | null>(null);
+    const [dynamicPrice, setDynamicPrice] = useState<number | null>(null);
+    const [dynamicCurrency, setDynamicCurrency] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchPackage = async () => {
+            try {
+                const id = getPackageId(plan, region);
+                const res = await api.get('/packages');
+                const pkg = res.data.find((p: any) => p.id === id);
+                if (pkg && pkg.price_cents) {
+                    setDynamicPrice(pkg.price_cents / 100);
+                    // Use a mapped symbol or default to what we have in pricingConfig
+                    // but for safety we just use the config's currency symbol.
+                }
+            } catch (err) {
+                console.error('Failed to fetch package price:', err);
+            }
+        };
+        fetchPackage();
+    }, [plan, region]);
 
     // Redirect to login if not authenticated
     useEffect(() => {
@@ -163,9 +183,16 @@ const CheckoutContent = () => {
             }
         };
         
-        const selectedPackage = packageIds[planName]?.[regionCode];
+        let mappedRegion = regionCode;
+        // If the specific region package doesn't exist, fall back to global for THAT plan
+        if (!packageIds[planName]?.[mappedRegion]) {
+            mappedRegion = 'global';
+        }
+        
+        const selectedPackage = packageIds[planName]?.[mappedRegion];
         if (selectedPackage) return selectedPackage;
         
+        // Ultimate fallback if planName itself is invalid
         return '47a32d16-64e0-4965-983b-3d0b84f331ad';
     };
 
@@ -223,7 +250,7 @@ const CheckoutContent = () => {
 
     const currentConfig = pricingConfig[region] || pricingConfig['global'];
     const planConfig = currentConfig.plans[plan as keyof typeof currentConfig.plans];
-    const currentPrice = planConfig?.monthlyPrice || 149;
+    const currentPrice = dynamicPrice !== null ? dynamicPrice : (planConfig?.monthlyPrice || 149);
     const currentCredits = planConfig?.credits || 8;
 
     return (

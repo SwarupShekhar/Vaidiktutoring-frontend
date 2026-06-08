@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import FadeUpSection from './FadeUpSection';
 
 export default function SessionOutputs() {
@@ -54,11 +53,9 @@ export default function SessionOutputs() {
                                 </div>
                                 <p className="text-xs font-black uppercase tracking-[0.15em] text-white/80 mb-4">{output.label}</p>
                                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        whileInView={{ width: "70%" }}
-                                        transition={{ delay: 0.5 + i * 0.1, duration: 1 }}
-                                        className="h-full bg-white/30 rounded-full"
+                                    <div
+                                        className="h-full bg-white/30 rounded-full nh-bar"
+                                        style={{ ['--nh-bar-w' as string]: '70%', animationDelay: `${0.5 + i * 0.1}s` }}
                                     />
                                 </div>
                             </div>

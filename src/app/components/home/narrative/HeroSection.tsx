@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { preload } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -191,29 +190,30 @@ export default function HeroSection() {
 
               {/* Main image container */}
               <div className="relative w-full aspect-4/3 rounded-3xl overflow-hidden shadow-2xl shadow-primary/10 dark:shadow-primary/5 z-10 border border-white/20 dark:border-white/5">
-                {/* initial={false} → first (LCP) image mounts at its animate state,
-                    so it paints from SSR without waiting on hydration+framer.
-                    Rotation crossfade for index 1+ is preserved unchanged. */}
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.div
-                    key={currentImageIndex}
-                    initial={{ opacity: 0, scale: 1.04 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.97 }}
-                    transition={{ duration: 0.7, ease: "easeInOut" }}
-                    className="absolute inset-0"
+                {/* CSS crossfade (no framer-motion in the LCP bundle).
+                    All layers stacked; active one fades+scales in over 700ms.
+                    Image 0 is active on mount → paints from SSR, no JS wait. */}
+                {HERO_IMAGES.map((src, i) => (
+                  <div
+                    key={src}
+                    aria-hidden={i !== currentImageIndex}
+                    className="absolute inset-0 transition-[opacity,transform] duration-700 ease-in-out"
+                    style={{
+                      opacity: i === currentImageIndex ? 1 : 0,
+                      transform: i === currentImageIndex ? "scale(1)" : "scale(1.04)",
+                    }}
                   >
                     <Image
-                      src={HERO_IMAGES[currentImageIndex]}
+                      src={src}
                       alt="Student and tutor in a focused online learning session"
                       fill
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 50vw"
                       quality={70}
-                      priority={currentImageIndex === 0}
+                      priority={i === 0}
                     />
-                  </motion.div>
-                </AnimatePresence>
+                  </div>
+                ))}
                 {/* Subtle overlay */}
                 <div className="absolute inset-0 bg-linear-to-t from-black/10 via-transparent to-transparent pointer-events-none" />
               </div>
