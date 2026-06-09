@@ -5,12 +5,10 @@ import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import Image from 'next/image';
 import { BlogPost } from '@/app/lib/blogs';
-import { format } from 'date-fns';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
 import { List, ChevronRight, Sparkles, ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import Breadcrumbs from '@/app/components/Breadcrumbs';
 import { blogsApi } from '@/app/lib/blogs';
 
@@ -256,7 +254,7 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
                             <p className="font-bold text-gray-500 dark:text-gray-400 text-sm">
                                 By <span className="text-primary font-black uppercase tracking-tight hover:underline cursor-pointer">StudyHours Editorial</span>
                                 <span className="mx-3 opacity-20">•</span>
-                                <span className="uppercase tracking-[0.2em] text-[10px] font-black">{blog.createdAt && format(new Date(blog.createdAt), 'MMMM d, yyyy')}</span>
+                                <span className="uppercase tracking-[0.2em] text-[10px] font-black">{blog.createdAt && new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                                 <span className="mx-3 opacity-20">•</span>
                                 <span className="uppercase tracking-[0.2em] text-[10px] font-black">{readingTime} min read</span>
                             </p>
@@ -325,9 +323,8 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
                                         `}
                                     >
                                         {activeHeading === heading.id && heading.level !== 3 && (
-                                            <motion.div 
-                                                layoutId="active-toc"
-                                                className="absolute left-[-2px] w-1 h-5 bg-primary rounded-full"
+                                            <div 
+                                                className="absolute left-[-2px] w-1 h-5 bg-primary rounded-full transition-all duration-300"
                                             />
                                         )}
                                         {heading.text}
@@ -357,13 +354,9 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
                                 <span className="flex items-center gap-3"><List size={16} className="text-primary" /> Index</span>
                                 <ChevronDown size={18} className={`transition-transform duration-500 ${tocOpen ? 'rotate-180' : ''}`} />
                             </button>
-                            <AnimatePresence>
                                 {tocOpen && (
-                                    <motion.nav 
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: 'auto', opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        className="flex flex-col gap-2 px-6 py-5 bg-white dark:bg-[#0A0A0B] border-t border-gray-100 dark:border-white/10"
+                                    <nav 
+                                        className="flex flex-col gap-2 px-6 py-5 bg-white dark:bg-[#0A0A0B] border-t border-gray-100 dark:border-white/10 animate-reveal-up"
                                     >
                                         {headings.map((heading, i) => (
                                             <a
@@ -379,9 +372,8 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
                                                 {heading.text}
                                             </a>
                                         ))}
-                                    </motion.nav>
+                                    </nav>
                                 )}
-                            </AnimatePresence>
                         </div>
                     )}
 
@@ -539,7 +531,7 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
                                     </p>
                                     <div className="pt-4 flex items-center justify-between">
                                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                            {post.createdAt && format(new Date(post.createdAt), 'MMM d, yyyy')}
+                                            {post.createdAt && new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </span>
                                         <span className="text-xs font-black text-gray-900 dark:text-white flex items-center gap-1 group-hover:gap-2 transition-all">
                                             Read More <ChevronRight size={14} />

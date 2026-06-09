@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import ReviewCard from './ReviewCard';
 import DemoButton from './DemoButton';
 import MorphingBlob from './MorphingBlob';
 import reviewsData from '@/data/reviews.json';
+import styles from './ReviewsSection.module.css';
 
 export default function ReviewsSection() {
     const [reviews] = useState([...reviewsData, ...reviewsData]); // Duplicate for seamless loop
@@ -28,22 +28,14 @@ export default function ReviewsSection() {
                     <div className="absolute left-0 top-0 bottom-0 w-32 bg-linear-to-r from-[rgba(240,244,248,1)] to-transparent dark:from-[#0f172a] z-10 pointer-events-none" />
                     <div className="absolute right-0 top-0 bottom-0 w-32 bg-linear-to-l from-white to-transparent dark:from-[#0f172a] z-10 pointer-events-none" />
 
-                    <div className="flex w-fit hover:pause-animation">
-                        <motion.div
-                            className="flex gap-6 pr-6"
-                            animate={{ x: ["0%", "-50%"] }}
-                            transition={{
-                                repeat: Infinity,
-                                ease: "linear",
-                                duration: 40, // Adjust speed here
-                            }}
-                        >
+                    <div className={`flex w-fit ${styles.pauseOnHover}`}>
+                        <div className={styles.slider}>
                             {reviews.map((r, i) => (
                                 <div key={`${r.id}-${i}`} className="w-[350px] md:w-[400px] shrink-0">
                                     <ReviewCard review={r} />
                                 </div>
                             ))}
-                        </motion.div>
+                        </div>
                     </div>
                 </div>
 

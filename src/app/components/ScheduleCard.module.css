@@ -1,0 +1,163 @@
+.card {
+  --white: var(--color-surface); 
+  --black: var(--color-background);
+  --text-main: var(--color-text-primary);
+  --text-muted: var(--color-text-secondary);
+  --border-line: var(--color-border);
+  --primary-color: var(--color-primary);
+  --secondary-color: var(--color-secondary);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  width: 22rem;
+  
+  background-color: var(--color-surface); 
+  
+  background-image: 
+     radial-gradient(at 0% 0%, rgba(var(--color-primary-rgb), 0.1) 0px, transparent 50%),
+     radial-gradient(at 100% 100%, rgba(var(--color-secondary-rgb), 0.1) 0px, transparent 50%);
+  
+  border-radius: 1rem;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] .card {
+  box-shadow: 0px -16px 24px 0px rgba(255, 255, 255, 0.05) inset;
+  background-color: #0D1117;
+}
+
+.cardBorder {
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: -10;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  
+  background-image: linear-gradient(
+    0deg,
+    transparent -50%,
+    var(--color-border) 100%
+  );
+  
+  border-radius: 1rem;
+}
+
+.cardBorder::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  z-index: 200;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%), rotate(0deg);
+  transform-origin: left;
+  width: 200%;
+  height: 10rem;
+  
+  background-image: linear-gradient(
+    0deg,
+    transparent 0%,
+    var(--color-primary) 40%,
+    var(--color-primary) 60%,
+    transparent 100%
+  );
+
+  animation: rotate 8s linear infinite;
+  opacity: 0.5;
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.cardParagraph {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.line {
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-border);
+  border: none;
+  margin: 0.5rem 0;
+}
+
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cardListItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.check {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: var(--color-primary);
+  border-radius: 50%;
+}
+
+.checkSvg {
+  width: 0.85rem;
+  height: 0.85rem;
+  fill: white; 
+}
+
+.listText {
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.button {
+  cursor: pointer;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  width: 100%;
+  
+  background-image: linear-gradient(
+    to right,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+
+  border: 0;
+  border-radius: 9999px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.button:hover {
+  transform: scale(1.02);
+}

@@ -3,19 +3,19 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
-import SessionChat from '@/app/components/SessionChat';
+import dynamic from 'next/dynamic';
 import api from '@/app/lib/api';
 // import { DailyProvider } from '@daily-co/daily-react'; // Not used directly, using iframe
-import AttendanceTracker from '@/app/components/session/AttendanceTracker';
-import StudentSnapshotCard from '@/app/components/session/StudentSnapshotCard';
-import VaultSidebar from '@/app/components/session/VaultSidebar';
-import AttentionFrameworkPanel from '@/app/components/session/AttentionFrameworkPanel';
+
+const SessionChat = dynamic(() => import('@/app/components/SessionChat'), { ssr: false });
+const AttendanceTracker = dynamic(() => import('@/app/components/session/AttendanceTracker'), { ssr: false });
+const StudentSnapshotCard = dynamic(() => import('@/app/components/session/StudentSnapshotCard'), { ssr: false });
+const VaultSidebar = dynamic(() => import('@/app/components/session/VaultSidebar'), { ssr: false });
+const AttentionFrameworkPanel = dynamic(() => import('@/app/components/session/AttentionFrameworkPanel'), { ssr: false });
 import { vaultApi, VaultAsset } from '@/app/lib/vault';
 import { io, Socket } from 'socket.io-client';
-import confetti from 'canvas-confetti';
 
 import { toast } from 'sonner';
-import jsPDF from 'jspdf';
 import {
     Video,
     VideoOff,
@@ -41,7 +41,7 @@ import {
 } from 'lucide-react';
 import { MANIPULATIVES_DATA, DICE_FACES } from '../manipulatives-data';
 import { throttle } from '@/app/lib/utils';
-import { Rnd } from 'react-rnd';
+const Rnd = dynamic(() => import('react-rnd').then(mod => mod.Rnd), { ssr: false });
 
 
 
@@ -393,11 +393,13 @@ export default function SessionPage({ params }: SessionProps) {
 
             if (user?.role === 'student' || user?.role === 'parent') {
                 toast(`⭐ Great job! ${payload.studentName} received a sticker!`, { duration: 4000 });
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 }
-                });
+                import('canvas-confetti').then(({ default: confetti }) => {
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                }).catch(err => console.error('Failed to load canvas-confetti:', err));
             }
 
             // Remove animation after duration
@@ -1141,7 +1143,7 @@ export default function SessionPage({ params }: SessionProps) {
         };
 
         // Listens for confetti
-        const handleConfetti = () => {
+        const handleConfetti = async () => {
             const isYoungStudent = user?.role === 'student' && studentData.grade > 0 && studentData.grade <= 6;
             const isTutor = user?.role === 'tutor';
 
@@ -1155,16 +1157,21 @@ export default function SessionPage({ params }: SessionProps) {
                     zIndex: 9999
                 };
 
-                // Fire from left
-                confetti({
-                    ...config,
-                    origin: { x: 0.2, y: 0.6 }
-                });
-                // Fire from right
-                confetti({
-                    ...config,
-                    origin: { x: 0.8, y: 0.6 }
-                });
+                try {
+                    const confetti = (await import('canvas-confetti')).default;
+                    // Fire from left
+                    confetti({
+                        ...config,
+                        origin: { x: 0.2, y: 0.6 }
+                    });
+                    // Fire from right
+                    confetti({
+                        ...config,
+                        origin: { x: 0.8, y: 0.6 }
+                    });
+                } catch (err) {
+                    console.error('Failed to load canvas-confetti:', err);
+                }
             }
         };
 

@@ -2,8 +2,23 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { blogsApi, BlogPost } from '@/app/lib/blogs';
+import { optimizeCloudinaryUrl } from '@/app/lib/utils';
+
+function BlogCardImage({ src, alt }: { src: string; alt: string }) {
+    const [imgSrc, setImgSrc] = useState(src || '/images/blog-placeholder.png');
+    return (
+        <Image
+            src={optimizeCloudinaryUrl(imgSrc)}
+            alt={alt}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 relative z-10"
+            onError={() => setImgSrc('/images/blog-placeholder.png')}
+        />
+    );
+}
 
 export default function BlogsPage({ initialBlogs = [] }: { initialBlogs?: BlogPost[] }) {
     const [blogs, setBlogs] = useState<BlogPost[]>(initialBlogs);
@@ -13,11 +28,16 @@ export default function BlogsPage({ initialBlogs = [] }: { initialBlogs?: BlogPo
     const [fetchedCategory, setFetchedCategory] = useState<string | null>(initialBlogs.length > 0 ? 'All' : null);
 
     useEffect(() => {
+        if (category === fetchedCategory) {
+            return;
+        }
+
         const fetchBlogs = async () => {
             setLoading(true);
             try {
                 const res = await blogsApi.getAll(1, 100, category);
                 setBlogs(res.data);
+                setFetchedCategory(category);
                 setError('');
             } catch (err) {
                 console.error(err);
@@ -28,7 +48,7 @@ export default function BlogsPage({ initialBlogs = [] }: { initialBlogs?: BlogPo
         };
 
         fetchBlogs();
-    }, [category]);
+    }, [category, fetchedCategory]);
 
     const categories = ['All', 'Math', 'Science', 'Study Tips', 'College Prep'];
 
@@ -77,20 +97,16 @@ export default function BlogsPage({ initialBlogs = [] }: { initialBlogs?: BlogPo
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {blogs.map((blog, idx) => (
                             <Link href={`/blogs/${blog.slug}`} key={blog.id}>
-                                <motion.article
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: Math.min(idx * 0.1, 0.5) }}
-                                    className="group h-full bg-glass rounded-4xl border border-white/10 overflow-hidden hover:border-primary/50 transition-all hover:shadow-2xl hover:-translate-y-1 flex flex-col"
+                                <article
+                                    style={{ animationDelay: `${Math.min(idx * 0.1, 0.5)}s` }}
+                                    className="animate-reveal-up group h-full bg-glass rounded-4xl border border-white/10 overflow-hidden hover:border-primary/50 transition-all hover:shadow-2xl hover:-translate-y-1 flex flex-col"
                                 >
                                     {/* Image */}
                                     <div className="h-48 overflow-hidden relative">
                                         <div className="absolute inset-0 bg-gray-200 animate-pulse" />
-                                        <img
+                                        <BlogCardImage
                                             src={blog.imageUrl}
                                             alt={blog.title}
-                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 relative z-10"
-                                            onError={(e) => (e.currentTarget.src = '/images/blog-placeholder.png')}
                                         />
                                         <div className="absolute top-4 left-4 z-20 px-3 py-1 rounded-full bg-black/50 backdrop-blur-md text-white text-xs font-bold border border-white/20">
                                             {blog.category}
@@ -117,7 +133,7 @@ export default function BlogsPage({ initialBlogs = [] }: { initialBlogs?: BlogPo
                                             Read Article <span className="group-hover:translate-x-1 transition-transform">→</span>
                                         </div>
                                     </div>
-                                </motion.article>
+                                </article>
                             </Link>
                         ))}
                     </div>

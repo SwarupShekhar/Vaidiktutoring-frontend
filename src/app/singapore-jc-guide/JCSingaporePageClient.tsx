@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
+import { optimizeCloudinaryUrl } from "@/app/lib/utils";
 import {
   ArrowRight,
   BookOpen,
@@ -603,7 +604,7 @@ export default function JCSingaporePageClient() {
                 />
 
                 <Image
-                  src="https://res.cloudinary.com/de8vvmpip/image/upload/v1779800130/High-achieving_Singapore_JC_student_in_202605261824-Photoroom_vy0ywh.png"
+                  src={optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1779800130/High-achieving_Singapore_JC_student_in_202605261824-Photoroom_vy0ywh.png")}
                   alt="High-achieving Singapore JC Student"
                   width={650}
                   height={770}
@@ -782,7 +783,7 @@ export default function JCSingaporePageClient() {
               />
 
               <img 
-                src="https://res.cloudinary.com/de8vvmpip/image/upload/v1779800329/A_high-end__minimalist_studio_photograph_202605261828-Photoroom_drnffs.png" 
+                src={optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1779800329/A_high-end__minimalist_studio_photograph_202605261828-Photoroom_drnffs.png")} 
                 alt="A-Level study textbooks stack" 
                 className="w-full h-full object-contain max-h-[190px] filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.1)] transition-transform duration-300 group-hover:scale-105 z-10"
               />
@@ -952,7 +953,7 @@ export default function JCSingaporePageClient() {
             {/* Subject combinations flowchart image */}
             <div className="w-full h-44 rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 group">
               <img 
-                src="https://res.cloudinary.com/de8vvmpip/image/upload/v1779800682/A_high-resolution__minimalist_close-up_shot_202605261834_bsefp3.jpg" 
+                src={optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1779800682/A_high-resolution__minimalist_close-up_shot_202605261834_bsefp3.jpg")} 
                 alt="JC subject combination close-up shot" 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
@@ -1158,7 +1159,7 @@ export default function JCSingaporePageClient() {
               />
 
               <img 
-                src="https://res.cloudinary.com/de8vvmpip/image/upload/v1779801129/Confident_Singapore_junior_college_student_202605261841-Photoroom_g5xsdf.png" 
+                src={optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1779801129/Confident_Singapore_junior_college_student_202605261841-Photoroom_g5xsdf.png")} 
                 alt="Confident Singapore Junior College Student" 
                 className="w-full h-full object-contain max-h-[210px] filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.1)] transition-transform duration-300 group-hover:scale-105 z-10"
               />

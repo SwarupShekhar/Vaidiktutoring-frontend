@@ -1,6 +1,5 @@
 'use client';
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
 
 export default function FAQ() {
     const questions = [
@@ -50,32 +49,33 @@ export default function FAQ() {
 
 function AccordionItem({ question, answer }: { question: string, answer: string }) {
     const [isOpen, setIsOpen] = useState(false);
+    const contentRef = useRef<HTMLDivElement>(null);
 
     return (
         <div className="border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 overflow-hidden">
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex items-center justify-between p-6 text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                aria-expanded={isOpen}
             >
                 <span className="font-semibold text-(--color-text-primary) text-lg pr-4">{question}</span>
                 <span className={`text-primary text-2xl transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>
                     +
                 </span>
             </button>
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: 'easeInOut' }}
-                    >
-                        <div className="px-6 pb-6 text-text-secondary leading-relaxed border-t border-slate-100 dark:border-slate-700/50 pt-4">
-                            {answer}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <div
+                className="transition-all duration-300 ease-in-out"
+                style={{
+                    height: isOpen ? (contentRef.current?.scrollHeight || 0) : 0,
+                    opacity: isOpen ? 1 : 0
+                }}
+            >
+                <div ref={contentRef}>
+                    <div className="px-6 pb-6 text-text-secondary leading-relaxed border-t border-slate-100 dark:border-slate-700/50 pt-4">
+                        {answer}
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

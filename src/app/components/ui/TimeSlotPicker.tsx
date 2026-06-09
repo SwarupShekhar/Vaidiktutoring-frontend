@@ -3,7 +3,6 @@
 
 import React from 'react';
 import { addHours, format, addDays, startOfToday, isSameDay } from 'date-fns';
-import { motion } from 'framer-motion';
 import { Clock } from 'lucide-react';
 
 interface TimeSlotPickerProps {

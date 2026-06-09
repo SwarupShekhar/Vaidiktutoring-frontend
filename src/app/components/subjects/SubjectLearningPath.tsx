@@ -1,5 +1,6 @@
 import React from 'react';
 import { Layers, ShieldCheck, TrendingUp, Zap } from 'lucide-react';
+import styles from './SubjectLearningPath.module.css';
 
 type CurriculumFramework = {
     region: 'US' | 'UK' | 'International';
@@ -59,12 +60,16 @@ export default function SubjectLearningPath({ subject, isLoading }: LearningPath
                     {subject.skillPillars.map((pillar, idx) => {
                         const Icon = pillarIcons[idx % pillarIcons.length];
                         return (
-                            <GradientCard key={idx} $gradient={gradients[idx]}>
+                            <div 
+                                key={idx} 
+                                className={styles.gradientCard} 
+                                style={{ background: gradients[idx] }}
+                            >
                                 <div className="w-10 h-10 mb-4 rounded-full bg-white/20 flex items-center justify-center text-white">
                                     <Icon size={20} />
                                 </div>
                                 <h3 className="font-bold text-white text-lg leading-tight">{pillar}</h3>
-                            </GradientCard>
+                            </div>
                         )
                     })}
                 </div>
@@ -161,39 +166,3 @@ export default function SubjectLearningPath({ subject, isLoading }: LearningPath
         </div>
     );
 }
-
-import styled from 'styled-components';
-
-const GradientCard = styled.div<{ $gradient: string }>`
-  padding: 1.5rem;
-  border-radius: 1rem;
-  background: ${props => props.$gradient};
-  background-size: 400% 400%;
-  background-position: 0% 50%;
-  box-shadow:
-    rgba(0, 0, 0, 0.17) 0px -23px 25px 0px inset,
-    rgba(0, 0, 0, 0.15) 0px -36px 30px 0px inset,
-    rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset,
-    rgba(0, 0, 0, 0.06) 0px 2px 1px,
-    rgba(0, 0, 0, 0.09) 0px 4px 2px,
-    rgba(0, 0, 0, 0.09) 0px 8px 4px,
-    rgba(0, 0, 0, 0.09) 0px 16px 8px,
-    rgba(0, 0, 0, 0.09) 0px 32px 16px;
-  animation: gradientShift 5s ease infinite;
-  transition: transform 0.3s ease;
-  cursor: pointer;
-
-  &:hover {
-    transform: translateY(-5px);
-  }
-
-  @keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    background: linear-gradient(135deg, #1e3a8a 0%, #4c1d95 50%, #7c3aed 100%);
-  }
-`;

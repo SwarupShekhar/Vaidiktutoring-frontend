@@ -278,11 +278,14 @@ export default function Galaxy({
     resize();
 
     const mesh = new Mesh(gl, { geometry, program });
+    const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let isLooping = true;
     let animateId: number;
 
     function update(t: number) {
+      if (!isLooping) return;
       animateId = requestAnimationFrame(update);
-      if (!disableAnimation) {
+      if (!disableAnimation && !prefersReducedMotion) {
         program.uniforms.uTime.value = t * 0.001;
         program.uniforms.uStarSpeed.value = (t * 0.001 * starSpeed) / 10.0;
       }
@@ -299,6 +302,20 @@ export default function Galaxy({
 
       renderer.render({ scene: mesh });
     }
+
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        isLooping = false;
+        cancelAnimationFrame(animateId);
+      } else {
+        if (!isLooping) {
+          isLooping = true;
+          animateId = requestAnimationFrame(update);
+        }
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     animateId = requestAnimationFrame(update);
     ctn.appendChild(gl.canvas);
 
@@ -322,8 +339,10 @@ export default function Galaxy({
     }
 
     return () => {
+      isLooping = false;
       cancelAnimationFrame(animateId);
       window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (mouseInteraction) {
         window.removeEventListener('mousemove', handleMouseMove);
         ctn.removeEventListener('mouseleave', handleMouseLeave);

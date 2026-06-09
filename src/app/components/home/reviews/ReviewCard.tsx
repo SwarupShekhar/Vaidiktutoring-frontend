@@ -1,33 +1,26 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
-import { motion, useAnimation } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
 
 export default function ReviewCard({ review }: { review: any }) {
-    const controls = useAnimation();
     const ref = useRef<HTMLDivElement | null>(null);
+    const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         const obs = new IntersectionObserver(entries => {
             for (const e of entries) {
                 if (e.isIntersecting) {
-                    controls.start('visible');
+                    setIsVisible(true);
                 }
             }
         }, { threshold: 0.4 });
         if (ref.current) obs.observe(ref.current);
         return () => obs.disconnect();
-    }, [controls]);
+    }, []);
 
     return (
-        <motion.article
+        <article
             ref={ref}
-            initial="hidden"
-            animate={controls}
-            variants={{
-                hidden: { opacity: 0, y: 20, scale: 0.99 },
-                visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: 'easeOut' } }
-            }}
-            className="max-w-[320px] sm:w-[360px] lg:w-[380px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl p-6 border border-white/30 dark:border-slate-700/50 shadow-lg shrink-0"
+            className={`max-w-[320px] sm:w-[360px] lg:w-[380px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl p-6 border border-white/30 dark:border-slate-700/50 shadow-lg shrink-0 transition-all duration-700 ease-out ${isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-5 scale-[0.99]'}`}
             tabIndex={0}
             aria-label={`${review.name} - ${review.short}`}
         >
@@ -64,7 +57,7 @@ export default function ReviewCard({ review }: { review: any }) {
                     ))}
                 </div>
             </div>
-        </motion.article>
+        </article>
     );
 }
 

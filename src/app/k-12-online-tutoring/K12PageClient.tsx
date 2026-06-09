@@ -24,6 +24,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useAuthContext } from "@/app/context/AuthContext";
+import { optimizeCloudinaryUrl } from "@/app/lib/utils";
 import ParentTestimonials from "../components/subjects/ParentTestimonials";
 import StickyCTA from "../components/subjects/StickyCTA";
 
@@ -128,7 +129,7 @@ export default function K12OnlineTutoringPage({
               <div className="relative w-full h-full flex items-end justify-center overflow-visible">
                 <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-ice-blue/20 dark:to-slate-900/20 rounded-[4rem] z-0" />
                 <Image
-                  src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774006824/a_young_student_202603201710-Photoroom_ebs8yl.png"
+                  src={optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1774006824/a_young_student_202603201710-Photoroom_ebs8yl.png")}
                   alt="Premium K-12 Online Tutoring Service session | StudyHours"
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -318,7 +319,7 @@ export default function K12OnlineTutoringPage({
               className="relative aspect-square lg:aspect-auto lg:h-[600px] w-full rounded-[3rem] overflow-hidden shadow-2xl order-2 lg:order-1"
             >
               <Image
-                src="https://res.cloudinary.com/de8vvmpip/image/upload/v1776150164/A_bright__modern_202604141231_aw7o3c.jpg"
+                src={optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1776150164/A_bright__modern_202604141231_aw7o3c.jpg")}
                 alt="Learn from Experienced Tutors"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"

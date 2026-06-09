@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import { motion } from 'framer-motion';
 import CyberCard from './CyberCard';
 
 export default function HowItWorks() {

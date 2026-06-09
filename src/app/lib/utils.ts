@@ -15,3 +15,10 @@ export function throttle<T extends (...args: any[]) => any>(func: T, limit: numb
         }
     }
 }
+
+export const optimizeCloudinaryUrl = (url: string): string => {
+    if (url && url.includes("cloudinary.com") && !url.includes("f_auto")) {
+        return url.replace("/upload/", "/upload/f_auto,q_auto/");
+    }
+    return url;
+};

@@ -3,7 +3,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { Layers, User, GraduationCap, Calendar, CheckCircle, ChevronDown } from 'lucide-react';
@@ -50,15 +49,10 @@ function GlassSelect({ label, value, options, onChange, placeholder, icon }: Gla
                 <ChevronDown size={16} className={`transition-transform duration-300 ${open ? 'rotate-180' : ''} opacity-50`} />
             </button>
 
-            <AnimatePresence>
-                {open && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-[250px] overflow-y-auto scrollbar-thin"
-                    >
+            {open && (
+                <div
+                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-[250px] overflow-y-auto scrollbar-thin transition-opacity duration-150"
+                >
                         {options.length === 0 ? (
                             <div className="p-3 text-gray-500 text-sm text-center italic">No options available</div>
                         ) : (
@@ -80,9 +74,8 @@ function GlassSelect({ label, value, options, onChange, placeholder, icon }: Gla
                                 </button>
                             ))
                         )}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                </div>
+            )}
         </div>
     );
 }
@@ -274,7 +267,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                         const isDone = step > idx;
                         return (
                             <div key={idx} className="flex items-center">
-                                <motion.div
+                                <div
                                     className={`
                                         flex items-center gap-3 px-5 py-2 rounded-xl transition-all
                                         ${isActive ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-200 border border-blue-400 dark:border-blue-500/50' : ''}
@@ -289,7 +282,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                                         <p className="text-sm font-bold leading-none">{s.title}</p>
                                         {isActive && <p className="text-[10px] opacity-70 mt-0.5 font-normal">{s.subtitle}</p>}
                                     </div>
-                                </motion.div>
+                                </div>
                                 {idx < 2 && <div className="w-8 h-px bg-white/10 mx-1" />}
                             </div>
                         )
@@ -298,13 +291,11 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
             </div>
 
             {/* ERROR MSG */}
-            <AnimatePresence>
-                {error && (
-                    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-200 p-4 rounded-xl border border-red-200 dark:border-red-500/30 mb-6">
-                        {error}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {error && (
+                <div className="bg-red-50 dark:bg-red-500/20 text-red-700 dark:text-red-200 p-4 rounded-xl border border-red-200 dark:border-red-500/30 mb-6">
+                    {error}
+                </div>
+            )}
 
             {/* MAIN CONTENT AREA */}
             <div className="bg-white dark:bg-slate-900/60 border border-gray-200 dark:border-white/10 rounded-3xl p-8 min-h-[500px] pb-32 xl:pb-48 overflow-visible relative backdrop-blur-2xl shadow-sm">
@@ -312,15 +303,12 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-violet-500/5 rounded-full blur-[100px] pointer-events-none" />
 
-                <AnimatePresence mode="wait">
+                <div className="relative w-full h-full">
                     {/* STEP 0: CONTEXT */}
                     {step === 0 && (
-                        <motion.div
+                        <div
                             key="step0"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            className="space-y-8 relative z-10"
+                            className="space-y-8 relative z-10 transition-opacity duration-300"
                         >
                             <div className="max-w-xl mx-auto space-y-6">
                                 <h2 className="text-xl font-bold flex items-center gap-2 mb-6 text-gray-900 dark:text-white">
@@ -370,17 +358,14 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                                     icon={<Layers size={16} />} // Using Layers as generic placeholder if no specific subject icon
                                 />
                             </div>
-                        </motion.div>
+                        </div>
                     )}
 
                     {/* STEP 1: LOGISTICS (SCHEDULE ONLY) */}
                     {step === 1 && (
-                        <motion.div
+                        <div
                             key="step1"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            className="max-w-xl mx-auto space-y-8 relative z-10"
+                            className="max-w-xl mx-auto space-y-8 relative z-10 transition-opacity duration-300"
                         >
                             <div className="space-y-6">
                                 <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900 dark:text-white">
@@ -394,17 +379,14 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                                     />
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
                     )}
 
                     {/* STEP 2: REVIEW */}
                     {step === 2 && (
-                        <motion.div
+                        <div
                             key="step2"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            className="max-w-2xl mx-auto space-y-8 relative z-10"
+                            className="max-w-2xl mx-auto space-y-8 relative z-10 transition-opacity duration-300"
                         >
                             <div className="text-center mb-8">
                                 <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Ready for your Diagnostic?</h2>
@@ -464,9 +446,9 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                                     rows={3}
                                 />
                             </div>
-                        </motion.div>
+                        </div>
                     )}
-                </AnimatePresence>
+                </div>
             </div>
 
             {/* ACTION BAR */}

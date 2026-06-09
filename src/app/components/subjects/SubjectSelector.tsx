@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import styled from 'styled-components';
 import { Calculator, FlaskConical, BookOpen } from 'lucide-react';
 
 type SelectorProps = {
@@ -16,7 +15,7 @@ const subjects = [
 
 export default function SubjectSelector({ activeSubject, onSelect }: SelectorProps) {
     return (
-        <StyledWrapper>
+        <div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                 {subjects.map((subject) => {
                     const Icon = subject.Icon;
@@ -25,77 +24,43 @@ export default function SubjectSelector({ activeSubject, onSelect }: SelectorPro
                         <button
                             key={subject.id}
                             onClick={() => onSelect(subject.id)}
-                            className="relative group focus:outline-none"
+                            className="relative group focus:outline-none w-full text-left"
+                            style={{
+                                '--hover-color': subject.color,
+                            } as React.CSSProperties}
                         >
-                            <Card $isActive={isActive} $color={subject.color}>
-                                <div className="icon-wrapper" style={{ backgroundColor: `${subject.color}15`, color: subject.color }}>
+                            <div 
+                                className="flex flex-col items-center text-center w-full p-8 bg-surface rounded-2xl border-2 transition-all duration-200 cursor-pointer group-hover:-translate-y-0.5"
+                                style={{
+                                    borderColor: isActive ? subject.color : 'var(--color-border)',
+                                    boxShadow: isActive ? `0 8px 30px ${subject.color}25` : '0 4px 6px rgba(0,0,0,0.05)',
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isActive) {
+                                        e.currentTarget.style.borderColor = subject.color;
+                                        e.currentTarget.style.boxShadow = `0 8px 30px ${subject.color}15`;
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isActive) {
+                                        e.currentTarget.style.borderColor = 'var(--color-border)';
+                                        e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.05)';
+                                    }
+                                }}
+                            >
+                                <div 
+                                    className="w-14 h-14 rounded-xl flex items-center justify-center mb-4" 
+                                    style={{ backgroundColor: `${subject.color}15`, color: subject.color }}
+                                >
                                     <Icon size={24} />
                                 </div>
-                                <h3 className="heading">{subject.name}</h3>
-                                <p className="tagline">{subject.tagline}</p>
-                            </Card>
+                                <h3 className="text-xl font-bold text-(--color-text-primary) mb-1">{subject.name}</h3>
+                                <p className="text-[13px] text-text-secondary leading-snug">{subject.tagline}</p>
+                            </div>
                         </button>
                     );
                 })}
             </div>
-        </StyledWrapper>
+        </div>
     );
 }
-
-const StyledWrapper = styled.div`
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: 1.5rem;
-  }
-  
-  @media (min-width: 768px) {
-    .grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-`;
-
-const Card = styled.div<{ $isActive: boolean; $color: string }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  width: 100%;
-  padding: 32px 24px;
-  background: var(--color-surface);
-  border-radius: 16px;
-  border: 2px solid ${props => props.$isActive ? props.$color : 'var(--color-border)'};
-  box-shadow: ${props => props.$isActive ? `0 8px 30px ${props.$color}25` : '0 4px 6px rgba(0,0,0,0.05)'};
-  transition: all 0.2s ease;
-  cursor: pointer;
-
-  &:hover {
-    border-color: ${props => props.$color};
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px ${props => props.$color}15;
-  }
-
-  .icon-wrapper {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-  }
-
-  .heading {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--color-text-primary);
-    margin-bottom: 4px;
-  }
-
-  .tagline {
-    font-size: 13px;
-    color: var(--color-text-secondary);
-    line-height: 1.4;
-  }
-`;

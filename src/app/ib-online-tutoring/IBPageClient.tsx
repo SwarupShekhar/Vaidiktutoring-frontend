@@ -30,6 +30,7 @@ import {
   Infinity as InfinityIcon,
 } from "lucide-react";
 import { useAuthContext } from "@/app/context/AuthContext";
+import { optimizeCloudinaryUrl } from "@/app/lib/utils";
 import ParentTestimonials from "../components/subjects/ParentTestimonials";
 import StickyCTA from "../components/subjects/StickyCTA";
 import SubjectFAQ, { FAQItemType } from "../components/subjects/SubjectFAQ";
@@ -85,7 +86,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
                 className="hidden md:block absolute -top-56 left-0 w-[180px] h-[220px] rounded-[3.5rem] overflow-hidden shadow-xl"
               >
                 <Image
-                  src="https://res.cloudinary.com/de8vvmpip/image/upload/v1774008401/Candid_portrait_photography_202603201735_q92yxy.jpg"
+                  src={optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1774008401/Candid_portrait_photography_202603201735_q92yxy.jpg")}
                   alt="Expert IB online tutoring student in learning session | StudyHours"
                   fill
                   sizes="180px"
@@ -287,7 +288,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
                 accent: "from-blue-400 to-blue-600",
                 link: user ? "/bookings/new" : "/signup?type=assessment",
                 image:
-                  "https://res.cloudinary.com/de8vvmpip/image/upload/v1773997910/PYP___Young_202603201440-Photoroom_gbq65j.png",
+                  optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1773997910/PYP___Young_202603201440-Photoroom_gbq65j.png"),
                 size: "w-72 h-72",
               },
               {
@@ -299,7 +300,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
                 accent: "from-indigo-400 to-indigo-600",
                 link: user ? "/bookings/new" : "/signup?type=assessment",
                 image:
-                  "https://res.cloudinary.com/de8vvmpip/image/upload/v1773998172/MYP___Early_202603201445-Photoroom_gncugc.png",
+                  optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1773998172/MYP___Early_202603201445-Photoroom_gncugc.png"),
                 size: "w-64 h-64",
               },
               {
@@ -312,7 +313,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
                 link: user ? "/bookings/new" : "/signup?type=assessment",
                 featured: true,
                 image:
-                  "https://res.cloudinary.com/de8vvmpip/image/upload/v1773998262/DP___Older_202603201447-Photoroom_k8kaqj.png",
+                  optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1773998262/DP___Older_202603201447-Photoroom_k8kaqj.png"),
                 size: "w-64 h-64",
               },
               {
@@ -324,7 +325,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
                 accent: "from-cyan-400 to-cyan-600",
                 link: user ? "/bookings/new" : "/signup?type=assessment",
                 image:
-                  "https://res.cloudinary.com/de8vvmpip/image/upload/v1773998340/CP___Career-Focused_202603201448-Photoroom_yp2m68.png",
+                  optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1773998340/CP___Career-Focused_202603201448-Photoroom_yp2m68.png"),
                 size: "w-64 h-64",
               },
             ].map((prog, idx) => (
@@ -785,7 +786,7 @@ export default function IBTutorsPage({ testimonials }: { testimonials?: any[] })
 
                 <div className="relative h-full w-full flex items-end justify-center overflow-hidden rounded-[4rem]">
                   <Image
-                    src="https://res.cloudinary.com/de8vvmpip/image/upload/v1773998923/Candid_photography_of_202603201458-Photoroom_ao4da2.png"
+                    src={optimizeCloudinaryUrl("https://res.cloudinary.com/de8vvmpip/image/upload/v1773998923/Candid_photography_of_202603201458-Photoroom_ao4da2.png")}
                     alt="IB Student Exam Success"
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
