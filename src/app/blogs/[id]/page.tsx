@@ -30,7 +30,12 @@ export async function generateMetadata(
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     const { id } = await params;
-    const isDraft = (await draftMode()).isEnabled;
+    let isDraft = false;
+    try {
+        isDraft = (await draftMode()).isEnabled;
+    } catch {
+        // Suppress dynamic usage error during static generation
+    }
     const previewSecret = process.env.PREVIEW_SECRET || 'vaidikeduservicespvtltd_preview_2026_key';
     
     const fetchOptions: RequestInit = isDraft
@@ -91,7 +96,12 @@ export async function generateMetadata(
 
 export default async function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const isDraft = (await draftMode()).isEnabled;
+    let isDraft = false;
+    try {
+        isDraft = (await draftMode()).isEnabled;
+    } catch {
+        // Suppress dynamic usage error during static generation
+    }
     const previewSecret = process.env.PREVIEW_SECRET || 'vaidikeduservicespvtltd_preview_2026_key';
     
     const fetchOptions: RequestInit = isDraft

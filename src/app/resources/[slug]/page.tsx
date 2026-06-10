@@ -17,8 +17,12 @@ interface PageProps {
 // Generate dynamic metadata for search engines using HSL curated SEO fields
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const draft = await draftMode();
-  const isPreview = draft.isEnabled;
+  let isPreview = false;
+  try {
+    isPreview = (await draftMode()).isEnabled;
+  } catch {
+    // Suppress dynamic usage error during static generation
+  }
   try {
     const page = await cmsApi.getLandingPage(slug, isPreview);
     if (!page) {
@@ -60,8 +64,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function Page({ params }: PageProps) {
   const { slug } = await params;
-  const draft = await draftMode();
-  const isPreview = draft.isEnabled;
+  let isPreview = false;
+  try {
+    isPreview = (await draftMode()).isEnabled;
+  } catch {
+    // Suppress dynamic usage error during static generation
+  }
   const page = await cmsApi.getLandingPage(slug, isPreview);
 
   if (!page) {

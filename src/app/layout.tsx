@@ -53,7 +53,12 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-  const isDraftMode = (await draftMode()).isEnabled;
+  let isDraftMode = false;
+  try {
+    isDraftMode = (await draftMode()).isEnabled;
+  } catch {
+    // Suppress DYNAMIC_SERVER_USAGE error during static generation
+  }
 
   // If Clerk key is missing, show a fallback layout without Clerk
   if (!clerkPublishableKey) {
