@@ -12,11 +12,6 @@ import Navbar from "./components/navbar";
 import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import { CSPostHogProvider } from './providers/PostHogProvider'
-import dynamic from 'next/dynamic'
-
-const PostHogPageView = dynamic(() => import('./components/PostHogPageView'), {
-  ssr: false,
-})
 
 
 
@@ -81,7 +76,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                   <ClientSideComponents />
                   <AnnouncementBar />
                   <Navbar />
-                  <PostHogPageView />
                   {children}
                   {isDraftMode && <VisualEditing />}
                   <Footer />
@@ -119,7 +113,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                 <NotificationProvider>
                   <ClientSideComponents />
                   <Navbar />
-                  <PostHogPageView />
                   {children}
                   {isDraftMode && <VisualEditing />}
                   <Footer />

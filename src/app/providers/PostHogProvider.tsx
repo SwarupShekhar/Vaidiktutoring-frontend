@@ -2,6 +2,7 @@
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 import { useEffect } from 'react'
+import PostHogPageView from '../components/PostHogPageView'
 
 export function CSPostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -15,5 +16,10 @@ export function CSPostHogProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  return <PostHogProvider client={posthog}>{children}</PostHogProvider>
+  return (
+    <PostHogProvider client={posthog}>
+      <PostHogPageView />
+      {children}
+    </PostHogProvider>
+  )
 }

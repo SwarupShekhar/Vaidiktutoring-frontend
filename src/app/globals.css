@@ -297,3 +297,29 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes shimmer {
   100% { transform: translateX(100%); }
 }
+
+/* ── GCSE Results Quiz range slider thumb ── */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #4c70f5;
+  box-shadow: 0 0 12px rgba(76, 112, 245, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(76, 112, 245, 0.7), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #4c70f5;
+  box-shadow: 0 0 12px rgba(76, 112, 245, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}

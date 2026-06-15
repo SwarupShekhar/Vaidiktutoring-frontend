@@ -296,6 +296,70 @@ function pure1SolutionsEmail() {
   `);
 }
 
+function gcseResultsQuizEmail(data: Record<string, string>) {
+  const board = (data.examBoard || 'edexcel').toUpperCase();
+  const tier = (data.tier || 'higher').toUpperCase();
+  const grade = data.predictedGrade || '—';
+  const percent = data.estimatedPercent || '—';
+  const weakTopics = (data.weakTopics || '').split(', ').filter(Boolean);
+
+  const topicsList = weakTopics.length
+    ? `
+    <div style="background:#1a0a0a;border:1px solid #7f1d1d;border-radius:12px;padding:20px;margin:0 0 20px">
+      <p style="color:#f87171;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px">Flagged Topics Costing You Marks</p>
+      <p style="color:#6b7280;font-size:12px;margin:0 0 12px">These are the areas you flagged as weak during your quiz. Focus on these to close the gap:</p>
+      <ul style="margin:0;padding:0 0 0 16px">
+        ${weakTopics.map(t => `<li style="color:#fca5a5;font-size:14px;padding:5px 0;line-height:1.5">${t}</li>`).join('')}
+      </ul>
+    </div>
+    `
+    : '';
+
+  return emailWrapper(`
+    <p style="color:#5c9dff;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 6px">${board} · ${tier} · GCSE Results Analysis</p>
+    <h1 style="color:#fff;font-size:26px;font-weight:800;margin:0 0 16px;line-height:1.2">Your GCSE Maths Grade Analysis</h1>
+
+    <div style="background:#0d1117;border:1px solid #1f2937;border-radius:16px;padding:24px;margin:0 0 24px">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>
+            <p style="color:#8b949e;font-size:12px;text-transform:uppercase;margin:0 0 4px">Predicted Grade</p>
+            <p style="color:#22c55e;font-size:48px;font-weight:900;margin:0;line-height:1">${grade}</p>
+          </td>
+          <td align="right">
+            <p style="color:#8b949e;font-size:12px;text-transform:uppercase;margin:0 0 4px">Estimated Marks</p>
+            <p style="color:#fff;font-size:24px;font-weight:700;margin:0">${percent}%</p>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    ${topicsList}
+
+    <p style="color:#e5e5e5;font-size:15px;line-height:1.7;margin:0 0 20px">
+      We've attached the <strong style="color:#fff">GCSE Paper 3 Complete Solutions PDF</strong> to this email so you can check how the trickiest questions on the paper were solved.
+    </p>
+
+    <div style="background:#0a0f1a;border:1px solid #1e3a5f;border-radius:12px;padding:20px;margin:0 0 24px">
+      <p style="color:#5c9dff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">Want to close the gap?</p>
+      <p style="color:#e5e5e5;font-size:14px;line-height:1.6;margin:0 0 16px">
+        Flagging weak spots is the first step. Next is targeted practice. Create your free account to save your analysis, get a customized prep path, and match with a top GCSE tutor.
+      </p>
+      <a href="https://studyhours.com/signup?utm_source=gcse_results&utm_medium=quiz&utm_campaign=gcse_2026&email=${encodeURIComponent(data.email || '')}" style="display:inline-block;background:#4c70f5;color:#fff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:700;font-size:14px">
+        Create My Free Account →
+      </a>
+    </div>
+
+    <p style="color:#9ca3af;font-size:14px;line-height:1.6;margin:0 0 24px">
+      If you want to review your specific exam paper questions with a tutor, reply directly to this email. We're here to help.
+    </p>
+
+    <p style="color:#444;font-size:13px;margin:24px 0 0;line-height:1.6">
+      Best of luck,<br/>The StudyHours Team
+    </p>
+  `);
+}
+
 // ── Discord embeds ────────────────────────────────────────────────────────────
 
 function buildDiscordEmbed(source: string, email: string, fields: Record<string, string>) {
@@ -305,6 +369,7 @@ function buildDiscordEmbed(source: string, email: string, fields: Record<string,
     gcse_tracker: { title: '🇬🇧 New GCSE Paper 3 Lead',      color: 0x4c70f5 },
     'gcse-paper3-hitlist': { title: '📄 New Paper 3 Hitlist Lead', color: 0x4c70f5 },
     pure1_solutions: { title: '📐 New Pure 1 Solutions Lead', color: 0x6366f1 },
+    'gcse-results-quiz': { title: '🧮 New GCSE Results Quiz Lead', color: 0x22c55e },
   };
   const { title, color } = configs[source] ?? { title: 'New Lead', color: 0xffffff };
 
@@ -368,6 +433,7 @@ export async function POST(req: NextRequest) {
     gcse_tracker: gcseTrackerEmail,
     'gcse-paper3-hitlist': gcseHitlistEmail,
     pure1_solutions: pure1SolutionsEmail,
+    'gcse-results-quiz': gcseResultsQuizEmail,
   };
 
   const subjectLines: Record<string, (d: Record<string, string>) => string> = {
@@ -376,6 +442,7 @@ export async function POST(req: NextRequest) {
     gcse_tracker: (d) => `Your GCSE Paper 3 focus list — ${(d.examBoard ?? '').toUpperCase()} ${d.tier ?? ''}`,
     'gcse-paper3-hitlist': () => 'Your Free GCSE Maths Paper 3 Hit-List & Formula Sheet',
     pure1_solutions: () => 'Your Free Edexcel A-Level Pure 1 Worked Solutions',
+    'gcse-results-quiz': (d) => `Your GCSE Maths Grade Analysis — Predicted Grade: ${d.predictedGrade || '—'}`,
   };
 
   const template = emailTemplates[source];
@@ -391,11 +458,22 @@ export async function POST(req: NextRequest) {
         attachments = await Promise.all(
           PAPER3_PDFS.map(async (pdf) => ({
             filename: pdf.file,
-            content: await readFile(path.join(process.cwd(), PAPER3_PDF_DIR, pdf.file)),
+            content: await readFile(path.join(/*turbopackIgnore: true*/ process.cwd(), PAPER3_PDF_DIR, pdf.file)),
           }))
         );
       } catch (err) {
         console.error('Failed to read Paper 3 PDFs for attachment', err);
+      }
+    } else if (source === 'gcse-results-quiz') {
+      try {
+        attachments = [
+          {
+            filename: 'GCSE_Paper3_Complete_Solutions_StudyHours.pdf',
+            content: await readFile(path.join(/*turbopackIgnore: true*/ process.cwd(), PAPER3_PDF_DIR, 'GCSE_Paper3_Complete_Solutions_StudyHours.pdf')),
+          }
+        ];
+      } catch (err) {
+        console.error('Failed to read GCSE Paper 3 Complete Solutions PDF for attachment', err);
       }
     }
 
