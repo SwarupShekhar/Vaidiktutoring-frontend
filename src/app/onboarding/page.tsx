@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { useUser } from '@clerk/nextjs';
 import Loader from '@/app/components/Loader';
+import { api } from '@/app/lib/api';
 
 export default function OnboardingPage() {
   const { user, loading: authLoading } = useAuthContext();
@@ -64,24 +65,30 @@ export default function OnboardingPage() {
   const handleRoleSelect = async (selectedRole: 'parent' | 'student') => {
     setIsUpdating(true);
     try {
-      // Update Clerk Metadata (if we want to use that for immediate feedback)
+      import('posthog-js').then((posthog) => {
+        posthog.default.capture('Role Selected', { role: selectedRole });
+      });
+      // Update Clerk Metadata for immediate client-side feedback.
       if (clerkUser) {
         await clerkUser.update({
           unsafeMetadata: { role: selectedRole }
         });
       }
 
-      // Note: Backend syncs on every request, but we might need to tell backend to update role explicitly
-      // or rely on next page load to sync.
-      // Ideally call a backend endpoint to update role. 
-      // For now, relies on Clerk metadata or we can redirect to a specific proper dashboard.
+      // Persist the role authoritatively in the backend (DB + Clerk publicMetadata)
+      // and trigger the welcome email. Best-effort — don't block the redirect on it.
+      try {
+        await api.patch('/auth/role', { role: selectedRole });
+      } catch (err) {
+        console.error('Failed to persist role to backend', err);
+      }
 
       if (selectedRole === 'parent') {
-        // Redirect to add-student or parent dashboard
-        // forcing reload to ensure context updates if it relies on clerk metadata
+        // Parents add their first child next.
         window.location.href = '/onboarding/add-student';
       } else {
-        window.location.href = '/students/dashboard';
+        // Students go through the quick profile setup before the dashboard.
+        window.location.href = '/onboarding/student-profile';
       }
     } catch (e) {
       console.error("Failed to update role", e);

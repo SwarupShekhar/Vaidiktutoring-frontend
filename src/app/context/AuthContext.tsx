@@ -129,20 +129,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Debug logging for role issues
   if (clerkUser && !backendUser) {
-
-    
     // Special handling for known admin email
     if (clerkUser.primaryEmailAddress?.emailAddress === 'swarupshekhar.vaidikedu@gmail.com') {
-
       (user as any).role = 'admin';
     }
     
     // Additional check: If user has admin email but no metadata, force admin role
     if (clerkUser.primaryEmailAddress?.emailAddress === 'swarupshekhar.vaidikedu@gmail.com' && !clerkUser.publicMetadata?.role) {
-
       (user as any).role = 'admin';
     }
   }
+
+  useEffect(() => {
+    if (user?.id && user?.email) {
+      import('posthog-js').then((posthog) => {
+        posthog.default.identify(user.id, {
+          email: user.email,
+          role: user.role,
+          name: user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : undefined
+        });
+      });
+    } else if (user === null && initialCheckDone) {
+      import('posthog-js').then((posthog) => {
+        posthog.default.reset();
+      });
+    }
+  }, [user?.id, user?.email, user?.role, initialCheckDone]);
 
   async function login(email: string, password: string, shouldRedirect = true) {
     setLoading(true);

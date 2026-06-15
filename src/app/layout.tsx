@@ -11,6 +11,12 @@ import { ClientSideComponents } from "./components/ClientSideComponents";
 import Navbar from "./components/navbar";
 import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
+import { CSPostHogProvider } from './providers/PostHogProvider'
+import dynamic from 'next/dynamic'
+
+const PostHogPageView = dynamic(() => import('./components/PostHogPageView'), {
+  ssr: false,
+})
 
 
 
@@ -68,18 +74,21 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     return (
       <html lang="en" suppressHydrationWarning>
         <body suppressHydrationWarning className={`${luckiestGuy.variable} ${spaceGrotesk.variable} ${dmSans.variable}`}>
-          <QueryProvider>
+          <CSPostHogProvider>
+            <QueryProvider>
               <AuthProvider>
                 <NotificationProvider>
                   <ClientSideComponents />
                   <AnnouncementBar />
                   <Navbar />
+                  <PostHogPageView />
                   {children}
                   {isDraftMode && <VisualEditing />}
                   <Footer />
                 </NotificationProvider>
               </AuthProvider>
             </QueryProvider>
+          </CSPostHogProvider>
           <Analytics />
           <SpeedInsights />
         </body>
@@ -104,18 +113,20 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <link rel="dns-prefetch" href="https://cdn.sanity.io" />
         </head>
         <body suppressHydrationWarning className={`${luckiestGuy.variable} ${spaceGrotesk.variable} ${dmSans.variable}`}>
-          <QueryProvider>
+          <CSPostHogProvider>
+            <QueryProvider>
               <AuthProvider>
                 <NotificationProvider>
                   <ClientSideComponents />
                   <Navbar />
+                  <PostHogPageView />
                   {children}
                   {isDraftMode && <VisualEditing />}
                   <Footer />
                 </NotificationProvider>
               </AuthProvider>
             </QueryProvider>
-
+          </CSPostHogProvider>
           <Analytics />
           <SpeedInsights />
         </body>

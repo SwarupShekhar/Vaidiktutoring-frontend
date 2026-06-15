@@ -14,7 +14,8 @@ import {
   Loader2,
   Clock,
   Target,
-  UserCheck
+  UserCheck,
+  Activity
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -77,7 +78,7 @@ export default function StudentDetailModal({ studentId, onClose }: StudentDetail
           ) : (
             <>
               {/* Vital Statistics */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4">Contact Intelligence</h3>
                   <div className="flex items-center gap-3 group">
@@ -118,6 +119,28 @@ export default function StudentDetailModal({ studentId, onClose }: StudentDetail
                     <div>
                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Institution</p>
                       <p className="text-sm font-bold text-foreground">{student.school || 'Private Student'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4">Acquisition & Status</h3>
+                  <div className="flex items-center gap-3 group">
+                    <div className="p-2 bg-muted rounded-xl group-hover:bg-amber-500/10 group-hover:text-amber-500 transition-all">
+                      <Target size={16} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Lead Source</p>
+                      <p className="text-sm font-bold text-foreground">{student.users_students_user_idTousers?.lead_source || 'Organic / Unknown'}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 group">
+                    <div className="p-2 bg-muted rounded-xl group-hover:bg-blue-500/10 group-hover:text-blue-500 transition-all">
+                      <Activity size={16} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Onboarding Status</p>
+                      <p className="text-sm font-bold text-foreground capitalize">{(student.users_students_user_idTousers?.onboarding_status || 'not_started').replace('_', ' ')}</p>
                     </div>
                   </div>
                 </div>

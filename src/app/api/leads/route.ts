@@ -5,6 +5,7 @@ import path from 'path';
 import { PAPER3_PDFS, PAPER3_PDF_DIR } from '@/app/lib/paper3Pdfs';
 
 const WEBHOOK_URL = process.env.DISCORD_LEADS_WEBHOOK_URL;
+const BACKEND_URL = (process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'https://api.studyhours.com').replace(/\/$/, '');
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const FROM = process.env.EMAIL_FROM || 'StudyHours <hello@studyhours.com>';
 const BOOKING_URL = 'https://studyhours.com/bookings/new';
@@ -340,6 +341,14 @@ export async function POST(req: NextRequest) {
   }
 
   const sanitizedEmail = email.trim().toLowerCase().slice(0, 254);
+
+  // ── Persist to DB (lead_captures) so signups can be matched to their lead source ──
+  // Fire-and-forget: never block the lead-magnet response on this.
+  fetch(`${BACKEND_URL}/leads/capture`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: sanitizedEmail, source }),
+  }).catch(() => { /* non-fatal — lead still captured in Discord */ });
 
   // ── Send to Discord ──
   if (WEBHOOK_URL) {
