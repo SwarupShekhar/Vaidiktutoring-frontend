@@ -172,11 +172,68 @@ export default function GCSEResultsPage() {
     }
   }, [examBoard, tier]);
 
+  // Load email from URL query params on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const emailParam = params.get('email');
+      if (emailParam) {
+        setEmail(emailParam);
+      }
+    }
+  }, []);
+
   const weakTopics = topics.filter((t) => t.selected);
   const prediction = examBoard && tier ? predictGrade(tier, estimatedPercent, weakTopics.length, topics.length) : null;
 
   const toggleTopic = (id: string) => {
     setTopics((prev) => prev.map((t) => (t.id === id ? { ...t, selected: !t.selected } : t)));
+  };
+
+  const handleShowResults = async () => {
+    if (email) {
+      setSubmitting(true);
+      try {
+        await fetch(LEADS_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            source: 'gcse-results-quiz-autoverified',
+            email,
+            role: 'student',
+            examBoard,
+            tier,
+            estimatedPercent,
+            weakTopics: weakTopics.map((t) => t.name).join(', ') || 'None flagged',
+            predictedGrade: prediction?.grade,
+            skipEmailSend: true,
+          }),
+        });
+      } catch {
+        /* non-fatal */
+      }
+
+      // Track in PostHog
+      try {
+        const posthog = await import('posthog-js');
+        posthog.default.capture('GCSE Quiz Completed', {
+          examBoard,
+          tier,
+          estimatedPercent,
+          weakTopicCount: weakTopics.length,
+          predictedGrade: prediction?.grade,
+          isAutoVerified: true,
+        });
+      } catch {
+        /* posthog optional */
+      }
+
+      setSubmitting(false);
+      setRevealed(true);
+      setStep(5);
+    } else {
+      setStep(4);
+    }
   };
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
@@ -481,10 +538,11 @@ export default function GCSEResultsPage() {
             </div>
 
             <button
-              onClick={() => setStep(4)}
-              className="w-full py-4 rounded-2xl bg-[#4c70f5] hover:bg-[#3b5bdb] text-white font-bold text-lg transition-all shadow-lg shadow-[#4c70f5]/20 flex items-center justify-center gap-2"
+              onClick={handleShowResults}
+              disabled={submitting}
+              className="w-full py-4 rounded-2xl bg-[#4c70f5] hover:bg-[#3b5bdb] disabled:opacity-50 text-white font-bold text-lg transition-all shadow-lg shadow-[#4c70f5]/20 flex items-center justify-center gap-2"
             >
-              Show My Results
+              {submitting ? 'Generating...' : 'Show My Results'}
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
             </button>
           </div>

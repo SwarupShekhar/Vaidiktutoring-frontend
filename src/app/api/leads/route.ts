@@ -399,7 +399,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 
-  const { source, email, ...fields } = body;
+  const { source, email, skipEmailSend, ...fields } = body;
 
   if (!email?.includes('@') || !source) {
     return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
@@ -448,7 +448,7 @@ export async function POST(req: NextRequest) {
   const template = emailTemplates[source];
   const subjectFn = subjectLines[source];
 
-  if (template && subjectFn && resend) {
+  if (template && subjectFn && resend && !skipEmailSend) {
     const stringFields = Object.fromEntries(Object.entries(fields).map(([k, v]) => [k, String(v ?? '')]));
 
     // Gated lead magnets: attach the PDFs directly so the files are never publicly hosted.
