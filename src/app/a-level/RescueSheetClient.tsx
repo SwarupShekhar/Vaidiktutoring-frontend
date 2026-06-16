@@ -12,7 +12,7 @@ interface RescueSheetClientProps {
 const CONTENT = {
   aqa: {
     headline: "AQA A-Level Maths Paper 3 - Rescue Sheet",
-    subheadline: "Pure Maths & Statistics | 7357/3 | June 2025",
+    subheadline: "Pure Maths & Statistics | 7357/3 | June 2026",
     urgency: "Your exam is on June 18th. This is everything examiners actually mark you on - built from their own reports.",
     cards: [
       {
@@ -78,7 +78,7 @@ const CONTENT = {
   },
   edexcel: {
     headline: "Edexcel A-Level Maths Paper 3 - Rescue Sheet",
-    subheadline: "Statistics & Mechanics | 9MA0/03 | June 2025",
+    subheadline: "Statistics & Mechanics | 9MA0/03 | June 2026",
     urgency: "Your exam is on June 18th. This is everything examiners actually mark you on - built from their own reports.",
     cards: [
       {
