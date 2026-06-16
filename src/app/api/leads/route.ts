@@ -296,6 +296,46 @@ function pure1SolutionsEmail() {
   `);
 }
 
+function aLevelAqaPaper3RescueSheetEmail() {
+  return emailWrapper(`
+    <h1 style="color:#fff;font-size:26px;font-weight:800;margin:0 0 6px;line-height:1.2">Your AQA Paper 3 Rescue Sheet is here</h1>
+    <p style="color:#e5e5e5;font-size:15px;line-height:1.6;margin:0 0 20px">
+      The rescue sheet for your A-Level Maths Paper 3 exam is <strong>attached to this email</strong> — open or download it straight from your inbox.
+    </p>
+
+    <div style="background:#0a0f1a;border:1px solid #1e3a5f;border-radius:12px;padding:20px;margin:0 0 24px">
+      <p style="color:#5c9dff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">Warn your friends</p>
+      <p style="color:#e5e5e5;font-size:14px;line-height:1.6;margin:0">
+        If you find this sheet useful, forward this email to your classmates before the June 18th exam. Don't let them walk into Paper 3 blind.
+      </p>
+    </div>
+
+    <a href="${BOOKING_URL}?utm_source=email&utm_medium=aqa_alevel_paper3_rescue&utm_campaign=lead" style="display:block;background:#e11d48;color:#fff;text-align:center;padding:14px;border-radius:50px;font-weight:700;font-size:14px;text-decoration:none;margin:0 0 10px">
+      Book a free last-minute A-Level session
+    </a>
+  `);
+}
+
+function aLevelEdexcelPaper3RescueSheetEmail() {
+  return emailWrapper(`
+    <h1 style="color:#fff;font-size:26px;font-weight:800;margin:0 0 6px;line-height:1.2">Your Edexcel Paper 3 Rescue Sheet is here</h1>
+    <p style="color:#e5e5e5;font-size:15px;line-height:1.6;margin:0 0 20px">
+      The rescue sheet for your A-Level Maths Paper 3 exam is <strong>attached to this email</strong> — open or download it straight from your inbox.
+    </p>
+
+    <div style="background:#0a0f1a;border:1px solid #1e3a5f;border-radius:12px;padding:20px;margin:0 0 24px">
+      <p style="color:#5c9dff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px">Warn your friends</p>
+      <p style="color:#e5e5e5;font-size:14px;line-height:1.6;margin:0">
+        If you find this sheet useful, forward this email to your classmates before the June 18th exam. Don't let them walk into Paper 3 blind.
+      </p>
+    </div>
+
+    <a href="${BOOKING_URL}?utm_source=email&utm_medium=edexcel_alevel_paper3_rescue&utm_campaign=lead" style="display:block;background:#e11d48;color:#fff;text-align:center;padding:14px;border-radius:50px;font-weight:700;font-size:14px;text-decoration:none;margin:0 0 10px">
+      Book a free last-minute A-Level session
+    </a>
+  `);
+}
+
 function gcseResultsQuizEmail(data: Record<string, string>) {
   const board = (data.examBoard || 'edexcel').toUpperCase();
   const tier = (data.tier || 'higher').toUpperCase();
@@ -370,6 +410,8 @@ function buildDiscordEmbed(source: string, email: string, fields: Record<string,
     'gcse-paper3-hitlist': { title: '📄 New Paper 3 Hitlist Lead', color: 0x4c70f5 },
     pure1_solutions: { title: '📐 New Pure 1 Solutions Lead', color: 0x6366f1 },
     'gcse-results-quiz': { title: '🧮 New GCSE Results Quiz Lead', color: 0x22c55e },
+    'a-level-aqa-paper3': { title: '📄 New AQA Paper 3 Rescue Sheet Lead', color: 0x4c70f5 },
+    'a-level-edexcel-paper3': { title: '📄 New Edexcel Paper 3 Rescue Sheet Lead', color: 0x4c70f5 },
   };
   const { title, color } = configs[source] ?? { title: 'New Lead', color: 0xffffff };
 
@@ -434,6 +476,8 @@ export async function POST(req: NextRequest) {
     'gcse-paper3-hitlist': gcseHitlistEmail,
     pure1_solutions: pure1SolutionsEmail,
     'gcse-results-quiz': gcseResultsQuizEmail,
+    'a-level-aqa-paper3': aLevelAqaPaper3RescueSheetEmail,
+    'a-level-edexcel-paper3': aLevelEdexcelPaper3RescueSheetEmail,
   };
 
   const subjectLines: Record<string, (d: Record<string, string>) => string> = {
@@ -443,6 +487,8 @@ export async function POST(req: NextRequest) {
     'gcse-paper3-hitlist': () => 'Your Free GCSE Maths Paper 3 Hit-List & Formula Sheet',
     pure1_solutions: () => 'Your Free Edexcel A-Level Pure 1 Worked Solutions',
     'gcse-results-quiz': (d) => `Your GCSE Maths Grade Analysis — Predicted Grade: ${d.predictedGrade || '—'}`,
+    'a-level-aqa-paper3': () => 'Your Free AQA A-Level Maths Paper 3 Rescue Sheet',
+    'a-level-edexcel-paper3': () => 'Your Free Edexcel A-Level Maths Paper 3 Rescue Sheet',
   };
 
   const template = emailTemplates[source];
@@ -474,6 +520,28 @@ export async function POST(req: NextRequest) {
         ];
       } catch (err) {
         console.error('Failed to read GCSE Paper 3 Complete Solutions PDF for attachment', err);
+      }
+    } else if (source === 'a-level-aqa-paper3') {
+      try {
+        attachments = [
+          {
+            filename: 'AQApaper3 rescue sheet.pdf',
+            content: await readFile(path.join(/*turbopackIgnore: true*/ process.cwd(), PAPER3_PDF_DIR, 'AQApaper3 rescue sheet.pdf')),
+          }
+        ];
+      } catch (err) {
+        console.error('Failed to read AQA Paper 3 Rescue Sheet for attachment', err);
+      }
+    } else if (source === 'a-level-edexcel-paper3') {
+      try {
+        attachments = [
+          {
+            filename: 'Edexcel paper3 rescue sheet.pdf',
+            content: await readFile(path.join(/*turbopackIgnore: true*/ process.cwd(), PAPER3_PDF_DIR, 'Edexcel paper3 rescue sheet.pdf')),
+          }
+        ];
+      } catch (err) {
+        console.error('Failed to read Edexcel Paper 3 Rescue Sheet for attachment', err);
       }
     }
 
