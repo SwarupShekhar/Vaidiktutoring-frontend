@@ -26,6 +26,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import RatingModal from "@/app/components/RatingModal";
+import AttendanceReport from "@/app/components/dashboard/AttendanceReport";
 
 function DashboardContent() {
   const { user } = useAuthContext();
@@ -521,18 +522,10 @@ function DashboardContent() {
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                {/* Attendance Summary */}
-                {selectedSummary && (
-                    <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-4">
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-blue-800 uppercase tracking-tight">Monthly Attendance</span>
-                            <span className="text-sm font-black text-blue-900">{selectedSummary.attendanceRate}% Rate</span>
-                        </div>
-                        <p className="text-[10px] text-blue-600 font-medium mt-1 uppercase tracking-widest">
-                            Attended {selectedSummary.sessionsThisMonth} sessions this month
-                        </p>
-                    </div>
-                )}
+                {/* Attendance Report */}
+                <div className="mb-4">
+                    <AttendanceReport studentId={selectedChildId} />
+                </div>
 
                 {/* Subject Progress indicators */}
                 {selectedSummary?.subjectProgress && selectedSummary.subjectProgress.length > 0 && (
