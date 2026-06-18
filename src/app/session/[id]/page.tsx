@@ -18,8 +18,6 @@ import { io, Socket } from 'socket.io-client';
 import { toast } from 'sonner';
 import {
     Video,
-    VideoOff,
-    Mic,
     ClipboardList,
     Library,
     FileUp,
@@ -79,19 +77,21 @@ export default function SessionPage({ params }: SessionProps) {
     }, [user, authLoading, router]);
 
     // Daily.co State
-    const [hasJoined, setHasJoined] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return sessionStorage.getItem(`hasJoined_${sessionId}`) === 'true';
-        }
-        return false;
-    });
+    // Students/parents auto-join straight into the session. Tutors first get a
+    // record-the-session prompt (rendered below) and join from there.
+    const [hasJoined, setHasJoined] = useState(false);
 
-    // Persistent state sync
+    // Auto-join everyone EXCEPT tutors. Tutors must acknowledge the record prompt
+    // first, so we never auto-join them.
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            sessionStorage.setItem(`hasJoined_${sessionId}`, hasJoined.toString());
+        if (user && user.role !== 'tutor') {
+            setHasJoined(true);
         }
-    }, [hasJoined, sessionId]);
+    }, [user]);
+
+    // Suppresses the tutor record prompt during end-of-session teardown
+    // (hasJoined flips false right before the redirect fires).
+    const [isEnding, setIsEnding] = useState(false);
     const [dailyRoomUrl, setDailyRoomUrl] = useState<string | null>(null);
     const [dailyToken, setDailyToken] = useState<string | null>(null);
     const [videoLoading, setVideoLoading] = useState(false);
@@ -190,13 +190,6 @@ export default function SessionPage({ params }: SessionProps) {
     const [studentSelection, setStudentSelection] = useState<number | null>(null);
     const [finalPollResults, setFinalPollResults] = useState<{ question: string; options: string[]; results: number[]; totalResponses: number } | null>(null);
 
-    // Pre-join State
-    const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-    const [cameraError, setCameraError] = useState(false);
-    const [currentTime, setCurrentTime] = useState(new Date());
-    const [checklistItems, setChecklistItems] = useState([false, false, false]);
-    const videoRef = useRef<HTMLVideoElement>(null);
-
     // Sticker State
     const [showStickerPanel, setShowStickerPanel] = useState(false);
     const [incomingSticker, setIncomingSticker] = useState<{ type: string; id: string } | null>(null);
@@ -232,28 +225,6 @@ export default function SessionPage({ params }: SessionProps) {
     const [isToolbarCollapsed, setIsToolbarCollapsed] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
 
-    // Pre-join Effects
-    useEffect(() => {
-        if (!hasJoined) {
-            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-                .then(stream => {
-                    setLocalStream(stream);
-                    if (videoRef.current) {
-                        videoRef.current.srcObject = stream;
-                    }
-                })
-                .catch(() => {
-                    setCameraError(true);
-                });
-        } else {
-            // Cleanup stream after join
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-                setLocalStream(null);
-            }
-        }
-    }, [hasJoined]);
-
     useEffect(() => {
         if (!hasJoined) return;
         
@@ -286,18 +257,6 @@ export default function SessionPage({ params }: SessionProps) {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentTime(new Date());
-        }, 1000);
-        return () => clearInterval(interval);
-    }, []);
-
-    useEffect(() => {
-        setTimeout(() => setChecklistItems([true, false, false]), 500);
-        setTimeout(() => setChecklistItems([true, true, false]), 1000);
-        setTimeout(() => setChecklistItems([true, true, true]), 1500);
-    }, []);
 
     useEffect(() => {
         if (user?.role === 'tutor') {
@@ -651,6 +610,7 @@ export default function SessionPage({ params }: SessionProps) {
     }, [excalidrawAPI]);
 
     const handleEndSession = useCallback(async () => {
+        setIsEnding(true);
         try {
             // 1. Capture and post whiteboard snapshot
             const snapshotUrl = await captureSnapshot();
@@ -1533,96 +1493,28 @@ export default function SessionPage({ params }: SessionProps) {
 
     return (
         <div className="w-screen h-screen flex flex-col bg-background overflow-hidden">
-            {/* PRE-JOIN OVERLAY */}
-            {!hasJoined && (
-                <div className="absolute inset-0 z-50 bg-linear-to-br from-gray-950 via-purple-950 to-gray-950 flex flex-col items-center justify-center p-6">
-                    {/* Ambient Background Orbs */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl animate-pulse"></div>
-                        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-                        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-pink-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-                    </div>
-
-                    {/* Top Bar */}
-                    <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-6 py-4">
-                        <div className="text-white font-bold text-xl">StudyHours</div>
-                        <div className="bg-black/20 text-white px-4 py-2 rounded-full text-sm">Room {sessionId.slice(0, 8)}</div>
-                        <div className="text-white text-sm">{currentTime.toLocaleTimeString()}</div>
-                    </div>
-
-                    {/* Main Content */}
-                    <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl">
-                        {/* Left: Camera Preview */}
-                        <div className="w-full md:w-3/5">
-                            <div className="relative w-full h-96 md:h-full rounded-2xl overflow-hidden bg-black/60 border border-purple-500/30">
-                                {cameraError ? (
-                                    <div className="flex flex-col items-center justify-center h-full text-white/40">
-                                        <VideoOff size={64} strokeWidth={1.5} className="mb-4 opacity-20" />
-                                        <p className="text-sm font-medium">Camera is off — you can turn it on after joining</p>
-                                    </div>
-                                ) : (
-                                    <video ref={videoRef} autoPlay muted className="w-full h-full object-cover" />
-                                )}
-                                <div className="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm">
-                                    {user?.first_name || 'You'}
-                                </div>
-                                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-                                    <button className="w-10 h-10 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-colors">
-                                        <Video size={18} />
-                                    </button>
-                                    <button className="w-10 h-10 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-colors">
-                                        <Mic size={18} />
-                                    </button>
-                                </div>
+            {/* Tutor-only pre-join prompt: remind to record before entering. Students auto-join (never see this). */}
+            {!hasJoined && user?.role === 'tutor' && !isEnding && (
+                <div className="absolute inset-0 z-50 bg-gray-950/95 flex items-center justify-center p-6">
+                    <div className="w-full max-w-md bg-gray-900 border border-purple-500/30 rounded-2xl p-8 text-white shadow-2xl">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+                                <Video className="text-amber-400" size={24} />
                             </div>
+                            <h2 className="text-2xl font-bold leading-tight">Record this session</h2>
                         </div>
-
-                        {/* Right: Session Info Panel */}
-                        <div className="w-full md:w-2/5 p-8 text-white">
-                            <h1 className="text-4xl font-bold mb-2">{booking?.subject?.name || 'Tutoring Session'}</h1>
-                            <div className="flex items-center gap-3 mb-4">
-                                <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                                    {(user?.role === 'tutor' ? booking?.students?.first_name : booking?.tutor?.first_name)?.charAt(0) || 'U'}
-                                </div>
-                                <div>
-                                    <p className="font-semibold">{user?.role === 'tutor' ? `${booking?.students?.first_name} ${booking?.students?.last_name}` : `${booking?.tutor?.first_name} ${booking?.tutor?.last_name}`}</p>
-                                    <p className="text-sm text-gray-300">{user?.role === 'tutor' ? 'Student' : 'Tutor'}</p>
-                                </div>
-                            </div>
-                            <p className="text-lg mb-6">Today at {booking?.start_time ? new Date(booking.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '3:00 PM'} · 60 minutes</p>
-                            <div className="border-t border-gray-600 pt-6 mb-6">
-                                <ul className="space-y-3">
-                                    {['Whiteboard ready', 'Session timer set', 'Materials loaded'].map((item, index) => (
-                                        <li key={index} className="flex items-center gap-3">
-                                            <div className={`w-5 h-5 rounded-full border-2 border-purple-500 flex items-center justify-center ${checklistItems[index] ? 'bg-purple-500' : ''}`}>
-                                                {checklistItems[index] && <span className="text-white text-xs">✓</span>}
-                                            </div>
-                                            <span className={checklistItems[index] ? 'text-white' : 'text-gray-400'}>{item}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            {user?.role === 'tutor' && (
-                                <div className="mb-5 flex items-start gap-3 bg-amber-500/15 border border-amber-400/30 rounded-xl p-4">
-                                    <Video className="text-amber-400 shrink-0 mt-0.5" size={18} />
-                                    <div>
-                                        <p className="text-amber-300 font-semibold text-sm">Enable screen share to record this session</p>
-                                        <p className="text-amber-200/70 text-xs mt-1">
-                                            After joining, click <strong>Share Screen</strong> in Daily.co and share <strong>this browser tab</strong>. This captures both the video call and the whiteboard so students can review the session later.
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-                            <button
-                                onClick={() => setHasJoined(true)}
-                                disabled={videoLoading}
-                                className="w-full h-14 bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                            >
-                                {videoLoading ? <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div> : null}
-                                {videoLoading ? 'Connecting...' : 'Join Session →'}
-                            </button>
-                            <p className="text-center text-gray-400 text-sm mt-3">Your camera and mic are off by default</p>
-                        </div>
+                        <p className="text-gray-300 text-sm leading-relaxed mb-2">
+                            Please record this session so your student can review it afterwards.
+                        </p>
+                        <p className="text-gray-400 text-xs leading-relaxed mb-6">
+                            After you join, click <strong className="text-white">Share Screen</strong> in the video panel and share <strong className="text-white">this browser tab</strong> — that captures both the video call and the whiteboard.
+                        </p>
+                        <button
+                            onClick={() => setHasJoined(true)}
+                            className="w-full h-12 bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                        >
+                            Got it — Join Session →
+                        </button>
                     </div>
                 </div>
             )}
