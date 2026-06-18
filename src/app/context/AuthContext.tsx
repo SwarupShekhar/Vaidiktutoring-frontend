@@ -52,6 +52,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.warn('LocalStorage access failed in AuthContext:', e);
       }
 
+      // A leftover manual auth_token must NOT mask an active Clerk session — that
+      // makes the app authenticate as a PREVIOUS user (the cause of cross-account
+      // 403s after switching accounts). If Clerk is loaded with an active user,
+      // discard any stale manual token and fall through to the Clerk path below.
+      if (savedToken && isClerkLoaded && clerkUser) {
+        try { localStorage.removeItem('auth_token'); } catch { /* ignore */ }
+        savedToken = null;
+      }
+
       if (savedToken) {
         setToken(savedToken);
         setAuthToken(savedToken);
@@ -207,7 +216,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       console.warn('Failed to remove auth_token from localStorage:', e);
     }
+    // Fully clear the token from the api client and auth state so NO request can
+    // send a previous user's token after logout / account-switch.
+    setAuthToken(null);
+    setTokenGetter(async () => null);
+    setToken(null);
+    setBackendUser(null);
     document.cookie = "manual_auth_token=; path=/; max-age=0";
+    document.cookie = "user_role=; path=/; max-age=0";
     signOut(() => router.push('/'));
   }
 

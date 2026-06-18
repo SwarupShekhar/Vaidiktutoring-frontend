@@ -95,6 +95,10 @@ export default function SessionPage({ params }: SessionProps) {
     const [dailyRoomUrl, setDailyRoomUrl] = useState<string | null>(null);
     const [dailyToken, setDailyToken] = useState<string | null>(null);
     const [videoLoading, setVideoLoading] = useState(false);
+    // Set when the backend denies access to this session (e.g. the logged-in tutor
+    // is not the one assigned to this booking) — show a clear message instead of a
+    // broken/looping session screen.
+    const [accessDenied, setAccessDenied] = useState(false);
     const [booking, setBooking] = useState<BookingDetails | null>(null);
 
 
@@ -976,13 +980,13 @@ export default function SessionPage({ params }: SessionProps) {
         try {
             const formData = new FormData();
             formData.append('file', file);
-            const token = localStorage.getItem('auth_token');
 
+            // Auth is injected by the shared api client's interceptor — do not read
+            // localStorage directly (that can send a stale token for a different user).
             const res = await api.post(`/sessions/${sessionId}/slides`, formData, {
                 timeout: 60000,
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'multipart/form-data'
                 }
             });
 
@@ -1364,11 +1368,10 @@ export default function SessionPage({ params }: SessionProps) {
     useEffect(() => {
         if (hasJoined && sessionId) {
             setVideoLoading(true);
-            const token = localStorage.getItem('auth_token');
 
-            api.get(`/sessions/${sessionId}/daily-token`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
+            // Auth is injected by the shared api client's interceptor — do not read
+            // localStorage directly (that can send a stale token for a different user).
+            api.get(`/sessions/${sessionId}/daily-token`)
                 .then(res => {
                     setDailyRoomUrl(res.data.roomUrl);
                     setDailyToken(res.data.token);
@@ -1376,7 +1379,13 @@ export default function SessionPage({ params }: SessionProps) {
                 })
                 .catch(err => {
                     console.error('[Daily] Failed to get token:', err);
-                    toast.error('Failed to join video session. Please try again.');
+                    if (err?.response?.status === 403) {
+                        // Not authorized for this session — stop here and show a clear
+                        // message rather than letting the video/chat keep retrying.
+                        setAccessDenied(true);
+                    } else {
+                        toast.error('Failed to join video session. Please try again.');
+                    }
                     setVideoLoading(false);
                 });
         }
@@ -1493,6 +1502,24 @@ export default function SessionPage({ params }: SessionProps) {
 
     return (
         <div className="w-screen h-screen flex flex-col bg-background overflow-hidden">
+            {/* Access denied — backend rejected this session (e.g. not the assigned tutor / not a participant). */}
+            {accessDenied && (
+                <div className="absolute inset-0 z-[60] bg-gray-950/97 flex items-center justify-center p-6">
+                    <div className="w-full max-w-md bg-gray-900 border border-red-500/30 rounded-2xl p-8 text-white shadow-2xl text-center">
+                        <h2 className="text-2xl font-bold mb-3">You don't have access to this session</h2>
+                        <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                            This session belongs to a different tutor or student. If you think this is a mistake, make sure you're signed in with the account assigned to this booking.
+                        </p>
+                        <button
+                            onClick={() => router.push(user?.role === 'tutor' ? '/tutor/dashboard' : user?.role === 'parent' ? '/parent/dashboard' : '/students/dashboard')}
+                            className="w-full h-12 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl transition-all"
+                        >
+                            Back to dashboard
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Tutor-only pre-join prompt: remind to record before entering. Students auto-join (never see this). */}
             {!hasJoined && user?.role === 'tutor' && !isEnding && (
                 <div className="absolute inset-0 z-50 bg-gray-950/95 flex items-center justify-center p-6">
