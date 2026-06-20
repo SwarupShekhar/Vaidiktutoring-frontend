@@ -136,13 +136,35 @@ export const ConstellationBackground = () => {
     window.addEventListener("resize", handleResize);
     init();
 
+    let observer: IntersectionObserver;
     if (!prefersReducedMotion) {
-      animate();
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              if (!animationFrameId) {
+                animate();
+              }
+            } else {
+              if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = 0;
+              }
+            }
+          });
+        },
+        { rootMargin: "100px" }
+      );
+
+      if (canvasRef.current) {
+        observer.observe(canvasRef.current);
+      }
     }
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      if (observer) observer.disconnect();
     };
   }, [isDark]);
 

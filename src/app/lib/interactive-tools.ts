@@ -12,7 +12,7 @@ export const INTERACTIVE_TOOLS: InteractiveTool[] = [
     title: 'Studyhours Chemistry Lab',
     description: 'Explore our interactive periodic table, balance complex chemical equations with real-time feedback, calculate molar masses, and run virtual lab simulations.',
     iconName: 'Atom',
-    url: process.env.NEXT_PUBLIC_INTERACTIVE_CHEM_URL || 'https://zperiod-alpha.vercel.app/?v=2.0.1',
+    url: process.env.NEXT_PUBLIC_INTERACTIVE_CHEM_URL || 'https://lab.studyhours.com/?v=2.0.1',
   },
   /* 
   Temporarily disabled until biology cell studio gets more diagrams and meets our premium quality standards.

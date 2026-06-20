@@ -308,15 +308,31 @@ export default function Galaxy({
         isLooping = false;
         cancelAnimationFrame(animateId);
       } else {
-        if (!isLooping) {
-          isLooping = true;
-          animateId = requestAnimationFrame(update);
-        }
+        // Only resume if it's currently intersecting, which is handled by the IntersectionObserver
+        // So we do nothing here to let the observer handle the resuming if it's visible.
       }
     }
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    animateId = requestAnimationFrame(update);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!isLooping) {
+            isLooping = true;
+            animateId = requestAnimationFrame(update);
+          }
+        } else {
+          if (isLooping) {
+            isLooping = false;
+            cancelAnimationFrame(animateId);
+          }
+        }
+      },
+      { rootMargin: '100px' }
+    );
+    observer.observe(ctn);
+
     ctn.appendChild(gl.canvas);
 
     function handleMouseMove(e: MouseEvent) {
@@ -343,6 +359,7 @@ export default function Galaxy({
       cancelAnimationFrame(animateId);
       window.removeEventListener('resize', resize);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      observer.disconnect();
       if (mouseInteraction) {
         window.removeEventListener('mousemove', handleMouseMove);
         ctn.removeEventListener('mouseleave', handleMouseLeave);
