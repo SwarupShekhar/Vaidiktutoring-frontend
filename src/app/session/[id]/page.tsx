@@ -644,6 +644,8 @@ export default function SessionPage({ params }: SessionProps) {
         } catch (error) {
             console.error('Failed to end session:', error);
             toast.error('Failed to end session. Please try again.');
+        } finally {
+            setIsEnding(false);
         }
     }, [sessionId, captureSnapshot, user?.role, router]);
 
@@ -1209,7 +1211,7 @@ export default function SessionPage({ params }: SessionProps) {
             } finally {
                 setTimeout(() => {
                     whiteboardRef.current.isUpdating = false;
-                }, 30);
+                }, 15);
             }
         };
 
@@ -1297,7 +1299,7 @@ export default function SessionPage({ params }: SessionProps) {
         const lastSyncedFiles = { current: '' };
 
         const lastEmitTime = { current: 0 };
-        const emitThrottle = 50; // ms
+        const emitThrottle = 150; // ms
 
         const unsubscribe = excalidrawAPI.onChange((elements: any[], _appState: any, files: any) => {
             // 1. Skip if we are currently receiving a remote update
