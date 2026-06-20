@@ -616,10 +616,12 @@ export default function SessionPage({ params }: SessionProps) {
     const handleEndSession = useCallback(async () => {
         setIsEnding(true);
         try {
-            // 1. Capture and post whiteboard snapshot
-            const snapshotUrl = await captureSnapshot();
-            if (snapshotUrl) {
-                await api.post(`/sessions/${sessionId}/whiteboard-snapshot`, { snapshotUrl });
+            // 1. Capture and post whiteboard snapshot (only for tutors/admins)
+            if (user?.role === 'tutor' || user?.role === 'admin') {
+                const snapshotUrl = await captureSnapshot();
+                if (snapshotUrl) {
+                    await api.post(`/sessions/${sessionId}/whiteboard-snapshot`, { snapshotUrl });
+                }
             }
 
             // 2. Call backend to end the session
