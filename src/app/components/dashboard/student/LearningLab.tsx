@@ -125,15 +125,6 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
                 {!isEnrolled && <Lock size={12} />}
                 <PlayCircle size={14} /> Launch Lab
               </button>
-
-              <a
-                href={tool.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-bold transition-all text-center flex items-center gap-1.5"
-              >
-                <ExternalLink size={12} /> External
-              </a>
             </div>
           </motion.div>
         ))}
@@ -165,15 +156,6 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
               </div>
 
               <div className="flex items-center gap-3">
-                <a
-                  href={activeTool.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-bold transition-all"
-                >
-                  <ExternalLink size={14} /> Open in New Tab
-                </a>
-
                 <button
                   onClick={() => { setActiveTool(null); setIframeUrl(null); }}
                   className="p-2 bg-slate-800 hover:bg-slate-700 hover:text-red-500 rounded-xl text-slate-400 transition-colors"
