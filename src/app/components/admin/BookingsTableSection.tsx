@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import api from '@/app/lib/api';
 import { format } from 'date-fns';
-import { RefreshCw, Clock, User, BookOpen, CheckCircle2, AlertCircle, Calendar } from 'lucide-react';
+import { RefreshCw, Clock, User, BookOpen, CheckCircle2, AlertCircle, Calendar, Plus } from 'lucide-react';
+import CreateGroupSessionModal from './CreateGroupSessionModal';
 
 interface Booking {
     id: string;
@@ -40,6 +41,7 @@ export default function BookingsTableSection() {
     const [page, setPage] = useState(1);
     const [filter, setFilter] = useState<'all' | 'pending'>('pending');
     const [allocatingId, setAllocatingId] = useState<string | null>(null);
+    const [showGroupSessionModal, setShowGroupSessionModal] = useState(false);
 
 
     useEffect(() => {
@@ -71,13 +73,22 @@ export default function BookingsTableSection() {
                 <h2 className="text-xl font-bold text-(--color-text-primary)">
                     All Bookings & Allocations
                 </h2>
-                <button
-                    onClick={() => window.location.reload()}
-                    className="p-2 rounded-xl hover:bg-white/10 text-text-secondary transition-colors"
-                    title="Refresh"
-                >
-                    <RefreshCw size={18} />
-                </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setShowGroupSessionModal(true)}
+                        className="px-4 py-2 rounded-xl text-sm font-bold bg-blue-600/10 text-blue-500 hover:bg-blue-600/20 hover:text-blue-400 transition-colors flex items-center gap-2"
+                    >
+                        <Plus size={16} />
+                        Group Session
+                    </button>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="p-2 rounded-xl hover:bg-white/10 text-text-secondary transition-colors"
+                        title="Refresh"
+                    >
+                        <RefreshCw size={18} />
+                    </button>
+                </div>
             </div>
 
             <div className="flex gap-4 mb-4">
@@ -166,6 +177,7 @@ export default function BookingsTableSection() {
 
                                             if (validFName || validLName) return `${validFName || ''} ${validLName || ''}`.trim();
                                             if (email) return email.split('@')[0];
+                                            if (!b.student) return 'Group Session';
                                             return 'Student User';
                                         })()}
                                     </td>
@@ -267,6 +279,15 @@ export default function BookingsTableSection() {
                 </button>
             </div>
 
-        </div >
+            {showGroupSessionModal && (
+                <CreateGroupSessionModal 
+                    onClose={() => setShowGroupSessionModal(false)}
+                    onSuccess={() => {
+                        setShowGroupSessionModal(false);
+                        window.dispatchEvent(new Event('refresh-bookings-table'));
+                    }}
+                />
+            )}
+        </div>
     );
 }
