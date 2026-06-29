@@ -17,6 +17,7 @@ import { StickerRewards } from './StickerRewards';
 import { TutorCommunicationSection } from './TutorCommunicationSection';
 import { MaterialsVaultSection } from './MaterialsVaultSection';
 import { WeeklySchedule } from './WeeklySchedule';
+import { DownloadAppBanner } from './DownloadAppBanner';
 
 const LearningLab = dynamic(
   () => import('./LearningLab').then(mod => mod.LearningLab),
@@ -137,6 +138,8 @@ export const EnrolledDashboard: React.FC<EnrolledDashboardProps> = ({
           return 'Good Evening';
         }}
       />
+
+      <DownloadAppBanner />
 
       <SessionHero 
         nextSession={nextSession}

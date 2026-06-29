@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: "Privacy Policy | StudyHours",
@@ -84,7 +85,7 @@ export default function PrivacyPage() {
 
                     <section className="space-y-4">
                         <h2 className="text-2xl font-semibold">5. Cookies and Tracking Technologies</h2>
-                        <p>We use cookies and similar tracking technologies to track activity on our platform and hold certain information. This includes cookies for authentication (Clerk), analytics (Google Analytics GA4, Vercel Analytics), and functionality (Razorpay, Daily.co, Cloudflare Turnstile). For more details, please visit our <a href="/cookies" className="text-blue-600 hover:underline">Cookies Policy</a> page.</p>
+                        <p>We use cookies and similar tracking technologies to track activity on our platform and hold certain information. This includes cookies for authentication (Clerk), analytics (Google Analytics GA4, Vercel Analytics), and functionality (Razorpay, Daily.co, Cloudflare Turnstile). For more details, please visit our <Link href="/legal/cookies" className="text-blue-600 hover:underline">Cookies Policy</Link> page.</p>
                     </section>
 
                     <section className="space-y-4">

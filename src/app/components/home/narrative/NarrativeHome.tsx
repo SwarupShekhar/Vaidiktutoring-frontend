@@ -59,7 +59,7 @@ export default function NarrativeHome() {
             Book a free trial lesson — no commitment required
           </h2>
           <a
-            href="/book-trial"
+            href="/signup?type=assessment"
             className="mt-2 px-8 py-3 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
           >
             Book your free lesson →

@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
 
 import dynamic from 'next/dynamic';
 
@@ -19,6 +20,7 @@ import { UpcomingSchedule } from './UpcomingSchedule';
 import { PastSessionsSidebar } from './PastSessionsSidebar';
 import { TrialBanner } from '@/app/components/dashboard/TrialBanner';
 import { UpgradeNudge } from '@/app/components/dashboard/UpgradeNudge';
+import { DownloadAppBanner } from './DownloadAppBanner';
 
 const LearningLab = dynamic(
   () => import('./LearningLab').then(mod => mod.LearningLab),
@@ -75,6 +77,7 @@ export const TrialDashboard: React.FC<TrialDashboardProps> = ({
   isEnrolled
 }) => {
   const router = useRouter();
+  const isAppShell = useIsAppShell();
 
   const stats = useMemo(() => {
     const completedCount = progressSummary?.totalSessions || 0;
@@ -104,7 +107,7 @@ export const TrialDashboard: React.FC<TrialDashboardProps> = ({
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible"
-      className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8 relative">
+      className={isAppShell ? 'w-full p-4 md:p-8 space-y-8 relative' : 'min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8 relative'}>
 
       {/* Onboarding Card */}
       {showOnboarding && (
@@ -129,38 +132,44 @@ export const TrialDashboard: React.FC<TrialDashboardProps> = ({
         getGreeting={getGreeting}
       />
 
-      {/* Trial exhausted / expired upgrade banner */}
-      {(creditStatus?.mode === 'trial_exhausted' || creditStatus?.mode === 'trial_expired') && (
-        <motion.div variants={itemVariants}
-          className="rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="flex-1">
-            <p className="font-bold text-amber-800 dark:text-amber-300">You've used your free sessions — enroll in a package to continue learning</p>
-            <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">Your trial has ended. Choose a plan to book more classes.</p>
-          </div>
-          <button onClick={onUpgrade}
-            className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-sm transition-all whitespace-nowrap">
-            View Packages
-          </button>
-        </motion.div>
-      )}
+      {/* If in app shell, we move these to a sticky bottom bar later, or we can just render them in a fixed container here */}
+      {!isAppShell && (
+        <>
+          <DownloadAppBanner />
+          {/* Trial exhausted / expired upgrade banner */}
+          {(creditStatus?.mode === 'trial_exhausted' || creditStatus?.mode === 'trial_expired') && (
+            <motion.div variants={itemVariants}
+              className="rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex-1">
+                <p className="font-bold text-amber-800 dark:text-amber-300">You've used your free sessions — enroll in a package to continue learning</p>
+                <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">Your trial has ended. Choose a plan to book more classes.</p>
+              </div>
+              <button onClick={onUpgrade}
+                className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-sm transition-all whitespace-nowrap">
+                View Packages
+              </button>
+            </motion.div>
+          )}
 
-      {/* Learning mode — out of credits banner */}
-      {creditStatus?.mode === 'learning' && (creditStatus?.creditsRemaining ?? 0) === 0 && (
-        <motion.div variants={itemVariants}
-          className="rounded-2xl bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="flex-1">
-            <p className="font-bold text-violet-800 dark:text-violet-300">You're out of sessions for this month</p>
-            <p className="text-xs text-violet-600 dark:text-violet-400 mt-1">Your current package credits are used up. Renew or upgrade to keep learning.</p>
-          </div>
-          <button onClick={onUpgrade}
-            className="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-sm transition-all whitespace-nowrap">
-            Renew / Upgrade
-          </button>
-        </motion.div>
-      )}
+          {/* Learning mode — out of credits banner */}
+          {creditStatus?.mode === 'learning' && (creditStatus?.creditsRemaining ?? 0) === 0 && (
+            <motion.div variants={itemVariants}
+              className="rounded-2xl bg-violet-50 dark:bg-violet-500/10 border border-violet-200 dark:border-violet-500/30 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex-1">
+                <p className="font-bold text-violet-800 dark:text-violet-300">You're out of sessions for this month</p>
+                <p className="text-xs text-violet-600 dark:text-violet-400 mt-1">Your current package credits are used up. Renew or upgrade to keep learning.</p>
+              </div>
+              <button onClick={onUpgrade}
+                className="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-sm transition-all whitespace-nowrap">
+                Renew / Upgrade
+              </button>
+            </motion.div>
+          )}
 
-      {/* TRIAL BANNER */}
-      {creditStatus?.mode === 'trial_active' && <TrialBanner status={creditStatus} />}
+          {/* TRIAL BANNER */}
+          {creditStatus?.mode === 'trial_active' && <TrialBanner status={creditStatus} />}
+        </>
+      )}
 
       {(creditStatus?.mode === 'trial_exhausted' || creditStatus?.mode === 'trial_expired') ? (
         <UpgradeNudge
@@ -238,6 +247,45 @@ export const TrialDashboard: React.FC<TrialDashboardProps> = ({
             )}
           </motion.div>
         </>
+      )}
+
+      {/* STICKY BOTTOM BAR FOR NATIVE APP TRIAL STATUS */}
+      {isAppShell && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-6 bg-slate-900/80 backdrop-blur-md border-t border-slate-800">
+          <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+            {creditStatus?.mode === 'trial_exhausted' || creditStatus?.mode === 'trial_expired' ? (
+              <>
+                <div>
+                  <p className="font-bold text-amber-400 text-sm">Free trial ended</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Enroll to continue booking classes.</p>
+                </div>
+                <button onClick={onUpgrade} className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-lg text-sm transition-all whitespace-nowrap">
+                  View Packages
+                </button>
+              </>
+            ) : creditStatus?.mode === 'learning' && (creditStatus?.creditsRemaining ?? 0) === 0 ? (
+              <>
+                <div>
+                  <p className="font-bold text-violet-400 text-sm">Out of sessions</p>
+                  <p className="text-xs text-slate-400 mt-0.5">Renew or upgrade to keep learning.</p>
+                </div>
+                <button onClick={onUpgrade} className="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-lg text-sm transition-all whitespace-nowrap">
+                  Renew
+                </button>
+              </>
+            ) : creditStatus?.mode === 'trial_active' ? (
+              <>
+                <div>
+                  <p className="font-bold text-blue-400 text-sm">Trial Active</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{creditStatus?.creditsRemaining ?? 0} sessions left</p>
+                </div>
+                <button onClick={onUpgrade} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold border border-slate-700 rounded-lg text-sm transition-all whitespace-nowrap">
+                  Upgrade Plan
+                </button>
+              </>
+            ) : null}
+          </div>
+        </div>
       )}
     </motion.div>
   );

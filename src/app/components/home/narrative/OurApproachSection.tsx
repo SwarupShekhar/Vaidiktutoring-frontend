@@ -65,7 +65,7 @@ export default function OurApproachSection() {
               not accidental.
             </p>
             <Link
-              href="/our-approach"
+              href="/methodology"
               className="group inline-flex items-center gap-2 text-primary font-bold text-sm hover:underline underline-offset-4 transition-all cursor-pointer"
             >
               Learn more about our method

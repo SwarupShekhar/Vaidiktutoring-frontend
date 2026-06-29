@@ -15,13 +15,47 @@ import {
   Star,
   Target,
   ChevronLeft,
-  Loader2
+  Loader2,
+  LogOut,
+  ShieldCheck,
+  FileText,
+  ExternalLink
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
+import {
+  AppPage,
+  AppPageItem,
+  AppPageHeader,
+  AppCard,
+  AppPillButton,
+  AppEmptyState,
+  AppSkeleton,
+  AppSkeletonCard,
+  accentRgb,
+} from '@/app/components/app-shell/ui';
 
 export default function StudentProfilePage() {
-  const { user, loading: authLoading } = useAuthContext();
+  const { user, token, loading: authLoading, logout } = useAuthContext();
+  const isAppShell = useIsAppShell();
+
+  // Legal / policy pages. Open in the system browser inside the desktop app
+  // (they live on the marketing site, outside the app shell), normal new tab on web.
+  const LEGAL_LINKS = [
+    { label: 'Privacy Policy', path: '/legal/privacy' },
+    { label: 'Terms of Use', path: '/legal/terms' },
+    { label: 'Cookie Policy', path: '/legal/cookies' },
+    { label: 'Acceptable Use', path: '/legal/aup' },
+    { label: 'Refund Policy', path: '/legal/refunds' },
+  ];
+  const openLegal = (path: string) => {
+    if (isAppShell && typeof window !== 'undefined' && window.electron?.openExternal) {
+      window.electron.openExternal(`https://studyhours.com${path}`);
+    } else if (typeof window !== 'undefined') {
+      window.open(path, '_blank', 'noopener,noreferrer');
+    }
+  };
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ['student-profile', user?.id],
@@ -29,10 +63,47 @@ export default function StudentProfilePage() {
       const res = await api.get('/students/me');
       return res.data;
     },
-    enabled: !!user && !authLoading,
+    // Gate on the auth TOKEN (not just `user`) so the request never fires before
+    // auth is bootstrapped. In the desktop app `token` and `user` hydrate at
+    // different times; gating on `user` made this page short-circuit to
+    // "Profile not found" while auth was still resolving. Mirrors
+    // useStudentDashboardSummary, which is why the homescreen loads but this didn't.
+    enabled: !!token && !authLoading,
   });
 
-  if (authLoading || isLoading) {
+  // While auth is still bootstrapping (no token yet) OR the query is in flight,
+  // show the loading state — NOT the "not found" state.
+  const authResolving = authLoading || !token;
+
+  if (authResolving || isLoading) {
+    if (isAppShell) {
+      return (
+        <AppPage>
+          <AppPageItem>
+            <div className="flex items-center gap-3.5">
+              <AppSkeleton className="h-11 w-11 rounded-xl" />
+              <div className="space-y-2">
+                <AppSkeleton className="h-7 w-48" />
+                <AppSkeleton className="h-4 w-72" />
+              </div>
+            </div>
+          </AppPageItem>
+          <AppPageItem>
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="space-y-6 md:col-span-2">
+                <AppSkeletonCard />
+                <AppSkeletonCard />
+              </div>
+              <div className="space-y-6">
+                <AppSkeletonCard />
+                <AppSkeletonCard />
+                <AppSkeletonCard />
+              </div>
+            </div>
+          </AppPageItem>
+        </AppPage>
+      );
+    }
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -41,6 +112,20 @@ export default function StudentProfilePage() {
   }
 
   if (!profile) {
+    if (isAppShell) {
+      return (
+        <AppPage>
+          <AppPageItem>
+            <AppEmptyState
+              icon={User}
+              accent="indigo"
+              title="Profile not found."
+              tone="error"
+            />
+          </AppPageItem>
+        </AppPage>
+      );
+    }
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <p className="text-muted-foreground">Profile not found.</p>
@@ -58,16 +143,301 @@ export default function StudentProfilePage() {
     visible: { y: 0, opacity: 1 }
   };
 
+  if (isAppShell) {
+    // Use the authoritative credit status (same source the homescreen shows via
+    // useCreditStatus), NOT the denormalized `sessions_remaining` column — the two
+    // drift apart, which is what made Profile ≠ homescreen.
+    const credit = profile.creditStatus ?? null;
+    const sessionsRemaining = credit?.creditsRemaining ?? profile.sessions_remaining ?? 0;
+    const creditModeLabel =
+      credit?.mode === 'trial_active'
+        ? 'Free trial sessions'
+        : credit?.mode === 'paid' || credit?.mode === 'learning'
+          ? 'Plan sessions remaining'
+          : credit?.mode === 'trial_expired' || credit?.mode === 'trial_exhausted'
+            ? 'Trial ended — renew to add sessions'
+            : 'Sessions remaining';
+    const interests: string[] =
+      profile.interests && Array.isArray(profile.interests) ? profile.interests : [];
+    const struggleAreas: string[] =
+      profile.struggle_areas && Array.isArray(profile.struggle_areas)
+        ? profile.struggle_areas
+        : [];
+
+    return (
+      <AppPage>
+        <AppPageItem>
+          <AppPageHeader
+            icon={User}
+            accent="indigo"
+            title="My Profile"
+            subtitle="Manage and verify your personal information."
+          />
+        </AppPageItem>
+
+        <AppPageItem>
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Left column */}
+            <div className="space-y-6 md:col-span-2">
+              {/* Personal Information */}
+              <AppCard accent="indigo">
+                <h2 className="mb-6 flex items-center gap-2 text-lg font-bold text-white">
+                  <User size={18} style={{ color: accentRgb('indigo') }} /> Personal Information
+                </h2>
+                <div className="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-white/45">
+                      Full Name
+                    </p>
+                    <p className="mt-1 font-semibold text-white">
+                      {profile.first_name} {profile.last_name}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-white/45">
+                      Email Address
+                    </p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <Mail size={15} className="text-white/45" />
+                      <p className="font-medium text-white">{profile.email || 'Not provided'}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-white/45">
+                      Grade / Level
+                    </p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <GraduationCap size={15} className="text-white/45" />
+                      <p className="font-medium text-white">{profile.grade || 'Not specified'}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-white/45">
+                      School Name
+                    </p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <School size={15} className="text-white/45" />
+                      <p className="font-medium text-white">{profile.school || 'Not provided'}</p>
+                    </div>
+                  </div>
+                </div>
+              </AppCard>
+
+              {/* Academic Profile */}
+              <AppCard accent="indigo">
+                <h2 className="mb-6 flex items-center gap-2 text-lg font-bold text-white">
+                  <Target size={18} style={{ color: accentRgb('indigo') }} /> Academic Profile
+                </h2>
+                <div className="space-y-6">
+                  <div>
+                    <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-white/45">
+                      Curriculum Preference
+                    </p>
+                    <span
+                      className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm font-bold"
+                      style={{
+                        background: accentRgb('indigo', 0.14),
+                        color: accentRgb('indigo'),
+                        border: `1px solid ${accentRgb('indigo', 0.3)}`,
+                      }}
+                    >
+                      <BookOpen size={15} />
+                      {profile.curricula?.name || 'Standard'}
+                    </span>
+                  </div>
+
+                  <div>
+                    <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-white/45">
+                      Learning Interests
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {interests.length > 0 ? (
+                        interests.map((interest, i) => (
+                          <span
+                            key={i}
+                            className="rounded-full px-3 py-1 text-sm font-medium"
+                            style={{
+                              background: accentRgb('indigo', 0.12),
+                              color: accentRgb('indigo'),
+                              border: `1px solid ${accentRgb('indigo', 0.25)}`,
+                            }}
+                          >
+                            {interest}
+                          </span>
+                        ))
+                      ) : (
+                        <p className="text-sm italic text-white/45">No interests listed.</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-white/45">
+                      Areas for Improvement
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {struggleAreas.length > 0 ? (
+                        struggleAreas.map((area, i) => (
+                          <span
+                            key={i}
+                            className="rounded-full px-3 py-1 text-sm font-medium"
+                            style={{
+                              background: accentRgb('rose', 0.12),
+                              color: accentRgb('rose'),
+                              border: `1px solid ${accentRgb('rose', 0.25)}`,
+                            }}
+                          >
+                            {area}
+                          </span>
+                        ))
+                      ) : (
+                        <p className="text-sm italic text-white/45">No areas specified.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </AppCard>
+            </div>
+
+            {/* Right column */}
+            <div className="space-y-6">
+              {/* Enrollment Status */}
+              <AppCard accent="indigo">
+                <h3 className="mb-4 flex items-center gap-2 font-bold text-white">
+                  <Star size={16} style={{ color: accentRgb('indigo') }} /> Enrollment Status
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/60">Type</span>
+                    <span
+                      className="rounded-lg px-2 py-0.5 text-sm font-bold capitalize"
+                      style={{
+                        background: accentRgb('indigo', 0.14),
+                        color: accentRgb('indigo'),
+                      }}
+                    >
+                      {profile.enrollment_status}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-white/60">Member Since</span>
+                    <span className="text-sm font-bold text-white">
+                      {profile.created_at
+                        ? new Date(profile.created_at).toLocaleDateString()
+                        : 'N/A'}
+                    </span>
+                  </div>
+                  <div className="border-t border-white/10 pt-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-white/60">Sessions Remaining</span>
+                      <span className="font-black" style={{ color: accentRgb('indigo') }}>
+                        {sessionsRemaining}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-white/40">{creditModeLabel}</p>
+                  </div>
+                </div>
+              </AppCard>
+
+              {/* Your Expert Tutor */}
+              <AppCard accent="indigo">
+                <h3 className="mb-4 flex items-center gap-2 font-bold text-white">
+                  <GraduationCap size={16} style={{ color: accentRgb('indigo') }} /> Your Expert Tutor
+                </h3>
+                {profile.trial_tutor ? (
+                  <div className="flex items-center gap-4">
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-2xl text-xl font-bold"
+                      style={{
+                        background: accentRgb('indigo', 0.18),
+                        color: accentRgb('indigo'),
+                      }}
+                    >
+                      {profile.trial_tutor.users.first_name[0]}
+                    </div>
+                    <div>
+                      <p className="font-bold text-white">
+                        {profile.trial_tutor.users.first_name}{' '}
+                        {profile.trial_tutor.users.last_name}
+                      </p>
+                      <p className="text-xs text-white/45">Assigned Expert</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="py-4 text-center">
+                    <p className="mb-3 text-sm italic text-white/45">No tutor assigned yet.</p>
+                    <Link
+                      href="/experts"
+                      className="text-xs font-bold hover:underline"
+                      style={{ color: accentRgb('indigo') }}
+                    >
+                      Browse Tutors
+                    </Link>
+                  </div>
+                )}
+              </AppCard>
+
+              {/* Legal & Privacy */}
+              <AppCard accent="indigo">
+                <h3 className="mb-1 flex items-center gap-2 font-bold text-white">
+                  <ShieldCheck size={16} style={{ color: accentRgb('indigo') }} /> Legal &amp; Privacy
+                </h3>
+                <p className="mb-3 text-xs text-white/45">
+                  Policies open in your browser.
+                </p>
+                <div className="flex flex-col divide-y divide-white/5">
+                  {LEGAL_LINKS.map((l) => (
+                    <button
+                      key={l.path}
+                      onClick={() => openLegal(l.path)}
+                      className="flex items-center justify-between py-2.5 text-left text-sm font-semibold text-white/80 transition-colors hover:text-white"
+                    >
+                      <span className="flex items-center gap-2">
+                        <FileText size={14} className="text-white/40" /> {l.label}
+                      </span>
+                      <ExternalLink size={13} className="text-white/30" />
+                    </button>
+                  ))}
+                </div>
+              </AppCard>
+
+              {/* Account */}
+              <AppCard accent="indigo">
+                <h3 className="mb-1 flex items-center gap-2 font-bold text-white">
+                  <LogOut size={16} style={{ color: accentRgb('indigo') }} /> Account
+                </h3>
+                <p className="mb-4 text-xs text-white/45">
+                  Signed in as{' '}
+                  {profile.email || `${profile.first_name} ${profile.last_name}`}
+                </p>
+                <AppPillButton
+                  accent="rose"
+                  variant="soft"
+                  onClick={() => logout()}
+                  className="w-full"
+                >
+                  <LogOut size={15} /> Sign out
+                </AppPillButton>
+              </AppCard>
+            </div>
+          </div>
+        </AppPageItem>
+      </AppPage>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-4xl mx-auto px-4 pt-8">
-        {/* Back Link */}
-        <Link 
-          href="/students/dashboard" 
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
-        >
-          <ChevronLeft size={16} /> Back to Dashboard
-        </Link>
+        {/* Back Link (hidden in the desktop app — sidebar handles navigation) */}
+        {!isAppShell && (
+          <Link
+            href="/students/dashboard"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8"
+          >
+            <ChevronLeft size={16} /> Back to Dashboard
+          </Link>
+        )}
 
         {/* Header */}
         <header className="mb-10">
@@ -215,11 +585,25 @@ export default function StudentProfilePage() {
               ) : (
                 <div className="text-center py-4">
                   <p className="text-sm text-muted-foreground italic mb-3">No tutor assigned yet.</p>
-                  <Link href="/catalog" className="text-xs font-bold text-primary hover:underline">
+                  <Link href="/experts" className="text-xs font-bold text-primary hover:underline">
                     Browse Tutors
                   </Link>
                 </div>
               )}
+            </div>
+
+            {/* Account / Sign out */}
+            <div className="bg-surface rounded-3xl p-6 border border-border shadow-sm">
+              <h3 className="font-bold text-foreground mb-1">Account</h3>
+              <p className="text-xs text-muted-foreground mb-4">
+                Signed in as {profile.email || `${profile.first_name} ${profile.last_name}`}
+              </p>
+              <button
+                onClick={() => logout()}
+                className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 text-sm font-bold hover:bg-red-500 hover:text-white transition-colors"
+              >
+                <LogOut size={16} /> Sign out
+              </button>
             </div>
           </motion.div>
         </motion.div>

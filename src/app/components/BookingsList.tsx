@@ -33,8 +33,9 @@ export default function BookingsList({ bookings }: { bookings: Booking[] }) {
 
                     <div className="flex gap-2">
                         <a
-                            href={`/bookings/${b.id}`}
-                            className="px-3 py-1 rounded bg-[#1C3A5A] text-white text-sm"
+                            href="#"
+                            className="px-3 py-1 rounded bg-[#1C3A5A] text-white text-sm opacity-50 cursor-not-allowed"
+                            title="View Booking details coming soon"
                         >
                             View
                         </a>

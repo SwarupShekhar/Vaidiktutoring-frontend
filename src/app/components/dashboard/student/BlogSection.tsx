@@ -32,7 +32,7 @@ export const BlogSection = () => {
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {blogs.slice(0, 3).map((b: any) => (
-          <a key={b.id} href={`/blog/${b.slug}`}
+          <a key={b.id} href={`/blogs/${b.slug}`}
             className="group bg-surface rounded-2xl border border-border overflow-hidden hover:shadow-md transition-all">
             {b.image_url && (
               <div className="h-36 overflow-hidden relative">
