@@ -7,6 +7,7 @@ import TutorAllocationModal from '@/app/components/admin/TutorAllocationModal';
 import TutorListModal from '@/app/components/admin/TutorListModal';
 import AdminSessionSummaryModal from '@/app/components/admin/AdminSessionSummaryModal';
 import SupportTicketsSection from '@/app/components/admin/SupportTicketsSection';
+import CreateGroupSessionModal from '@/app/components/admin/CreateGroupSessionModal';
 import { useAuthContext } from '@/app/context/AuthContext';
 import Link from 'next/link';
 import api from '@/app/lib/api';
@@ -32,7 +33,9 @@ import {
     LifeBuoy,
     Shield,
     FileText,
-    RefreshCw
+    RefreshCw,
+    BookOpen,
+    Video
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -63,6 +66,7 @@ export default function AdminDashboardPage() {
     const [selectedBooking, setSelectedBooking] = useState<any>(null);
     const [summarySessionId, setSummarySessionId] = useState<string | null>(null);
     const [showSummary, setShowSummary] = useState(false);
+    const [showGroupSession, setShowGroupSession] = useState(false);
     const [newTicketCount, setNewTicketCount] = useState(0);
     const socketRef = useRef<any>(null);
 
@@ -393,6 +397,19 @@ export default function AdminDashboardPage() {
                                             <p className="text-[9px] text-slate-500 dark:text-white/40 font-mono uppercase mt-1">Archival Access</p>
                                         </Link>
 
+                                        <Link href="/admin/assignments" className="col-span-2 p-5 bg-black/5 dark:bg-white/5 border border-border dark:border-white/5 rounded-[1.8rem] hover:bg-purple-500/10 hover:border-purple-500/30 transition-all group/sub text-left flex items-center justify-between">
+                                            <div>
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <div className="p-2 bg-purple-500/10 rounded-xl text-purple-500 dark:text-purple-400">
+                                                        <BookOpen size={18} />
+                                                    </div>
+                                                    <p className="text-(--color-text-primary) dark:text-white font-bold text-sm">Assignments</p>
+                                                </div>
+                                                <p className="text-[9px] text-slate-500 dark:text-white/40 font-mono uppercase">Distribute Vault Assets</p>
+                                            </div>
+                                            <ChevronRight size={16} className="text-slate-400 dark:text-white/20 group-hover/sub:text-purple-500 transition-colors" />
+                                        </Link>
+
                                         <Link href="/admin/leads" className="col-span-2 p-5 bg-black/5 dark:bg-white/5 border border-border dark:border-white/5 rounded-[1.8rem] hover:bg-indigo-500/10 hover:border-indigo-500/30 transition-all group/sub text-left flex items-center justify-between">
                                             <div>
                                                 <div className="flex items-center gap-3 mb-2">
@@ -405,6 +422,19 @@ export default function AdminDashboardPage() {
                                             </div>
                                             <ChevronRight size={16} className="text-slate-400 dark:text-white/20 group-hover/sub:text-indigo-500 transition-colors" />
                                         </Link>
+
+                                        <button onClick={() => setShowGroupSession(true)} className="col-span-2 p-5 bg-black/5 dark:bg-white/5 border border-border dark:border-white/5 rounded-[1.8rem] hover:bg-rose-500/10 hover:border-rose-500/30 transition-all group/sub text-left flex items-center justify-between">
+                                            <div>
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <div className="p-2 bg-rose-500/10 rounded-xl text-rose-500 dark:text-rose-400">
+                                                        <Video size={18} />
+                                                    </div>
+                                                    <p className="text-(--color-text-primary) dark:text-white font-bold text-sm">Group Sessions</p>
+                                                </div>
+                                                <p className="text-[9px] text-slate-500 dark:text-white/40 font-mono uppercase">Manage & Schedule Zoom Groups</p>
+                                            </div>
+                                            <ChevronRight size={16} className="text-slate-400 dark:text-white/20 group-hover/sub:text-rose-500 transition-colors" />
+                                        </button>
                                     </div>
                                     
                                     {/* SYSTEM UTILITY BUTTON */}
@@ -528,6 +558,10 @@ export default function AdminDashboardPage() {
                         setSummarySessionId(null);
                     }} 
                     sessionId={summarySessionId}
+                />
+                <CreateGroupSessionModal 
+                    isOpen={showGroupSession} 
+                    onClose={() => setShowGroupSession(false)} 
                 />
             </div>
         </ProtectedClient>
