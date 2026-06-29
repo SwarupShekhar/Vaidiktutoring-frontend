@@ -559,10 +559,11 @@ export default function AdminDashboardPage() {
                     }} 
                     sessionId={summarySessionId}
                 />
-                <CreateGroupSessionModal 
-                    isOpen={showGroupSession} 
-                    onClose={() => setShowGroupSession(false)} 
-                />
+                {showGroupSession && (
+                    <CreateGroupSessionModal 
+                        onClose={() => setShowGroupSession(false)} 
+                    />
+                )}
             </div>
         </ProtectedClient>
     );
