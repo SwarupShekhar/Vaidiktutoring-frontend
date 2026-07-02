@@ -1,10 +1,20 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Bell, Check } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { api } from '@/app/lib/api';
 import { useAuthContext } from '@/app/context/AuthContext';
+
+// Where a notification takes you when clicked (null = just mark read, no nav).
+function routeFor(type?: string): string | null {
+  const t = type || '';
+  if (t === 'reschedule_requested') return '/admin/reschedule-requests';
+  if (t.startsWith('reschedule_')) return '/students/schedule';
+  if (t === 'session:note_added') return '/students/notes';
+  return null;
+}
 
 type Notif = {
   id: string;
@@ -20,11 +30,12 @@ const isRead = (n: Notif) => n.read ?? n.is_read ?? false;
 const msgOf = (n: Notif) => n.message || n.payload?.message || 'New notification';
 
 /**
- * Notification bell for the desktop app shell — every role sees it. Reuses the
+ * Notification bell for the desktop app shell, every role sees it. Reuses the
  * existing /notifications API (poll + mark read). App-dark styled dropdown.
  */
 export default function NotificationBell() {
   const { user } = useAuthContext();
+  const router = useRouter();
   const [items, setItems] = useState<Notif[]>([]);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -116,7 +127,12 @@ export default function NotificationBell() {
               items.slice(0, 30).map((n) => (
                 <button
                   key={n.id}
-                  onClick={() => markRead(n.id)}
+                  onClick={() => {
+                    markRead(n.id);
+                    setOpen(false);
+                    const to = routeFor(n.type);
+                    if (to) router.push(to);
+                  }}
                   className={`flex w-full items-start gap-2.5 border-b border-white/5 px-4 py-3 text-left transition-colors hover:bg-white/[0.04] ${
                     isRead(n) ? 'opacity-60' : ''
                   }`}
@@ -125,7 +141,7 @@ export default function NotificationBell() {
                   <span className={isRead(n) ? 'flex-1' : 'flex-1 pl-0'}>
                     <span className="block text-sm text-white/85">{msgOf(n)}</span>
                     {n.created_at && (
-                      <span className="mt-0.5 block text-[11px] text-white/35">
+                      <span className="mt-0.5 block text-[11px] text-white/55">
                         {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
                       </span>
                     )}

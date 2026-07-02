@@ -73,7 +73,7 @@ function ChildSpace() {
   const attendanceRate = Math.round(summary?.attendanceRate ?? 0);
 
   const sessionsLabel = useMemo(() => {
-    if (!credit) return '—';
+    if (!credit) return ', ';
     if (credit.mode === 'trial_active') return `${Math.max(0, TRIAL_LIMIT - (credit.sessionsUsed ?? 0))} of ${TRIAL_LIMIT} free`;
     if (credit.mode === 'trial_exhausted' || credit.mode === 'trial_expired') return 'Trial ended';
     return `${Math.max(0, credit.creditsRemaining ?? 0)} left`;
@@ -93,7 +93,7 @@ function ChildSpace() {
     { label: 'Recordings', desc: 'Recorded sessions', href: `/parent/recordings?child=${childId}`, icon: Video },
   ];
 
-  // Interactive learning labs — open to every child (trial included), same as the
+  // Interactive learning labs, open to every child (trial included), same as the
   // student dashboard. Launches the tool in a fullscreen iframe.
   const [activeTool, setActiveTool] = useState<InteractiveTool | null>(null);
   const [labLoading, setLabLoading] = useState(true);
@@ -165,7 +165,7 @@ function ChildSpace() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {stat(
             'Attendance',
-            hasAttendance ? `${attendanceRate}%` : '—',
+            hasAttendance ? `${attendanceRate}%` : ', ',
             ClipboardCheck,
             attendanceRate >= 90 ? 'emerald' : attendanceRate >= 70 ? 'amber' : 'indigo',
             hasAttendance ? undefined : 'No sessions yet',
@@ -200,7 +200,7 @@ function ChildSpace() {
         </div>
       </AppPageItem>
 
-      {/* Interactive labs — available to every child */}
+      {/* Interactive labs, available to every child */}
       <AppPageItem>
         <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-white/40">Interactive labs</p>
         <div className="grid gap-4 sm:grid-cols-2">

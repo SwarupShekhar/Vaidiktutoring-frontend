@@ -87,8 +87,10 @@ export const TutorAppDashboard: React.FC<TutorAppDashboardProps> = ({ user }) =>
   // The class to teach next: a live class today wins, else the soonest upcoming booking.
   const nextSession = todaySessions?.[0] ?? upcomingBookings?.[0] ?? null;
   const nextStart = sessionStartOf(nextSession);
-  // Tutors join in-platform via /session/:id (same as the web dashboard's "Join Live Class").
-  const canJoin = !!nextSession?.id;
+  // Tutors join in-platform via /session/:id. Gate on the start time (5 min lead)
+  // — an always-enabled Join let a tutor open a class days early → daily-token 403.
+  const JOIN_LEAD_MS = 5 * 60_000;
+  const canJoin = !!nextStart && Date.now() >= nextStart.getTime() - JOIN_LEAD_MS;
 
   const handleJoin = () => {
     if (nextSession?.id) router.push(`/session/${nextSession.id}`);

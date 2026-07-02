@@ -73,7 +73,7 @@ function TutorBlogs() {
           icon={PenLine}
           accent="emerald"
           title="My Blogs"
-          subtitle="Write articles and submit them for review — an editor publishes approved posts to the site."
+          subtitle="Write articles and submit them for review, an editor publishes approved posts to the site."
           right={
             <Link href="/tutor/blogs/new">
               <AppPillButton accent="emerald" variant="solid">
@@ -94,7 +94,7 @@ function TutorBlogs() {
           <AppEmptyState
             icon={FileText}
             accent="emerald"
-            title="No blogs yet — write your first article."
+            title="No blogs yet, write your first article."
           />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
@@ -109,7 +109,7 @@ function TutorBlogs() {
                     </span>
                   </div>
                   {b.excerpt && <p className="mt-1 line-clamp-2 text-xs text-white/45">{b.excerpt}</p>}
-                  <p className="mt-3 text-[11px] text-white/35">
+                  <p className="mt-3 text-[11px] text-white/55">
                     {b.published_at
                       ? `Published ${format(new Date(b.published_at), 'd MMM yyyy')}`
                       : b.created_at

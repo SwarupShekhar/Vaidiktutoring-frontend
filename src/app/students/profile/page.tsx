@@ -23,11 +23,15 @@ import {
   FileText,
   ExternalLink,
   Video,
-  VideoOff
+  VideoOff,
+  Pencil,
+  X,
+  Save
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
+import useCatalog from '@/app/Hooks/useCatalog';
 import {
   AppPage,
   AppPageItem,
@@ -99,8 +103,46 @@ export default function StudentProfilePage() {
     },
   });
 
+  // ---- Editable profile (everything except name + email) ----
+  const { curricula } = useCatalog();
+  type EditForm = {
+    grade: string;
+    school: string;
+    curriculum_preference: string;
+    interests: string; // comma-separated
+    struggle_areas: string; // comma-separated
+  };
+  const [editForm, setEditForm] = useState<EditForm | null>(null);
+  const splitList = (s: string) => s.split(',').map((x) => x.trim()).filter(Boolean);
+  const profileMutation = useMutation({
+    mutationFn: async (f: EditForm) => {
+      const res = await api.patch('/students/me', {
+        grade: f.grade || undefined,
+        school: f.school || undefined,
+        curriculum_preference: f.curriculum_preference || undefined,
+        interests: splitList(f.interests),
+        struggle_areas: splitList(f.struggle_areas),
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success('Profile updated');
+      queryClient.invalidateQueries({ queryKey: ['student-profile'] });
+      setEditForm(null);
+    },
+    onError: (e: any) => toast.error(e?.response?.data?.message || 'Could not save profile'),
+  });
+  const openEdit = (p: any) =>
+    setEditForm({
+      grade: p?.grade ?? '',
+      school: p?.school ?? '',
+      curriculum_preference: p?.curriculum_preference ?? '',
+      interests: Array.isArray(p?.interests) ? p.interests.join(', ') : '',
+      struggle_areas: Array.isArray(p?.struggle_areas) ? p.struggle_areas.join(', ') : '',
+    });
+
   // While auth is still bootstrapping (no token yet) OR the query is in flight,
-  // show the loading state — NOT the "not found" state.
+  // show the loading state, NOT the "not found" state.
   const authResolving = authLoading || !token;
 
   if (authResolving || isLoading) {
@@ -173,7 +215,7 @@ export default function StudentProfilePage() {
 
   if (isAppShell) {
     // Use the authoritative credit status (same source the homescreen shows via
-    // useCreditStatus), NOT the denormalized `sessions_remaining` column — the two
+    // useCreditStatus), NOT the denormalized `sessions_remaining` column, the two
     // drift apart, which is what made Profile ≠ homescreen.
     const credit = profile.creditStatus ?? null;
     const sessionsRemaining = credit?.creditsRemaining ?? profile.sessions_remaining ?? 0;
@@ -183,7 +225,7 @@ export default function StudentProfilePage() {
         : credit?.mode === 'paid' || credit?.mode === 'learning'
           ? 'Plan sessions remaining'
           : credit?.mode === 'trial_expired' || credit?.mode === 'trial_exhausted'
-            ? 'Trial ended — renew to add sessions'
+            ? 'Trial ended, renew to add sessions'
             : 'Sessions remaining';
     const interests: string[] =
       profile.interests && Array.isArray(profile.interests) ? profile.interests : [];
@@ -200,6 +242,11 @@ export default function StudentProfilePage() {
             accent="indigo"
             title="My Profile"
             subtitle="Manage and verify your personal information."
+            right={
+              <AppPillButton accent="indigo" variant="soft" onClick={() => openEdit(profile)}>
+                <Pencil size={14} /> Edit
+              </AppPillButton>
+            }
           />
         </AppPageItem>
 
@@ -447,7 +494,7 @@ export default function StudentProfilePage() {
                       <span className="flex items-center gap-2">
                         <FileText size={14} className="text-white/40" /> {l.label}
                       </span>
-                      <ExternalLink size={13} className="text-white/30" />
+                      <ExternalLink size={13} className="text-white/50" />
                     </button>
                   ))}
                 </div>
@@ -474,6 +521,58 @@ export default function StudentProfilePage() {
             </div>
           </div>
         </AppPageItem>
+
+        {/* Edit profile modal, everything except name + email. */}
+        {editForm && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+            <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#15131f] p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-bold text-white">Edit profile</h2>
+                <button onClick={() => setEditForm(null)} className="rounded-lg p-1.5 text-white/50 ring-1 ring-white/10 hover:bg-white/10 hover:text-white" aria-label="Close">
+                  <X size={16} />
+                </button>
+              </div>
+              <p className="mb-4 text-xs text-white/40">Name and email can't be changed here.</p>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-white/40">Grade / Level</label>
+                    <input value={editForm.grade} onChange={(e) => setEditForm({ ...editForm, grade: e.target.value })} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none focus:border-indigo-400/60" />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-white/40">School</label>
+                    <input value={editForm.school} onChange={(e) => setEditForm({ ...editForm, school: e.target.value })} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none focus:border-indigo-400/60" />
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-white/40">Curriculum</label>
+                  <select value={editForm.curriculum_preference} onChange={(e) => setEditForm({ ...editForm, curriculum_preference: e.target.value })} className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none focus:border-indigo-400/60">
+                    <option value="" className="bg-[#15131f]">No preference</option>
+                    {(curricula || []).map((c: any) => (
+                      <option key={c.id} value={c.id} className="bg-[#15131f]">{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-white/40">Interests</label>
+                  <input value={editForm.interests} onChange={(e) => setEditForm({ ...editForm, interests: e.target.value })} placeholder="Comma-separated, e.g. Coding, Football" className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white placeholder-white/25 outline-none focus:border-indigo-400/60" />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-white/40">Areas to improve</label>
+                  <input value={editForm.struggle_areas} onChange={(e) => setEditForm({ ...editForm, struggle_areas: e.target.value })} placeholder="Comma-separated, e.g. Algebra, Essays" className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white placeholder-white/25 outline-none focus:border-indigo-400/60" />
+                </div>
+              </div>
+
+              <div className="mt-6 flex items-center justify-end gap-2">
+                <button onClick={() => setEditForm(null)} className="rounded-xl px-4 py-2 text-sm font-bold text-white/60 hover:text-white">Cancel</button>
+                <button onClick={() => profileMutation.mutate(editForm)} disabled={profileMutation.isPending} className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-50">
+                  {profileMutation.isPending ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />} Save
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </AppPage>
     );
   }
@@ -481,7 +580,7 @@ export default function StudentProfilePage() {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="max-w-4xl mx-auto px-4 pt-8">
-        {/* Back Link (hidden in the desktop app — sidebar handles navigation) */}
+        {/* Back Link (hidden in the desktop app, sidebar handles navigation) */}
         {!isAppShell && (
           <Link
             href="/students/dashboard"
@@ -681,7 +780,7 @@ export default function StudentProfilePage() {
   );
 }
 
-/* Age check — true only when a birth date is present AND the learner is 18+. */
+/* Age check, true only when a birth date is present AND the learner is 18+. */
 function isAdult(birthDate?: string | null): boolean {
   if (!birthDate) return false;
   const dob = new Date(birthDate);
@@ -724,7 +823,7 @@ function RecordingConsentCard({
     : 'needs-dob';
 
   const blurb = 'Turn on to let your tutor record your sessions so you can review them later. Off by default; change anytime. Recordings auto-delete after 30 days.';
-  const minorNote = "Sessions are only recorded with consent. For a learner under 18, a parent or guardian must enable recording from their own account — it can't be turned on here.";
+  const minorNote = "Sessions are only recorded with consent. For a learner under 18, a parent or guardian must enable recording from their own account, it can't be turned on here.";
 
   const toggle = (
     <button

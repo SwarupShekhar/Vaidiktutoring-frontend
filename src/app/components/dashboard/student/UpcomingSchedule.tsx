@@ -114,6 +114,9 @@ export const UpcomingSchedule: React.FC<UpcomingScheduleProps> = ({
               {/* Expandable Content */}
               {expandedId === session.id && (() => {
                 const { isZoom } = resolveZoom(session);
+                // Join opens 5 min before start — joining early hits a backend 403.
+                const startMs = new Date(session.start_time || (session as any).requested_start).getTime();
+                const joinable = Number.isFinite(startMs) && startMs - Date.now() <= 5 * 60_000;
                 return (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
@@ -122,12 +125,12 @@ export const UpcomingSchedule: React.FC<UpcomingScheduleProps> = ({
                     className="px-4 pb-4 pt-1 flex justify-end border-t border-border bg-background/50"
                   >
                     <button
-                      disabled={isJoining}
+                      disabled={isJoining || !joinable}
                       onClick={(e) => handleJoinClick(e, session)}
                       className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold shadow-md shadow-blue-500/20 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isJoining ? <Loader2 size={16} className="animate-spin" /> : null}
-                      {isZoom ? 'Join Zoom' : 'Join Class'}
+                      {!joinable ? 'Opens 5 min before' : isZoom ? 'Join Zoom' : 'Join Class'}
                     </button>
                   </motion.div>
                 );

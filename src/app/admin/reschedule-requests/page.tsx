@@ -58,7 +58,7 @@ function AdminReschedule() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
-  // Approve modal — admin picks the NEW class time (approving actually reschedules).
+  // Approve modal, admin picks the NEW class time (approving actually reschedules).
   const [approving, setApproving] = useState<RescheduleRequest | null>(null);
   const [newStart, setNewStart] = useState('');
   const [duration, setDuration] = useState(60);
@@ -196,7 +196,7 @@ function AdminReschedule() {
         )}
       </div>
 
-      {/* Approve modal — pick the new class time (this actually moves the class). */}
+      {/* Approve modal, pick the new class time (this actually moves the class). */}
       {approving && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-white/10 dark:bg-slate-900">

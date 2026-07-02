@@ -106,7 +106,7 @@ function ParentNotes() {
       a.rel = 'noopener noreferrer';
       a.click();
     } catch {
-      /* swallow — button just re-enables */
+      /* swallow, button just re-enables */
     } finally {
       setDownloading(null);
     }
@@ -180,7 +180,7 @@ function ParentNotes() {
                         ? ` · ${note.sessions.bookings.subjects.name}`
                         : ''}
                     </p>
-                    <p className="mt-1 text-[11px] text-white/35">
+                    <p className="mt-1 text-[11px] text-white/55">
                       {tutorName(note)}
                       {note.created_at ? ` · ${format(new Date(note.created_at), 'd MMM yyyy')}` : ''}
                     </p>

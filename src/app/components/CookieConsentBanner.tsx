@@ -1,13 +1,19 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
 
 /**
  * CookieConsentBanner
  * Fixed banner that appears for first-time visitors to capture GDPR-compliant cookie consent.
  * Choices are persisted to localStorage.
+ *
+ * NOT shown in the desktop app shell: a native app doesn't run the marketing
+ * site's analytics/tracking cookies, so the web consent banner doesn't apply —
+ * app privacy is covered by the Privacy Policy + in-app settings. Web unchanged.
  */
 export default function CookieConsentBanner() {
+    const isAppShell = useIsAppShell();
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -52,6 +58,7 @@ export default function CookieConsentBanner() {
         window.dispatchEvent(new CustomEvent('cookie-consent-updated', { detail: choice }));
     };
 
+    if (isAppShell) return null; // native app → no web cookie banner
     if (!isVisible) return null;
 
     return (

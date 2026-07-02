@@ -6,11 +6,14 @@ import { dark } from '@clerk/themes';
 import { useTheme } from 'next-themes';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
 import { Mail, Lock, Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
 
 function LoginContent() {
   const { login } = useAuthContext();
   const { resolvedTheme } = useTheme();
+  const isAppShell = useIsAppShell();
+  const darkUI = isAppShell || resolvedTheme === 'dark';
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -45,16 +48,18 @@ function LoginContent() {
   };
 
   return (
-    <main className="min-h-screen relative flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-      {/* Animated Blobs Background */}
+    <main className={`min-h-screen relative flex items-center justify-center overflow-hidden py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${isAppShell ? 'bg-[#0a0a0f]' : 'bg-slate-50 dark:bg-slate-950'}`}>
+      {/* Animated Blobs Background — web only (app shell stays clean dark) */}
+      {!isAppShell && (
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-300/40 dark:bg-purple-900/20 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-30 animate-blob"></div>
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-yellow-200/40 dark:bg-yellow-900/20 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
         <div className="absolute bottom-[-20%] left-[20%] w-[500px] h-[500px] bg-pink-300/40 dark:bg-pink-900/20 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
       </div>
+      )}
 
       <div className="relative z-10 w-full max-w-md">
-        <div className="bg-white/70 dark:bg-black/40 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-3xl shadow-2xl p-8 space-y-6 flex flex-col justify-center transition-all duration-500 overflow-hidden">
+        <div className={`backdrop-blur-2xl rounded-3xl shadow-2xl p-8 space-y-6 flex flex-col justify-center transition-all duration-500 overflow-hidden border ${isAppShell ? 'bg-[#15131f] border-white/10' : 'bg-white/70 dark:bg-black/40 border-white/20 dark:border-white/10'}`}>
 
           {!showManual ? (
             <div className="animate-in fade-in slide-in-from-top-4 duration-500 flex flex-col items-center w-full">
@@ -74,7 +79,7 @@ function LoginContent() {
                     routing="hash"
                     forceRedirectUrl={redirectUrl}
                     appearance={{
-                      baseTheme: resolvedTheme === 'dark' ? dark : undefined,
+                      baseTheme: darkUI ? dark : undefined,
                       elements: {
                         card: "bg-transparent shadow-none border-none p-0",
                         headerTitle: "hidden",

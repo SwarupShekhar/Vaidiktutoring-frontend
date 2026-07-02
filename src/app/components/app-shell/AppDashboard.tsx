@@ -165,9 +165,13 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
   const sessionStart = nextSession
     ? new Date(nextSession.start_time ?? nextSession.requested_start)
     : null;
-  // 5-min join window removed for testing — Join is enabled whenever a room link exists.
-  // (Re-add `&& sessionStart && sessionStart.getTime() - Date.now() <= 5*60_000` for prod.)
-  const canJoin = !!nextSession?.meet_link;
+  // Join opens 5 min before start (joining a class days early hits a backend 403
+  // on the daily-token). Stays open after start so a late student can still join.
+  const JOIN_LEAD_MS = 5 * 60_000;
+  const canJoin =
+    !!nextSession?.meet_link &&
+    !!sessionStart &&
+    Date.now() >= sessionStart.getTime() - JOIN_LEAD_MS;
   // A freshly booked session is 'requested'/'pending' with no room link yet — show
   // "awaiting confirmation" instead of a dead Join button.
   const isPending =

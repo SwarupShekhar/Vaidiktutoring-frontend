@@ -54,8 +54,11 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
 
     const isLive = isWithinInterval(now, { start: startTime, end: endTime });
     
-    // Allow joining if the session is today or in the past (to allow late joins/reviews)
-    const canJoin = startTime.toDateString() === now.toDateString() || startTime < now;
+    // Join opens 5 min before start (and stays open after). Joining a class
+    // hours/days early hits a backend daily-token 403 with a misleading
+    // "different tutor" screen, so gate the button on the real time window.
+    const JOIN_LEAD_MS = 5 * 60_000;
+    const canJoin = startTime.getTime() - now.getTime() <= JOIN_LEAD_MS;
     const subjectName = session.subject?.name || session.subject_name || 'StudyHours Session';
 
     // Resolve the video provider. ZOOM sessions are joined externally via `zoom_join_url`;

@@ -4,6 +4,15 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
+import { useAuthContext } from '@/app/context/AuthContext';
+
+// Role-correct dashboard — a tutor/parent bounced to the STUDENT dashboard hits
+// a role-mismatch 403. Route each role to its own home.
+function dashboardFor(role?: string): string {
+    if (role === 'tutor') return '/tutor/dashboard';
+    if (role === 'parent') return '/parent/dashboard';
+    return '/students/dashboard';
+}
 
 // Synchronous app-shell detection (no effect delay) — usable during render.
 function detectAppShellSync(): boolean {
@@ -18,8 +27,10 @@ function detectAppShellSync(): boolean {
 export default function NotFound() {
     const router = useRouter();
     const isAppShell = useIsAppShell();
-    // In the desktop app there is no marketing home — send users to their dashboard.
-    const homeHref = isAppShell ? '/students/dashboard' : '/';
+    const { user, loading } = useAuthContext();
+    const dash = dashboardFor(user?.role);
+    // In the desktop app there is no marketing home — send users to THEIR dashboard.
+    const homeHref = isAppShell ? dash : '/';
 
     // Set during render (before any effect) so ClientSideComponents' windowReady
     // skips while this transient 404 paints — keeping the splash over it instead
@@ -32,13 +43,16 @@ export default function NotFound() {
     // In the desktop app, a transient 404 can flash on launch (route still
     // resolving). Bounce straight to the dashboard so it never dwells on screen.
     useEffect(() => {
+        // Wait for auth to resolve so we send them to the RIGHT role dashboard
+        // (the splash covers the 404 via __shSuppressReady while we wait).
+        if (loading) return;
         if (detectAppShellSync()) {
             // Hard nav (not router.replace) to force a clean remount + window reveal.
-            window.location.replace('/students/dashboard');
+            window.location.replace(dash);
         } else if (isAppShell) {
-            router.replace('/students/dashboard');
+            router.replace(dash);
         }
-    }, [isAppShell, router]);
+    }, [isAppShell, router, dash, loading]);
 
     return (
         <main className="min-h-screen relative flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">

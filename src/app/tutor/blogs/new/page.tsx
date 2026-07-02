@@ -13,8 +13,10 @@ import {
   AppPageHeader,
   AppCard,
 } from '@/app/components/app-shell/ui';
+import { BlogEditor } from '@/app/components/blog-editor';
 
-const CATEGORIES = ['Study Tips', 'Exam Prep', 'Subject Guides', 'Parenting', 'Student Life', 'News'];
+// Same category list the website blog editor uses (BlogSidebar).
+const CATEGORIES = ['Study Tips', 'Math', 'Science', 'English', 'College Prep', 'News', 'Technology', 'Parenting'];
 
 export default function TutorNewBlogPage() {
   return (
@@ -131,14 +133,25 @@ function TutorNewBlog() {
 
             <div>
               <label className={label}>Content</label>
-              <textarea
-                className={`${field} min-h-[280px] resize-y font-mono text-[13px] leading-relaxed`}
-                value={form.content}
-                onChange={(e) => set('content', e.target.value)}
-                placeholder="Write your article here. Basic HTML is supported; an editor will format and polish it before publishing."
-              />
-              <p className="mt-1.5 text-[11px] text-white/35">
-                Plain text or basic HTML. The editorial team formats and publishes approved posts.
+              {/* Same TipTap editor the website blog editor uses → markdown output,
+                  so tutor drafts match the website blog system exactly. Tutors can't
+                  publish (canPublish=false); an admin reviews + publishes. */}
+              <div className="rounded-xl border border-white/10 bg-white">
+                <BlogEditor
+                  content={form.content}
+                  onChange={(md) => set('content', md)}
+                  editable={true}
+                  canPublish={false}
+                  status="PENDING"
+                  onPublishToggle={() => {}}
+                  title={form.title}
+                  category={form.category}
+                  imageUrl={form.imageUrl}
+                  excerpt={form.excerpt}
+                />
+              </div>
+              <p className="mt-1.5 text-[11px] text-white/55">
+                Rich editor, headings, links, images, lists. An editor reviews &amp; publishes approved posts.
               </p>
             </div>
 

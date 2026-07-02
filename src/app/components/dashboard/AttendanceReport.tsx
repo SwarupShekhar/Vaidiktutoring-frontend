@@ -34,7 +34,7 @@ const STATUS_LABEL: Record<AttendanceStatus, string> = {
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return ", ";
   return d.toLocaleDateString(undefined, {
     weekday: "short",
     month: "short",
@@ -44,14 +44,14 @@ function formatDate(iso: string): string {
 }
 
 function formatTime(iso: string | null): string {
-  if (!iso) return "—";
+  if (!iso) return ", ";
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return ", ";
   return d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 }
 
 function formatMinutes(mins: number | null): string {
-  if (mins == null) return "—";
+  if (mins == null) return ", ";
   return `${mins} min`;
 }
 
@@ -200,7 +200,7 @@ export default function AttendanceReport({ studentId, variant = 'light' }: Atten
             Attendance Rate
           </span>
           <span className={`text-lg font-black ${t.summaryRate}`}>
-            {summary.totalSessions === 0 ? "—" : `${summary.attendanceRate}%`}
+            {summary.totalSessions === 0 ? ", " : `${summary.attendanceRate}%`}
           </span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -238,7 +238,7 @@ export default function AttendanceReport({ studentId, variant = 'light' }: Atten
 
       {/* Sessions table */}
       {sessions.length === 0 ? (
-        <p className={`text-xs italic text-center py-4 ${dark ? 'text-white/35' : 'text-text-secondary opacity-50'}`}>
+        <p className={`text-xs italic text-center py-4 ${dark ? 'text-white/55' : 'text-text-secondary opacity-50'}`}>
           No attendance records yet
         </p>
       ) : (

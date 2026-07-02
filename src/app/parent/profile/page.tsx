@@ -88,7 +88,7 @@ export default function ParentProfilePage() {
 }
 
 /* ------------------------------------------------------------------ */
-/* App-shell (desktop) — premium dark                                  */
+/* App-shell (desktop), premium dark                                  */
 /* ------------------------------------------------------------------ */
 function ParentProfileApp() {
   const { user, logout } = useAuthContext();
@@ -122,7 +122,7 @@ function ParentProfileApp() {
             </div>
             <div className="flex items-center gap-3 text-white/80">
               <Mail size={15} className="text-white/40" />
-              <span>{user?.email || '—'}</span>
+              <span>{user?.email || ', '}</span>
             </div>
           </div>
         </AppCard>
@@ -137,7 +137,7 @@ function ParentProfileApp() {
           </div>
           <p className="mb-4 text-xs leading-relaxed text-white/50">
             Live tutoring uses your child's camera and microphone. Sessions are only
-            recorded — so your child can review them later — if you turn it on below.
+            recorded, so your child can review them later, if you turn it on below.
             You can withdraw consent at any time; it takes effect immediately.{' '}
             <Link
               href="/legal/privacy"
@@ -167,7 +167,7 @@ function ParentProfileApp() {
                       </p>
                       <p className="mt-0.5 flex items-center gap-1.5 text-xs text-white/45">
                         <Video size={12} />
-                        {granted ? 'Recording allowed' : 'Recording off — sessions still run live'}
+                        {granted ? 'Recording allowed' : 'Recording off, sessions still run live'}
                       </p>
                     </div>
                     <button
@@ -217,7 +217,7 @@ function ParentProfileApp() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Web — light                                                         */
+/* Web, light                                                         */
 /* ------------------------------------------------------------------ */
 function ParentProfileWeb() {
   const { user, logout } = useAuthContext();
@@ -241,7 +241,7 @@ function ParentProfileWeb() {
             <UserIcon size={15} className="text-slate-400" /> {displayName}
           </div>
           <div className="flex items-center gap-2">
-            <Mail size={15} className="text-slate-400" /> {user?.email || '—'}
+            <Mail size={15} className="text-slate-400" /> {user?.email || ', '}
           </div>
         </div>
       </section>
@@ -255,7 +255,7 @@ function ParentProfileWeb() {
         </div>
         <p className="mb-4 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
           Live tutoring uses your child's camera and microphone. Sessions are only
-          recorded — so your child can review them later — if you turn it on below. You
+          recorded, so your child can review them later, if you turn it on below. You
           can withdraw consent at any time.{' '}
           <Link href="/legal/privacy" className="text-emerald-600 underline underline-offset-2">
             How we handle recordings
@@ -281,7 +281,7 @@ function ParentProfileWeb() {
                       {childName(c)}
                     </p>
                     <p className="mt-0.5 text-xs text-slate-500">
-                      {granted ? 'Recording allowed' : 'Recording off — sessions still run live'}
+                      {granted ? 'Recording allowed' : 'Recording off, sessions still run live'}
                     </p>
                   </div>
                   <button

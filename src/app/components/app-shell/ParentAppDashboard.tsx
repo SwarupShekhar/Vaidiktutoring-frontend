@@ -44,7 +44,7 @@ const itemVariants = {
 
 const CARD_COLOR = '#15131f';
 
-// Per-category accent as "r, g, b" — mirrors the student bento palette.
+// Per-category accent as "r, g, b", mirrors the student bento palette.
 const ACCENT = {
   indigo: '129, 140, 248',
   amber: '245, 158, 11',
@@ -108,7 +108,7 @@ const CardButton: React.FC<{
     disabled={disabled}
     onClick={onClick}
     className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition-all ${
-      disabled ? 'cursor-not-allowed bg-white/5 text-white/35 ring-1 ring-white/10' : 'text-white active:scale-95'
+      disabled ? 'cursor-not-allowed bg-white/5 text-white/55 ring-1 ring-white/10' : 'text-white active:scale-95'
     }`}
     style={disabled ? undefined : { background: `rgb(${accent})` }}
   >
@@ -152,7 +152,7 @@ const ParentAppDashboard: React.FC = () => {
 
   const TRIAL_SESSION_LIMIT = 3;
 
-  // Active child — defaults to the first one once the list loads.
+  // Active child, defaults to the first one once the list loads.
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
   useEffect(() => {
     if (!selectedChildId && students.length > 0) {
@@ -203,10 +203,10 @@ const ParentAppDashboard: React.FC = () => {
     };
   }, [credit]);
 
-  // Attendance — reuses the existing parent attendance hook + report component.
+  // Attendance, reuses the existing parent attendance hook + report component.
   const { report: attendance } = useAttendanceReport(selectedChildId);
   const attendanceRate = attendance?.summary.attendanceRate ?? Math.round(summary?.attendanceRate ?? 0);
-  // A child with zero sessions has NO attendance to speak of — showing "100%"
+  // A child with zero sessions has NO attendance to speak of, showing "100%"
   // there is misleading. Gate every attendance display on real sessions existing.
   const hasAttendance = (attendance?.summary.totalSessions ?? 0) > 0;
 
@@ -243,7 +243,7 @@ const ParentAppDashboard: React.FC = () => {
   const renewalNeeded =
     pkgRemaining != null && pkgTotal != null && pkgTotal > 0 && pkgRemaining <= Math.ceil(pkgTotal * 0.2);
 
-  // What's new — newest recording/feedback for the child.
+  // What's new, newest recording/feedback for the child.
   const whatsNew = useMemo(() => {
     const rec = summary?.recentRecordings?.[0] ?? null;
     const fb = summary?.recentFeedback?.[0] ?? null;
@@ -271,7 +271,7 @@ const ParentAppDashboard: React.FC = () => {
   const cards = useMemo(() => {
     const list: any[] = [];
 
-    // 1. NEXT CLASS (hero, 8 cols) — the selected child's next session.
+    // 1. NEXT CLASS (hero, 8 cols), the selected child's next session.
     if (childNext) {
       list.push({
         color: CARD_COLOR,
@@ -306,7 +306,7 @@ const ParentAppDashboard: React.FC = () => {
       });
     }
 
-    // 2. ATTENDANCE (4 cols) — reuses useAttendanceReport; taps to full report.
+    // 2. ATTENDANCE (4 cols), reuses useAttendanceReport; taps to full report.
     const attAccent = !hasAttendance
       ? '148, 163, 184'
       : attendanceRate >= 90 ? ACCENT.emerald : attendanceRate >= 70 ? ACCENT.amber : ACCENT.magenta;
@@ -317,7 +317,7 @@ const ParentAppDashboard: React.FC = () => {
       onClick: () => setReportOpen(true),
       label: 'Attendance',
       icon: <ClipboardCheck className="h-4 w-4" />,
-      value: hasAttendance ? `${attendanceRate}%` : '—',
+      value: hasAttendance ? `${attendanceRate}%` : ', ',
       children: (
         <div className="mt-1 space-y-2">
           {hasAttendance ? (
@@ -326,16 +326,16 @@ const ParentAppDashboard: React.FC = () => {
               <p className="text-xs text-white/55">
                 {attendance!.summary.attended} attended · {attendance!.summary.absent} absent · {attendance!.summary.late} late
               </p>
-              <p className="text-[11px] font-semibold text-white/35">→ tap for the full report</p>
+              <p className="text-[11px] font-semibold text-white/55">→ tap for the full report</p>
             </>
           ) : (
-            <p className="text-xs text-white/45">No sessions yet — attendance appears once {childName} has attended a class.</p>
+            <p className="text-xs text-white/45">No sessions yet, attendance appears once {childName} has attended a class.</p>
           )}
         </div>
       ),
     });
 
-    // 3. SESSIONS (4 cols) — trial-aware gauge. Trial → "N of 3 free classes";
+    // 3. SESSIONS (4 cols), trial-aware gauge. Trial → "N of 3 free classes";
     // paid/learning → plan sessions remaining. Exhausted → prompt to upgrade.
     if (sessionGauge?.kind === 'trial') {
       const exhausted = sessionGauge.exhausted;
@@ -347,7 +347,7 @@ const ParentAppDashboard: React.FC = () => {
         label: 'Sessions',
         icon: <Ticket className="h-4 w-4" />,
         value: exhausted ? '0 of 3' : `${sessionGauge.remaining} of ${sessionGauge.total}`,
-        description: exhausted ? 'Trial ended — upgrade to keep learning' : sessionGauge.label,
+        description: exhausted ? 'Trial ended, upgrade to keep learning' : sessionGauge.label,
         children: exhausted ? (
           <CardButton accent={ACCENT.amber}>Upgrade plan</CardButton>
         ) : (
@@ -371,7 +371,7 @@ const ParentAppDashboard: React.FC = () => {
         children: exhausted ? <CardButton accent={ACCENT.amber}>Renew plan</CardButton> : undefined,
       });
     } else {
-      // No credit data yet — safe neutral fallback.
+      // No credit data yet, safe neutral fallback.
       list.push({
         color: CARD_COLOR,
         accent: '148, 163, 184',
@@ -379,12 +379,12 @@ const ParentAppDashboard: React.FC = () => {
         href: '/bookings/new',
         label: 'Sessions',
         icon: <Ticket className="h-4 w-4" />,
-        value: '—',
+        value: ', ',
         description: 'Book a session to get started',
       });
     }
 
-    // 4. MOMENTUM (4 cols) — weekly streak + lifetime stats for the child.
+    // 4. MOMENTUM (4 cols), weekly streak + lifetime stats for the child.
     list.push({
       color: CARD_COLOR,
       accent: ACCENT.amber,
@@ -399,12 +399,12 @@ const ParentAppDashboard: React.FC = () => {
           <p className="text-xs text-white/55">
             {totalHours}h attended · {totalSessions} sessions
           </p>
-          <p className="text-[11px] font-semibold text-white/35">→ tap to see attendance history</p>
+          <p className="text-[11px] font-semibold text-white/55">→ tap to see attendance history</p>
         </div>
       ),
     });
 
-    // 5. WHAT'S NEW (4 cols) — newest note/recording for the child.
+    // 5. WHAT'S NEW (4 cols), newest note/recording for the child.
     list.push({
       color: CARD_COLOR,
       accent: ACCENT.violet,
@@ -416,7 +416,7 @@ const ParentAppDashboard: React.FC = () => {
       description: whatsNew?.description ?? 'Recordings and tutor notes land here.',
     });
 
-    // 6. ACTION — ratings awaiting feedback (4 cols).
+    // 6. ACTION, ratings awaiting feedback (4 cols).
     if (pendingCount > 0 && !ratingsDone) {
       list.push({
         color: CARD_COLOR,
@@ -446,7 +446,7 @@ const ParentAppDashboard: React.FC = () => {
       });
     }
 
-    // 7. SUBJECTS (4 cols) — progress + topics covered for the child.
+    // 7. SUBJECTS (4 cols), progress + topics covered for the child.
     if (subjectProgress.length > 0 || topicsCovered.length > 0) {
       list.push({
         color: CARD_COLOR,
@@ -497,7 +497,7 @@ const ParentAppDashboard: React.FC = () => {
       });
     }
 
-    // 8. ADD CHILD (4 cols) — onboarding shortcut.
+    // 8. ADD CHILD (4 cols), onboarding shortcut.
     list.push({
       color: CARD_COLOR,
       accent: ACCENT.teal,
@@ -555,7 +555,7 @@ const ParentAppDashboard: React.FC = () => {
         />
       </motion.div>
 
-      {/* Child selector — only when there's more than one child */}
+      {/* Child selector, only when there's more than one child */}
       {students.length > 1 && (
         <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-2">
           <span className="mr-1 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-white/40">
@@ -584,7 +584,7 @@ const ParentAppDashboard: React.FC = () => {
         </motion.div>
       )}
 
-      {/* Empty state — no children added yet */}
+      {/* Empty state, no children added yet */}
       {!loadingStudentList && students.length === 0 ? (
         <motion.div
           variants={itemVariants}
