@@ -34,7 +34,7 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
   }, []);
 
   const handleLaunch = (tool: InteractiveTool) => {
-    if (!isEnrolled) {
+    if (!isEnrolled && tool.id !== 'chem') {
       setShowUpgradeModal(true);
       return;
     }
@@ -122,7 +122,7 @@ export const LearningLab: React.FC<LearningLabProps> = ({ isEnrolled = true, isT
                 onClick={() => handleLaunch(tool)}
                 className="flex-1 py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/20 active:scale-95 transition-all cursor-pointer"
               >
-                {!isEnrolled && <Lock size={12} />}
+                {!isEnrolled && tool.id !== 'chem' && <Lock size={12} />}
                 <PlayCircle size={14} /> Launch Lab
               </button>
             </div>

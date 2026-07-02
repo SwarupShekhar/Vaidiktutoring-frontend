@@ -9,13 +9,18 @@ import Loader from '@/app/components/Loader';
 import { api } from '@/app/lib/api';
 
 export default function OnboardingPage() {
-  const { user, loading: authLoading } = useAuthContext();
+  const { user, loading: authLoading, refreshUser } = useAuthContext();
   const { user: clerkUser, isLoaded: isClerkLoaded } = useUser();
   const router = useRouter();
   const [role, setRole] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [forceShowContent, setForceShowContent] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  // Once the user actively picks a role we drive navigation explicitly (to the
+  // add-child / profile onboarding step). Without this, refreshing the role to
+  // 'parent' makes the auto-redirect effect below fire and bounce them straight to
+  // the dashboard — skipping onboarding entirely.
+  const roleSelectionInProgress = useRef(false);
 
   // Set a timeout to force show content after 5 seconds (fallback)
   useEffect(() => {
@@ -37,10 +42,14 @@ export default function OnboardingPage() {
     if (authLoading || !isClerkLoaded) {
       if (!forceShowContent) return;
     }
-    
+
+    // If the user just picked a role, handleRoleSelect drives navigation to the
+    // next onboarding step — don't let this auto-redirect race it to the dashboard.
+    if (roleSelectionInProgress.current) return;
+
     // Debug: Check what role is being detected
 
-    
+
     if (user?.role === 'admin') {
       // Admins go to admin dashboard
 
@@ -64,6 +73,7 @@ export default function OnboardingPage() {
 
   const handleRoleSelect = async (selectedRole: 'parent' | 'student') => {
     setIsUpdating(true);
+    roleSelectionInProgress.current = true; // stop the auto-redirect effect from hijacking
     try {
       import('posthog-js').then((posthog) => {
         posthog.default.capture('Role Selected', { role: selectedRole });
@@ -75,21 +85,28 @@ export default function OnboardingPage() {
         });
       }
 
-      // Persist the role authoritatively in the backend (DB + Clerk publicMetadata)
-      // and trigger the welcome email. Best-effort — don't block the redirect on it.
+      // Persist the role authoritatively in the backend (DB + Clerk publicMetadata),
+      // then refresh the auth context. `user.role` comes from the backend profile
+      // (backendUser), which is cached as the 'student' JIT default at signup; if we
+      // navigate before re-fetching it, the role-gated onboarding page sees 'student'
+      // and bounces to /unauthorized (the 403). updateRole awaits the DB write, so a
+      // fresh getMe() here deterministically returns the new role.
       try {
         await api.patch('/auth/role', { role: selectedRole });
+        await refreshUser();
       } catch (err) {
         console.error('Failed to persist role to backend', err);
       }
 
-      if (selectedRole === 'parent') {
-        // Parents add their first child next.
-        window.location.href = '/onboarding/add-student';
-      } else {
-        // Students go through the quick profile setup before the dashboard.
-        window.location.href = '/onboarding/student-profile';
-      }
+      // HARD navigation (not router.push). The next page is role-gated, and a
+      // client-side push can render it before the refreshed 'parent' role has
+      // propagated through React state → ProtectedClient sees the stale 'student'
+      // and bounces to /unauthorized. A full page load re-initialises AuthContext
+      // from scratch (getMe returns the now-authoritative role), so the gate passes
+      // deterministically. It also sidesteps this page's auto-redirect effect.
+      const nextStep =
+        selectedRole === 'parent' ? '/onboarding/add-student' : '/onboarding/student-profile';
+      window.location.assign(nextStep);
     } catch (e) {
       console.error("Failed to update role", e);
       setIsUpdating(false);

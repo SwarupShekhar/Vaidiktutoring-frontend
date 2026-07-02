@@ -27,9 +27,12 @@ import {
 } from "lucide-react";
 import RatingModal from "@/app/components/RatingModal";
 import AttendanceReport from "@/app/components/dashboard/AttendanceReport";
+import { useIsAppShell } from "@/app/Hooks/useIsAppShell";
+import ParentAppDashboard from "@/app/components/app-shell/ParentAppDashboard";
 
 function DashboardContent() {
   const { user } = useAuthContext();
+  const isAppShell = useIsAppShell();
   const {
     studentCount,
     loadingStudents,
@@ -102,6 +105,12 @@ function DashboardContent() {
   }, [pastSessions]);
 
   const selectedSummary = selectedChildId ? (childSummaries[selectedChildId] ?? null) : null;
+
+  // Desktop app-shell users get the native Magic Bento homescreen. The web JSX
+  // below is rendered byte-for-byte identically for every non-app visitor.
+  if (isAppShell) {
+    return <ParentAppDashboard />;
+  }
 
   return (
       <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">

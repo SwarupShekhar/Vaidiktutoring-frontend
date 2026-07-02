@@ -24,6 +24,9 @@ type AuthContextValue = {
   login: (email: string, password: string, shouldRedirect?: boolean) => Promise<void>;
   signup: (payload: any) => Promise<void>;
   logout: () => void;
+  /** Re-fetch the authoritative user (role, etc.) from the backend. Call after a
+   *  server-side change like role selection so the context isn't left stale. */
+  refreshUser: () => Promise<void>;
   resendVerification: () => Promise<any>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   verificationModalOpen: boolean;
@@ -224,7 +227,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setBackendUser(null);
     document.cookie = "manual_auth_token=; path=/; max-age=0";
     document.cookie = "user_role=; path=/; max-age=0";
-    signOut(() => router.push('/'));
+    // In the desktop app the marketing homepage has no purpose — send unauthenticated
+    // users straight to /login. Web logout still returns to the marketing home.
+    const isAppShell =
+      typeof window !== 'undefined' &&
+      (!!(window as any).electron?.isDesktopApp ||
+        (typeof navigator !== 'undefined' && navigator.userAgent.includes('StudyHoursApp')) ||
+        document.documentElement.classList.contains('app-shell-mode'));
+    signOut(() => router.push(isAppShell ? '/login' : '/'));
   }
 
   async function resendVerification() {
@@ -256,6 +266,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Verification Modal State (Keep as dummy or handle via logic)
   const [verificationModalOpen, setVerificationModalOpen] = useState(false);
 
+  // Re-pull the authoritative user from the backend. `user` prefers `backendUser`
+  // (the cached getMe result) over Clerk's publicMetadata, so after a server-side
+  // role change we MUST refresh backendUser or the context keeps the stale role
+  // (e.g. the 'student' JIT default) and role-gated pages 403.
+  const refreshUser = async () => {
+    try {
+      const u = await authLib.getMe();
+      setBackendUser(u);
+    } catch (err) {
+      console.error('refreshUser failed:', err);
+    }
+  };
+
   const value: AuthContextValue = {
     user,
     token,
@@ -263,6 +286,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     signup,
     logout,
+    refreshUser,
     resendVerification,
     changePassword,
     verificationModalOpen,

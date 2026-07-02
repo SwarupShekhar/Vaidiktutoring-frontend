@@ -9,6 +9,7 @@ import { useAuthContext } from '@/app/context/AuthContext';
 import StickyCTA from '../components/subjects/StickyCTA';
 import { useCurriculum } from '../context/CurriculumContext';
 import { CURRICULA } from '../config/curricula';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
 import api from '@/app/lib/api';
 
 // --- Section 1: HeroPricing ---
@@ -139,6 +140,7 @@ const TestPrepLeadForm = () => {
 const PricingPlans = () => {
     const { user } = useAuthContext();
     const router = useRouter();
+    const isAppShell = useIsAppShell();
     const { activeCurriculum, setCurriculum } = useCurriculum();
     const [dynamicPackages, setDynamicPackages] = useState<any[]>([]);
     const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
@@ -322,6 +324,119 @@ const PricingPlans = () => {
             monthlyPrice: getDynamicPrice(activeCurriculum.id, p.id, p.monthlyPrice)
         }))
     };
+
+    // ---- App-shell (desktop) native plans view ----
+    if (isAppShell) {
+        return (
+            <div className="mx-auto w-full max-w-5xl px-4 py-6 md:px-6">
+                <div className="mb-6">
+                    <h1 className="text-2xl font-extrabold tracking-tight text-white">Plans</h1>
+                    <p className="mt-1 max-w-xl text-sm text-white/45">
+                        Personalized tutoring built around your child&apos;s needs. Final pricing
+                        follows a free academic assessment — cancel anytime, no lock-in.
+                    </p>
+                </div>
+
+                {/* Region / curriculum selector */}
+                <div className="mb-5 flex flex-wrap gap-1.5">
+                    {CURRICULA.map((c) => {
+                        const active = activeCurriculum.id === c.id;
+                        return (
+                            <button
+                                key={c.id}
+                                onClick={() => setCurriculum(c.id)}
+                                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-semibold transition-all ${
+                                    active
+                                        ? 'bg-indigo-500/20 text-indigo-200 ring-1 ring-indigo-400/40'
+                                        : 'bg-white/5 text-white/55 ring-1 ring-white/10 hover:bg-white/10 hover:text-white/80'
+                                }`}
+                            >
+                                <span>{c.flag}</span>
+                                {c.country}
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {/* Region name + exams */}
+                <div className="mb-6">
+                    <h2 className="text-sm font-bold text-white/80">{currentConfig.name}</h2>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                        {activeCurriculum.exams.map((exam) => (
+                            <span
+                                key={exam}
+                                className="rounded-md bg-white/5 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white/50"
+                            >
+                                {exam}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+
+                {activeCurriculum.id === 'test-prep' ? (
+                    <TestPrepLeadForm />
+                ) : (
+                    <div className="grid gap-4 md:grid-cols-3">
+                        {currentConfig.plans.map((plan: any) => {
+                            const recommended = plan.id === 'mastery';
+                            return (
+                                <div
+                                    key={plan.id}
+                                    className={`relative flex flex-col rounded-2xl border bg-[#15131f] p-6 ${
+                                        recommended ? 'border-indigo-400/50 ring-1 ring-indigo-500/20' : 'border-white/10'
+                                    }`}
+                                >
+                                    {recommended && (
+                                        <span className="absolute -top-3 left-6 inline-flex items-center gap-1 rounded-full bg-indigo-500 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
+                                            <Star size={10} fill="white" /> Recommended
+                                        </span>
+                                    )}
+                                    <h3 className="text-lg font-bold text-white">{plan.name}</h3>
+                                    <p className="text-xs text-white/45">{plan.frequency}</p>
+
+                                    <div className="mt-4 flex items-baseline gap-1">
+                                        <span className="text-3xl font-extrabold text-white">
+                                            {currentConfig.currency}{plan.monthlyPrice}
+                                        </span>
+                                        <span className="text-sm text-white/45">/ month</span>
+                                    </div>
+
+                                    <div className="mt-3 flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+                                        <span className="text-xs font-bold text-indigo-300">Monthly credits</span>
+                                        <span className="text-sm font-black text-white">
+                                            {plan.credits}
+                                            <span className="text-[10px] font-medium text-white/45"> sessions</span>
+                                        </span>
+                                    </div>
+
+                                    <ul className="mt-5 flex-1 space-y-2.5">
+                                        {plan.features.map((feat: string, i: number) => (
+                                            <li key={i} className="flex items-start gap-2 text-sm text-white/75">
+                                                <Check size={14} strokeWidth={3} className="mt-0.5 shrink-0 text-indigo-300" />
+                                                {feat}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <button
+                                        onClick={() => handlePlanClick(plan.id, activeCurriculum.id)}
+                                        className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-opacity hover:opacity-90 ${
+                                            recommended
+                                                ? 'bg-indigo-500 text-white'
+                                                : 'bg-white/[0.06] text-indigo-200 ring-1 ring-white/10'
+                                        }`}
+                                    >
+                                        Choose {plan.name}
+                                        <ArrowRight size={16} />
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+        );
+    }
 
     return (
         <section className="py-24 px-6 relative">
@@ -710,6 +825,19 @@ const StickyPricingCTA = () => {
 
 // --- Main Pricing Page Component ---
 export default function PricingPage() {
+    const isAppShell = useIsAppShell();
+
+    // In the desktop app, drop the marketing chrome (hero, comparison, FAQ, sticky
+    // CTA + out-of-app links) and show a clean, app-native plans view. PricingPlans
+    // renders its own dark app-shell layout when isAppShell. Web is unchanged.
+    if (isAppShell) {
+        return (
+            <main className="min-h-full bg-[#0a0a0f]">
+                <PricingPlans />
+            </main>
+        );
+    }
+
     return (
         <main className="bg-background">
             <HeroPricing />

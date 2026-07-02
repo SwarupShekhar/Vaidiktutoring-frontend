@@ -7,8 +7,11 @@ import { useRouter } from 'next/navigation';
 import { addDays, startOfWeek, isToday, isTomorrow, format } from 'date-fns';
 
 import dynamic from 'next/dynamic';
+import api from '@/app/lib/api';
 
 // Modular Components
+import { StudentProfile } from '@/app/Hooks/useStudentDashboardSummary';
+import { ProgressSummary } from '@/app/Hooks/useStudentProgress';
 import { DashboardHeader } from './DashboardHeader';
 import { SessionHero } from './SessionHero';
 import { StatCardsSection } from './StatCardsSection';
@@ -17,7 +20,6 @@ import { StickerRewards } from './StickerRewards';
 import { TutorCommunicationSection } from './TutorCommunicationSection';
 import { MaterialsVaultSection } from './MaterialsVaultSection';
 import { WeeklySchedule } from './WeeklySchedule';
-import { DownloadAppBanner } from './DownloadAppBanner';
 
 const LearningLab = dynamic(
   () => import('./LearningLab').then(mod => mod.LearningLab),
@@ -57,6 +59,7 @@ export const EnrolledDashboard: React.FC<EnrolledDashboardProps> = ({
   progressSummary,
   isEnrolled
 }) => {
+  const [isJoining, setIsJoining] = useState(false);
   const scheduleRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const now = new Date();
@@ -109,8 +112,8 @@ export const EnrolledDashboard: React.FC<EnrolledDashboardProps> = ({
       : `${format(sessionStart, 'EEEE d MMMM')} · ${format(sessionStart, 'h:mm a')}`;
   }, [sessionStart]);
 
-  const startWithin5Min = nextSession
-    ? (new Date(nextSession.start_time ?? nextSession.requested_start).getTime() - now.getTime()) <= 5 * 60_000
+  const canJoin = nextSession
+    ? (new Date(nextSession.start_time ?? nextSession.requested_start).toDateString() === now.toDateString() || new Date(nextSession.start_time ?? nextSession.requested_start) < now)
     : false;
 
   const fmtDate = (iso?: string) => {
@@ -139,15 +142,44 @@ export const EnrolledDashboard: React.FC<EnrolledDashboardProps> = ({
         }}
       />
 
-      <DownloadAppBanner />
-
       <SessionHero 
         nextSession={nextSession}
         loading={loading}
-        isEnrolled={isEnrolled}
+        isEnrolled={true}
         sessionLabel={sessionLabel}
-        startWithin5Min={startWithin5Min}
-        onJoinSession={() => nextSession?.meet_link && window.open(nextSession.meet_link, '_blank')}
+        startWithin5Min={canJoin}
+        isJoining={isJoining}
+        onJoinSession={() => {
+          if (!nextSession) return;
+          // Resolve the video provider from the nested session row (booking payload),
+          // falling back to the booking object itself.
+          const sess = nextSession.sessions?.[0] ?? nextSession;
+          const provider = sess?.video_provider ?? nextSession.video_provider;
+          const legacyZoomLink = !!nextSession.meet_link && nextSession.meet_link.includes('zoom.us');
+          const isZoom = provider === 'ZOOM' || legacyZoomLink;
+          const zoomUrl =
+            sess?.zoom_join_url ?? nextSession.zoom_join_url ?? (legacyZoomLink ? nextSession.meet_link : null);
+
+          if (isZoom) {
+            (async () => {
+              try {
+                setIsJoining(true);
+                const { data } = await api.get(`/sessions/${sess?.id || nextSession.id}/zoom/join`);
+                if (data.joinUrl) {
+                  window.open(data.joinUrl, '_blank', 'noopener,noreferrer');
+                }
+              } catch (err) {
+                console.error("Failed to join Zoom session", err);
+                if (zoomUrl) window.open(zoomUrl, '_blank', 'noopener,noreferrer');
+              } finally {
+                setIsJoining(false);
+              }
+            })();
+          } else if (nextSession.id) {
+            // Daily.co (or default/unset) — join the in-app room.
+            router.push(`/session/${nextSession.id}`);
+          }
+        }}
       />
 
       {/* Package Renewal Banner */}
@@ -206,27 +238,33 @@ export const EnrolledDashboard: React.FC<EnrolledDashboardProps> = ({
         </motion.div>
       )}
 
-      <AchievementSection progress={progressSummary} />
-      
-      <StickerRewards stickers={studentProfile?.stickers ?? []} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="lg:col-span-2 space-y-8">
+          <AchievementSection progress={progressSummary} />
+          
+          <StickerRewards stickers={studentProfile?.stickers ?? []} />
 
-      <TutorCommunicationSection 
-        feedback={progressSummary?.recentFeedback || []}
-        fmtDate={fmtDate}
-      />
+          <MaterialsVaultSection 
+            recentRecordings={progressSummary?.recentRecordings || []}
+            fmtDate={fmtDate}
+          />
 
-      <MaterialsVaultSection 
-        recentRecordings={progressSummary?.recentRecordings || []}
-        fmtDate={fmtDate}
-      />
+          <div ref={scheduleRef}>
+            <WeeklySchedule 
+              weekDays={weekDays}
+              upcomingSessions={upcomingSessions}
+              isEnrolled={isEnrolled}
+              fmtDate={fmtDate}
+            />
+          </div>
+        </div>
 
-      <div ref={scheduleRef}>
-        <WeeklySchedule 
-          weekDays={weekDays}
-          upcomingSessions={upcomingSessions}
-          isEnrolled={isEnrolled}
-          fmtDate={fmtDate}
-        />
+        <div className="space-y-8">
+          <TutorCommunicationSection 
+            feedback={progressSummary?.recentFeedback || []}
+            fmtDate={fmtDate}
+          />
+        </div>
       </div>
     </motion.div>
   );

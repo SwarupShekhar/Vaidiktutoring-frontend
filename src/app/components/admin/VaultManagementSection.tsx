@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { vaultApi, VaultAsset } from '@/app/lib/vault';
+import { getGradeOptions } from '@/app/lib/gradeTokens';
 import { format } from 'date-fns';
 import { RefreshCw, Plus, FileText, Download, Shield, Trash2, Loader2, UploadCloud } from 'lucide-react';
 import { useAuthContext } from '@/app/context/AuthContext';
@@ -18,8 +19,11 @@ export default function VaultManagementSection() {
         title: '',
         description: '',
         file_type: 'PDF',
+        curriculum_id: '',
+        grade: '',
     });
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [curriculaOptions, setCurriculaOptions] = useState<{id: string, name: string}[]>([]);
 
     const fetchAssets = async () => {
         try {
@@ -33,8 +37,18 @@ export default function VaultManagementSection() {
         }
     };
 
+    const fetchCurricula = async () => {
+        try {
+            const data = await vaultApi.getCurricula();
+            setCurriculaOptions(data);
+        } catch (error) {
+            console.error('Failed to fetch curricula', error);
+        }
+    };
+
     useEffect(() => {
         fetchAssets();
+        fetchCurricula();
     }, []);
 
     const handleUpload = async (e: React.FormEvent) => {
@@ -45,20 +59,28 @@ export default function VaultManagementSection() {
             setUploading(true);
             const formData = new FormData();
             formData.append('file', selectedFile);
-            formData.append('title', uploadForm.title);
-            formData.append('description', uploadForm.description);
-            formData.append('file_type', uploadForm.file_type);
-            if (user?.userId) formData.append('uploaded_by', user.userId);
+            if (uploadForm.file_type === 'QUESTION_BANK') {
+                formData.append('curriculum_id', uploadForm.curriculum_id);
+                formData.append('grade', uploadForm.grade);
+                const res = await vaultApi.uploadPracticeSet(formData);
+                alert(`Successfully ingested ${res.count} questions to the database!`);
+            } else {
+                formData.append('title', uploadForm.title);
+                formData.append('description', uploadForm.description);
+                formData.append('file_type', uploadForm.file_type);
+                if (user?.userId) formData.append('uploaded_by', user.userId);
 
-            await vaultApi.upload(formData);
+                await vaultApi.upload(formData);
+                alert('Asset uploaded successfully to the Vault!');
+            }
+            
             setShowUploadModal(false);
             setSelectedFile(null);
-            setUploadForm({ title: '', description: '', file_type: 'PDF' });
+            setUploadForm({ title: '', description: '', file_type: 'PDF', curriculum_id: '', grade: '' });
             fetchAssets();
-            alert('Asset uploaded successfully to the Vault!');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Upload failed', error);
-            alert('Failed to upload asset');
+            alert('Failed to upload: ' + (error.response?.data?.message || error.message));
         } finally {
             setUploading(false);
         }
@@ -161,7 +183,7 @@ export default function VaultManagementSection() {
                                 <UploadCloud size={24} className="text-indigo-500" />
                                 Add to Vault
                             </h3>
-                            <p className="text-sm text-text-secondary mt-1">Upload a PDF or PPT to make it available for tutoring.</p>
+                            <p className="text-sm text-text-secondary mt-1">Upload a PDF, PPT, or an Excel Question Bank.</p>
                         </div>
                         
                         <form onSubmit={handleUpload} className="p-6 space-y-4">
@@ -186,6 +208,40 @@ export default function VaultManagementSection() {
                                 />
                             </div>
 
+                            {uploadForm.file_type === 'QUESTION_BANK' && (
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-text-secondary">Curriculum</label>
+                                        <select 
+                                            required
+                                            className="w-full px-4 py-2.5 bg-surface-secondary border border-border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-hidden transition-all"
+                                            value={uploadForm.curriculum_id}
+                                            onChange={(e) => setUploadForm({...uploadForm, curriculum_id: e.target.value})}
+                                        >
+                                            <option value="" disabled>Select Curriculum...</option>
+                                            {curriculaOptions.map(c => (
+                                                <option key={c.id} value={c.id}>{c.name} ({c.id})</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-text-secondary">Grade Level</label>
+                                        <select 
+                                            required
+                                            disabled={!uploadForm.curriculum_id}
+                                            className="w-full px-4 py-2.5 bg-surface-secondary border border-border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-hidden transition-all disabled:opacity-50"
+                                            value={uploadForm.grade}
+                                            onChange={(e) => setUploadForm({...uploadForm, grade: e.target.value})}
+                                        >
+                                            <option value="" disabled>Select Grade...</option>
+                                            {getGradeOptions(uploadForm.curriculum_id).map(g => (
+                                                <option key={g.value} value={g.value}>{g.label} ({g.value})</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-text-secondary">Format</label>
@@ -196,6 +252,7 @@ export default function VaultManagementSection() {
                                     >
                                         <option value="PDF">PDF Document</option>
                                         <option value="PPT">PowerPoint</option>
+                                        <option value="QUESTION_BANK">Excel (Question Bank)</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
@@ -203,7 +260,7 @@ export default function VaultManagementSection() {
                                     <div className="relative cursor-pointer">
                                         <input 
                                             type="file" 
-                                            accept=".pdf,.pptx,.ppt"
+                                            accept={uploadForm.file_type === 'QUESTION_BANK' ? ".xlsx,.xls,.csv" : ".pdf,.pptx,.ppt"}
                                             className="absolute inset-0 opacity-0 cursor-pointer"
                                             onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
                                         />

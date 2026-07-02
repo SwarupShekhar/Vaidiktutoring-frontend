@@ -20,7 +20,6 @@ import { UpcomingSchedule } from './UpcomingSchedule';
 import { PastSessionsSidebar } from './PastSessionsSidebar';
 import { TrialBanner } from '@/app/components/dashboard/TrialBanner';
 import { UpgradeNudge } from '@/app/components/dashboard/UpgradeNudge';
-import { DownloadAppBanner } from './DownloadAppBanner';
 
 const LearningLab = dynamic(
   () => import('./LearningLab').then(mod => mod.LearningLab),
@@ -105,6 +104,42 @@ export const TrialDashboard: React.FC<TrialDashboardProps> = ({
     return 'Good Evening';
   };
 
+  const sessionGrid = (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="lg:col-span-2 space-y-8">
+        <SessionHero 
+          nextSession={nextSession}
+          loading={loading}
+          isEnrolled={false}
+        />
+
+        <AnimatePresence>
+          {user?.email_verified === false && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+              className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start gap-4 text-amber-800 shadow-sm">
+              <AlertCircle className="shrink-0 mt-0.5" size={20} />
+              <div>
+                <p className="font-bold text-sm">Action Needed: Verify your email</p>
+                <p className="text-xs opacity-90">You won't be able to book new sessions until your email is verified.</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <UpcomingSchedule 
+          sessions={otherUpcoming}
+          loading={loading}
+          fmtDate={fmtDate}
+        />
+      </div>
+
+      <PastSessionsSidebar 
+        pastSessions={pastSessions}
+        fmtDate={fmtDate}
+      />
+    </div>
+  );
+
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible"
       className={isAppShell ? 'w-full p-4 md:p-8 space-y-8 relative' : 'min-h-screen p-4 md:p-8 max-w-7xl mx-auto space-y-8 relative'}>
@@ -135,7 +170,6 @@ export const TrialDashboard: React.FC<TrialDashboardProps> = ({
       {/* If in app shell, we move these to a sticky bottom bar later, or we can just render them in a fixed container here */}
       {!isAppShell && (
         <>
-          <DownloadAppBanner />
           {/* Trial exhausted / expired upgrade banner */}
           {(creditStatus?.mode === 'trial_exhausted' || creditStatus?.mode === 'trial_expired') && (
             <motion.div variants={itemVariants}
@@ -171,6 +205,9 @@ export const TrialDashboard: React.FC<TrialDashboardProps> = ({
         </>
       )}
 
+      {/* ALWAYS SHOW UPCOMING SESSIONS IF ANY */}
+      {upcomingSessions.length > 0 && sessionGrid}
+
       {(creditStatus?.mode === 'trial_exhausted' || creditStatus?.mode === 'trial_expired') ? (
         <UpgradeNudge
           status={creditStatus}
@@ -198,39 +235,7 @@ export const TrialDashboard: React.FC<TrialDashboardProps> = ({
             fmtDate={fmtDate}
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-8">
-              <SessionHero 
-                nextSession={nextSession}
-                loading={loading}
-                isEnrolled={false}
-              />
-
-              <AnimatePresence>
-                {user?.email_verified === false && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                    className="bg-amber-50 border border-amber-200 rounded-2xl p-5 flex items-start gap-4 text-amber-800 shadow-sm">
-                    <AlertCircle className="shrink-0 mt-0.5" size={20} />
-                    <div>
-                      <p className="font-bold text-sm">Action Needed: Verify your email</p>
-                      <p className="text-xs opacity-90">You won't be able to book new sessions until your email is verified.</p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <UpcomingSchedule 
-                sessions={otherUpcoming}
-                loading={loading}
-                fmtDate={fmtDate}
-              />
-            </div>
-
-            <PastSessionsSidebar 
-              pastSessions={pastSessions}
-              fmtDate={fmtDate}
-            />
-          </div>
+          {upcomingSessions.length === 0 && sessionGrid}
 
           {/* MOBILE CTA */}
           <motion.div variants={itemVariants} className="flex sm:hidden">

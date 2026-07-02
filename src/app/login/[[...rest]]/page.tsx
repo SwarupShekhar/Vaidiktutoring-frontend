@@ -11,6 +11,7 @@ import { Mail, Lock, Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
 function LoginContent() {
   const { login } = useAuthContext();
   const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect_url') || '/dashboard';
@@ -19,6 +20,10 @@ function LoginContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showManual, setShowManual] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleManualLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,22 +68,24 @@ function LoginContent() {
               </div>
 
               {/* Clerk Sign In with Theme Support */}
-              <div className="w-full flex justify-center">
-                <SignIn
-                  routing="hash"
-                  forceRedirectUrl={redirectUrl}
-                  appearance={{
-                    baseTheme: resolvedTheme === 'dark' ? dark : undefined,
-                    elements: {
-                      card: "bg-transparent shadow-none border-none p-0",
-                      headerTitle: "hidden",
-                      headerSubtitle: "hidden",
-                      socialButtonsBlockButton: "rounded-xl border border-slate-200 dark:border-slate-800",
-                      formButtonPrimary: "bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl",
-                      footer: "hidden", // Hide Clerk's internal footer to use our own
-                    }
-                  }}
-                />
+              <div className="w-full flex justify-center min-h-[400px]">
+                {mounted && (
+                  <SignIn
+                    routing="hash"
+                    forceRedirectUrl={redirectUrl}
+                    appearance={{
+                      baseTheme: resolvedTheme === 'dark' ? dark : undefined,
+                      elements: {
+                        card: "bg-transparent shadow-none border-none p-0",
+                        headerTitle: "hidden",
+                        headerSubtitle: "hidden",
+                        socialButtonsBlockButton: "rounded-xl border border-slate-200 dark:border-slate-800",
+                        formButtonPrimary: "bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-xl",
+                        footer: "hidden", // Hide Clerk's internal footer to use our own
+                      }
+                    }}
+                  />
+                )}
               </div>
 
               <div className="mt-6 flex flex-col items-center gap-4 w-full border-t border-slate-200 dark:border-slate-800 pt-6">

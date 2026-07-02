@@ -5,8 +5,10 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CreditCard, ShieldCheck, Zap, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import Link_Next from 'next/link';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { loadRazorpay } from '@/app/lib/razorpay';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
 import api from '@/app/lib/api';
 
 type PaymentState = 'initial' | 'loading' | 'processing' | 'success' | 'cancelled' | 'error';
@@ -15,6 +17,7 @@ type PaymentState = 'initial' | 'loading' | 'processing' | 'success' | 'cancelle
 const CheckoutContent = () => {
     const searchParams = useSearchParams();
     const router = useRouter();
+    const queryClient = useQueryClient();
     const { user, loading: authLoading } = useAuthContext();
     const plan = searchParams.get('plan') || 'FOUNDATION';
     const region = (searchParams.get('region') || 'global').toLowerCase();
@@ -25,6 +28,9 @@ const CheckoutContent = () => {
     const [enrollingStudentId, setEnrollingStudentId] = useState<string | null>(null);
     const [dynamicPrice, setDynamicPrice] = useState<number | null>(null);
     const [dynamicCurrency, setDynamicCurrency] = useState<string | null>(null);
+    const isAppShell = useIsAppShell();
+    // No marketing navbar in the desktop shell → collapse the top padding.
+    const pageTopPad = isAppShell ? 'pt-6' : 'pt-32';
 
     useEffect(() => {
         const fetchPackage = async () => {
@@ -55,7 +61,7 @@ const CheckoutContent = () => {
     // Show loading while checking auth
     if (authLoading || !user) {
         return (
-            <div className="min-h-screen pt-32 pb-24 px-6 bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background flex items-center justify-center">
+            <div className={`min-h-screen ${pageTopPad} pb-24 px-6 bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background flex items-center justify-center`}>
                 <div className="animate-pulse flex flex-col items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-primary/20" />
                     <p className="text-text-secondary font-medium">Verifying authentication...</p>
@@ -71,12 +77,14 @@ const CheckoutContent = () => {
                 if (enrollingStudentId) {
                     router.push(`/enroll/${enrollingStudentId}`);
                 } else {
-                    router.push('/students/dashboard?payment=success');
+                    // Send parents back to the parent dashboard (not the student one).
+                    const home = user?.role === 'parent' ? '/parent/dashboard' : '/students/dashboard';
+                    router.push(`${home}?payment=success`);
                 }
             }, 2000);
             return () => clearTimeout(timer);
         }
-    }, [paymentState, router, enrollingStudentId]);
+    }, [paymentState, router, enrollingStudentId, user?.role]);
 
     const handlePayment = async () => {
         setPaymentState('loading');
@@ -129,6 +137,12 @@ const CheckoutContent = () => {
                             if (verifyResponse.data.studentId) {
                                 setEnrollingStudentId(verifyResponse.data.studentId);
                             }
+                            // Upgrade changes plan/credits → bust the cached credit +
+                            // dashboard data so the parent/student dashboards morph into
+                            // their paid state immediately instead of lingering on trial.
+                            ['credit-status', 'parent-dashboard-summary', 'student-dashboard-summary', 'parent-children-consent', 'student-profile'].forEach(
+                                (key) => queryClient.invalidateQueries({ queryKey: [key] }),
+                            );
                             setPaymentState('success');
                         } else {
                             throw new Error('Payment verification failed');
@@ -253,8 +267,95 @@ const CheckoutContent = () => {
     const currentPrice = dynamicPrice !== null ? dynamicPrice : (planConfig?.monthlyPrice || 149);
     const currentCredits = planConfig?.credits || 8;
 
+    // ---- App-shell (desktop) native checkout ----
+    if (isAppShell) {
+        const prettyPlan = plan.charAt(0) + plan.slice(1).toLowerCase();
+        return (
+            <div className="mx-auto w-full max-w-lg px-4 py-6 md:px-6">
+                <button
+                    onClick={() => router.back()}
+                    className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-white/60 transition-colors hover:text-white"
+                >
+                    <ArrowLeft size={16} /> Back
+                </button>
+
+                <div className="rounded-2xl border border-white/10 bg-[#15131f] p-6">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/15 text-indigo-300">
+                            <CreditCard size={22} />
+                        </div>
+                        <div>
+                            <h1 className="text-xl font-black text-white">Confirm your plan</h1>
+                            <p className="text-sm text-white/45">Review before payment.</p>
+                        </div>
+                    </div>
+
+                    <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-indigo-300">
+                            Plan · {region}
+                        </span>
+                        <div className="mt-1 flex items-end justify-between">
+                            <h2 className="text-lg font-black text-white">{prettyPlan}</h2>
+                            <div className="text-right">
+                                <div className="text-2xl font-black text-white">
+                                    {currentConfig.currency}{currentPrice}
+                                    <span className="text-xs text-white/45">/mo</span>
+                                </div>
+                                <div className="text-[11px] font-bold text-emerald-400">{currentCredits} monthly credits</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p className="mt-3 flex items-start gap-2 rounded-xl bg-emerald-500/10 p-3 text-xs text-emerald-200 ring-1 ring-emerald-400/20">
+                        <ShieldCheck size={15} className="mt-0.5 shrink-0" />
+                        Secure payment via Razorpay — card details are encrypted and never stored. Includes {currentCredits} monthly 30-min session credits.
+                    </p>
+
+                    <div className="mt-6">
+                        {paymentState === 'initial' && (
+                            <button
+                                onClick={handlePayment}
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 py-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                            >
+                                <CreditCard size={18} /> Pay {currentConfig.currency}{currentPrice}/mo
+                            </button>
+                        )}
+                        {(paymentState === 'loading' || paymentState === 'processing') && (
+                            <button disabled className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500/50 py-4 text-sm font-bold text-white">
+                                <Loader2 size={18} className="animate-spin" />
+                                {paymentState === 'loading' ? 'Preparing…' : 'Processing…'}
+                            </button>
+                        )}
+                        {paymentState === 'success' && (
+                            <div className="text-center">
+                                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15">
+                                    <CheckCircle size={28} className="text-emerald-400" />
+                                </div>
+                                <p className="mt-3 font-bold text-emerald-400">Payment successful!</p>
+                                <p className="text-sm text-white/45">Taking you to your dashboard…</p>
+                            </div>
+                        )}
+                        {(paymentState === 'cancelled' || paymentState === 'error') && (
+                            <div className="space-y-3">
+                                <p className={`rounded-xl p-3 text-sm ring-1 ${paymentState === 'error' ? 'bg-rose-500/10 text-rose-200 ring-rose-400/20' : 'bg-amber-500/10 text-amber-200 ring-amber-400/20'}`}>
+                                    {paymentState === 'error' ? errorMessage || 'Payment failed. Please try again.' : 'Payment was cancelled.'}
+                                </p>
+                                <button
+                                    onClick={() => setPaymentState('initial')}
+                                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 py-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                                >
+                                    <CreditCard size={18} /> Try again
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen pt-32 pb-24 px-6 bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background">
+        <div className={`min-h-screen ${pageTopPad} pb-24 px-6 bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background`}>
             <div className="max-w-xl mx-auto">
                 <Link_Next
                     href={`/pricing?region=${region}`}

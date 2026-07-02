@@ -73,13 +73,17 @@ export default function PrivacyPage() {
                     </section>
 
                     <section className="space-y-4">
-                        <h2 className="text-2xl font-semibold">4. Session Recordings</h2>
-                        <p>Live tutoring sessions conducted via Daily.co may be recorded for quality assurance and safety purposes.</p>
+                        <h2 className="text-2xl font-semibold">4. Camera, Microphone &amp; Session Recordings</h2>
+                        <p>Live tutoring sessions are conducted over a video service (Daily.co) and require access to the participant's camera and microphone. Your device will ask for permission before the camera or microphone is used, and access is only requested when you are about to join a session — never in the background.</p>
+                        <p><strong>Recordings are off by default.</strong> A session is only recorded when the student's parent or legal guardian has given explicit, opt-in consent. We do not rely on implied consent for recording a minor.</p>
                         <ul className="list-disc pl-6 space-y-2">
-                            <li>Storage: Recordings are stored securely on Azure Blob Storage.</li>
-                            <li>Access: Access is limited to the student, the tutor, and StudyHours support staff for dispute resolution.</li>
-                            <li>Retention: Recordings are retained for 60 days.</li>
-                            <li>Consent: By participating in sessions, users consent to the potential recording of their sessions.</li>
+                            <li><strong>Parental consent:</strong> For students under 18, only a parent/guardian can enable recording, and they can withdraw that consent at any time from Profile → Settings. Withdrawal takes effect immediately and blocks any further recording.</li>
+                            <li><strong>In-session notice:</strong> All participants see a clear on-screen indicator during a session showing whether it may be recorded.</li>
+                            <li><strong>Purpose:</strong> Recordings exist so the student can review the lesson afterwards, and for safety and quality assurance.</li>
+                            <li><strong>Storage:</strong> Recordings are stored securely on Microsoft Azure Blob Storage and streamed through our servers; they are not publicly accessible.</li>
+                            <li><strong>Access:</strong> Access is limited to the enrolled student, their parent/guardian, the assigned tutor, and StudyHours support staff for dispute resolution.</li>
+                            <li><strong>Retention:</strong> Recordings are automatically deleted after 30 days.</li>
+                            <li><strong>Deletion:</strong> A parent/guardian may request earlier deletion of any recording of their child at any time.</li>
                         </ul>
                     </section>
 
@@ -107,7 +111,7 @@ export default function PrivacyPage() {
 
                     <section className="space-y-4">
                         <h2 className="text-2xl font-semibold">7. Data Retention</h2>
-                        <p>We retain your personal data for as long as your account is active plus a reasonable period thereafter for legitimate business or legal purposes. Payment records are retained as required by law. Session recordings are retained for 60 days.</p>
+                        <p>We retain your personal data for as long as your account is active plus a reasonable period thereafter for legitimate business or legal purposes. Payment records are retained as required by law. Session recordings are automatically deleted after 30 days.</p>
                     </section>
 
                     <section className="space-y-4">

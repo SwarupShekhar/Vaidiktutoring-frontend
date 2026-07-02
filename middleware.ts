@@ -55,11 +55,24 @@ export default clerkMiddleware(async (auth, req) => {
             return NextResponse.redirect(url, 301);
         }
 
-        // Fast-path bypass for guest users visiting public routes.
-        // If there are no active Clerk session or manual login cookies, we can safely bypass Clerk auth() overhead.
+        // Check if we are inside the Desktop/Mobile wrapper. Detect via custom
+        // User-Agent OR the `sh_app` cookie set by the Electron preload (the UA can
+        // be dropped on some client-side/RSC requests; the cookie always rides along).
+        const userAgent = req.headers.get("user-agent") || "";
         const cookies = req.headers.get("cookie") || "";
+        const isAppShell = userAgent.includes("StudyHoursApp") || cookies.includes("sh_app=1");
         const hasClerkCookie = cookies.includes("__session") || cookies.includes("clerk") || cookies.includes("manual_auth_token");
-        if (!hasClerkCookie && isPublicRoute(req)) {
+        
+        const path = req.nextUrl.pathname;
+
+        // Strict App Isolation: Fast path for obvious guest users
+        if (isAppShell && !hasClerkCookie && isPublicRoute(req)) {
+            if (path !== '/login' && !path.startsWith('/signup')) {
+                return NextResponse.redirect(new URL('/login', req.url));
+            }
+        }
+
+        if (!isAppShell && !hasClerkCookie && isPublicRoute(req)) {
             return NextResponse.next();
         }
 
@@ -68,8 +81,7 @@ export default clerkMiddleware(async (auth, req) => {
 
         // Redirect authenticated users to their specific dashboards if they hit marketing pages or /dashboard
         if (userId) {
-            const path = req.nextUrl.pathname;
-            const marketingPaths = ['/', '/about', '/methodology', '/blog', '/blogs', '/careers', '/contact', '/home', '/login', '/signup'];
+            const marketingPaths = ['/', '/about', '/methodology', '/blog', '/blogs', '/careers', '/contact', '/home', '/login', '/signup', '/pricing', '/subjects', '/resources', '/studio', '/experts'];
             const isMarketingPath = marketingPaths.some(p => p === path || path.startsWith(p + '/'));
             const isDashboardRoot = path === '/dashboard' || path === '/dashboard/';
 
@@ -81,7 +93,7 @@ export default clerkMiddleware(async (auth, req) => {
 
                 // If we have a role, redirect to the correct dashboard
                 if (safeRole) {
-                    let dashboardPath = '/dashboard'; // Fallback
+                    let dashboardPath = '/students/dashboard'; // Fallback (real route, never the dead /dashboard)
                     if (safeRole === 'admin') dashboardPath = '/admin/dashboard';
                     else if (safeRole === 'tutor') dashboardPath = '/tutor/dashboard';
                     else if (safeRole === 'student') dashboardPath = '/students/dashboard';
@@ -94,6 +106,9 @@ export default clerkMiddleware(async (auth, req) => {
 
         // Allow public routes without authentication
         if (isPublicRoute(req)) {
+            if (isAppShell && path !== '/login' && !path.startsWith('/signup')) {
+                return NextResponse.redirect(new URL('/login', req.url));
+            }
             return NextResponse.next();
         }
         

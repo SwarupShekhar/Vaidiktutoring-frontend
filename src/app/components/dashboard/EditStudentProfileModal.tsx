@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { X, Save, AlertCircle } from 'lucide-react';
 import { api } from '@/app/lib/api';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface EditStudentProfileModalProps {
     isOpen: boolean;
@@ -22,6 +23,7 @@ interface ProfileForm {
 export const EditStudentProfileModal: React.FC<EditStudentProfileModalProps> = ({ isOpen, onClose, student, onUpdate }) => {
     const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ProfileForm>();
     const router = useRouter();
+    const queryClient = useQueryClient();
     const [error, setError] = React.useState<string | null>(null);
 
     useEffect(() => {
@@ -45,6 +47,15 @@ export const EditStudentProfileModal: React.FC<EditStudentProfileModalProps> = (
             };
 
             await api.patch(`/students/${student.id}`, payload);
+
+            // Invalidate the client caches so the Profile page AND the homescreen
+            // re-fetch fresh data. router.refresh() alone only refreshes server
+            // components — these views are client-side react-query, so without
+            // this the edit wouldn't show until a full reload ("not synced").
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ['student-profile'] }),
+                queryClient.invalidateQueries({ queryKey: ['student-dashboard-summary'] }),
+            ]);
 
             if (onUpdate) onUpdate();
             onClose();

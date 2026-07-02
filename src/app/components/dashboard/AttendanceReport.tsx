@@ -10,6 +10,8 @@ import {
 
 interface AttendanceReportProps {
   studentId?: string | null;
+  /** 'dark' matches the app-shell (parent app dashboard); 'light' is the web default. */
+  variant?: 'light' | 'dark';
 }
 
 const STATUS_STYLES: Record<AttendanceStatus, string> = {
@@ -96,8 +98,43 @@ function downloadCsv(studentName: string, sessions: AttendanceSession[]) {
   URL.revokeObjectURL(url);
 }
 
-export default function AttendanceReport({ studentId }: AttendanceReportProps) {
+export default function AttendanceReport({ studentId, variant = 'light' }: AttendanceReportProps) {
   const { report, loading, error } = useAttendanceReport(studentId);
+  const dark = variant === 'dark';
+
+  // Theme tokens so the same component fits the light web dashboard AND the dark
+  // app-shell slide-over.
+  const t = dark
+    ? {
+        summaryBox: 'bg-white/[0.03] border-white/10',
+        summaryLabel: 'text-white/70',
+        summaryRate: 'text-white',
+        statBox: 'bg-white/[0.04]',
+        statSub: 'text-white/40',
+        totalLine: 'text-white/45',
+        exportBtn: 'bg-white/[0.05] border-white/10 text-white/70 hover:text-white hover:border-white/20',
+        heading: 'text-white/40',
+        tableWrap: 'border-white/10',
+        tableHead: 'bg-white/[0.03] text-white/40',
+        row: 'border-white/10 hover:bg-white/[0.03]',
+        cellStrong: 'text-white',
+        cellMuted: 'text-white/55',
+      }
+    : {
+        summaryBox: 'bg-blue-50 border-blue-100',
+        summaryLabel: 'text-blue-800',
+        summaryRate: 'text-blue-900',
+        statBox: 'bg-white/70',
+        statSub: 'text-gray-400',
+        totalLine: 'text-blue-600',
+        exportBtn: 'bg-white border-gray-200 text-gray-600 hover:text-black hover:border-gray-300 shadow-sm',
+        heading: 'text-gray-400',
+        tableWrap: 'border-gray-100',
+        tableHead: 'bg-gray-50 text-gray-400',
+        row: 'border-gray-100 hover:bg-gray-50/60',
+        cellStrong: 'text-gray-900',
+        cellMuted: 'text-gray-600',
+      };
 
   if (!studentId) {
     return (
@@ -142,14 +179,14 @@ export default function AttendanceReport({ studentId }: AttendanceReportProps) {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-[10px] font-black uppercase text-gray-400 tracking-widest">
+        <h3 className={`text-[10px] font-black uppercase tracking-widest ${t.heading}`}>
           Attendance Report
         </h3>
         <button
           type="button"
           onClick={() => downloadCsv(studentName, sessions)}
           disabled={sessions.length === 0}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-[10px] font-bold uppercase tracking-widest text-gray-600 hover:text-black hover:border-gray-300 shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase tracking-widest transition-all disabled:opacity-40 disabled:cursor-not-allowed ${t.exportBtn}`}
         >
           <Download size={13} />
           Export CSV
@@ -157,60 +194,62 @@ export default function AttendanceReport({ studentId }: AttendanceReportProps) {
       </div>
 
       {/* Summary row */}
-      <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
+      <div className={`border rounded-2xl p-4 ${t.summaryBox}`}>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-xs font-bold text-blue-800 uppercase tracking-tight">
+          <span className={`text-xs font-bold uppercase tracking-tight ${t.summaryLabel}`}>
             Attendance Rate
           </span>
-          <span className="text-lg font-black text-blue-900">
-            {summary.attendanceRate}%
+          <span className={`text-lg font-black ${t.summaryRate}`}>
+            {summary.totalSessions === 0 ? "—" : `${summary.attendanceRate}%`}
           </span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="bg-white/70 rounded-xl p-2.5 text-center">
-            <div className="text-base font-black text-green-600">{summary.attended}</div>
-            <div className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mt-0.5">
+          <div className={`rounded-xl p-2.5 text-center ${t.statBox}`}>
+            <div className="text-base font-black text-green-500">{summary.attended}</div>
+            <div className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${t.statSub}`}>
               Attended
             </div>
           </div>
-          <div className="bg-white/70 rounded-xl p-2.5 text-center">
-            <div className="text-base font-black text-amber-600">{summary.late}</div>
-            <div className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mt-0.5">
+          <div className={`rounded-xl p-2.5 text-center ${t.statBox}`}>
+            <div className="text-base font-black text-amber-500">{summary.late}</div>
+            <div className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${t.statSub}`}>
               Late
             </div>
           </div>
-          <div className="bg-white/70 rounded-xl p-2.5 text-center">
-            <div className="text-base font-black text-red-600">{summary.absent}</div>
-            <div className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mt-0.5">
+          <div className={`rounded-xl p-2.5 text-center ${t.statBox}`}>
+            <div className="text-base font-black text-red-500">{summary.absent}</div>
+            <div className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${t.statSub}`}>
               Absent
             </div>
           </div>
-          <div className="bg-white/70 rounded-xl p-2.5 text-center">
-            <div className="text-base font-black text-blue-700">{summary.totalMinutes}</div>
-            <div className="text-[9px] font-bold uppercase tracking-widest text-gray-400 mt-0.5">
+          <div className={`rounded-xl p-2.5 text-center ${t.statBox}`}>
+            <div className={`text-base font-black ${dark ? 'text-indigo-300' : 'text-blue-700'}`}>{summary.totalMinutes}</div>
+            <div className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${t.statSub}`}>
               Total Minutes
             </div>
           </div>
         </div>
-        <p className="text-[10px] text-blue-600 font-medium mt-3 uppercase tracking-widest">
-          {summary.totalSessions} session{summary.totalSessions === 1 ? "" : "s"} total
+        <p className={`text-[10px] font-medium mt-3 uppercase tracking-widest ${t.totalLine}`}>
+          {summary.totalSessions === 0
+            ? "No sessions yet"
+            : `${summary.totalSessions} session${summary.totalSessions === 1 ? "" : "s"} total`}
         </p>
       </div>
 
       {/* Sessions table */}
       {sessions.length === 0 ? (
-        <p className="text-xs italic text-text-secondary opacity-50 text-center py-4">
+        <p className={`text-xs italic text-center py-4 ${dark ? 'text-white/35' : 'text-text-secondary opacity-50'}`}>
           No attendance records yet
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-gray-100">
+        <div className={`overflow-x-auto rounded-2xl border ${t.tableWrap}`}>
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className={t.tableHead}>
                 {["Session", "Date", "Status", "Join", "Leave", "Minutes"].map((h) => (
                   <th
                     key={h}
-                    className="px-3 py-2.5 text-[9px] font-black uppercase tracking-widest text-gray-400 whitespace-nowrap"
+                    className="px-3 py-2.5 text-[9px] font-black uppercase tracking-widest whitespace-nowrap"
                   >
                     {h}
                   </th>
@@ -221,10 +260,10 @@ export default function AttendanceReport({ studentId }: AttendanceReportProps) {
               {sessions.map((s) => (
                 <tr
                   key={s.sessionId}
-                  className="border-t border-gray-100 hover:bg-gray-50/60 transition-colors"
+                  className={`border-t transition-colors ${t.row}`}
                 >
-                  <td className="px-3 py-2.5 text-xs font-bold text-gray-900">{s.title}</td>
-                  <td className="px-3 py-2.5 text-[11px] text-gray-600 whitespace-nowrap">
+                  <td className={`px-3 py-2.5 text-xs font-bold ${t.cellStrong}`}>{s.title}</td>
+                  <td className={`px-3 py-2.5 text-[11px] whitespace-nowrap ${t.cellMuted}`}>
                     {formatDate(s.scheduledStart)}
                   </td>
                   <td className="px-3 py-2.5">
@@ -235,13 +274,13 @@ export default function AttendanceReport({ studentId }: AttendanceReportProps) {
                       {STATUS_LABEL[s.status]}
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 text-[11px] text-gray-600 whitespace-nowrap">
+                  <td className={`px-3 py-2.5 text-[11px] whitespace-nowrap ${t.cellMuted}`}>
                     {formatTime(s.joinedAt)}
                   </td>
-                  <td className="px-3 py-2.5 text-[11px] text-gray-600 whitespace-nowrap">
+                  <td className={`px-3 py-2.5 text-[11px] whitespace-nowrap ${t.cellMuted}`}>
                     {formatTime(s.leftAt)}
                   </td>
-                  <td className="px-3 py-2.5 text-[11px] font-medium text-gray-700 whitespace-nowrap">
+                  <td className={`px-3 py-2.5 text-[11px] font-medium whitespace-nowrap ${t.cellMuted}`}>
                     {formatMinutes(s.minutesAttended)}
                   </td>
                 </tr>

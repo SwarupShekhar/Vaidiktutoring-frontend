@@ -36,8 +36,8 @@ function GlassSelect({ label, value, options, onChange, placeholder, icon }: Gla
                 onBlur={() => setTimeout(() => setOpen(false), 200)} // Delay to allow click
                 className={`
                     w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all
-                    bg-gray-100 dark:bg-black/20 hover:bg-gray-200 dark:hover:bg-black/30 text-left
-                    ${open ? 'border-blue-500 shadow-lg shadow-blue-500/20' : 'border-gray-300 dark:border-white/10 hover:border-gray-400 dark:hover:border-white/20'}
+                    bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 text-left
+                    ${open ? 'border-indigo-500 shadow-lg shadow-indigo-500/15' : 'border-gray-300 dark:border-white/10 hover:border-gray-400 dark:hover:border-white/20'}
                 `}
             >
                 <div className="flex items-center gap-3">
@@ -51,7 +51,7 @@ function GlassSelect({ label, value, options, onChange, placeholder, icon }: Gla
 
             {open && (
                 <div
-                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1a1a2e] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-[250px] overflow-y-auto scrollbar-thin transition-opacity duration-150"
+                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1a1830] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-[250px] overflow-y-auto scrollbar-thin transition-opacity duration-150"
                 >
                         {options.length === 0 ? (
                             <div className="p-3 text-gray-500 text-sm text-center italic">No options available</div>
@@ -66,11 +66,11 @@ function GlassSelect({ label, value, options, onChange, placeholder, icon }: Gla
                                     }}
                                     className={`
                                         w-full text-left px-4 py-3 text-sm transition-colors flex items-center justify-between
-                                        ${value === opt.id ? 'bg-blue-100 dark:bg-blue-600/30 text-blue-700 dark:text-blue-200' : 'hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300'}
+                                        ${value === opt.id ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-200' : 'hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300'}
                                     `}
                                 >
                                     {opt.label}
-                                    {value === opt.id && <CheckCircle size={14} className="text-blue-400" />}
+                                    {value === opt.id && <CheckCircle size={14} className="text-indigo-400" />}
                                 </button>
                             ))
                         )}
@@ -214,9 +214,13 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                 note
             });
 
-            // Invalidate queries to refresh dashboard
+            // Invalidate queries to refresh dashboard. The home dashboard reads
+            // 'student-dashboard-summary' (next class) and 'credit-status' (trial
+            // credits) — both must refresh so a freshly booked session appears.
             queryClient.invalidateQueries({ queryKey: ['student-bookings'] });
             queryClient.invalidateQueries({ queryKey: ['parent-upcoming-sessions'] });
+            queryClient.invalidateQueries({ queryKey: ['student-dashboard-summary'] });
+            queryClient.invalidateQueries({ queryKey: ['credit-status'] });
 
             // Success Animation or Redirect
             // Role-based redirect
@@ -253,10 +257,10 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
             {/* Header / Progress */}
             <div className="mb-10 flex flex-col items-center justify-between gap-6">
                 <div className="text-center">
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-400 to-violet-400">
+                    <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
                         Schedule Your Diagnostic
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Set up your assessment in 3 simple steps.</p>
+                    <p className="text-gray-500 dark:text-white/50 mt-1">Set up your assessment in 3 simple steps.</p>
 
                 </div>
 
@@ -270,12 +274,12 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                                 <div
                                     className={`
                                         flex items-center gap-3 px-5 py-2 rounded-xl transition-all
-                                        ${isActive ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-200 border border-blue-400 dark:border-blue-500/50' : ''}
-                                        ${isDone ? 'text-green-600 dark:text-green-400 opacity-60' : ''}
+                                        ${isActive ? 'bg-indigo-100 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-200 border border-indigo-400 dark:border-indigo-400/40' : ''}
+                                        ${isDone ? 'text-emerald-600 dark:text-emerald-400 opacity-70' : ''}
                                         ${!isActive && !isDone ? 'text-gray-500' : ''}
                                     `}
                                 >
-                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isActive ? 'bg-blue-500 text-white' : 'bg-gray-300 dark:bg-white/10 text-gray-600 dark:text-gray-400'}`}>
+                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isActive ? 'bg-indigo-500 text-white' : 'bg-gray-300 dark:bg-white/10 text-gray-600 dark:text-gray-400'}`}>
                                         {isDone ? <CheckCircle size={14} /> : idx + 1}
                                     </div>
                                     <div className="hidden sm:block">
@@ -298,10 +302,9 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
             )}
 
             {/* MAIN CONTENT AREA */}
-            <div className="bg-white dark:bg-slate-900/60 border border-gray-200 dark:border-white/10 rounded-3xl p-8 min-h-[500px] pb-32 xl:pb-48 overflow-visible relative backdrop-blur-2xl shadow-sm">
-                {/* Decorative gradients */}
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-violet-500/5 rounded-full blur-[100px] pointer-events-none" />
+            <div className="bg-white dark:bg-[#15131f] border border-gray-200 dark:border-white/10 rounded-3xl p-8 min-h-[420px] overflow-visible relative shadow-lg">
+                {/* Decorative accent wash (matches home bento) */}
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
 
                 <div className="relative w-full h-full">
                     {/* STEP 0: CONTEXT */}
@@ -312,7 +315,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                         >
                             <div className="max-w-xl mx-auto space-y-6">
                                 <h2 className="text-xl font-bold flex items-center gap-2 mb-6 text-gray-900 dark:text-white">
-                                    <Layers className="text-blue-500 dark:text-blue-400" size={20} /> Assessment Focus
+                                    <Layers className="text-indigo-500 dark:text-indigo-400" size={20} /> Assessment Focus
                                 </h2>
 
 
@@ -466,7 +469,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                         <button
                             onClick={() => setStep(s => Math.min(2, s + 1) as Step)}
                             disabled={!canProceed()}
-                            className="px-8 py-3 rounded-xl bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold shadow-lg shadow-blue-900/40 transform hover:scale-105 transition-all disabled:opacity-50 disabled:grayscale disabled:pointer-events-none"
+                            className="px-8 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg shadow-indigo-900/30 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale disabled:pointer-events-none"
                         >
                             Continue
                         </button>
@@ -488,7 +491,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                     <button
                         onClick={submitBooking}
                         disabled={submitting}
-                        className="px-8 py-3 rounded-xl bg-linear-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 text-white font-bold shadow-lg shadow-green-900/40 transform hover:scale-105 transition-all text-lg flex items-center gap-2 disabled:opacity-50"
+                        className="px-8 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-900/30 transition-all active:scale-95 text-lg flex items-center gap-2 disabled:opacity-50"
                     >
                         {submitting ? 'Creating Session...' : 'Confirm Assessment'} <CheckCircle size={20} />
 

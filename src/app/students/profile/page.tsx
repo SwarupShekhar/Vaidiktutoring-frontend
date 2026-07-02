@@ -1,16 +1,18 @@
 'use client';
 
+import { useState } from 'react';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { api } from '@/app/lib/api';
-import { useQuery } from '@tanstack/react-query';
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  BookOpen, 
-  Calendar, 
-  GraduationCap, 
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  BookOpen,
+  Calendar,
+  GraduationCap,
   School,
   Star,
   Target,
@@ -19,7 +21,9 @@ import {
   LogOut,
   ShieldCheck,
   FileText,
-  ExternalLink
+  ExternalLink,
+  Video,
+  VideoOff
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -69,6 +73,30 @@ export default function StudentProfilePage() {
     // "Profile not found" while auth was still resolving. Mirrors
     // useStudentDashboardSummary, which is why the homescreen loads but this didn't.
     enabled: !!token && !authLoading,
+  });
+
+  // Adult-learner self-consent to recording. Minors are refused server-side; here
+  // we only show the toggle when the account is 18+ (see RecordingConsentCard).
+  const queryClient = useQueryClient();
+  const consentMutation = useMutation({
+    mutationFn: async (vars: { granted: boolean; birthDate?: string }) => {
+      const res = await api.patch('/students/me/recording-consent', vars);
+      return res.data;
+    },
+    onSuccess: (_d, vars) => {
+      toast.success(
+        vars.granted ? 'Recording consent granted' : 'Recording consent withdrawn',
+      );
+      queryClient.invalidateQueries({ queryKey: ['student-profile'] });
+    },
+    onError: (e: any) => {
+      const msg = e?.response?.data?.message;
+      toast.error(
+        msg === 'DOB_REQUIRED'
+          ? 'Please enter your date of birth to enable recording.'
+          : msg || 'Could not update consent',
+      );
+    },
   });
 
   // While auth is still bootstrapping (no token yet) OR the query is in flight,
@@ -336,6 +364,21 @@ export default function StudentProfilePage() {
                     </div>
                     <p className="mt-1 text-xs text-white/40">{creditModeLabel}</p>
                   </div>
+                  <div className="grid grid-cols-2 gap-2 border-t border-white/10 pt-4">
+                    <Link
+                      href="/pricing"
+                      className="flex items-center justify-center rounded-xl px-3 py-2 text-sm font-bold transition-opacity hover:opacity-90"
+                      style={{ background: accentRgb('indigo'), color: '#fff' }}
+                    >
+                      View plans
+                    </Link>
+                    <Link
+                      href="/students/sessions"
+                      className="flex items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-sm font-bold text-white/80 transition-colors hover:bg-white/5"
+                    >
+                      Session history
+                    </Link>
+                  </div>
                 </div>
               </AppCard>
 
@@ -376,6 +419,15 @@ export default function StudentProfilePage() {
                   </div>
                 )}
               </AppCard>
+
+              {/* Privacy & recording (adult self-consent) */}
+              <RecordingConsentCard
+                variant="app"
+                birthDate={profile.birth_date}
+                granted={!!profile.recording_consent_granted}
+                pending={consentMutation.isPending}
+                onToggle={(next, dob) => consentMutation.mutate({ granted: next, birthDate: dob })}
+              />
 
               {/* Legal & Privacy */}
               <AppCard accent="indigo">
@@ -558,11 +610,19 @@ export default function StudentProfilePage() {
                     <span className="font-black text-primary">{profile.sessions_remaining}</span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-                    <div 
-                      className="bg-primary h-full" 
+                    <div
+                      className="bg-primary h-full"
                       style={{ width: `${Math.min(100, (profile.sessions_remaining / (profile.creditStatus?.credits_total || 10)) * 100)}%` }}
                     />
                   </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2 pt-4 border-t border-border">
+                  <Link href="/pricing" className="flex items-center justify-center rounded-xl bg-primary px-3 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90">
+                    View plans
+                  </Link>
+                  <Link href="/students/sessions" className="flex items-center justify-center rounded-xl border border-border px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted">
+                    Session history
+                  </Link>
                 </div>
               </div>
             </div>
@@ -592,6 +652,15 @@ export default function StudentProfilePage() {
               )}
             </div>
 
+            {/* Privacy & recording (adult self-consent) */}
+            <RecordingConsentCard
+              variant="web"
+              birthDate={profile.birth_date}
+              granted={!!profile.recording_consent_granted}
+              pending={consentMutation.isPending}
+              onToggle={(next, dob) => consentMutation.mutate({ granted: next, birthDate: dob })}
+            />
+
             {/* Account / Sign out */}
             <div className="bg-surface rounded-3xl p-6 border border-border shadow-sm">
               <h3 className="font-bold text-foreground mb-1">Account</h3>
@@ -608,6 +677,163 @@ export default function StudentProfilePage() {
           </motion.div>
         </motion.div>
       </div>
+    </div>
+  );
+}
+
+/* Age check — true only when a birth date is present AND the learner is 18+. */
+function isAdult(birthDate?: string | null): boolean {
+  if (!birthDate) return false;
+  const dob = new Date(birthDate);
+  if (isNaN(dob.getTime())) return false;
+  const now = new Date();
+  let age = now.getFullYear() - dob.getFullYear();
+  const m = now.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) age--;
+  return age >= 18;
+}
+
+/**
+ * Recording-consent card for a student's OWN account. Only adult learners (18+)
+ * see a toggle; for a minor (or unknown age) it explains that a parent/guardian
+ * must enable recording. Renders app-shell (dark) or web (light) styling.
+ */
+function RecordingConsentCard({
+  birthDate,
+  granted,
+  pending,
+  onToggle,
+  variant,
+}: {
+  birthDate?: string | null;
+  granted: boolean;
+  pending: boolean;
+  onToggle: (next: boolean, birthDate?: string) => void;
+  variant: 'app' | 'web';
+}) {
+  const [dob, setDob] = useState('');
+  const app = variant === 'app';
+  const hasDob = !!birthDate;
+  const adult = isAdult(birthDate);
+  // Three states: known adult → toggle; known minor → parent-only note;
+  // unknown age (no DOB on file) → collect a self-attested date of birth.
+  const state: 'adult' | 'minor' | 'needs-dob' = hasDob
+    ? adult
+      ? 'adult'
+      : 'minor'
+    : 'needs-dob';
+
+  const blurb = 'Turn on to let your tutor record your sessions so you can review them later. Off by default; change anytime. Recordings auto-delete after 30 days.';
+  const minorNote = "Sessions are only recorded with consent. For a learner under 18, a parent or guardian must enable recording from their own account — it can't be turned on here.";
+
+  const toggle = (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={granted}
+      disabled={pending}
+      onClick={() => onToggle(!granted)}
+      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${
+        granted ? 'bg-emerald-500' : app ? 'bg-white/15' : 'bg-slate-300 dark:bg-slate-600'
+      }`}
+    >
+      <span
+        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+          granted ? 'translate-x-6' : 'translate-x-1'
+        }`}
+      />
+    </button>
+  );
+
+  const heading = (
+    <h3
+      className={
+        app
+          ? 'mb-1 flex items-center gap-2 font-bold text-white'
+          : 'font-bold text-foreground mb-1 flex items-center gap-2'
+      }
+    >
+      <ShieldCheck size={16} style={app ? { color: accentRgb('emerald') } : undefined} className={app ? '' : 'text-emerald-600'} />{' '}
+      Privacy &amp; recording
+    </h3>
+  );
+
+  const body = (
+    <>
+      {state === 'adult' && (
+        <>
+          <p className={app ? 'mb-4 text-xs text-white/45' : 'text-xs text-muted-foreground mb-4'}>{blurb}</p>
+          <div
+            className={
+              app
+                ? 'flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3'
+                : 'flex items-center justify-between rounded-xl border border-border bg-muted/40 px-4 py-3'
+            }
+          >
+            <span className={app ? 'flex items-center gap-2 text-sm text-white/80' : 'flex items-center gap-2 text-sm text-foreground'}>
+              {granted ? <Video size={15} /> : <VideoOff size={15} />}
+              {granted ? 'Recording allowed' : 'Recording off'}
+            </span>
+            {toggle}
+          </div>
+        </>
+      )}
+
+      {state === 'minor' && (
+        <p className={app ? 'text-xs leading-relaxed text-white/45' : 'text-xs text-muted-foreground leading-relaxed'}>
+          {minorNote}
+        </p>
+      )}
+
+      {state === 'needs-dob' && (
+        <>
+          <p className={app ? 'mb-3 text-xs text-white/45' : 'text-xs text-muted-foreground mb-3'}>
+            {blurb} To enable it, confirm you're 18 or older.
+          </p>
+          <label className={app ? 'mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-white/40' : 'mb-1.5 block text-xs font-bold uppercase tracking-wide text-muted-foreground'}>
+            Date of birth
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="date"
+              value={dob}
+              max={new Date().toISOString().slice(0, 10)}
+              onChange={(e) => setDob(e.target.value)}
+              className={
+                app
+                  ? 'flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none focus:border-emerald-400/60'
+                  : 'flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-emerald-500'
+              }
+            />
+            <button
+              type="button"
+              disabled={pending || !dob || !isAdult(dob)}
+              onClick={() => onToggle(true, dob)}
+              className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+            >
+              Enable
+            </button>
+          </div>
+          {dob && !isAdult(dob) && (
+            <p className="mt-2 text-xs text-rose-400">You must be 18 or older to self-consent to recording.</p>
+          )}
+        </>
+      )}
+    </>
+  );
+
+  if (app) {
+    return (
+      <AppCard accent="emerald">
+        {heading}
+        {body}
+      </AppCard>
+    );
+  }
+  return (
+    <div className="bg-surface rounded-3xl p-6 border border-border shadow-sm">
+      {heading}
+      {body}
     </div>
   );
 }

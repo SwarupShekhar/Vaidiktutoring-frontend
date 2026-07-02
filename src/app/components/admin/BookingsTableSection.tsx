@@ -252,6 +252,17 @@ export default function BookingsTableSection() {
                                                 <BookOpen size={14} /> Summary
                                             </button>
                                         )}
+                                        {b.status !== 'cancelled' && b.status !== 'completed' && (
+                                            <button 
+                                                className="px-3 py-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors"
+                                                onClick={() => {
+                                                    const evt = new CustomEvent('open-reschedule-modal', { detail: { booking: b } });
+                                                    window.dispatchEvent(evt);
+                                                }}
+                                            >
+                                                <Calendar size={14} /> Reschedule
+                                            </button>
+                                        )}
                                         </div>
                                     </td>
                                 </tr>

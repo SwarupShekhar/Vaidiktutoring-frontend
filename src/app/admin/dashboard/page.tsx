@@ -8,6 +8,7 @@ import TutorListModal from '@/app/components/admin/TutorListModal';
 import AdminSessionSummaryModal from '@/app/components/admin/AdminSessionSummaryModal';
 import SupportTicketsSection from '@/app/components/admin/SupportTicketsSection';
 import CreateGroupSessionModal from '@/app/components/admin/CreateGroupSessionModal';
+import RescheduleBookingModal from '@/app/components/admin/RescheduleBookingModal';
 import { useAuthContext } from '@/app/context/AuthContext';
 import Link from 'next/link';
 import api from '@/app/lib/api';
@@ -35,7 +36,8 @@ import {
     FileText,
     RefreshCw,
     BookOpen,
-    Video
+    Video,
+    CalendarClock
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -67,6 +69,8 @@ export default function AdminDashboardPage() {
     const [summarySessionId, setSummarySessionId] = useState<string | null>(null);
     const [showSummary, setShowSummary] = useState(false);
     const [showGroupSession, setShowGroupSession] = useState(false);
+    const [showReschedule, setShowReschedule] = useState(false);
+    const [rescheduleBooking, setRescheduleBooking] = useState<any>(null);
     const [newTicketCount, setNewTicketCount] = useState(0);
     const socketRef = useRef<any>(null);
 
@@ -157,11 +161,18 @@ export default function AdminDashboardPage() {
         };
         window.addEventListener('open-admin-session-summary', handleOpenSummary);
 
+        const handleOpenReschedule = (e: any) => {
+            setRescheduleBooking(e.detail?.booking || null);
+            setShowReschedule(true);
+        };
+        window.addEventListener('open-reschedule-modal', handleOpenReschedule);
+
         return () => {
             clearInterval(interval);
             window.removeEventListener('open-tutor-allocation', handleOpenAllocation);
             window.removeEventListener('refresh-admin-stats', fetchStats);
             window.removeEventListener('open-admin-session-summary', handleOpenSummary);
+            window.removeEventListener('open-reschedule-modal', handleOpenReschedule);
         };
     }, []);
 
@@ -423,6 +434,19 @@ export default function AdminDashboardPage() {
                                             <ChevronRight size={16} className="text-slate-400 dark:text-white/20 group-hover/sub:text-indigo-500 transition-colors" />
                                         </Link>
 
+                                        <Link href="/admin/reschedule-requests" className="col-span-2 p-5 bg-black/5 dark:bg-white/5 border border-border dark:border-white/5 rounded-[1.8rem] hover:bg-amber-500/10 hover:border-amber-500/30 transition-all group/sub text-left flex items-center justify-between">
+                                            <div>
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <div className="p-2 bg-amber-500/10 rounded-xl text-amber-500 dark:text-amber-400">
+                                                        <CalendarClock size={18} />
+                                                    </div>
+                                                    <p className="text-(--color-text-primary) dark:text-white font-bold text-sm">Reschedule Requests</p>
+                                                </div>
+                                                <p className="text-[9px] text-slate-500 dark:text-white/40 font-mono uppercase">Students Asking To Move Classes</p>
+                                            </div>
+                                            <ChevronRight size={16} className="text-slate-400 dark:text-white/20 group-hover/sub:text-amber-500 transition-colors" />
+                                        </Link>
+
                                         <button onClick={() => setShowGroupSession(true)} className="col-span-2 p-5 bg-black/5 dark:bg-white/5 border border-border dark:border-white/5 rounded-[1.8rem] hover:bg-rose-500/10 hover:border-rose-500/30 transition-all group/sub text-left flex items-center justify-between">
                                             <div>
                                                 <div className="flex items-center gap-3 mb-2">
@@ -564,6 +588,18 @@ export default function AdminDashboardPage() {
                         onClose={() => setShowGroupSession(false)} 
                     />
                 )}
+                <RescheduleBookingModal 
+                    isOpen={showReschedule}
+                    onClose={() => {
+                        setShowReschedule(false);
+                        setRescheduleBooking(null);
+                    }}
+                    booking={rescheduleBooking}
+                    onSuccess={() => {
+                        // refresh bookings
+                        window.dispatchEvent(new CustomEvent('refresh-bookings-table'));
+                    }}
+                />
             </div>
         </ProtectedClient>
     );

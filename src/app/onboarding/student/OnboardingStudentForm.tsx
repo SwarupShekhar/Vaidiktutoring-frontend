@@ -19,6 +19,7 @@ const studentSchema = z.object({
     school: z.string().min(1, 'School is required'),
     email: z.string().email('Invalid email address').optional().or(z.literal('')),
     curriculum_preference: z.string().optional(),
+    recording_consent_granted: z.boolean().optional(),
 });
 
 type FormValues = z.infer<typeof studentSchema>;
@@ -54,6 +55,7 @@ export default function OnboardingStudentForm() {
             school: values.school,
             email: values.email || null,
             curriculum_preference: values.curriculum_preference || null,
+            recording_consent_granted: values.recording_consent_granted || false,
         });
 
         toast.promise(promise, {
@@ -195,6 +197,33 @@ export default function OnboardingStudentForm() {
                         <p className="text-xs text-text-secondary mt-1">
                             We’ll use this to match the right content and tutors.
                         </p>
+                    </div>
+
+                    {/* Recording consent (opt-in). Required for a minor's sessions to
+                        be recorded; unchecked = live classes only, and it can be
+                        enabled later from Profile → Settings. */}
+                    <div className="rounded-lg border border-border bg-background p-4">
+                        <label className="flex items-start gap-3 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                {...register('recording_consent_granted')}
+                                className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                            />
+                            <span className="text-sm text-(--color-text-primary)">
+                                I consent to my child's live sessions being recorded so they can
+                                review them later.
+                                <span className="mt-1 block text-xs text-text-secondary">
+                                    Optional. Sessions still run live without this. Recordings are
+                                    stored securely, visible only to you, your child and the tutor,
+                                    and auto-deleted after 30 days. You can change this anytime in
+                                    Profile → Settings. See our{' '}
+                                    <a href="/legal/privacy" target="_blank" className="underline">
+                                        Privacy Policy
+                                    </a>
+                                    .
+                                </span>
+                            </span>
+                        </label>
                     </div>
 
                     <div className="flex justify-between pt-2">

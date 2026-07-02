@@ -16,6 +16,11 @@ declare global {
     windowMaximize: () => void;
     windowClose: () => void;
     openExternal: (url: string) => void;
+    /**
+     * Just-in-time camera/mic request. Call right before joining a live session.
+     * Triggers the native macOS permission dialog (no-op grant on Win/Linux).
+     */
+    requestMediaAccess: () => Promise<{ camera: string; microphone: string }>;
     getPlatform: () => string;
   }
 

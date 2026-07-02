@@ -4,11 +4,23 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { debounce } from 'lodash';
 import { useRouter } from 'next/navigation';
 import ProtectedClient from '@/app/components/ProtectedClient';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
 import { api } from '@/app/lib/api';
 import {
   Play, Camera, ArrowLeft, Loader2, AlertCircle, Video, Search,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import {
+  AppPage,
+  AppPageItem,
+  AppPageHeader,
+  AppCard,
+  AppSearchInput,
+  AppPillButton,
+  AppEmptyState,
+  AppSkeletonCard,
+  accentRgb,
+} from '@/app/components/app-shell/ui';
 
 interface SessionEntry {
   sessionId: string;
@@ -24,6 +36,7 @@ interface SessionEntry {
 
 function RecordingsContent() {
   const router = useRouter();
+  const isAppShell = useIsAppShell();
   const [sessions, setSessions] = useState<SessionEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,18 +75,36 @@ function RecordingsContent() {
     return acc;
   }, {});
 
+  // ----- Desktop app-shell branch (premium dark) -----
+  if (isAppShell) {
+    return (
+      <RecordingsAppShellView
+        loading={loading}
+        error={error}
+        filtered={filtered}
+        bySubject={bySubject}
+        search={search}
+        onSearchChange={handleSearchChange}
+        onView={(sessionId) => router.push(`/students/recordings/${sessionId}`)}
+      />
+    );
+  }
+
+  // ----- Web branch (UNCHANGED) -----
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-5xl mx-auto space-y-8">
+    <div className={isAppShell ? 'p-4 md:p-8' : 'min-h-screen bg-background p-4 md:p-8'}>
+      <div className={isAppShell ? 'w-full space-y-8' : 'max-w-5xl mx-auto space-y-8'}>
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push('/students/dashboard')}
-            className="flex items-center gap-2 text-sm text-text-secondary hover:text-foreground transition-colors"
-          >
-            <ArrowLeft size={16} /> Dashboard
-          </button>
-        </div>
+        {!isAppShell && (
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.push('/students/dashboard')}
+              className="flex items-center gap-2 text-sm text-text-secondary hover:text-foreground transition-colors"
+            >
+              <ArrowLeft size={16} /> Dashboard
+            </button>
+          </div>
+        )}
 
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
@@ -178,6 +209,163 @@ function RecordingsContent() {
         ))}
       </div>
     </div>
+  );
+}
+
+// -------------------------------------------------------------------------
+// Desktop app-shell view (premium dark). Renders ONLY inside the Electron
+// shell; the web branch above is untouched.
+// -------------------------------------------------------------------------
+function RecordingsAppShellView({
+  loading,
+  error,
+  filtered,
+  bySubject,
+  search,
+  onSearchChange,
+  onView,
+}: {
+  loading: boolean;
+  error: string | null;
+  filtered: SessionEntry[];
+  bySubject: Record<string, SessionEntry[]>;
+  search: string;
+  onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onView: (sessionId: string) => void;
+}) {
+  return (
+    <AppPage>
+      <AppPageItem>
+        <AppPageHeader
+          icon={Video}
+          accent="purple"
+          title="Recordings & Snapshots"
+          subtitle="All your session recordings and whiteboard snapshots, grouped by subject."
+          right={
+            <AppSearchInput
+              value={search}
+              onChange={onSearchChange}
+              placeholder="Search subject..."
+              accent="purple"
+            />
+          }
+        />
+      </AppPageItem>
+
+      {loading && (
+        <AppPageItem>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <AppSkeletonCard key={i} />
+            ))}
+          </div>
+        </AppPageItem>
+      )}
+
+      {!loading && error && (
+        <AppPageItem>
+          <AppEmptyState
+            tone="error"
+            icon={AlertCircle}
+            title="Couldn't load your sessions"
+            description={error}
+          />
+        </AppPageItem>
+      )}
+
+      {!loading && !error && filtered.length === 0 && (
+        <AppPageItem>
+          <AppEmptyState
+            icon={Video}
+            accent="purple"
+            title="No recordings or snapshots yet"
+            description="They will appear here after your sessions."
+          />
+        </AppPageItem>
+      )}
+
+      {!loading && !error &&
+        Object.entries(bySubject).map(([subject, subjectSessions]) => (
+          <section key={subject} className="space-y-4">
+            <AppPageItem>
+              <h2 className="border-b border-white/10 pb-2 text-xl font-bold text-white">
+                {subject}
+              </h2>
+            </AppPageItem>
+            <AppPageItem>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {subjectSessions.map((s) => (
+                  <AppCard key={s.sessionId} accent="purple" interactive>
+                    <div className="flex h-full flex-col gap-3">
+                      {/* Date + time range */}
+                      <div>
+                        <p className="text-sm font-bold text-white">
+                          {s.startTime
+                            ? format(new Date(s.startTime), 'EEE, MMM d, yyyy')
+                            : 'Date TBD'}
+                        </p>
+                        {s.startTime && (
+                          <p className="text-xs text-white/50">
+                            {format(new Date(s.startTime), 'h:mm a')}
+                            {s.endTime ? ` – ${format(new Date(s.endTime), 'h:mm a')}` : ''}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Badges */}
+                      <div className="flex flex-wrap gap-2">
+                        {s.hasRecording && (
+                          <span
+                            className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold"
+                            style={{
+                              background: accentRgb('purple', 0.14),
+                              color: accentRgb('purple'),
+                              border: `1px solid ${accentRgb('purple', 0.3)}`,
+                            }}
+                          >
+                            <Play size={10} /> Recording
+                          </span>
+                        )}
+                        {s.hasWhiteboardSnapshot && (
+                          <span
+                            className="flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold"
+                            style={{
+                              background: accentRgb('sky', 0.14),
+                              color: accentRgb('sky'),
+                              border: `1px solid ${accentRgb('sky', 0.3)}`,
+                            }}
+                          >
+                            <Camera size={10} /> Whiteboard
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Tutor note preview */}
+                      {s.tutorNote && (
+                        <p className="line-clamp-2 text-xs italic text-white/55">
+                          &ldquo;{s.tutorNote}&rdquo;
+                        </p>
+                      )}
+
+                      {/* CTA */}
+                      <div className="mt-auto pt-1">
+                        <AppPillButton
+                          accent="purple"
+                          variant="soft"
+                          className="w-full"
+                          onClick={() => onView(s.sessionId)}
+                        >
+                          <Play size={13} /> View Session
+                        </AppPillButton>
+                      </div>
+                    </div>
+                  </AppCard>
+                ))}
+              </div>
+            </AppPageItem>
+          </section>
+        ))}
+    </AppPage>
   );
 }
 

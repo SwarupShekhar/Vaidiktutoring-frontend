@@ -52,13 +52,29 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
     const endTime = new Date(session.end_time || session.requested_end);
     const now = new Date();
 
-    const canJoin = isWithinInterval(now, {
-        start: subMinutes(startTime, 10),
-        end: endTime
-    });
-
     const isLive = isWithinInterval(now, { start: startTime, end: endTime });
+    
+    // Allow joining if the session is today or in the past (to allow late joins/reviews)
+    const canJoin = startTime.toDateString() === now.toDateString() || startTime < now;
     const subjectName = session.subject?.name || session.subject_name || 'StudyHours Session';
+
+    // Resolve the video provider. ZOOM sessions are joined externally via `zoom_join_url`;
+    // Daily.co (or unset) sessions use the in-app room at /session/<id>.
+    const sess = session.sessions?.[0] ?? session;
+    const provider = sess?.video_provider ?? session.video_provider;
+    const legacyZoomLink = !!session.meet_link && session.meet_link.includes('zoom.us');
+    const isZoom = provider === 'ZOOM' || legacyZoomLink;
+    const zoomUrl =
+        sess?.zoom_join_url ?? session.zoom_join_url ?? (legacyZoomLink ? session.meet_link : null);
+    const zoomUnavailable = isZoom && !zoomUrl;
+
+    const handleJoin = () => {
+        if (isZoom) {
+            if (zoomUrl) window.open(zoomUrl, '_blank', 'noopener,noreferrer');
+        } else {
+            router.push(`/session/${session.id}`);
+        }
+    };
 
     return (
         <motion.div 
@@ -112,11 +128,12 @@ export const SessionCommandCard = ({ session, loading }: SessionCommandCardProps
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                     {canJoin ? (
                         <button
-                            onClick={() => router.push(`/session/${session.id}`)}
-                            className="flex-2 py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center justify-center gap-3 transition-all shadow-md active:scale-95"
+                            onClick={handleJoin}
+                            disabled={zoomUnavailable}
+                            className="flex-2 py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center justify-center gap-3 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Video size={20} />
-                            Join Your Classroom
+                            {zoomUnavailable ? 'Link Unavailable' : isZoom ? 'Join Zoom' : 'Join Your Classroom'}
                         </button>
                     ) : (
                         <button

@@ -4,11 +4,16 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { debounce } from 'lodash';
 import { useRouter } from 'next/navigation';
 import ProtectedClient from '@/app/components/ProtectedClient';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
 import { api } from '@/app/lib/api';
 import {
   BookOpen, ArrowLeft, Loader2, AlertCircle, Download, FileText, Search,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import {
+  AppPage, AppPageItem, AppPageHeader, AppCard, AppSearchInput,
+  AppPillButton, AppEmptyState, AppSkeletonCard, accentRgb, type AccentKey,
+} from '@/app/components/app-shell/ui';
 
 interface ClassNote {
   id: string;
@@ -32,6 +37,14 @@ const NOTE_TYPE_LABEL: Record<string, string> = {
   whiteboard_pdf: 'Whiteboard Export',
 };
 
+// App-shell note-type accents — rendered as soft accent pills.
+const NOTE_TYPE_ACCENT: Record<string, AccentKey> = {
+  annotated_pdf: 'amber',
+  after_class: 'emerald',
+  general: 'sky',
+  whiteboard_pdf: 'violet',
+};
+
 const NOTE_TYPE_COLOR: Record<string, string> = {
   annotated_pdf: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300',
   after_class: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
@@ -41,6 +54,7 @@ const NOTE_TYPE_COLOR: Record<string, string> = {
 
 function NotesContent() {
   const router = useRouter();
+  const isAppShell = useIsAppShell();
   const [notes, setNotes] = useState<ClassNote[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -94,18 +108,141 @@ function NotesContent() {
   const tutorName = (note: ClassNote) =>
     [note.users?.first_name, note.users?.last_name].filter(Boolean).join(' ') || 'Tutor';
 
+  // ---------------------------------------------------------------------------
+  // Desktop app-shell view — premium dark surface. The web branch below is
+  // untouched. Only this branch uses the app-shell primitives + dark palette.
+  // ---------------------------------------------------------------------------
+  if (isAppShell) {
+    return (
+      <AppPage>
+        <AppPageItem>
+          <AppPageHeader
+            icon={BookOpen}
+            accent="green"
+            title="Shared Notes"
+            subtitle="Annotated PDFs and after-class notes shared by your tutors."
+            right={
+              <AppSearchInput
+                value={search}
+                onChange={handleSearchChange}
+                placeholder="Search notes…"
+                accent="green"
+              />
+            }
+          />
+        </AppPageItem>
+
+        {loading ? (
+          <AppPageItem>
+            <div className="space-y-4">
+              <AppSkeletonCard />
+              <AppSkeletonCard />
+              <AppSkeletonCard />
+            </div>
+          </AppPageItem>
+        ) : error && filtered.length === 0 ? (
+          <AppPageItem>
+            <AppEmptyState
+              tone="error"
+              icon={AlertCircle}
+              title="Couldn’t load your notes"
+              description={error}
+            />
+          </AppPageItem>
+        ) : filtered.length === 0 ? (
+          <AppPageItem>
+            <AppEmptyState
+              icon={BookOpen}
+              accent="green"
+              title="No notes shared yet."
+              description="Your tutor will share notes here after sessions."
+            />
+          </AppPageItem>
+        ) : (
+          <AppPageItem>
+            <div className="space-y-4">
+              {filtered.map(note => {
+                const subject = note.sessions?.bookings?.subjects?.name || 'Session';
+                const date = note.sessions?.start_time
+                  ? format(new Date(note.sessions.start_time), 'EEE, MMM d, yyyy')
+                  : format(new Date(note.created_at), 'EEE, MMM d, yyyy');
+                const typeLabel = NOTE_TYPE_LABEL[note.note_type] || 'Notes';
+                const typeAccent = NOTE_TYPE_ACCENT[note.note_type] || 'green';
+
+                return (
+                  <AppCard key={note.id} accent="green">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div className="flex min-w-0 items-start gap-4">
+                        <span
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                          style={{
+                            background: accentRgb('green', 0.12),
+                            color: accentRgb('green'),
+                          }}
+                        >
+                          <FileText size={20} />
+                        </span>
+                        <div className="min-w-0 space-y-1">
+                          <h3 className="truncate font-bold text-white">{note.title}</h3>
+                          <p className="text-sm text-white/60">{subject} · {date}</p>
+                          <p className="text-xs text-white/45">Shared by {tutorName(note)}</p>
+                          <span
+                            className="inline-block rounded-full px-2 py-0.5 text-[10px] font-bold"
+                            style={{
+                              background: accentRgb(typeAccent, 0.14),
+                              color: accentRgb(typeAccent),
+                              border: `1px solid ${accentRgb(typeAccent, 0.3)}`,
+                            }}
+                          >
+                            {typeLabel}
+                          </span>
+                        </div>
+                      </div>
+
+                      {note.blob_name && (
+                        <AppPillButton
+                          variant="solid"
+                          accent="green"
+                          disabled={downloading === note.id}
+                          onClick={() => handleDownload(note.id, note.title)}
+                        >
+                          {downloading === note.id
+                            ? <Loader2 size={14} className="animate-spin" />
+                            : <Download size={14} />}
+                          Download
+                        </AppPillButton>
+                      )}
+                    </div>
+
+                    {note.content && (
+                      <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                        <p className="whitespace-pre-wrap text-sm text-white/80">{note.content}</p>
+                      </div>
+                    )}
+                  </AppCard>
+                );
+              })}
+            </div>
+          </AppPageItem>
+        )}
+      </AppPage>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className={isAppShell ? 'p-4 md:p-8' : 'min-h-screen bg-background p-4 md:p-8'}>
+      <div className={isAppShell ? 'w-full space-y-8' : 'max-w-4xl mx-auto space-y-8'}>
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push('/students/dashboard')}
-            className="flex items-center gap-2 text-sm text-text-secondary hover:text-foreground transition-colors"
-          >
-            <ArrowLeft size={16} /> Dashboard
-          </button>
-        </div>
+        {!isAppShell && (
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.push('/students/dashboard')}
+              className="flex items-center gap-2 text-sm text-text-secondary hover:text-foreground transition-colors"
+            >
+              <ArrowLeft size={16} /> Dashboard
+            </button>
+          </div>
+        )}
 
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>

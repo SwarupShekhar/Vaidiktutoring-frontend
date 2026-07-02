@@ -82,7 +82,9 @@ export default function TermsPage() {
                             <li><strong>Legitimate Use:</strong> Students must use the Platform solely for legitimate academic and learning purposes.</li>
                             <li><strong>Minor Consent:</strong> For students under the age of 18, a parent or legal guardian must review and accept these Terms on their behalf.</li>
                             <li><strong>Monitoring:</strong> Guardians are responsible for monitoring their child's interactions and usage of the Platform.</li>
-                            <li><strong>Recordings:</strong> Students and guardians must not record sessions without the explicit consent of the tutor and StudyHours. Note that StudyHours may record sessions for safety and quality as outlined in the Privacy Policy.</li>
+                            <li><strong>Recording Consent:</strong> Session recording is off by default and only occurs with explicit, opt-in consent. For a student under 18, that consent may only be given by a parent or legal guardian. An adult learner (18 or older) using their own account may consent for themselves. Consent may be withdrawn at any time from Profile → Settings, and StudyHours handles recordings as described in the Privacy Policy.</li>
+                            <li><strong>Age Verification:</strong> Where you enable recording as an adult learner, you confirm that you are 18 years of age or older. Age is self-attested, and you are solely responsible for the accuracy of the date of birth and eligibility you provide. Providing false information to enable recording is a violation of these Terms.</li>
+                            <li><strong>Unauthorized Recording:</strong> Students and guardians must not themselves record, screen-capture, or otherwise reproduce sessions without the explicit consent of the tutor and StudyHours.</li>
                         </ul>
                     </section>
 

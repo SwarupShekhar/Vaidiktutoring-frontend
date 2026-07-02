@@ -11,6 +11,7 @@ interface SessionHeroProps {
   sessionLabel?: string | null;
   countdown?: string;
   startWithin5Min?: boolean;
+  isJoining?: boolean;
   onJoinSession?: () => void;
 }
 
@@ -26,6 +27,7 @@ export const SessionHero: React.FC<SessionHeroProps> = ({
   sessionLabel,
   countdown,
   startWithin5Min,
+  isJoining,
   onJoinSession
 }) => {
   if (isEnrolled) {
@@ -47,14 +49,17 @@ export const SessionHero: React.FC<SessionHeroProps> = ({
               {countdown && <p className="text-white/70 text-sm">Starts in {countdown}</p>}
             </div>
             <button
-              disabled={!startWithin5Min}
+              disabled={!startWithin5Min || isJoining}
               onClick={onJoinSession}
-              className={`px-8 py-4 rounded-2xl font-bold text-base transition-all ${
+              className={`px-8 py-4 rounded-2xl font-bold text-base transition-all flex items-center justify-center gap-2 ${
                 startWithin5Min
-                  ? 'bg-white text-violet-700 shadow-lg shadow-white/30 animate-pulse hover:scale-105'
+                  ? 'bg-white text-violet-700 shadow-lg shadow-white/30 hover:scale-105'
                   : 'bg-white/20 text-white/60 cursor-not-allowed'
-              }`}
+              } ${startWithin5Min && !isJoining ? 'animate-pulse' : ''}`}
             >
+              {isJoining ? (
+                <span className="w-5 h-5 border-2 border-violet-700 border-t-transparent rounded-full animate-spin"></span>
+              ) : null}
               Join Class
             </button>
           </div>

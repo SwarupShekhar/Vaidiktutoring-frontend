@@ -12,6 +12,7 @@ import { usePathname } from 'next/navigation';
 export default function AuthRoleRedirect() {
   const { user, loading } = useAuthContext();
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     // Skip if still loading
@@ -23,18 +24,18 @@ export default function AuthRoleRedirect() {
 
     // 1. Force Admins to Admin Dashboard if they are elsewhere
     if (role === 'admin' && !pathname?.startsWith('/admin')) {
-      window.location.href = '/admin/dashboard';
+      router.replace('/admin/dashboard');
       return;
     }
 
     // 2. Force Students/Tutors/Parents to their dashboards if they are on marketing pages
     if (isMarketingPath) {
-      if (role === 'tutor') window.location.href = '/tutor/dashboard';
-      else if (role === 'student') window.location.href = '/students/dashboard';
-      else if (role === 'parent') window.location.href = '/parent/dashboard';
-      else if (role === 'admin') window.location.href = '/admin/dashboard';
+      if (role === 'tutor') router.replace('/tutor/dashboard');
+      else if (role === 'student') router.replace('/students/dashboard');
+      else if (role === 'parent') router.replace('/parent/dashboard');
+      else if (role === 'admin') router.replace('/admin/dashboard');
     }
-  }, [user?.role, user?.id, loading, pathname]);
+  }, [user?.role, user?.id, loading, pathname, router]);
 
   return null;
 }

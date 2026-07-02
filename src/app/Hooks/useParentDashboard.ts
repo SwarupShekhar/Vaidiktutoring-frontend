@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '../lib/api';
 import { useAuthContext } from '../context/AuthContext';
 import type { ProgressSummary } from './useStudentProgress';
+import type { CreditStatus } from '@/app/types/credits';
 
 export type ParentDashboardStudent = {
     id: string;
@@ -45,6 +46,8 @@ type ParentDashboardSummary = {
     bookings: ParentDashboardSession[];
     pendingRatings: PendingRating[];
     childSummaries: Record<string, ProgressSummary | null>;
+    // Per-child credit/trial status (same shape as the student's credit status).
+    childCredits: Record<string, CreditStatus | null>;
 };
 
 export function useParentDashboard() {
@@ -60,6 +63,7 @@ export function useParentDashboard() {
                 bookings: Array.isArray(res.data?.bookings) ? res.data.bookings : [],
                 pendingRatings: Array.isArray(res.data?.pendingRatings) ? res.data.pendingRatings : [],
                 childSummaries: res.data?.childSummaries || {},
+                childCredits: res.data?.childCredits || {},
             };
         },
         enabled: !!userId && !authLoading,
@@ -97,6 +101,7 @@ export function useParentDashboard() {
         students,
         loadingStudentList: loading,
         childSummaries: data?.childSummaries || {},
+        childCredits: data?.childCredits || {},
         pendingRatings: data?.pendingRatings || [],
         refetch,
     };

@@ -48,6 +48,18 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         audioRef.current = new Audio("https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3");
     }, []);
 
+    // Desktop app: clear the dock/taskbar badge once the user looks at the app.
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const electron = (window as unknown as {
+            electron?: { isDesktopApp?: boolean; setBadgeCount?: (count: number) => void };
+        }).electron;
+        if (!electron?.isDesktopApp) return;
+        const clear = () => electron.setBadgeCount?.(0);
+        window.addEventListener('focus', clear);
+        return () => window.removeEventListener('focus', clear);
+    }, []);
+
     const playSound = useCallback(() => {
         if (audioRef.current) {
             audioRef.current.currentTime = 0;
@@ -62,7 +74,26 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             timestamp: new Date(),
         };
 
-        setNotifications(prev => [newNotif, ...prev]);
+        setNotifications(prev => {
+            const next = [newNotif, ...prev];
+            // Desktop app: when the window isn't focused, surface a NATIVE OS
+            // notification via the Electron preload bridge (mac + windows). When
+            // focused, the in-app toast is enough, so we skip the duplicate.
+            if (typeof window !== 'undefined') {
+                const electron = (window as unknown as {
+                    electron?: {
+                        isDesktopApp?: boolean;
+                        sendNotification?: (title: string, body: string) => void;
+                        setBadgeCount?: (count: number) => void;
+                    };
+                }).electron;
+                if (electron?.isDesktopApp && !document.hasFocus()) {
+                    electron.sendNotification?.(newNotif.title, newNotif.message);
+                    electron.setBadgeCount?.(next.length);
+                }
+            }
+            return next;
+        });
 
         if (notif.playAudio || notif.type === 'loud') {
             playSound();

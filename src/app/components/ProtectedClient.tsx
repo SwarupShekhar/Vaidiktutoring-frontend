@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useAuth from '@/app/Hooks/useAuth';
 import { DashboardLoadingSkeleton } from '@/app/components/dashboard/student/DashboardLoadingSkeleton';
@@ -12,53 +12,62 @@ type Props = {
 
 /**
  * Protected client wrapper for pages that require auth.
- * - If auth is still loading: show nothing (or a simple loader).
- * - If not logged in: redirect to /login (after render via useEffect).
- * - If role mismatch: redirect to /403 or / (choose whichever you prefer).
+ * - Auth still loading  -> loading skeleton.
+ * - Not logged in       -> redirect to /login.
+ * - Wrong role          -> refresh the profile ONCE, then redirect to /unauthorized
+ *                          only if it's still wrong.
  *
- * Important: router.replace / router.push must be called in useEffect,
- * otherwise React throws "Cannot update a component while rendering a different component".
+ * The one-shot refresh matters: right after navigation or an account switch the
+ * cached role can be briefly stale (backendUser hasn't re-synced yet), which used
+ * to fire spurious 403s. Re-fetching getMe once resolves the real role before we
+ * decide. It still fails closed — a genuinely wrong role redirects after the refresh.
  */
 export default function ProtectedClient({ children, roles = [] }: Props) {
   const router = useRouter();
-  const { user, loading } = useAuth(); // user may be null if not logged in
+  const { user, loading, refreshUser } = useAuth();
+  const rolesKey = roles.join(',');
 
-  // if we're still checking auth, don't attempt redirects yet
+  const refreshedRef = useRef(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const mismatch =
+    !!user && roles.length > 0 && (!user.role || !roles.includes(user.role));
+
   useEffect(() => {
-    if (loading) return;
+    if (loading || refreshing) return;
 
-    // not logged in -> redirect to login
     if (!user) {
       router.push('/login');
       return;
     }
 
-    // role check if roles specified
-    if (roles.length > 0 && (!user.role || !roles.includes(user.role))) {
-      // redirect to unauthorized page or dashboard based on role? 
-      // User said "If user is authenticated BUT wrong role → redirect". 
-      // Usually to a "not authorized" page or home. 
-      // I'll stick to replacing '/unauthorized' with a push to '/unauthorized' or '/' 
-      // but usually if they are logged in but wrong role, maybe redirect to their dashboard?
-      // But for now, I will use '/unauthorized' as placeholder or maybe just '/'?
-      // The prompt didn't specify destination for wrong role, just "redirect".
-      // Previous code had '/unauthorized'.
+    if (mismatch) {
+      if (!refreshedRef.current) {
+        // Grace: pull the authoritative profile once before deciding.
+        refreshedRef.current = true;
+        setRefreshing(true);
+        Promise.resolve(refreshUser?.()).finally(() => setRefreshing(false));
+        return;
+      }
       router.push('/unauthorized');
     }
-    // only run when loading/user/roles change
-  }, [loading, user, roles, router]);
+    // rolesKey keeps the dep stable when `roles` is passed as an inline array.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, refreshing, user, mismatch, rolesKey, router]);
 
-  if (loading) {
+  if (loading || refreshing) {
     return <DashboardLoadingSkeleton />;
   }
 
-  // If not logged in (and we already attempted redirect in useEffect),
-  // return null to avoid rendering protected children on the first render.
   if (!user) return null;
 
-  // If roles are specified and user doesn't match, don't render children.
-  if (roles.length > 0 && (!user.role || !roles.includes(user.role))) return null;
+  // Mismatch but the grace refresh hasn't run/finished -> keep showing loading,
+  // never the protected children and never a premature redirect.
+  if (mismatch && !refreshedRef.current) {
+    return <DashboardLoadingSkeleton />;
+  }
 
-  // All good: render children
+  if (mismatch) return null; // refresh done, still wrong -> redirect fires in effect
+
   return <>{children}</>;
 }

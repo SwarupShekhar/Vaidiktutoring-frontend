@@ -7,13 +7,14 @@ import ProtectedClient from '@/app/components/ProtectedClient';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { useTutorDashboard } from '@/app/Hooks/useTutorDashboard';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
+import { TutorAppDashboard } from '@/app/components/app-shell/TutorAppDashboard';
 import { StatCard } from '@/app/components/dashboard/StatCard';
 import BlogManagementSection from '@/app/components/admin/BlogManagementSection';
 import { api } from '@/app/lib/api';
 import {
   Calendar,
   Clock,
-  DollarSign,
   BookOpen,
   Users,
   ArrowRight,
@@ -167,6 +168,19 @@ export default function TutorDashboardPage() {
   const { user } = useAuthContext();
   const { todaySessions, upcomingBookings, availableJobs, stats, loading } = useTutorDashboard();
   const [shareNotesSessionId, setShareNotesSessionId] = useState<string | null>(null);
+  const isAppShell = useIsAppShell();
+
+  // Desktop app-shell: native Magic Bento homescreen. Web render path below is
+  // untouched for non-app users.
+  if (isAppShell) {
+    return (
+      <ProtectedClient roles={['tutor']}>
+        <ErrorBoundary>
+          <TutorAppDashboard user={user} />
+        </ErrorBoundary>
+      </ProtectedClient>
+    );
+  }
 
   return (
     <ProtectedClient roles={['tutor']}>
@@ -222,6 +236,12 @@ export default function TutorDashboardPage() {
               </p>
             </div>
             <div className="flex items-center gap-6">
+              <Link
+                href="/tutor/students"
+                className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-black text-sm hover:bg-emerald-200 dark:hover:bg-emerald-900/50 transition-all active:scale-95"
+              >
+                <Users size={18} /> My Students
+              </Link>
               <div className="hidden lg:flex flex-col items-end">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Expert Rating</p>
                 <div className="flex items-center gap-1.5 text-emerald-500 font-black text-lg">
@@ -238,7 +258,7 @@ export default function TutorDashboardPage() {
           </header>
 
           {/* ANALYTICS GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <StatCard
               label="Today's Priority"
               value={stats.todayCount}
@@ -261,14 +281,6 @@ export default function TutorDashboardPage() {
               icon={Clock}
               color="#ec4899"
               description="Verified logs"
-              loading={loading}
-            />
-            <StatCard
-              label="Est. Earnings"
-              value={`$${stats.earnings.toFixed(2)}`}
-              icon={DollarSign}
-              color="#10b981"
-              description="Current cycle"
               loading={loading}
             />
           </div>

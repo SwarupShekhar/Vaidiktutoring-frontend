@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { User, Calendar, Plus } from 'lucide-react';
+import { User, Calendar, Plus, BrainCircuit } from 'lucide-react';
 
 interface DashboardHeaderProps {
   user: any;
@@ -65,6 +65,13 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
+        <Link
+          href="/students/practice"
+          className="flex items-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 font-bold rounded-2xl border border-indigo-200 dark:border-indigo-800 shadow-sm hover:bg-indigo-100 transition-all text-sm"
+        >
+          <BrainCircuit size={16} />
+          Practice Center
+        </Link>
         {isEnrolled ? (
           <>
             <Link

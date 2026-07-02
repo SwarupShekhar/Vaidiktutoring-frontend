@@ -106,20 +106,42 @@ export default function AdminSessionSummaryModal({ sessionId, isOpen, onClose }:
                             <div>
                                 <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-4">Participants</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="p-4 border border-border rounded-2xl flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600">S</div>
-                                        <div>
-                                            <p className="text-xs font-bold text-slate-500">Student</p>
-                                            <p className="font-medium text-sm">{summary.student?.name || 'N/A'}</p>
+                                    {summary.students?.map((s: any, idx: number) => (
+                                        <div key={`student-${idx}`} className="p-4 border border-border rounded-2xl flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600">S</div>
+                                            <div>
+                                                <p className="text-xs font-bold text-slate-500">Student</p>
+                                                <p className="font-medium text-sm">{s.name || 'N/A'}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="p-4 border border-border rounded-2xl flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center font-bold text-yellow-600">T</div>
-                                        <div>
-                                            <p className="text-xs font-bold text-slate-500">Tutor</p>
-                                            <p className="font-medium text-sm">{summary.tutor?.name || 'N/A'}</p>
+                                    ))}
+                                    {(!summary.students || summary.students.length === 0) && (
+                                        <div className="p-4 border border-border rounded-2xl flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600">S</div>
+                                            <div>
+                                                <p className="text-xs font-bold text-slate-500">Student</p>
+                                                <p className="font-medium text-sm">N/A</p>
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
+                                    {summary.tutors?.map((t: any, idx: number) => (
+                                        <div key={`tutor-${idx}`} className="p-4 border border-border rounded-2xl flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center font-bold text-yellow-600">T</div>
+                                            <div>
+                                                <p className="text-xs font-bold text-slate-500">Tutor</p>
+                                                <p className="font-medium text-sm">{t.name || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {(!summary.tutors || summary.tutors.length === 0) && (
+                                        <div className="p-4 border border-border rounded-2xl flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center font-bold text-yellow-600">T</div>
+                                            <div>
+                                                <p className="text-xs font-bold text-slate-500">Tutor</p>
+                                                <p className="font-medium text-sm">N/A</p>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

@@ -3,7 +3,11 @@
 import React, { useMemo, useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { EnrolledDashboard } from '@/app/components/dashboard/student/EnrolledDashboard';
+import { AppDashboard } from '@/app/components/app-shell/AppDashboard';
 import { TrialDashboard } from '@/app/components/dashboard/student/TrialDashboard';
+import { PlanBadgeWeb } from '@/app/components/dashboard/student/PlanBadgeWeb';
+import { SubjectsCardWeb } from '@/app/components/dashboard/student/SubjectsCardWeb';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
 import { useAuthContext } from '@/app/context/AuthContext';
@@ -48,6 +52,7 @@ const BADGES = [
 function StudentDashboardContent() {
   const { user } = useAuthContext();
   const router = useRouter();
+  const isAppShell = useIsAppShell();
   
   // Data Fetching via the optimized parallelized backend summary query
   const {
@@ -126,14 +131,31 @@ function StudentDashboardContent() {
   const completedStepsCount = onboardingSteps.filter(s => s.complete).length;
 
   if (isGlobalLoading || !studentProfile) {
+    if (isAppShell) {
+      return (
+        <AppDashboard
+          studentProfile={null}
+          enrollment={null}
+          upcomingSessions={[]}
+          pastSessions={[]}
+          bookings={[]}
+          loading={true}
+          user={user}
+          progressSummary={null}
+          isEnrolled={false}
+          creditStatus={null}
+        />
+      );
+    }
     return <DashboardLoadingSkeleton />;
   }
 
   return (
     <ErrorBoundary>
-      <div className="space-y-8 pb-12">
-        <SetupBanner />
-        {user && user.phone_verified !== true && (
+      <div className={isAppShell ? "h-full" : "space-y-8 pb-12"}>
+        {!isAppShell && <SetupBanner />}
+        {!isAppShell && <PlanBadgeWeb credit={creditStatus} />}
+        {!isAppShell && user && user.phone_verified !== true && (
             <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <span className="text-2xl">📱</span>
@@ -154,8 +176,9 @@ function StudentDashboardContent() {
                 </a>
             </div>
         )}
-        {isEnrolled ? (
-          <EnrolledDashboard 
+        {isAppShell ? (
+          // Desktop app: every user (trial or enrolled) gets the native bento dashboard.
+          <AppDashboard
             studentProfile={studentProfile}
             enrollment={enrollment}
             upcomingSessions={upcomingSessions}
@@ -164,10 +187,24 @@ function StudentDashboardContent() {
             loading={isGlobalLoading}
             user={user}
             progressSummary={progressSummary}
-            isEnrolled={true}
+            isEnrolled={isEnrolled}
+            pendingRatings={pendingRatings}
+            creditStatus={creditStatus}
           />
+        ) : isEnrolled ? (
+            <EnrolledDashboard
+              studentProfile={studentProfile}
+              enrollment={enrollment}
+              upcomingSessions={upcomingSessions}
+              pastSessions={pastSessions}
+              bookings={bookings}
+              loading={isGlobalLoading}
+              user={user}
+              progressSummary={progressSummary}
+              isEnrolled={true}
+            />
         ) : (
-          <TrialDashboard 
+          <TrialDashboard
             user={user}
             studentProfile={studentProfile}
             creditStatus={creditStatus}
@@ -191,8 +228,11 @@ function StudentDashboardContent() {
           />
         )}
 
-        {/* Blogs are at the bottom of both dashboards */}
-        <BlogSection />
+        {/* Your subjects + topics covered (web dashboards only) */}
+        {!isAppShell && <SubjectsCardWeb progressSummary={progressSummary} />}
+
+        {/* Blogs are at the bottom of web dashboards only */}
+        {!isAppShell && <BlogSection />}
       </div>
 
       {/* Modals */}

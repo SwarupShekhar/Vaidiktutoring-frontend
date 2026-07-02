@@ -16,6 +16,8 @@ export interface CreditStatus {
   sessionsUsed: number;
   canBook: boolean;
   plan: SubscriptionPlan;
+  /** ISO date the current plan/trial ends — drives the homescreen plan badge. */
+  planEndsAt?: string | null;
 }
 
 export interface PlanInfo {

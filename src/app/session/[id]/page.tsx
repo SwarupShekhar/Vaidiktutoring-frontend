@@ -18,6 +18,7 @@ import { io, Socket } from 'socket.io-client';
 import { toast } from 'sonner';
 import {
     Video,
+    VideoOff,
     ClipboardList,
     Library,
     FileUp,
@@ -65,7 +66,7 @@ interface SessionProps {
 
 export default function SessionPage({ params }: SessionProps) {
     const { id: sessionId } = React.use(params);
-    const { user, loading: authLoading } = useAuthContext();
+    const { user, token, loading: authLoading } = useAuthContext();
     const router = useRouter();
 
     // Protect the route - redirect if not authenticated
@@ -106,12 +107,17 @@ export default function SessionPage({ params }: SessionProps) {
     const [showAttendance, setShowAttendance] = useState(false);
     
     // Dynamic Session Roster from booking details
-    const sessionRoster = booking?.students ? [
-        { 
-            id: (booking.students as any).id, 
-            name: `${(booking.students as any).first_name} ${(booking.students as any).last_name || ''}`.trim() 
-        }
-    ] : [];
+    const sessionRoster = booking?.students ? (
+        Array.isArray(booking.students)
+            ? booking.students.map((student: any) => ({
+                id: student.id,
+                name: `${student.first_name} ${student.last_name || ''}`.trim()
+            }))
+            : [{
+                id: (booking.students as any).id,
+                name: `${(booking.students as any).first_name} ${(booking.students as any).last_name || ''}`.trim()
+            }]
+    ) : [];
 
     const saveAttendance = async (records: Record<string, 'present' | 'absent' | 'late'>) => {
         try {
@@ -284,12 +290,18 @@ export default function SessionPage({ params }: SessionProps) {
         annotationsRef.current = slideAnnotations;
     }, [slideAnnotations]);
 
+    const primaryStudent = Array.isArray(booking?.students) ? booking.students[0] : (booking?.students as any);
+    // Recording is only permitted when the child's parent has consented. The
+    // backend independently enforces this on upload; here we drive the UI so the
+    // tutor never sees a "record" instruction (and everyone sees an honest
+    // recording/not-recording indicator) when consent is absent.
+    const recordingAllowed = !!primaryStudent?.recording_consent_granted;
     const studentData = {
-        name: booking?.students ? `${(booking.students as any).first_name} ${(booking.students as any).last_name || ''}`.trim() : 'Student',
-        grade: (booking as any)?.students?.grade ? parseInt(String((booking as any).students.grade).replace(/\D/g, '')) : 0,
-        interests: (booking as any)?.students?.interests || [],
-        recentProgress: (booking as any)?.students?.recent_focus || 'Waiting for initial session assessment.',
-        struggleAreas: (booking as any)?.students?.struggle_areas || []
+        name: primaryStudent ? `${primaryStudent.first_name} ${primaryStudent.last_name || ''}`.trim() : 'Student',
+        grade: primaryStudent?.grade ? parseInt(String(primaryStudent.grade).replace(/\D/g, '')) : 0,
+        interests: primaryStudent?.interests || [],
+        recentProgress: primaryStudent?.recent_focus || 'Waiting for initial session assessment.',
+        struggleAreas: primaryStudent?.struggle_areas || []
     };
 
     // Initialize Shared Socket for Attention Events
@@ -303,7 +315,18 @@ export default function SessionPage({ params }: SessionProps) {
 
 
 
+        // SECURITY: the backend authenticates the socket from this handshake token
+        // (JWT) and ignores any client-supplied userId. Source the token the same
+        // way authenticated HTTP requests do: the AuthContext-managed JWT, with the
+        // manual_auth_token cookie as a fallback (matches admin dashboard socket).
+        const authToken = token
+            || (typeof document !== 'undefined'
+                ? document.cookie.match(/manual_auth_token=([^;]+)/)?.[1]
+                : undefined)
+            || '';
+
         const newSocket = io(SOCKET_URL, {
+            auth: { token: authToken },
             query: { sessionId, userId: user.id },
             transports: ['websocket'], // Force websocket to resolve "xhr poll error"
             withCredentials: true
@@ -403,7 +426,7 @@ export default function SessionPage({ params }: SessionProps) {
         return () => {
             newSocket.disconnect();
         };
-    }, [user, sessionId, hasJoined]);
+    }, [user, token, sessionId, hasJoined]);
 
     // Timer Logic
     useEffect(() => {
@@ -1505,7 +1528,24 @@ export default function SessionPage({ params }: SessionProps) {
     if (!user) return null;
 
     return (
-        <div className="w-screen h-screen flex flex-col bg-background overflow-hidden">
+        <div className="app-session-root w-screen h-screen flex flex-col bg-background overflow-hidden">
+            {/* Always-visible escape hatch. In the desktop app the in-iframe "Leave"
+                (Daily) and the toolbar "End" can get clipped at the window edge or
+                hidden, so this guarantees anyone can exit. Sits below the 32px titlebar. */}
+            {hasJoined && (
+              <button
+                onClick={() => {
+                  const dest = user?.role === 'tutor' ? '/tutor/dashboard'
+                    : user?.role === 'parent' ? '/parent/dashboard'
+                    : '/students/dashboard';
+                  router.push(dest);
+                }}
+                className="fixed left-1/2 top-[40px] z-[9999] -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-red-500 px-4 py-1.5 text-xs font-bold text-white shadow-lg shadow-red-900/30 transition-all hover:bg-red-600 active:scale-95"
+                title="Leave session"
+              >
+                <LogOut size={14} /> Leave session
+              </button>
+            )}
             {/* Access denied — backend rejected this session (e.g. not the assigned tutor / not a participant). */}
             {accessDenied && (
                 <div className="absolute inset-0 z-[60] bg-gray-950/97 flex items-center justify-center p-6">
@@ -1524,22 +1564,44 @@ export default function SessionPage({ params }: SessionProps) {
                 </div>
             )}
 
-            {/* Tutor-only pre-join prompt: remind to record before entering. Students auto-join (never see this). */}
+            {/* Tutor-only pre-join prompt. Students auto-join (never see this).
+                The message + instruction depend on whether the parent has consented
+                to recording — we never tell a tutor to record a child whose parent
+                hasn't opted in. */}
             {!hasJoined && user?.role === 'tutor' && !isEnding && (
                 <div className="absolute inset-0 z-50 bg-gray-950/95 flex items-center justify-center p-6">
-                    <div className="w-full max-w-md bg-gray-900 border border-purple-500/30 rounded-2xl p-8 text-white shadow-2xl">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
-                                <Video className="text-amber-400" size={24} />
-                            </div>
-                            <h2 className="text-2xl font-bold leading-tight">Record this session</h2>
-                        </div>
-                        <p className="text-gray-300 text-sm leading-relaxed mb-2">
-                            Please record this session so your student can review it afterwards.
-                        </p>
-                        <p className="text-gray-400 text-xs leading-relaxed mb-6">
-                            After you join, click <strong className="text-white">Share Screen</strong> in the video panel and share <strong className="text-white">this browser tab</strong> — that captures both the video call and the whiteboard.
-                        </p>
+                    <div className={`w-full max-w-md bg-gray-900 border rounded-2xl p-8 text-white shadow-2xl ${recordingAllowed ? 'border-purple-500/30' : 'border-white/10'}`}>
+                        {recordingAllowed ? (
+                            <>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+                                        <Video className="text-amber-400" size={24} />
+                                    </div>
+                                    <h2 className="text-2xl font-bold leading-tight">Record this session</h2>
+                                </div>
+                                <p className="text-gray-300 text-sm leading-relaxed mb-2">
+                                    The parent has consented to recording. Please record this session so your student can review it afterwards.
+                                </p>
+                                <p className="text-gray-400 text-xs leading-relaxed mb-6">
+                                    After you join, click <strong className="text-white">Share Screen</strong> in the video panel and share <strong className="text-white">this browser tab</strong> — that captures both the video call and the whiteboard.
+                                </p>
+                            </>
+                        ) : (
+                            <>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-12 h-12 rounded-full bg-rose-500/15 flex items-center justify-center shrink-0">
+                                        <VideoOff className="text-rose-400" size={24} />
+                                    </div>
+                                    <h2 className="text-2xl font-bold leading-tight">Do not record</h2>
+                                </div>
+                                <p className="text-gray-300 text-sm leading-relaxed mb-2">
+                                    This student's parent has <strong className="text-white">not</strong> consented to recording. Please run the class live but <strong className="text-white">do not record or screen-share to capture it</strong>.
+                                </p>
+                                <p className="text-gray-400 text-xs leading-relaxed mb-6">
+                                    The parent can enable recording anytime from Profile → Settings. Until then, uploads are blocked.
+                                </p>
+                            </>
+                        )}
                         <button
                             onClick={() => setHasJoined(true)}
                             className="w-full h-12 bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2"
@@ -1547,6 +1609,28 @@ export default function SessionPage({ params }: SessionProps) {
                             Got it — Join Session →
                         </button>
                     </div>
+                </div>
+            )}
+
+            {/* Honest, always-visible recording status for everyone in the room —
+                the two-party-consent notice. Green "recording may occur" when the
+                parent has opted in; neutral "not recorded" otherwise. */}
+            {hasJoined && (
+                <div
+                    className={`fixed right-3 top-[40px] z-[9999] inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold shadow-lg ${
+                        recordingAllowed
+                            ? 'bg-red-500/90 text-white shadow-red-900/30'
+                            : 'bg-gray-800/90 text-gray-300 ring-1 ring-white/10'
+                    }`}
+                    title={recordingAllowed
+                        ? 'The parent has consented — this session may be recorded for later review.'
+                        : 'This session is not being recorded.'}
+                >
+                    {recordingAllowed ? (
+                        <><span className="h-2 w-2 rounded-full bg-white animate-pulse" /> May be recorded</>
+                    ) : (
+                        <><VideoOff size={12} /> Not recorded</>
+                    )}
                 </div>
             )}
 
@@ -1679,9 +1763,9 @@ export default function SessionPage({ params }: SessionProps) {
             )}
 
             {/* ── TOP HUD BAR ─────────────────────────────────────────────── */}
-            <div className="absolute top-0 left-0 right-0 h-[52px] z-20 bg-black/80 backdrop-blur-xl border-b border-white/8 flex items-center px-4 gap-3">
-                {/* Left: live indicator + subject */}
-                <div className="flex items-center gap-2">
+            <div className="absolute top-0 left-0 right-0 h-[52px] z-20 bg-black/80 backdrop-blur-xl border-b border-white/8 flex items-center px-4 gap-3 overflow-x-auto no-scrollbar">
+                {/* Left: live indicator + subject (shrinks/truncates first) */}
+                <div className="flex items-center gap-2 min-w-0">
                     <div className="relative shrink-0">
                         <div className="w-2.5 h-2.5 rounded-full bg-green-500 relative z-10" />
                         <div className="absolute inset-0 bg-green-500 rounded-full animate-ping opacity-60" />
@@ -1691,10 +1775,10 @@ export default function SessionPage({ params }: SessionProps) {
                     </span>
                 </div>
 
-                <div className="flex-1" />
+                <div className="flex-1 min-w-2" />
 
-                {/* Right: timer + reactions + end */}
-                <div className="flex items-center gap-2 ml-auto">
+                {/* Right: timer + reactions + end (stays intact, never clipped) */}
+                <div className="flex items-center gap-2 ml-auto shrink-0">
                     <div className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 border border-white/10 transition-all duration-500 tabular-nums ${timeRemaining <= 5 * 60
                             ? 'bg-red-600/90 text-white animate-pulse'
                             : timeRemaining <= 10 * 60

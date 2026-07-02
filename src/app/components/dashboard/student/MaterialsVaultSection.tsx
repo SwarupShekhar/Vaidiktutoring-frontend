@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Video, BookOpen, MessageCircle, PlayCircle, Play, ChevronRight } from 'lucide-react';
 
@@ -29,7 +30,7 @@ export const MaterialsVaultSection: React.FC<MaterialsVaultSectionProps> = ({
       {/* Quick Access Grid */}
       <motion.section variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Recordings Link */}
-        <a
+        <Link
           href="/students/recordings"
           className="group p-5 rounded-3xl bg-surface border border-border shadow-sm hover:shadow-md hover:border-purple-300 transition-all flex flex-col gap-3"
         >
@@ -43,10 +44,10 @@ export const MaterialsVaultSection: React.FC<MaterialsVaultSectionProps> = ({
           <div className="mt-auto flex items-center gap-1 text-xs font-semibold text-purple-600">
             <PlayCircle size={14} /> View all recordings
           </div>
-        </a>
+        </Link>
 
         {/* Whiteboard Snapshots Link */}
-        <a
+        <Link
           href="/students/recordings"
           className="group p-5 rounded-3xl bg-surface border border-border shadow-sm hover:shadow-md hover:border-blue-300 transition-all flex flex-col gap-3"
         >
@@ -60,10 +61,10 @@ export const MaterialsVaultSection: React.FC<MaterialsVaultSectionProps> = ({
           <div className="mt-auto flex items-center gap-1 text-xs font-semibold text-blue-600">
             <ChevronRight size={14} /> View snapshots
           </div>
-        </a>
+        </Link>
 
         {/* Shared Notes Link */}
-        <a
+        <Link
           href="/students/notes"
           className="group p-5 rounded-3xl bg-surface border border-border shadow-sm hover:shadow-md hover:border-green-300 transition-all flex flex-col gap-3"
         >
@@ -77,7 +78,7 @@ export const MaterialsVaultSection: React.FC<MaterialsVaultSectionProps> = ({
           <div className="mt-auto flex items-center gap-1 text-xs font-semibold text-green-600">
             <ChevronRight size={14} /> View notes
           </div>
-        </a>
+        </Link>
       </motion.section>
 
       {/* Recent Recordings List */}
@@ -98,10 +99,10 @@ export const MaterialsVaultSection: React.FC<MaterialsVaultSectionProps> = ({
                     <p className="text-[10px] text-text-secondary uppercase">{fmtDate(r.date)}</p>
                   </div>
                 </div>
-                <a href={`/students/recordings/${r.sessionId}`}
+                <Link href={`/students/recordings/${r.sessionId}`}
                   className="w-full py-2.5 bg-background hover:bg-red-500 hover:text-white border border-border hover:border-red-500 rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center gap-2">
                   <Play size={14} /> Watch Lesson
-                </a>
+                </Link>
               </div>
             ))}
           </div>

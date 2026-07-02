@@ -1,10 +1,44 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
+
+// Synchronous app-shell detection (no effect delay) — usable during render.
+function detectAppShellSync(): boolean {
+    if (typeof window === 'undefined') return false;
+    const w = window as any;
+    if (w.electron?.isDesktopApp) return true;
+    if (typeof navigator !== 'undefined' && navigator.userAgent.includes('StudyHoursApp')) return true;
+    if (typeof document !== 'undefined' && document.cookie.includes('sh_app=1')) return true;
+    return false;
+}
 
 export default function NotFound() {
     const router = useRouter();
+    const isAppShell = useIsAppShell();
+    // In the desktop app there is no marketing home — send users to their dashboard.
+    const homeHref = isAppShell ? '/students/dashboard' : '/';
+
+    // Set during render (before any effect) so ClientSideComponents' windowReady
+    // skips while this transient 404 paints — keeping the splash over it instead
+    // of revealing the bad route. The hard nav below reloads into a fresh context
+    // (clearing the flag) so windowReady fires normally on the real dashboard.
+    if (detectAppShellSync() && typeof window !== 'undefined') {
+        (window as any).__shSuppressReady = true;
+    }
+
+    // In the desktop app, a transient 404 can flash on launch (route still
+    // resolving). Bounce straight to the dashboard so it never dwells on screen.
+    useEffect(() => {
+        if (detectAppShellSync()) {
+            // Hard nav (not router.replace) to force a clean remount + window reveal.
+            window.location.replace('/students/dashboard');
+        } else if (isAppShell) {
+            router.replace('/students/dashboard');
+        }
+    }, [isAppShell, router]);
 
     return (
         <main className="min-h-screen relative flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
@@ -31,7 +65,7 @@ export default function NotFound() {
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
                         <Link
-                            href="/"
+                            href={homeHref}
                             className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-bold rounded-full text-white bg-primary hover:opacity-90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                         >
                             Return Home

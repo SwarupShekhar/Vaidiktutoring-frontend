@@ -16,6 +16,7 @@ type CreateStudentForm = {
   interests_raw?: string;
   recent_focus?: string;
   struggle_areas_raw?: string;
+  recording_consent_granted?: boolean;
 };
 
 export default function AddStudentOnboardingPage() {
@@ -50,6 +51,7 @@ export default function AddStudentOnboardingPage() {
               .map((i) => i.trim())
               .filter(Boolean)
           : [],
+        recording_consent_granted: values.recording_consent_granted || false,
       });
 
       // Redirect to dashboard after successful add
@@ -189,6 +191,28 @@ export default function AddStudentOnboardingPage() {
                   Separate with commas
                 </p>
               </div>
+
+              <hr className="border-gray-100 dark:border-gray-800" />
+
+              {/* Recording consent (opt-in). Off by default; a parent can enable it
+                  now or later from Profile → Settings. */}
+              <label className="flex items-start gap-3 cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white/40 dark:bg-white/5 p-4">
+                <input
+                  type="checkbox"
+                  {...register("recording_consent_granted")}
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-200">
+                  I consent to my child's live sessions being recorded so they can review
+                  them later.
+                  <span className="mt-1 block text-xs text-gray-400">
+                    Optional. Sessions still run live without this. Recordings are stored
+                    securely, visible only to you, your child and the tutor, and
+                    auto-deleted after 30 days. You can change this anytime in Profile →
+                    Settings.
+                  </span>
+                </span>
+              </label>
 
               <div className="pt-4 flex items-center justify-between gap-4">
                 <button

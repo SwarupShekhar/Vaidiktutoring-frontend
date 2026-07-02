@@ -11,6 +11,7 @@ import { ClientSideComponents } from "./components/ClientSideComponents";
 import Navbar from "./components/navbar";
 import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
+import TitleBar from "./components/TitleBar";
 import { CSPostHogProvider } from './providers/PostHogProvider'
 
 
@@ -18,7 +19,7 @@ import { CSPostHogProvider } from './providers/PostHogProvider'
 import { ClerkProvider } from "@clerk/nextjs";
 import { Luckiest_Guy, Space_Grotesk, DM_Sans } from "next/font/google";
 import { Metadata } from "next";
-import { draftMode } from "next/headers";
+import { draftMode, cookies } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
 
 const luckiestGuy = Luckiest_Guy({
@@ -61,6 +62,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     // Suppress DYNAMIC_SERVER_USAGE error during static generation
   }
 
+  const cookieStore = await cookies();
+  const isAppShell = cookieStore.get("sh_app")?.value === "1";
+
   // If Clerk key is missing, show a fallback layout without Clerk
   if (!clerkPublishableKey) {
     console.warn(
@@ -74,11 +78,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               <AuthProvider>
                 <NotificationProvider>
                   <ClientSideComponents />
-                  <AnnouncementBar />
-                  <Navbar />
+                  {isAppShell && <TitleBar />}
+                  {!isAppShell && <AnnouncementBar />}
+                  {!isAppShell && <Navbar />}
                   {children}
                   {isDraftMode && <VisualEditing />}
-                  <Footer />
+                  {!isAppShell && <Footer />}
                 </NotificationProvider>
               </AuthProvider>
             </QueryProvider>
@@ -105,17 +110,27 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
           <link rel="dns-prefetch" href="https://clerk.studyhours.com" />
           <link rel="dns-prefetch" href="https://cdn.sanity.io" />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                if (typeof window !== 'undefined' && window.electron && window.electron.isDesktopApp) {
+                  document.documentElement.classList.add('app-shell-mode');
+                }
+              `
+            }}
+          />
         </head>
-        <body suppressHydrationWarning className={`${luckiestGuy.variable} ${spaceGrotesk.variable} ${dmSans.variable}`}>
+        <body suppressHydrationWarning className={`${luckiestGuy.variable} ${spaceGrotesk.variable} ${dmSans.variable} ${isAppShell ? 'app-shell-mode' : ''}`}>
           <CSPostHogProvider>
             <QueryProvider>
               <AuthProvider>
                 <NotificationProvider>
                   <ClientSideComponents />
-                  <Navbar />
+                  {isAppShell && <TitleBar />}
+                  {!isAppShell && <Navbar />}
                   {children}
                   {isDraftMode && <VisualEditing />}
-                  <Footer />
+                  {!isAppShell && <Footer />}
                 </NotificationProvider>
               </AuthProvider>
             </QueryProvider>

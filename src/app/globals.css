@@ -323,3 +323,46 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 0 12px rgba(76, 112, 245, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
   cursor: pointer;
 }
+
+/* ── App Shell Native UX Enhancements ── */
+.app-shell-mode {
+  user-select: none;
+  -webkit-user-select: none;
+  overscroll-behavior: none; /* Disable rubber-banding bounce */
+}
+
+.app-shell-mode body {
+  padding-top: 32px; /* Prevent content from overlapping under the native TitleBar */
+}
+
+/* Full-height immersive pages (e.g. the live session room) use h-screen / 100vh, but
+   the 32px body padding makes them overflow and clip their own bottom controls
+   (the End/Leave bar). Fit them to the space below the TitleBar instead. */
+.app-shell-mode .app-session-root {
+  height: calc(100vh - 32px) !important;
+}
+
+/* Make the padded top area draggable for the native window */
+.app-shell-mode::before {
+  content: "";
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  -webkit-app-region: drag;
+  z-index: 999999;
+}
+
+.app-shell-mode img {
+  -webkit-user-drag: none;
+}
+
+.app-shell-mode .selectable,
+.app-shell-mode input,
+.app-shell-mode textarea,
+.app-shell-mode [contenteditable="true"] {
+  user-select: text;
+  -webkit-user-select: text;
+}
