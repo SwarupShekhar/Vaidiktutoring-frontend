@@ -124,7 +124,7 @@ export default clerkMiddleware(async (auth, req) => {
             // (e.g. /pricing to upgrade) — don't bounce those to login. Guests never
             // reach this point for /pricing: they're caught by the !hasClerkCookie
             // redirect earlier.
-            if (isAppShell && path !== '/login' && !path.startsWith('/signup') && !path.startsWith('/onboarding') && !path.startsWith('/pricing')) {
+            if (isAppShell && path !== '/login' && !path.startsWith('/signup') && !path.startsWith('/onboarding') && !path.startsWith('/pricing') && !path.startsWith('/checkout')) {
                 return NextResponse.redirect(new URL('/login', req.url));
             }
             return NextResponse.next();

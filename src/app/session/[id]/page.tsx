@@ -1552,7 +1552,7 @@ export default function SessionPage({ params }: SessionProps) {
                     <div className="w-full max-w-md bg-gray-900 border border-red-500/30 rounded-2xl p-8 text-white shadow-2xl text-center">
                         <h2 className="text-2xl font-bold mb-3">You don't have access to this session</h2>
                         <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                            This session belongs to a different tutor or student. If you think this is a mistake, make sure you're signed in with the account assigned to this booking.
+                            You either don't have access to this session, or the class hasn't opened yet (you can join 5 minutes early). If this is your session, please check the start time, or ensure you're signed in with the correct account.
                         </p>
                         <button
                             onClick={() => router.push(user?.role === 'tutor' ? '/tutor/dashboard' : user?.role === 'parent' ? '/parent/dashboard' : '/students/dashboard')}

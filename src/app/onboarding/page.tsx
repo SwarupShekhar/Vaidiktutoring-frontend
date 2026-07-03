@@ -119,9 +119,13 @@ export default function OnboardingPage() {
     }
   };
 
+  const onboardingStatus = (user as any)?.onboarding_status;
+  const needsRoleChoice =
+    !clerkUser?.publicMetadata?.role && onboardingStatus === 'not_started';
+
   // Show loader while auth is loading - but not forever (max 5 seconds)
-  // This handles the case where auth might get stuck
-  if ((authLoading || !isClerkLoaded) && !forceShowContent) {
+  // Also show loader if we're about to redirect an already-onboarded user
+  if (((authLoading || !isClerkLoaded) && !forceShowContent) || (!authLoading && isClerkLoaded && user?.id && !needsRoleChoice)) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${isAppShell ? 'bg-[#0a0a0f]' : 'bg-slate-50 dark:bg-slate-950'}`}>
         <Loader />
