@@ -8,6 +8,7 @@ import ProtectedClient from '@/app/components/ProtectedClient';
 import BookingWizard from '@/app/components/bookings/BookingWizard';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { useCreditStatus } from '@/app/Hooks/useCreditStatus';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
 import { useRouter } from 'next/navigation';
 
 interface StudentSummary {
@@ -18,6 +19,7 @@ interface StudentSummary {
 export default function NewBookingPage() {
     const { user } = useAuthContext();
     const router = useRouter();
+    const isAppShell = useIsAppShell();
     const isParent = user?.role === 'parent';
     const { status: creditStatus } = useCreditStatus();
 
@@ -73,9 +75,12 @@ export default function NewBookingPage() {
 
     return (
         <ProtectedClient roles={['parent', 'student']}>
-            <div className="max-w-5xl mx-auto px-6 py-10">
+            {/* In the desktop app, force a dark context so the wizard's dark: variants
+                fire (system theme can be light) and it matches the always-dark app
+                shell instead of reading as a bright website. Web path unchanged. */}
+            <div className={isAppShell ? 'dark w-full max-w-2xl mx-auto px-4 py-5' : 'max-w-5xl mx-auto px-6 py-10'}>
                 {hardError && (
-                    <div className="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                    <div className="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 dark:bg-red-500/15 dark:border-red-500/30 dark:text-red-300">
                         Could not load students. Please refresh the page.
                     </div>
                 )}

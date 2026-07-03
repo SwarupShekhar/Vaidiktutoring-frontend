@@ -20,7 +20,6 @@ import {
   CalendarPlus,
   Zap,
 } from 'lucide-react';
-import { AppTopBar } from './AppTopBar';
 import { AppPrompts } from './AppPrompts';
 import MagicBento from '../MagicBento';
 import { INTERACTIVE_TOOLS } from '@/app/lib/interactive-tools';
@@ -729,11 +728,6 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
       {/* Dismissible setup/verify chips */}
       <motion.div variants={itemVariants}>
         <AppPrompts user={user} />
-      </motion.div>
-
-      {/* Compact next-class + join bar */}
-      <motion.div variants={itemVariants}>
-        <AppTopBar user={user} nextSession={nextSession} onJoin={handleJoin} credit={credit} />
       </motion.div>
 
       {/* Real data-driven Magic Bento grid */}

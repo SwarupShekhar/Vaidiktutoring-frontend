@@ -19,7 +19,6 @@ import {
   X,
   Zap,
 } from 'lucide-react';
-import { AppTopBar } from './AppTopBar';
 import MagicBento from '../MagicBento';
 import AttendanceReport from '@/app/components/dashboard/AttendanceReport';
 import RatingModal from '@/app/components/RatingModal';
@@ -541,18 +540,6 @@ const ParentAppDashboard: React.FC = () => {
       animate="visible"
       className="mx-auto w-full max-w-6xl space-y-5 px-4 py-3 md:px-6"
     >
-      {/* Personal header (greeting + date) */}
-      <motion.div variants={itemVariants}>
-        <AppTopBar
-          user={user}
-          credit={credit}
-          subtitle={
-            students.length > 1
-              ? `Here's how ${childName} is doing.`
-              : "Here's your family's learning snapshot."
-          }
-        />
-      </motion.div>
 
       {/* Child selector, only when there's more than one child */}
       {students.length > 1 && (

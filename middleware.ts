@@ -81,8 +81,16 @@ export default clerkMiddleware(async (auth, req) => {
 
         // Redirect authenticated users to their specific dashboards if they hit marketing pages or /dashboard
         if (userId) {
-            const marketingPaths = ['/', '/about', '/methodology', '/blog', '/blogs', '/careers', '/contact', '/home', '/login', '/signup', '/pricing', '/subjects', '/resources', '/studio', '/experts'];
-            const isMarketingPath = marketingPaths.some(p => p === path || path.startsWith(p + '/'));
+            const marketingPaths = ['/', '/about', '/methodology', '/blog', '/blogs', '/careers', '/contact', '/home', '/login', '/signup', '/subjects', '/resources', '/studio', '/experts'];
+            // '/pricing' is marketing on the WEBSITE only (logged-in web users route to
+            // their dashboard, unchanged). Inside the desktop APP it is NOT marketing:
+            // a logged-in parent must be able to open Plans to upgrade. Treating it as
+            // marketing in-app bounced role-in-DB-but-not-Clerk accounts through
+            // /onboarding first, flashing the parent/student selector before landing
+            // back on the dashboard.
+            const isMarketingPath =
+                marketingPaths.some(p => p === path || path.startsWith(p + '/')) ||
+                (!isAppShell && (path === '/pricing' || path.startsWith('/pricing/')));
             const isDashboardRoot = path === '/dashboard' || path === '/dashboard/';
 
             if (isMarketingPath || isDashboardRoot) {
@@ -111,7 +119,12 @@ export default clerkMiddleware(async (auth, req) => {
 
         // Allow public routes without authentication
         if (isPublicRoute(req)) {
-            if (isAppShell && path !== '/login' && !path.startsWith('/signup') && !path.startsWith('/onboarding')) {
+            // In the app, guests are pushed to /login for marketing pages. Authenticated
+            // users reach here for genuinely public routes they're allowed to view
+            // (e.g. /pricing to upgrade) — don't bounce those to login. Guests never
+            // reach this point for /pricing: they're caught by the !hasClerkCookie
+            // redirect earlier.
+            if (isAppShell && path !== '/login' && !path.startsWith('/signup') && !path.startsWith('/onboarding') && !path.startsWith('/pricing')) {
                 return NextResponse.redirect(new URL('/login', req.url));
             }
             return NextResponse.next();

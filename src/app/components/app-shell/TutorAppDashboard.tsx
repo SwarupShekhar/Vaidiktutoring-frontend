@@ -23,7 +23,6 @@ import { useTutorDashboard } from '@/app/Hooks/useTutorDashboard';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { api } from '@/app/lib/api';
 import ShareNotesModal from '@/app/tutor/ShareNotesModal';
-import NotificationBell from './NotificationBell';
 import { ACCENT, CARD_COLOR, containerVariants, itemVariants } from './ui';
 
 // ---- small data-viz primitives (mirror AppDashboard) ----
@@ -336,14 +335,6 @@ export const TutorAppDashboard: React.FC<TutorAppDashboardProps> = ({ user }) =>
     quality.reviewsCount,
   ]);
 
-  const firstName = user?.firstName || user?.first_name || 'Instructor';
-  const greeting = useMemo(() => {
-    const h = new Date().getHours();
-    if (h < 12) return 'Good morning';
-    if (h < 17) return 'Good afternoon';
-    return 'Good evening';
-  }, []);
-  const today = useMemo(() => format(new Date(), 'EEEE, d MMMM'), []);
 
   return (
     <motion.div
@@ -352,22 +343,6 @@ export const TutorAppDashboard: React.FC<TutorAppDashboardProps> = ({ user }) =>
       animate="visible"
       className="mx-auto w-full max-w-6xl space-y-5 px-4 py-3 md:px-6"
     >
-      {/* Personal header (tutor-flavoured; mirrors AppTopBar's style without editing it) */}
-      <motion.div variants={itemVariants}>
-        <header className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="truncate text-2xl font-extrabold tracking-tight text-white">
-              {greeting}, {firstName}
-            </h1>
-            <p className="mt-0.5 text-sm text-white/45">Here&apos;s your teaching snapshot.</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <p className="text-sm font-medium text-white/40">{today}</p>
-            <NotificationBell />
-          </div>
-        </header>
-      </motion.div>
-
       {/* Real data-driven Magic Bento grid */}
       <motion.div variants={itemVariants}>
         {loading && cards.length === 0 ? null : (
