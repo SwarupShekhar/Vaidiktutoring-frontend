@@ -7,9 +7,11 @@ import { useAuthContext } from '@/app/context/AuthContext';
 import { useUser } from '@clerk/nextjs';
 import Loader from '@/app/components/Loader';
 import { api } from '@/app/lib/api';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
 
 export default function OnboardingPage() {
   const { user, loading: authLoading, refreshUser } = useAuthContext();
+  const isAppShell = useIsAppShell();
   const { user: clerkUser, isLoaded: isClerkLoaded } = useUser();
   const router = useRouter();
   const [role, setRole] = useState<string | null>(null);
@@ -50,25 +52,29 @@ export default function OnboardingPage() {
     // Debug: Check what role is being detected
 
 
+    // Only a BRAND-NEW signup should see the role selector. It is uniquely marked
+    // by onboarding_status 'not_started' (JIT default) with no chosen role yet.
+    // Everyone else — a returning parent/student, or one who already picked a role
+    // (publicMetadata.role set, which also flips status to 'in_progress') — goes to
+    // their dashboard. Keying on onboarding_status (not publicMetadata alone) avoids
+    // re-prompting older accounts that never had publicMetadata.role populated.
+    // Admin/tutor are staff-provisioned and never self-onboard. Hard-nav (not
+    // router.push) so the role-gated destination re-inits AuthContext with the
+    // authoritative role → no stale-role 403 race.
+    const onboardingStatus = (user as any)?.onboarding_status;
+    const needsRoleChoice =
+      !clerkUser?.publicMetadata?.role && onboardingStatus === 'not_started';
+
     if (user?.role === 'admin') {
-      // Admins go to admin dashboard
-
-      router.push('/admin/dashboard');
-    } else if (user?.role === 'parent') {
-      // Parents go to parent dashboard
-
-      router.push('/parent/dashboard');
+      window.location.assign('/admin/dashboard');
     } else if (user?.role === 'tutor') {
-      // Tutors go to tutor dashboard
-
-      router.push('/tutor/dashboard');
-    } else if (user?.role === 'student' && user?.id) {
-      // If student and NOT a fresh signup (id exists), go to dashboard.
-      if (clerkUser?.publicMetadata?.role) {
-
-        router.push('/students/dashboard');
-      }
+      window.location.assign('/tutor/dashboard');
+    } else if (user?.role === 'parent' && !needsRoleChoice && user?.id) {
+      window.location.assign('/parent/dashboard');
+    } else if (user?.role === 'student' && !needsRoleChoice && user?.id) {
+      window.location.assign('/students/dashboard');
     }
+    // else: fresh signup (needsRoleChoice) → fall through, render the selector.
   }, [user, clerkUser, router, authLoading, isClerkLoaded, forceShowContent]);
 
   const handleRoleSelect = async (selectedRole: 'parent' | 'student') => {
@@ -117,36 +123,35 @@ export default function OnboardingPage() {
   // This handles the case where auth might get stuck
   if ((authLoading || !isClerkLoaded) && !forceShowContent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className={`min-h-screen flex items-center justify-center ${isAppShell ? 'bg-[#0a0a0f]' : 'bg-slate-50 dark:bg-slate-950'}`}>
         <Loader />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-950 p-6">
+    <div className={`min-h-screen relative flex items-center justify-center overflow-hidden p-6 ${isAppShell ? 'bg-[#0a0a0f]' : 'bg-slate-50 dark:bg-slate-950'}`}>
 
-      {/* Animated Blobs Background */}
+      {/* Animated Blobs Background — web only, app shell stays clean dark */}
+      {!isAppShell && (
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-400/20 dark:bg-blue-900/10 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-[100px] animate-blob"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-400/20 dark:bg-purple-900/10 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-[100px] animate-blob animation-delay-2000"></div>
       </div>
+      )}
 
       <div className="relative z-10 w-full max-w-2xl text-center">
-        {/* ... existing content ... */}
-
-
-        <div className="bg-white/60 dark:bg-black/40 backdrop-blur-2xl border border-white/50 dark:border-white/10 rounded-4xl shadow-2xl p-10 md:p-14 mb-8">
+        <div className={`backdrop-blur-2xl border rounded-4xl shadow-2xl p-10 md:p-14 mb-8 ${isAppShell ? 'bg-[#15131f] border-white/10' : 'bg-white/60 dark:bg-black/40 border-white/50 dark:border-white/10'}`}>
 
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary text-white text-4xl mb-8 shadow-lg shadow-blue-500/30">
             👋
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+          <h1 className={`text-4xl md:text-5xl font-bold mb-6 ${isAppShell ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
             Welcome{clerkUser?.firstName ? `, ${clerkUser.firstName}` : ''}!
           </h1>
 
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-10 leading-relaxed max-w-lg mx-auto">
+          <p className={`text-xl mb-10 leading-relaxed max-w-lg mx-auto ${isAppShell ? 'text-white/70' : 'text-gray-600 dark:text-gray-300'}`}>
             To give you the best experience, please tell us who will be using this account.
           </p>
 
@@ -154,21 +159,21 @@ export default function OnboardingPage() {
             <button
               onClick={() => handleRoleSelect('parent')}
               disabled={isUpdating}
-              className="flex flex-col items-center justify-center p-6 rounded-3xl bg-white/50 dark:bg-white/5 border-2 border-transparent hover:border-primary hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all group"
+              className={`flex flex-col items-center justify-center p-6 rounded-3xl border-2 border-transparent transition-all group ${isAppShell ? 'bg-white/[0.04] hover:border-indigo-400/60 hover:bg-white/[0.07]' : 'bg-white/50 dark:bg-white/5 hover:border-primary hover:bg-blue-50/50 dark:hover:bg-blue-900/20'}`}
             >
               <span className="text-4xl mb-4 group-hover:scale-110 transition-transform">👨‍👩‍👧‍👦</span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">I am a Parent</span>
-              <span className="text-sm text-gray-500 dark:text-gray-400 mt-2">Manage tuition for my kids</span>
+              <span className={`text-lg font-bold ${isAppShell ? 'text-white' : 'text-gray-900 dark:text-white'}`}>I am a Parent</span>
+              <span className={`text-sm mt-2 ${isAppShell ? 'text-white/50' : 'text-gray-500 dark:text-gray-400'}`}>Manage tuition for my kids</span>
             </button>
 
             <button
               onClick={() => handleRoleSelect('student')}
               disabled={isUpdating}
-              className="flex flex-col items-center justify-center p-6 rounded-3xl bg-white/50 dark:bg-white/5 border-2 border-transparent hover:border-primary hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all group"
+              className={`flex flex-col items-center justify-center p-6 rounded-3xl border-2 border-transparent transition-all group ${isAppShell ? 'bg-white/[0.04] hover:border-indigo-400/60 hover:bg-white/[0.07]' : 'bg-white/50 dark:bg-white/5 hover:border-primary hover:bg-blue-50/50 dark:hover:bg-blue-900/20'}`}
             >
               <span className="text-4xl mb-4 group-hover:scale-110 transition-transform">🎓</span>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">I am a Student</span>
-              <span className="text-sm text-gray-500 dark:text-gray-400 mt-2">Access my lessons & schedule</span>
+              <span className={`text-lg font-bold ${isAppShell ? 'text-white' : 'text-gray-900 dark:text-white'}`}>I am a Student</span>
+              <span className={`text-sm mt-2 ${isAppShell ? 'text-white/50' : 'text-gray-500 dark:text-gray-400'}`}>Access my lessons & schedule</span>
             </button>
           </div>
         </div>

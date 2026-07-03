@@ -1,7 +1,12 @@
-export default function Loading() {
+import { cookies } from 'next/headers';
+import { AppDashboardSkeleton } from '@/app/components/app-shell/AppDashboardSkeleton';
+
+export default async function Loading() {
+  const isApp = (await cookies()).get('sh_app')?.value === '1';
+  if (isApp) return <AppDashboardSkeleton />;
   return (
-    <div 
-      className="min-h-screen bg-gray-50 p-6 animate-pulse" 
+    <div
+      className="min-h-screen bg-gray-50 p-6 animate-pulse"
       role="status" 
       aria-live="polite" 
       aria-busy="true"
