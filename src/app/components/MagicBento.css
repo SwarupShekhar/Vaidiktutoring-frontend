@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   grid-auto-rows: auto;
-  gap: 1.25rem;
+  gap: 0.875rem;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -21,12 +21,12 @@
   grid-column: span 4;
 
   position: relative;
-  min-height: 150px;
-  border-radius: 1.5rem;
-  padding: 1.5rem;
+  min-height: 116px;
+  border-radius: 1.25rem;
+  padding: 1.1rem 1.15rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.625rem;
   transition:
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.3s ease;
@@ -123,9 +123,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.625rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.5rem;
   background: rgba(var(--card-accent), 0.15);
   color: rgb(var(--card-accent));
   line-height: 1;
@@ -155,7 +155,7 @@
 }
 
 .magic-bento-card__title {
-  font-size: 1.25rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #fff;
   margin: 0;
@@ -164,14 +164,14 @@
 }
 
 .magic-bento-card__description {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: rgba(255, 255, 255, 0.6);
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .magic-bento-card__value {
-  font-size: 2.25rem;
+  font-size: 1.75rem;
   font-weight: 800;
   line-height: 1.05;
   color: #fff;

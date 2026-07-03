@@ -67,13 +67,15 @@ export default function AppShell({
         className="app-shell-scroll overflow-y-auto overflow-x-hidden"
         style={{ height: 'calc(100vh - 32px)', background: mainBg }}
       >
-        {/* Persistent top bar: Back (when not home) on the left, notification bell
-            on the right — visible on every app page, every role. */}
-        <div
-          className="sticky top-0 z-30 flex items-center justify-between border-b border-white/5 px-4 py-2.5 backdrop-blur"
-          style={{ background: `${hue.base}d9` /* ~85% opaque */ }}
-        >
-          {showBack ? (
+        {/* Inner-page top bar: Back on the left, notification bell on the right.
+            The HOME dashboard renders NO bar here — an empty full-width band read
+            as a website navbar and ate vertical space. On home the bell lives in
+            the dashboard's own header (AppTopBar / tutor header) instead. */}
+        {showBack && (
+          <div
+            className="sticky top-0 z-30 flex items-center justify-between border-b border-white/5 px-4 py-2 backdrop-blur"
+            style={{ background: `${hue.base}d9` /* ~85% opaque */ }}
+          >
             <button
               onClick={() => router.back()}
               className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold text-white/70 transition-colors hover:bg-white/10 hover:text-white"
@@ -81,11 +83,9 @@ export default function AppShell({
               <ArrowLeft size={16} />
               Back
             </button>
-          ) : (
-            <span />
-          )}
-          <NotificationBell />
-        </div>
+            <NotificationBell />
+          </div>
+        )}
         {children}
       </main>
 

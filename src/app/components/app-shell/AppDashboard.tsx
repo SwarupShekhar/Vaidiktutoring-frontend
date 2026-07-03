@@ -724,7 +724,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="mx-auto w-full max-w-6xl space-y-8 px-4 py-4 md:px-6"
+      className="mx-auto w-full max-w-6xl space-y-5 px-4 py-3 md:px-6"
     >
       {/* Dismissible setup/verify chips */}
       <motion.div variants={itemVariants}>
@@ -737,7 +737,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
       </motion.div>
 
       {/* Real data-driven Magic Bento grid */}
-      <motion.div variants={itemVariants} className="mt-8">
+      <motion.div variants={itemVariants}>
         <MagicBento
           cards={cards}
           textAutoHide={false}

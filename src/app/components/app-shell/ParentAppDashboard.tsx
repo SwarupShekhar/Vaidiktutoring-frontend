@@ -317,7 +317,7 @@ const ParentAppDashboard: React.FC = () => {
       onClick: () => setReportOpen(true),
       label: 'Attendance',
       icon: <ClipboardCheck className="h-4 w-4" />,
-      value: hasAttendance ? `${attendanceRate}%` : ', ',
+      value: hasAttendance ? `${attendanceRate}%` : undefined,
       children: (
         <div className="mt-1 space-y-2">
           {hasAttendance ? (
@@ -379,7 +379,6 @@ const ParentAppDashboard: React.FC = () => {
         href: '/bookings/new',
         label: 'Sessions',
         icon: <Ticket className="h-4 w-4" />,
-        value: ', ',
         description: 'Book a session to get started',
       });
     }
@@ -540,7 +539,7 @@ const ParentAppDashboard: React.FC = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="mx-auto w-full max-w-6xl space-y-8 px-4 py-4 md:px-6"
+      className="mx-auto w-full max-w-6xl space-y-5 px-4 py-3 md:px-6"
     >
       {/* Personal header (greeting + date) */}
       <motion.div variants={itemVariants}>
@@ -606,7 +605,7 @@ const ParentAppDashboard: React.FC = () => {
           </a>
         </motion.div>
       ) : (
-        <motion.div variants={itemVariants} className="mt-8">
+        <motion.div variants={itemVariants}>
           <MagicBento
             cards={cards}
             textAutoHide={false}

@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { Crown, Clock } from 'lucide-react';
 import type { CreditStatus } from '@/app/types/credits';
 import { getPlanBadge, planDaysSuffix } from '@/app/lib/plan';
+import NotificationBell from './NotificationBell';
 
 interface AppTopBarProps {
   user: any;
@@ -79,16 +80,19 @@ export const AppTopBar: React.FC<AppTopBarProps> = ({ user, credit, subtitle }) 
   const today = useMemo(() => format(new Date(), 'EEEE, d MMMM'), []);
 
   return (
-    <header className="flex flex-wrap items-end justify-between gap-3">
+    <header className="flex items-start justify-between gap-3">
       <div className="min-w-0">
         <h1 className="truncate text-2xl font-extrabold tracking-tight text-white">
           {greeting}{firstName ? `, ${firstName}` : ''}
         </h1>
         <p className="mt-0.5 text-sm text-white/45">{subtitle ?? "Here's your study snapshot."}</p>
       </div>
-      <div className="flex flex-col items-end gap-1.5">
-        <PlanBadge credit={credit} />
-        <p className="text-sm font-medium text-white/40">{today}</p>
+      <div className="flex items-center gap-3">
+        <div className="flex flex-col items-end gap-1.5">
+          <PlanBadge credit={credit} />
+          <p className="text-sm font-medium text-white/40">{today}</p>
+        </div>
+        <NotificationBell />
       </div>
     </header>
   );
