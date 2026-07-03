@@ -73,27 +73,65 @@ export default function NewBookingPage() {
     const hardError =
         isError && (error as any)?.response?.status !== 404;
 
+    // ---- Desktop app-shell premium view: BookingWizard owns its own AppPage
+    // layout (matches Vault/Notes/etc.), so this branch just supplies the
+    // phone-verify nudge above it. Web path (below) is unchanged. ----
+    if (isAppShell) {
+        return (
+            <ProtectedClient roles={['parent', 'student']}>
+                {(hardError || (user && user.phone_verified === false)) && (
+                    <div className="max-w-xl mx-auto px-4 pt-6 space-y-3">
+                        {hardError && (
+                            <div className="rounded-xl px-4 py-3 text-sm bg-rose-500/10 border border-rose-500/30 text-rose-300">
+                                Could not load students. Please refresh the page.
+                            </div>
+                        )}
+                        {user && user.phone_verified === false && (
+                            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-2xl">📱</span>
+                                    <div>
+                                        <p className="text-sm font-semibold text-amber-300">
+                                            Add your phone number
+                                        </p>
+                                        <p className="text-xs text-amber-400/80">
+                                            Verify your number for session reminders and account security.
+                                        </p>
+                                    </div>
+                                </div>
+                                <a
+                                    href="/verify-phone"
+                                    className="shrink-0 px-4 py-2 rounded-xl bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition-colors"
+                                >
+                                    Verify now →
+                                </a>
+                            </div>
+                        )}
+                    </div>
+                )}
+                <BookingWizard students={students} isStudentsLoading={isLoading} />
+            </ProtectedClient>
+        );
+    }
+
     return (
         <ProtectedClient roles={['parent', 'student']}>
-            {/* In the desktop app, force a dark context so the wizard's dark: variants
-                fire (system theme can be light) and it matches the always-dark app
-                shell instead of reading as a bright website. Web path unchanged. */}
-            <div className={isAppShell ? 'dark w-full max-w-2xl mx-auto px-4 py-5' : 'max-w-5xl mx-auto px-6 py-10'}>
+            <div className="max-w-5xl mx-auto px-6 py-10">
                 {hardError && (
-                    <div className="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 dark:bg-red-500/15 dark:border-red-500/30 dark:text-red-300">
+                    <div className="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
                         Could not load students. Please refresh the page.
                     </div>
                 )}
 
                 {user && user.phone_verified === false && (
-                    <div className="mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 flex items-center justify-between gap-4">
+                    <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                             <span className="text-2xl">📱</span>
                             <div>
-                                <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                                <p className="text-sm font-semibold text-amber-800">
                                     Add your phone number
                                 </p>
-                                <p className="text-xs text-amber-700 dark:text-amber-400">
+                                <p className="text-xs text-amber-700">
                                     Verify your number for session reminders and account security.
                                 </p>
                             </div>

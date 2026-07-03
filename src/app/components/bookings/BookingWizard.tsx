@@ -5,14 +5,90 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Layers, User, GraduationCap, Calendar, CheckCircle, ChevronDown } from 'lucide-react';
+import { Layers, User, GraduationCap, Calendar, CheckCircle, ChevronDown, ClipboardList, Sparkles } from 'lucide-react';
 
 import useCatalog from '@/app/Hooks/useCatalog';
 import api from '@/app/lib/api';
 import { useAuthContext } from '@/app/context/AuthContext';
+import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
 
 import { SelectionCard } from '@/app/components/ui/SelectionCard';
 import { TimeSlotPicker } from '@/app/components/ui/TimeSlotPicker';
+import {
+    AppPage,
+    AppPageItem,
+    AppCard,
+    AppPillButton,
+    accentRgb,
+    CARD_COLOR,
+    type AccentKey,
+} from '@/app/components/app-shell/ui';
+
+// --- APP-SHELL SELECT (mirrors GlassSelect but styled with app-shell tokens) ---
+interface AppSelectProps {
+    label: string;
+    value: string | null;
+    options: { id: string; label: string }[];
+    onChange: (val: string) => void;
+    placeholder?: string;
+    icon?: React.ReactNode;
+    accent?: AccentKey | string;
+}
+
+function AppSelect({ label, value, options, onChange, placeholder, icon, accent = 'indigo' }: AppSelectProps) {
+    const [open, setOpen] = useState(false);
+    const selected = options.find(o => o.id === value);
+
+    return (
+        <div className="relative">
+            <label className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-2 block ml-1">{label}</label>
+            <button
+                onClick={() => setOpen(!open)}
+                onBlur={() => setTimeout(() => setOpen(false), 200)}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left"
+                style={{
+                    background: 'rgba(255,255,255,0.04)',
+                    borderColor: open ? accentRgb(accent, 0.6) : 'rgba(255,255,255,0.1)',
+                }}
+            >
+                <div className="flex items-center gap-3 min-w-0">
+                    {icon && <span style={{ color: accentRgb(accent) }}>{icon}</span>}
+                    <span className={`truncate ${selected ? 'text-white' : 'text-white/40'}`}>
+                        {selected?.label || placeholder}
+                    </span>
+                </div>
+                <ChevronDown size={16} className={`shrink-0 transition-transform duration-300 ${open ? 'rotate-180' : ''} text-white/40`} />
+            </button>
+
+            {open && (
+                <div
+                    className="absolute top-full left-0 right-0 mt-2 rounded-xl shadow-2xl z-50 overflow-hidden max-h-[250px] overflow-y-auto scrollbar-thin"
+                    style={{ background: '#1a1830', border: '1px solid rgba(255,255,255,0.1)' }}
+                >
+                    {options.length === 0 ? (
+                        <div className="p-3 text-white/40 text-sm text-center italic">No options available</div>
+                    ) : (
+                        options.map(opt => (
+                            <button
+                                key={opt.id}
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    onChange(opt.id);
+                                    setOpen(false);
+                                }}
+                                className="w-full text-left px-4 py-3 text-sm transition-colors flex items-center justify-between text-white/70 hover:bg-white/10"
+                                style={value === opt.id ? { background: accentRgb(accent, 0.16), color: accentRgb(accent) } : undefined}
+                            >
+                                {opt.label}
+                                {value === opt.id && <CheckCircle size={14} style={{ color: accentRgb(accent) }} />}
+                            </button>
+                        ))
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
 
 // --- COMPONENTS ---
 interface GlassSelectProps {
@@ -114,6 +190,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
     const router = useRouter();
     const { user } = useAuthContext();
     const queryClient = useQueryClient();
+    const isAppShell = useIsAppShell();
     const { subjects, curricula, packages, loading: loadingCatalog } = useCatalog();
 
     // STATE
@@ -251,7 +328,250 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
         { title: 'Confirm', subtitle: 'Ready to go' }
     ];
 
+    // ---- Desktop app-shell premium view ----
+    if (isAppShell) {
+        return (
+            <AppPage>
+            <div className="max-w-xl mx-auto space-y-8">
+                <AppPageItem>
+                    <div className="flex items-center gap-3.5 mb-6">
+                        <span
+                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border"
+                            style={{ background: accentRgb('indigo', 0.12), borderColor: accentRgb('indigo', 0.3), color: accentRgb('indigo') }}
+                        >
+                            <ClipboardList size={22} />
+                        </span>
+                        <div>
+                            <h1 className="text-2xl font-black tracking-tight text-white">Schedule Your Diagnostic</h1>
+                            <p className="text-sm text-white/50">Set up your assessment in 3 simple steps.</p>
+                        </div>
+                    </div>
 
+                    {/* Segmented stepper */}
+                    <div className="flex rounded-2xl p-1.5 gap-1" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                        {steps.map((s, idx) => {
+                            const isActive = step === idx;
+                            const isDone = step > idx;
+                            return (
+                                <div
+                                    key={idx}
+                                    className="flex-1 flex items-center gap-2.5 px-4 py-2.5 rounded-xl transition-all"
+                                    style={isActive ? { background: accentRgb('indigo', 0.15), border: `1px solid ${accentRgb('indigo', 0.35)}` } : undefined}
+                                >
+                                    <div
+                                        className="w-6 h-6 shrink-0 rounded-full flex items-center justify-center text-[11px] font-black"
+                                        style={
+                                            isActive
+                                                ? { background: accentRgb('indigo'), color: '#fff' }
+                                                : isDone
+                                                    ? { background: accentRgb('emerald', 0.16), color: accentRgb('emerald') }
+                                                    : { background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.4)' }
+                                        }
+                                    >
+                                        {isDone ? <CheckCircle size={13} /> : idx + 1}
+                                    </div>
+                                    <div className="min-w-0 hidden sm:block">
+                                        <p className={`text-xs font-bold leading-none truncate ${isActive ? 'text-white' : isDone ? 'text-emerald-400' : 'text-white/40'}`}>{s.title}</p>
+                                        {isActive && <p className="text-[10px] text-white/40 mt-0.5">{s.subtitle}</p>}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </AppPageItem>
+
+                {error && (
+                    <AppPageItem>
+                        <div
+                            className="rounded-xl px-4 py-3 text-sm"
+                            style={{ background: accentRgb('rose', 0.1), border: `1px solid ${accentRgb('rose', 0.3)}`, color: accentRgb('rose') }}
+                        >
+                            {error}
+                        </div>
+                    </AppPageItem>
+                )}
+
+                <AppPageItem>
+                    <AppCard accent="indigo" interactive={false} className="!p-7 min-h-[380px]">
+                        {step === 0 && (
+                            <div className="space-y-5">
+                                <h2 className="flex items-center gap-2 text-base font-black text-white mb-1">
+                                    <Layers size={18} style={{ color: accentRgb('indigo') }} /> Assessment Focus
+                                </h2>
+
+                                <AppSelect
+                                    label="Program"
+                                    value={programId}
+                                    options={programs.map(p => ({ id: p.id, label: p.name }))}
+                                    onChange={setProgramId}
+                                    placeholder="Select a Program"
+                                    icon={<Layers size={16} />}
+                                />
+
+                                {user?.role !== 'student' && (
+                                    <AppSelect
+                                        label="Student"
+                                        value={studentId}
+                                        options={availableStudents.map(s => ({ id: s.id, label: s.name }))}
+                                        onChange={setStudentId}
+                                        placeholder="Select a Student"
+                                        icon={<User size={16} />}
+                                    />
+                                )}
+
+                                <AppSelect
+                                    label="Curriculum"
+                                    value={curriculumId}
+                                    options={curricula?.map((c: any) => ({ id: c.id, label: c.name })) || []}
+                                    onChange={setCurriculumId}
+                                    placeholder="Select a Curriculum"
+                                    icon={<GraduationCap size={16} />}
+                                />
+
+                                <AppSelect
+                                    label="Subject"
+                                    value={subjectId}
+                                    options={subjects?.map((s: any) => ({ id: s.id, label: s.name })) || []}
+                                    onChange={setSubjectId}
+                                    placeholder="Select a Subject"
+                                    icon={<Layers size={16} />}
+                                />
+                            </div>
+                        )}
+
+                        {step === 1 && (
+                            <div className="space-y-5">
+                                <h2 className="flex items-center gap-2 text-base font-black text-white mb-1">
+                                    <Calendar size={18} style={{ color: accentRgb('emerald') }} /> Schedule Session
+                                </h2>
+                                <div className="rounded-2xl p-5" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                                    <TimeSlotPicker start={start} end={end} onSelect={handleTimeSelect} />
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 2 && (
+                            <div className="space-y-5">
+                                <div className="text-center mb-2">
+                                    <span
+                                        className="inline-flex h-12 w-12 items-center justify-center rounded-2xl mb-3"
+                                        style={{ background: accentRgb('emerald', 0.14), color: accentRgb('emerald') }}
+                                    >
+                                        <Sparkles size={22} />
+                                    </span>
+                                    <h2 className="text-xl font-black text-white">Ready for your Diagnostic?</h2>
+                                    <p className="text-sm text-white/50 mt-1">Review session details before confirming.</p>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1.5">Program</p>
+                                        <p className="text-sm font-bold text-white truncate">{programs.find(p => p.id === programId)?.name || '—'}</p>
+                                    </div>
+                                    <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1.5">Student</p>
+                                        <p className="text-sm font-bold text-white truncate">{students.find(s => s.id === studentId)?.name || '—'}</p>
+                                    </div>
+                                </div>
+
+                                <div className="rounded-xl p-4 flex items-center justify-between" style={{ background: accentRgb('emerald', 0.08), border: `1px solid ${accentRgb('emerald', 0.2)}` }}>
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Date</p>
+                                        <p className="text-sm font-bold text-white">{start ? format(new Date(start), 'EEE, MMM d') : '-'}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Time</p>
+                                        <p className="text-lg font-black" style={{ color: accentRgb('emerald') }}>{start ? format(new Date(start), 'h:mm a') : '-'}</p>
+                                        <p className="text-[11px] text-white/40">to {end ? format(new Date(end), 'h:mm a') : '-'}</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-wrap gap-2">
+                                    <span
+                                        className="rounded-full px-3 py-1 text-[11px] font-bold"
+                                        style={{ background: accentRgb('cyan', 0.14), color: accentRgb('cyan'), border: `1px solid ${accentRgb('cyan', 0.3)}` }}
+                                    >
+                                        {curricula?.find((c: any) => c.id === curriculumId)?.name}
+                                    </span>
+                                    <span
+                                        className="rounded-full px-3 py-1 text-[11px] font-bold"
+                                        style={{ background: accentRgb('violet', 0.14), color: accentRgb('violet'), border: `1px solid ${accentRgb('violet', 0.3)}` }}
+                                    >
+                                        {subjects?.find((s: any) => s.id === subjectId)?.name}
+                                    </span>
+                                </div>
+
+                                <textarea
+                                    placeholder="Add notes for the tutor…"
+                                    value={note}
+                                    onChange={e => setNote(e.target.value)}
+                                    className="w-full rounded-xl p-4 text-sm text-white placeholder-white/30 outline-none transition-colors"
+                                    style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)' }}
+                                    rows={3}
+                                    onFocus={(e) => { e.currentTarget.style.borderColor = accentRgb('indigo', 0.6); }}
+                                    onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; }}
+                                />
+                            </div>
+                        )}
+                    </AppCard>
+                </AppPageItem>
+
+                <AppPageItem>
+                    <div className="flex justify-between items-center">
+                        <AppPillButton
+                            accent="indigo"
+                            variant="ghost"
+                            disabled={step === 0 || submitting}
+                            onClick={() => setStep(s => Math.max(0, s - 1) as Step)}
+                            className="!py-3 !px-5 disabled:opacity-0"
+                        >
+                            Back
+                        </AppPillButton>
+
+                        {step < 2 ? (
+                            <div className="flex flex-col items-end gap-1.5">
+                                <AppPillButton
+                                    accent="indigo"
+                                    variant="solid"
+                                    disabled={!canProceed()}
+                                    onClick={() => setStep(s => Math.min(2, s + 1) as Step)}
+                                    className="!py-3 !px-7"
+                                >
+                                    Continue
+                                </AppPillButton>
+                                {!canProceed() && step === 0 && (
+                                    <p className="text-[11px] font-semibold" style={{ color: accentRgb('rose') }}>
+                                        {!programId ? 'Select a Program' :
+                                            !studentId ? 'Select a Student' :
+                                                !curriculumId ? 'Select a Curriculum' :
+                                                    !subjectId ? 'Select a Subject' : ''}
+                                    </p>
+                                )}
+                                {!canProceed() && step === 1 && (
+                                    <p className="text-[11px] font-semibold" style={{ color: accentRgb('rose') }}>
+                                        {(!start || !end) ? 'Select a Time' : ''}
+                                    </p>
+                                )}
+                            </div>
+                        ) : (
+                            <AppPillButton
+                                accent="emerald"
+                                variant="solid"
+                                disabled={submitting}
+                                onClick={submitBooking}
+                                className="!py-3 !px-7 !text-sm"
+                            >
+                                {submitting ? 'Creating Session…' : 'Confirm Assessment'} <CheckCircle size={18} />
+                            </AppPillButton>
+                        )}
+                    </div>
+                </AppPageItem>
+            </div>
+            </AppPage>
+        );
+    }
+
+    // ---- Web view (UNCHANGED) ----
     return (
         <div className="w-full max-w-xl mx-auto">
             {/* Header / Progress */}

@@ -6,6 +6,7 @@ import * as authLib from '@/app/lib/auth';
 import { setAuthToken, setTokenGetter } from '@/app/lib/api';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUser, useAuth } from '@clerk/nextjs';
+import { useQueryClient } from '@tanstack/react-query';
 
 type User = {
   id?: string;
@@ -39,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { user: clerkUser, isLoaded: isClerkLoaded } = useUser();
   const { getToken, signOut } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
   const [initialCheckDone, setInitialCheckDone] = useState(false);
   const [token, setToken] = useState<string | null>(null);
@@ -227,6 +229,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setBackendUser(null);
     document.cookie = "manual_auth_token=; path=/; max-age=0";
     document.cookie = "user_role=; path=/; max-age=0";
+    // Drop every cached query (dashboard/profile/notifications/credits/etc.) so the
+    // next sign-in — same tab, no hard reload in the desktop app — can't render a
+    // previous user's stale/half-resolved data (was the "stuck after sign-in" bug).
+    queryClient.clear();
     // In the desktop app the marketing homepage has no purpose — send unauthenticated
     // users straight to /login. Web logout still returns to the marketing home.
     const isAppShell =
@@ -234,7 +240,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       (!!(window as any).electron?.isDesktopApp ||
         (typeof navigator !== 'undefined' && navigator.userAgent.includes('StudyHoursApp')) ||
         document.documentElement.classList.contains('app-shell-mode'));
-    signOut(() => router.push(isAppShell ? '/login' : '/'));
+    // Hard nav, not router.push: a soft nav can leave stale component state/subscriptions
+    // (sidebar, sockets) alive across the auth boundary and race with Clerk's signOut.
+    signOut(() => {
+      if (typeof window !== 'undefined') {
+        window.location.assign(isAppShell ? '/login' : '/');
+      }
+    });
   }
 
   async function resendVerification() {
