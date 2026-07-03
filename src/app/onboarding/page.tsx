@@ -16,6 +16,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [role, setRole] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [roleError, setRoleError] = useState<string | null>(null);
   const [forceShowContent, setForceShowContent] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   // Once the user actively picks a role we drive navigation explicitly (to the
@@ -97,11 +98,26 @@ export default function OnboardingPage() {
       // navigate before re-fetching it, the role-gated onboarding page sees 'student'
       // and bounces to /unauthorized (the 403). updateRole awaits the DB write, so a
       // fresh getMe() here deterministically returns the new role.
+      //
+      // If the backend REJECTS the switch (e.g. this account already has a student
+      // profile or already manages children — see auth.service.ts updateRole guard),
+      // we must NOT navigate to the next onboarding step: that previously happened
+      // silently (error only console.logged) and stranded the user on /onboarding/
+      // add-student with their role never actually changed underneath them. This is
+      // also what let a live paid student's account render as an empty 'parent'
+      // shell after the role picker fired but the write partially/fully failed.
       try {
         await api.patch('/auth/role', { role: selectedRole });
         await refreshUser();
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to persist role to backend', err);
+        roleSelectionInProgress.current = false;
+        setIsUpdating(false);
+        setRoleError(
+          err?.response?.data?.message ||
+            'Could not update your account. Please contact support before trying again.',
+        );
+        return;
       }
 
       // HARD navigation (not router.push). The next page is role-gated, and a
@@ -158,6 +174,12 @@ export default function OnboardingPage() {
           <p className={`text-xl mb-10 leading-relaxed max-w-lg mx-auto ${isAppShell ? 'text-white/70' : 'text-gray-600 dark:text-gray-300'}`}>
             To give you the best experience, please tell us who will be using this account.
           </p>
+
+          {roleError && (
+            <div className={`mb-8 rounded-2xl px-5 py-4 text-sm text-left max-w-lg mx-auto ${isAppShell ? 'bg-rose-500/10 border border-rose-500/30 text-rose-300' : 'bg-red-50 border border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300'}`}>
+              {roleError}
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button
