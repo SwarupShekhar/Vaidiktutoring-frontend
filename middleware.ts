@@ -67,7 +67,7 @@ export default clerkMiddleware(async (auth, req) => {
 
         // Strict App Isolation: Fast path for obvious guest users
         if (isAppShell && !hasClerkCookie && isPublicRoute(req)) {
-            if (path !== '/login' && !path.startsWith('/signup')) {
+            if (path !== '/login' && !path.startsWith('/signup') && !path.startsWith('/onboarding')) {
                 return NextResponse.redirect(new URL('/login', req.url));
             }
         }
@@ -87,26 +87,31 @@ export default clerkMiddleware(async (auth, req) => {
 
             if (isMarketingPath || isDashboardRoot) {
                 const role = (sessionClaims?.publicMetadata as any)?.role || (sessionClaims?.metadata as any)?.role;
-                
-                // Default to student if role is not yet populated by webhook
-                const safeRole = role || 'student';
 
-                // If we have a role, redirect to the correct dashboard
-                if (safeRole) {
-                    let dashboardPath = '/students/dashboard'; // Fallback (real route, never the dead /dashboard)
-                    if (safeRole === 'admin') dashboardPath = '/admin/dashboard';
-                    else if (safeRole === 'tutor') dashboardPath = '/tutor/dashboard';
-                    else if (safeRole === 'student') dashboardPath = '/students/dashboard';
-                    else if (safeRole === 'parent') dashboardPath = '/parent/dashboard';
-
-                    return NextResponse.redirect(new URL(dashboardPath, req.url));
+                if (!role) {
+                    // Brand-new / not-yet-onboarded account: no role in Clerk metadata yet.
+                    // Send to the onboarding funnel to pick parent/student instead of
+                    // silently defaulting to 'student' — that default dumped fresh signups
+                    // on the student dashboard (skipping role choice), and 403'd when their
+                    // DB row was 'parent' (ProtectedClient reads the backend role). The
+                    // onboarding page self-corrects returning users (it keys on the backend
+                    // onboarding_status), so this never traps an existing account.
+                    return NextResponse.redirect(new URL('/onboarding', req.url));
                 }
+
+                let dashboardPath = '/students/dashboard'; // real route, never the dead /dashboard
+                if (role === 'admin') dashboardPath = '/admin/dashboard';
+                else if (role === 'tutor') dashboardPath = '/tutor/dashboard';
+                else if (role === 'student') dashboardPath = '/students/dashboard';
+                else if (role === 'parent') dashboardPath = '/parent/dashboard';
+
+                return NextResponse.redirect(new URL(dashboardPath, req.url));
             }
         }
 
         // Allow public routes without authentication
         if (isPublicRoute(req)) {
-            if (isAppShell && path !== '/login' && !path.startsWith('/signup')) {
+            if (isAppShell && path !== '/login' && !path.startsWith('/signup') && !path.startsWith('/onboarding')) {
                 return NextResponse.redirect(new URL('/login', req.url));
             }
             return NextResponse.next();
