@@ -30,28 +30,10 @@ export default function TitleBar() {
         {isWindows ? 'StudyHours' : ''}
       </div>
 
-      {isWindows && (
-        <div className="flex h-full" style={{ WebkitAppRegion: 'no-drag', pointerEvents: 'auto' } as any}>
-          <button 
-            onClick={() => window.electron?.windowMinimize()}
-            className="h-full px-4 hover:bg-white/10 transition-colors flex items-center justify-center text-gray-400"
-          >
-            <svg width="10" height="1" viewBox="0 0 10 1"><path fill="currentColor" d="M0 0h10v1H0z"/></svg>
-          </button>
-          <button 
-            onClick={() => window.electron?.windowMaximize()}
-            className="h-full px-4 hover:bg-white/10 transition-colors flex items-center justify-center text-gray-400"
-          >
-            <svg width="10" height="10" viewBox="0 0 10 10"><path stroke="currentColor" fill="none" d="M1.5 1.5h7v7h-7z"/></svg>
-          </button>
-          <button 
-            onClick={() => window.electron?.windowClose()}
-            className="h-full px-4 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center text-gray-400"
-          >
-            <svg width="10" height="10" viewBox="0 0 10 10"><path fill="currentColor" d="M1.414 0L5 3.586 8.586 0 10 1.414 6.414 5 10 8.586 8.586 10 5 6.414 1.414 10 0 8.586 3.586 5 0 1.414z"/></svg>
-          </button>
-        </div>
-      )}
+      {/* Windows min/maximize/close are now drawn by the OS via Electron's native
+          titleBarOverlay (see main.js). The old web-rendered buttons were unreliable
+          inside the frameless shell, so they're intentionally removed here to avoid
+          a duplicate, non-functional set. This strip stays as the draggable region. */}
     </div>
   );
 }
