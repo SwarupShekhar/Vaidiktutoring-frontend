@@ -4,6 +4,7 @@ import React, { useRef, useState } from 'react';
 import { FileText, X, Upload, Loader2 } from 'lucide-react';
 import { api } from '@/app/lib/api';
 import { toast } from 'sonner';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 /**
  * Share notes/files with the student of a specific session.
@@ -28,6 +29,7 @@ export default function ShareNotesModal({
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const panelRef = useFocusTrap<HTMLDivElement>(true, onClose);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,9 +58,16 @@ export default function ShareNotesModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-5">
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="share-notes-modal-title"
+        tabIndex={-1}
+        className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-5"
+      >
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+          <h2 id="share-notes-modal-title" className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
             <FileText size={20} className="text-green-500" /> Share Notes
           </h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">

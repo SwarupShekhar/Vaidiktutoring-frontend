@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Star } from 'lucide-react';
 import { api } from '@/app/lib/api';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 interface PendingRating {
   sessionId: string;
@@ -25,7 +26,22 @@ export default function RatingModal({ pending, onDone }: RatingModalProps) {
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  if (!pending.length || index >= pending.length) return null;
+  const isOpen = pending.length > 0 && index < pending.length;
+
+  const handleSkip = () => {
+    setScore(0);
+    setHovered(0);
+    setComment('');
+    if (index === pending.length - 1) {
+      onDone();
+    } else {
+      setIndex((i) => i + 1);
+    }
+  };
+
+  const panelRef = useFocusTrap<HTMLDivElement>(isOpen, handleSkip);
+
+  if (!isOpen) return null;
 
   const current = pending[index];
   const isLast = index === pending.length - 1;
@@ -53,17 +69,6 @@ export default function RatingModal({ pending, onDone }: RatingModalProps) {
     }
   };
 
-  const handleSkip = () => {
-    setScore(0);
-    setHovered(0);
-    setComment('');
-    if (isLast) {
-      onDone();
-    } else {
-      setIndex((i) => i + 1);
-    }
-  };
-
   const displayScore = hovered || score;
   const dateStr = current.sessionDate
     ? new Date(current.sessionDate).toLocaleDateString('en-GB', {
@@ -75,10 +80,17 @@ export default function RatingModal({ pending, onDone }: RatingModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8 space-y-6">
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="rating-modal-title"
+        tabIndex={-1}
+        className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8 space-y-6"
+      >
         <div className="text-center space-y-1">
           <p className="text-xs font-bold uppercase tracking-widest text-orange-500">Rate your session</p>
-          <h2 className="text-2xl font-black text-gray-900 dark:text-white">
+          <h2 id="rating-modal-title" className="text-2xl font-black text-gray-900 dark:text-white">
             How was {current.tutorName}?
           </h2>
           {current.studentName && (

@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import api from "@/app/lib/api";
+import { useFocusTrap } from "@/app/Hooks/useFocusTrap";
 
 interface Tutor {
   id: string;
@@ -59,6 +60,8 @@ export default function TutorListModal({
         .finally(() => setLoading(false));
     }
   }, [isOpen]);
+
+  const panelRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -134,9 +137,16 @@ export default function TutorListModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl border border-white/10">
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tutor-list-modal-title"
+        tabIndex={-1}
+        className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl border border-white/10"
+      >
         <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+          <h2 id="tutor-list-modal-title" className="text-xl font-bold text-gray-900 dark:text-white">
             Active Tutors
           </h2>
           <button

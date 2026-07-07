@@ -1,8 +1,8 @@
 'use client';
 
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Video, PlayCircle, Loader2, Baby, X } from 'lucide-react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Video, PlayCircle, Loader2, Baby, X, UserPlus } from 'lucide-react';
 import { format } from 'date-fns';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
@@ -14,6 +14,7 @@ import {
   AppPageHeader,
   AppCard,
   AppEmptyState,
+  AppPillButton,
   AppSkeletonCard,
 } from '@/app/components/app-shell/ui';
 
@@ -45,6 +46,7 @@ const childLabel = (s: { first_name?: string; last_name?: string }) =>
   `${s.first_name ?? ''} ${s.last_name ?? ''}`.trim() || 'Child';
 
 function ParentRecordings() {
+  const router = useRouter();
   const { students, loadingStudentList } = useParentDashboard();
 
   const preChild = useSearchParams().get('child');
@@ -177,9 +179,24 @@ function ParentRecordings() {
             <AppSkeletonCard />
           </div>
         ) : students.length === 0 ? (
-          <AppEmptyState icon={Baby} accent="violet" title="No children yet" />
+          <AppEmptyState
+            icon={Baby}
+            accent="violet"
+            title="No children yet"
+            description="Add your first child to start viewing their session recordings."
+            action={
+              <AppPillButton accent="violet" variant="solid" onClick={() => router.push('/onboarding/student')}>
+                <UserPlus size={14} /> Add your first child
+              </AppPillButton>
+            }
+          />
         ) : sessions.length === 0 ? (
-          <AppEmptyState icon={Video} accent="violet" title="No recordings yet" />
+          <AppEmptyState
+            icon={Video}
+            accent="violet"
+            title="No recordings yet"
+            description="Recordings will appear here after your child's next session."
+          />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
             {sessions.map((s) => (

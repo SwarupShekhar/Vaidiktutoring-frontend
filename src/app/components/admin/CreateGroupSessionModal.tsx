@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Calendar, Clock, Video, Users, UserCheck, RefreshCw } from 'lucide-react';
 import api from '@/app/lib/api';
 import { toast } from 'sonner';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 interface CreateGroupSessionModalProps {
     onClose: () => void;
@@ -19,6 +20,7 @@ export default function CreateGroupSessionModal({ onClose, onSuccess }: CreateGr
     const [provider, setProvider] = useState<'ZOOM' | 'DAILYCO'>('ZOOM');
     
     const [loading, setLoading] = useState(false);
+    const panelRef = useFocusTrap<HTMLDivElement>(true, onClose);
 
     useEffect(() => {
         // Fetch all active tutors
@@ -73,8 +75,15 @@ export default function CreateGroupSessionModal({ onClose, onSuccess }: CreateGr
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className="bg-[#1A1C23] w-full max-w-2xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-                
+            <div
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="create-group-session-modal-title"
+                tabIndex={-1}
+                className="bg-[#1A1C23] w-full max-w-2xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            >
+
                 {/* Header */}
                 <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
                     <div className="flex items-center gap-3">
@@ -82,7 +91,7 @@ export default function CreateGroupSessionModal({ onClose, onSuccess }: CreateGr
                             <Users size={20} />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold text-white">Schedule Group Session</h2>
+                            <h2 id="create-group-session-modal-title" className="text-xl font-bold text-white">Schedule Group Session</h2>
                             <p className="text-sm text-gray-400">Create a session for multiple students</p>
                         </div>
                     </div>

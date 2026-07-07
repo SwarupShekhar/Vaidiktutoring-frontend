@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { X, Send, LifeBuoy, CheckCircle2 } from 'lucide-react';
 import { api } from '@/app/lib/api';
 import { toast } from 'sonner';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 interface SupportModalProps {
     isOpen: boolean;
@@ -43,11 +44,20 @@ export const SupportModal = ({ isOpen, onClose, context }: SupportModalProps) =>
         }
     };
 
+    const panelRef = useFocusTrap<HTMLDivElement>(isOpen && mounted, onClose);
+
     if (!isOpen || !mounted) return null;
 
     return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-surface w-full max-w-lg rounded-4xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200">
+            <div
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="support-modal-title"
+                tabIndex={-1}
+                className="bg-surface w-full max-w-lg rounded-4xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-200"
+            >
                 <div className="p-8">
                     <div className="flex justify-between items-start mb-6">
                         <div className="flex items-center gap-4">
@@ -55,7 +65,7 @@ export const SupportModal = ({ isOpen, onClose, context }: SupportModalProps) =>
                                 <LifeBuoy size={24} />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-foreground tracking-tight">How can we help?</h2>
+                                <h2 id="support-modal-title" className="text-2xl font-black text-foreground tracking-tight">How can we help?</h2>
                                 <p className="text-text-secondary text-sm">Tell us what you need and we&apos;ll get back to you.</p>
                             </div>
                         </div>

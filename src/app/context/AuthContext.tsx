@@ -112,6 +112,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               setAuthToken(t);
               const u = await authLib.getMe();
               setBackendUser(u);
+              // Mirror the authoritative DB role into the `user_role` cookie so
+              // Edge middleware can route Clerk/OAuth users whose Clerk session
+              // token has no publicMetadata.role yet (legacy / not-yet-backfilled
+              // accounts) straight to their dashboard instead of bouncing them
+              // through /onboarding. Manual login sets this in login(); this is
+              // the Clerk-session equivalent.
+              document.cookie = `user_role=${u.role || 'student'}; path=/; max-age=604800; SameSite=Lax`;
             }
           } catch (err) {
             console.error("Clerk session sync failed:", err);

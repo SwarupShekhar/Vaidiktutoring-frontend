@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import api from '@/app/lib/api';
 import { Loader2, X, CheckSquare, Clock, Video, MessageSquare, AlertCircle, PlaySquare, Activity } from 'lucide-react';
 import { format } from 'date-fns';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 interface AdminSessionSummaryModalProps {
     sessionId: string | null;
@@ -31,6 +32,8 @@ export default function AdminSessionSummaryModal({ sessionId, isOpen, onClose }:
         }
     }, [isOpen, sessionId]);
 
+    const panelRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
+
     if (!isOpen) return null;
 
     const safeFormatDate = (dateString: string | undefined | null) => {
@@ -44,15 +47,22 @@ export default function AdminSessionSummaryModal({ sessionId, isOpen, onClose }:
 
     return (
         <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xl animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-slate-900 rounded-4xl w-full max-w-2xl shadow-2xl border border-white/20 dark:border-white/5 flex flex-col max-h-[90vh] overflow-hidden relative">
-                
+            <div
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="admin-session-summary-modal-title"
+                tabIndex={-1}
+                className="bg-white dark:bg-slate-900 rounded-4xl w-full max-w-2xl shadow-2xl border border-white/20 dark:border-white/5 flex flex-col max-h-[90vh] overflow-hidden relative"
+            >
+
                 {/* Header */}
                 <div className="p-8 border-b border-border flex justify-between items-start relative z-10">
                     <div>
                         <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 mb-4">
                             <Activity size={24} />
                         </div>
-                        <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Session Summary</h2>
+                        <h2 id="admin-session-summary-modal-title" className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Session Summary</h2>
                         <p className="text-slate-500 font-medium mt-1">ID: {sessionId}</p>
                     </div>
                     <button 

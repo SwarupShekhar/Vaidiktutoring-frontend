@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import api from '@/app/lib/api';
 import StudentDetailModal from './StudentDetailModal';
 import { ExternalLink } from 'lucide-react';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 interface Student {
     id: string;
@@ -49,6 +50,8 @@ export default function StudentListModal({ isOpen, onClose }: StudentListModalPr
 
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
+    const panelRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
+
     if (!isOpen) return null;
 
     const getStatusBadge = (status: string) => {
@@ -77,10 +80,17 @@ export default function StudentListModal({ isOpen, onClose }: StudentListModalPr
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-5xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl border border-white/10">
+            <div
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="student-list-modal-title"
+                tabIndex={-1}
+                className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-5xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl border border-white/10"
+            >
                 <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
                     <div>
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white leading-tight">Registered Students</h2>
+                        <h2 id="student-list-modal-title" className="text-xl font-bold text-gray-900 dark:text-white leading-tight">Registered Students</h2>
                         <p className="text-xs text-gray-500 mt-1">Manage enrollments, plans, and session credits.</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors">

@@ -113,45 +113,45 @@ function LoginContent() {
             <div className="animate-in fade-in slide-in-from-right-4 duration-500 w-full">
               <button
                 onClick={() => setShowManual(false)}
-                className="mb-6 flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-purple-600 transition-colors group"
+                className={`mb-6 flex items-center gap-2 text-sm font-bold transition-colors group ${isAppShell ? 'text-white/50 hover:text-purple-400' : 'text-slate-500 hover:text-purple-600'}`}
               >
                 <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
                 Back to Social Login
               </button>
 
               <div className="mb-8">
-                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Direct Access</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Use your system credentials to enter the dashboard</p>
+                <h2 className={`text-3xl font-bold mb-2 ${isAppShell ? 'text-white' : 'text-slate-900 dark:text-white'}`}>Direct Access</h2>
+                <p className={`text-sm font-medium ${isAppShell ? 'text-white/50' : 'text-slate-500 dark:text-slate-400'}`}>Use your system credentials to enter the dashboard</p>
               </div>
 
               <form onSubmit={handleManualLogin} className="space-y-6">
                 {error && (
-                  <div className="p-4 bg-red-100/50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm font-bold">
+                  <div className={`p-4 rounded-xl border text-sm font-bold ${isAppShell ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-red-100/50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400'}`}>
                     {error}
                   </div>
                 )}
 
                 <div className="space-y-4">
                   <div className="relative">
-                    <Mail className="absolute left-4 top-4 h-5 w-5 text-slate-400" />
+                    <Mail className={`absolute left-4 top-4 h-5 w-5 ${isAppShell ? 'text-white/30' : 'text-slate-400'}`} />
                     <input
                       required
                       type="email"
                       placeholder="System Email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-12 pr-4 py-4 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all outline-none text-slate-900 dark:text-white font-semibold"
+                      className={`w-full pl-12 pr-4 py-4 rounded-xl border focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all outline-none font-semibold ${isAppShell ? 'bg-[#0a0a0f] border-white/10 text-white placeholder:text-white/30' : 'bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white'}`}
                     />
                   </div>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-4 h-5 w-5 text-slate-400" />
+                    <Lock className={`absolute left-4 top-4 h-5 w-5 ${isAppShell ? 'text-white/30' : 'text-slate-400'}`} />
                     <input
                       required
                       type="password"
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-12 pr-4 py-4 rounded-xl bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all outline-none text-slate-900 dark:text-white font-semibold"
+                      className={`w-full pl-12 pr-4 py-4 rounded-xl border focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all outline-none font-semibold ${isAppShell ? 'bg-[#0a0a0f] border-white/10 text-white placeholder:text-white/30' : 'bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white'}`}
                     />
                   </div>
                 </div>
@@ -171,7 +171,7 @@ function LoginContent() {
                   )}
                 </button>
 
-                <p className="text-center text-xs text-slate-400 font-medium">
+                <p className={`text-center text-xs font-medium ${isAppShell ? 'text-white/40' : 'text-slate-400'}`}>
                   Authorized personal only.
                 </p>
               </form>

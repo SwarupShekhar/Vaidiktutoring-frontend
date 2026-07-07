@@ -41,6 +41,7 @@ export default function NotificationBell() {
   const ref = useRef<HTMLDivElement>(null);
 
   const unread = items.filter((n) => !isRead(n)).length;
+  const bellLabel = unread > 0 ? `Notifications, ${unread} unread` : 'Notifications, no new';
 
   useEffect(() => {
     if (!user) return;
@@ -96,8 +97,10 @@ export default function NotificationBell() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        aria-label="Notifications"
-        className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg text-white/60 ring-1 ring-white/10 transition-colors hover:bg-white/10 hover:text-white"
+        aria-label={bellLabel}
+        aria-haspopup="true"
+        aria-expanded={open}
+        className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg text-white/60 ring-1 ring-white/10 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0f]"
       >
         <Bell size={17} />
         {unread > 0 && (

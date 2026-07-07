@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import api from '@/app/lib/api';
 import { Loader2, Calendar, Clock, X, AlertCircle } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 interface RescheduleBookingModalProps {
     isOpen: boolean;
@@ -37,6 +38,8 @@ export default function RescheduleBookingModal({ isOpen, onClose, booking, onSuc
         }
     }, [isOpen, booking]);
 
+    const panelRef = useFocusTrap<HTMLDivElement>(isOpen && !!booking, onClose);
+
     if (!isOpen || !booking) return null;
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -64,10 +67,17 @@ export default function RescheduleBookingModal({ isOpen, onClose, booking, onSuc
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-surface w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="reschedule-booking-modal-title"
+                tabIndex={-1}
+                className="bg-surface w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+            >
                 <div className="px-6 py-4 border-b border-border flex justify-between items-center">
                     <div>
-                        <h2 className="text-xl font-bold text-(--color-text-primary)">Reschedule Session</h2>
+                        <h2 id="reschedule-booking-modal-title" className="text-xl font-bold text-(--color-text-primary)">Reschedule Session</h2>
                         <p className="text-sm text-text-secondary mt-1">
                             {booking.student ? '1-on-1 Class' : 'Group Class'} - {booking.subject?.name || booking.subjects?.name || ''}
                         </p>

@@ -13,6 +13,7 @@ import {
   isExamDisrupted,
   type ExamEntry,
 } from '@/app/lib/exams';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 interface ExamTargetModalProps {
   isOpen: boolean;
@@ -84,11 +85,20 @@ export function ExamTargetModal({ isOpen, onClose, student, defaultRegion, onSav
     }
   };
 
+  const panelRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-      <div className="flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#15131f] shadow-2xl">
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="exam-target-modal-title"
+        tabIndex={-1}
+        className="flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#15131f] shadow-2xl"
+      >
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-5 py-4">
           <div className="flex items-center gap-3">
@@ -96,7 +106,7 @@ export function ExamTargetModal({ isOpen, onClose, student, defaultRegion, onSav
               <GraduationCap size={18} />
             </span>
             <div>
-              <h2 className="text-base font-black text-white">Your target exam</h2>
+              <h2 id="exam-target-modal-title" className="text-base font-black text-white">Your target exam</h2>
               <p className="text-[11px] text-white/45">Pick your exam, then confirm your exam date.</p>
             </div>
           </div>

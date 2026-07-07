@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import api from '@/app/lib/api';
 import { debounce } from 'lodash';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 interface EnrollStudentModalProps {
     isOpen: boolean;
@@ -36,6 +37,8 @@ export default function EnrollStudentModal({ isOpen, onClose, programId, onEnrol
         updateSearch(val);
     };
 
+    const panelRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
+
     if (!isOpen) return null;
 
     const handleEnroll = async () => {
@@ -60,9 +63,16 @@ export default function EnrollStudentModal({ isOpen, onClose, programId, onEnrol
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="enroll-student-modal-title"
+                tabIndex={-1}
+                className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+            >
                 <div className="p-6 border-b border-gray-100">
-                    <h3 className="text-xl font-bold text-gray-900">Enroll Student</h3>
+                    <h3 id="enroll-student-modal-title" className="text-xl font-bold text-gray-900">Enroll Student</h3>
                     <p className="text-sm text-gray-500">Add a student to this program.</p>
                 </div>
 

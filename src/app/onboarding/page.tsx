@@ -64,7 +64,9 @@ export default function OnboardingPage() {
     // authoritative role → no stale-role 403 race.
     const onboardingStatus = (user as any)?.onboarding_status;
     const needsRoleChoice =
-      !clerkUser?.publicMetadata?.role && onboardingStatus === 'not_started';
+      !clerkUser?.publicMetadata?.role &&
+      onboardingStatus === 'not_started' &&
+      !(user as any)?.has_onboarded_history;
 
     if (user?.role === 'admin') {
       window.location.assign('/admin/dashboard');
@@ -137,7 +139,9 @@ export default function OnboardingPage() {
 
   const onboardingStatus = (user as any)?.onboarding_status;
   const needsRoleChoice =
-    !clerkUser?.publicMetadata?.role && onboardingStatus === 'not_started';
+    !clerkUser?.publicMetadata?.role &&
+    onboardingStatus === 'not_started' &&
+    !(user as any)?.has_onboarded_history;
 
   // Show loader while auth is loading - but not forever (max 5 seconds)
   // Also show loader if we're about to redirect an already-onboarded user

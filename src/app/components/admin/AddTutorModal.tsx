@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { debounce } from 'lodash';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 interface AddTutorModalProps {
     isOpen: boolean;
@@ -34,6 +35,8 @@ export default function AddTutorModal({ isOpen, onClose, programId, onAdded }: A
         updateSearch(val);
     };
 
+    const panelRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
+
     if (!isOpen) return null;
 
     const handleAdd = async () => {
@@ -56,9 +59,16 @@ export default function AddTutorModal({ isOpen, onClose, programId, onAdded }: A
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="add-tutor-modal-title"
+                tabIndex={-1}
+                className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+            >
                 <div className="p-6 border-b border-gray-100">
-                    <h3 className="text-xl font-bold text-gray-900">Add Tutor to Program</h3>
+                    <h3 id="add-tutor-modal-title" className="text-xl font-bold text-gray-900">Add Tutor to Program</h3>
                     <p className="text-sm text-gray-500">Staff this program with a qualified tutor.</p>
                 </div>
 

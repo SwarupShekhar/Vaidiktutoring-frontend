@@ -18,6 +18,7 @@ import {
   Activity
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 interface StudentDetailModalProps {
   studentId: string | null;
@@ -38,11 +39,20 @@ export default function StudentDetailModal({ studentId, onClose }: StudentDetail
     }
   }, [studentId]);
 
+  const panelRef = useFocusTrap<HTMLDivElement>(!!studentId, onClose);
+
   if (!studentId) return null;
 
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-surface rounded-[2.5rem] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-border">
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="student-detail-modal-title"
+        tabIndex={-1}
+        className="bg-surface rounded-[2.5rem] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-border"
+      >
         {/* Header */}
         <div className="p-8 border-b border-border flex justify-between items-start bg-muted/30">
           <div className="flex items-center gap-5">
@@ -50,7 +60,7 @@ export default function StudentDetailModal({ studentId, onClose }: StudentDetail
               {student?.first_name?.[0] || 'S'}
             </div>
             <div>
-              <h2 className="text-2xl font-black text-foreground tracking-tight">
+              <h2 id="student-detail-modal-title" className="text-2xl font-black text-foreground tracking-tight">
                 {student ? `${student.first_name} ${student.last_name || ''}` : 'Loading...'}
               </h2>
               <div className="flex items-center gap-3 mt-1">

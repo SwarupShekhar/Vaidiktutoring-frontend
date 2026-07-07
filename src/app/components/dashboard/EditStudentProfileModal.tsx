@@ -6,6 +6,7 @@ import { X, Save, AlertCircle } from 'lucide-react';
 import { api } from '@/app/lib/api';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 interface EditStudentProfileModalProps {
     isOpen: boolean;
@@ -66,16 +67,25 @@ export const EditStudentProfileModal: React.FC<EditStudentProfileModalProps> = (
         }
     };
 
+    const panelRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
+
     if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-white/10">
+            <div
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="edit-student-profile-title"
+                tabIndex={-1}
+                className="bg-white dark:bg-gray-900 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-white/10"
+            >
 
                 {/* Header */}
                 <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
                     <div>
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Update Your Profile</h2>
+                        <h2 id="edit-student-profile-title" className="text-xl font-bold text-gray-900 dark:text-white">Update Your Profile</h2>
                         <p className="text-xs text-gray-500 max-w-[280px]">Help your tutors understand you better by keeping this updated!</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors">

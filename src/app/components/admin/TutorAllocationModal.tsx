@@ -9,6 +9,7 @@ import {
     ShieldCheck
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 interface TutorAllocationModalProps {
     isOpen: boolean;
@@ -152,11 +153,20 @@ export default function TutorAllocationModal({ isOpen, onClose, booking }: Tutor
         }
     };
 
+    const panelRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
+
     if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-2xl animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-slate-900 rounded-[3rem] w-full max-w-6xl h-[85vh] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] border border-white/10 flex overflow-hidden">
+            <div
+                ref={panelRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Tutor allocation"
+                tabIndex={-1}
+                className="bg-white dark:bg-slate-900 rounded-[3rem] w-full max-w-6xl h-[85vh] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] border border-white/10 flex overflow-hidden"
+            >
                 
                 {/* Left Panel: The Queue */}
                 <div className="w-1/3 border-r border-slate-200 dark:border-white/5 flex flex-col bg-slate-50/50 dark:bg-slate-950/50">

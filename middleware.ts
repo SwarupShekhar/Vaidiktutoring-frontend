@@ -94,7 +94,8 @@ export default clerkMiddleware(async (auth, req) => {
             const isDashboardRoot = path === '/dashboard' || path === '/dashboard/';
 
             if (isMarketingPath || isDashboardRoot) {
-                const role = (sessionClaims?.publicMetadata as any)?.role || (sessionClaims?.metadata as any)?.role;
+                const cookieUserRole = req.cookies.get('user_role')?.value;
+                const role = (sessionClaims?.publicMetadata as any)?.role || (sessionClaims?.metadata as any)?.role || cookieUserRole;
 
                 if (!role) {
                     // Brand-new / not-yet-onboarded account: no role in Clerk metadata yet.

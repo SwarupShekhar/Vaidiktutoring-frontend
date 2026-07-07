@@ -1,8 +1,8 @@
 'use client';
 
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { BookOpen, FileText, Download, Loader2, Baby } from 'lucide-react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { BookOpen, FileText, Download, Loader2, Baby, UserPlus } from 'lucide-react';
 import { format } from 'date-fns';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
@@ -14,6 +14,7 @@ import {
   AppPageHeader,
   AppCard,
   AppEmptyState,
+  AppPillButton,
   AppSkeletonCard,
 } from '@/app/components/app-shell/ui';
 
@@ -55,6 +56,7 @@ const childLabel = (s: { first_name?: string; last_name?: string }) =>
   `${s.first_name ?? ''} ${s.last_name ?? ''}`.trim() || 'Child';
 
 function ParentNotes() {
+  const router = useRouter();
   const { students, loadingStudentList } = useParentDashboard();
 
   const preChild = useSearchParams().get('child');
@@ -164,9 +166,24 @@ function ParentNotes() {
             <AppSkeletonCard />
           </div>
         ) : students.length === 0 ? (
-          <AppEmptyState icon={Baby} accent="emerald" title="No children yet" />
+          <AppEmptyState
+            icon={Baby}
+            accent="emerald"
+            title="No children yet"
+            description="Add your first child to start viewing notes shared by their tutors."
+            action={
+              <AppPillButton accent="emerald" variant="solid" onClick={() => router.push('/onboarding/student')}>
+                <UserPlus size={14} /> Add your first child
+              </AppPillButton>
+            }
+          />
         ) : notes.length === 0 ? (
-          <AppEmptyState icon={FileText} accent="emerald" title="No notes shared yet" />
+          <AppEmptyState
+            icon={FileText}
+            accent="emerald"
+            title="No notes shared yet"
+            description="Notes will appear here after your child's next session."
+          />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
             {notes.map((note) => (

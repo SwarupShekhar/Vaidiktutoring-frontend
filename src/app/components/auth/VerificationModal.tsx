@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuthContext } from '@/app/context/AuthContext';
+import { useFocusTrap } from '@/app/Hooks/useFocusTrap';
 
 export default function VerificationModal() {
     const { verificationModalOpen, setVerificationModalOpen, resendVerification } = useAuthContext();
@@ -29,6 +30,8 @@ export default function VerificationModal() {
         setError(null);
     };
 
+    const panelRef = useFocusTrap<HTMLDivElement>(verificationModalOpen, closeModal);
+
     if (!verificationModalOpen) return null;
 
     return (
@@ -42,7 +45,11 @@ export default function VerificationModal() {
             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
 
-                    <div className="relative transform overflow-hidden rounded-lg bg-white dark:bg-slate-900 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                    <div
+                        ref={panelRef}
+                        tabIndex={-1}
+                        className="relative transform overflow-hidden rounded-lg bg-white dark:bg-slate-900 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+                    >
                         <div>
                             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/20">
                                 <svg className="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
