@@ -9,7 +9,7 @@ const BACKEND_URL = (process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || '
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const FROM = process.env.EMAIL_FROM || 'StudyHours <hello@studyhours.com>';
 const BOOKING_URL = 'https://studyhours.com/bookings/new';
-const DISCORD_URL = 'https://discord.gg/7PYHxCPK';
+const DISCORD_URL = 'https://discord.gg/gDhGVWd6Cm';
 
 // Rate limit: 3 submissions per IP per 10 minutes
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();

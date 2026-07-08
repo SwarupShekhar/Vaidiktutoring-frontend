@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const LEADS_API = '/api/leads';
 const BOOKING_URL = 'https://studyhours.com/bookings/new?utm_source=gcse_tracker&utm_medium=website&utm_campaign=gcse_paper3';
-const DISCORD_URL = 'https://discord.gg/7PYHxCPK';
+const DISCORD_URL = 'https://discord.gg/gDhGVWd6Cm';
 
 interface Topic {
   id: string;

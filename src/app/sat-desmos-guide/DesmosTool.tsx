@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const LEADS_API = '/api/leads';
 const BOOKING_URL = 'https://studyhours.com/bookings/new?utm_source=desmos_guide&utm_medium=website&utm_campaign=desmos_tool';
-const DISCORD_URL = 'https://discord.gg/7PYHxCPK';
+const DISCORD_URL = 'https://discord.gg/gDhGVWd6Cm';
 
 type Topic = {
   id: string;

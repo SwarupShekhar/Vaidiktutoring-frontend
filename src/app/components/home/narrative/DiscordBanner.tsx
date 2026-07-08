@@ -32,7 +32,7 @@ export default function DiscordBanner() {
 
           <div className="relative z-10 flex-shrink-0">
             <Link
-              href="https://discord.gg/7PYHxCPK"
+              href="https://discord.gg/gDhGVWd6Cm"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white text-[#5865f2] font-bold text-lg hover:bg-blue-50 hover:scale-105 transition-all shadow-lg whitespace-nowrap"

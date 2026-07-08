@@ -5,7 +5,7 @@ import React from "react";
 const DiscordButton = () => {
   return (
     <a
-      href="https://discord.gg/7PYHxCPK"
+      href="https://discord.gg/gDhGVWd6Cm"
       target="_blank"
       rel="noopener noreferrer"
       className="group relative flex items-center justify-center w-[45px] h-[45px] rounded-full overflow-hidden transition-all duration-400 hover:w-[110px] hover:rounded-[30px] bg-[#5865f2] text-white no-underline border-none cursor-pointer"
