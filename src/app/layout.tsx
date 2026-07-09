@@ -12,6 +12,7 @@ import Navbar from "./components/navbar";
 import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import TitleBar from "./components/TitleBar";
+import AiChatbotWidget from "./components/AiChatbotWidget";
 import { CSPostHogProvider } from './providers/PostHogProvider'
 
 
@@ -84,6 +85,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                   {children}
                   {isDraftMode && <VisualEditing />}
                   {!isAppShell && <Footer />}
+                  <AiChatbotWidget />
                 </NotificationProvider>
               </AuthProvider>
             </QueryProvider>
@@ -131,6 +133,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                   {children}
                   {isDraftMode && <VisualEditing />}
                   {!isAppShell && <Footer />}
+                  <AiChatbotWidget />
                 </NotificationProvider>
               </AuthProvider>
             </QueryProvider>

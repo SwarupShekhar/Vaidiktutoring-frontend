@@ -11,6 +11,7 @@
     "postinstall": "cp node_modules/pdfjs-dist/build/pdf.worker.min.mjs public/pdf.worker.min.mjs"
   },
   "dependencies": {
+    "@ai-sdk/react": "^4.0.19",
     "@clerk/clerk-js": "6.3.2",
     "@clerk/nextjs": "6.37.1",
     "@clerk/themes": "2.4.51",
@@ -18,6 +19,7 @@
     "@excalidraw/excalidraw": "^0.18.0",
     "@hcaptcha/react-hcaptcha": "^2.0.2",
     "@hookform/resolvers": "^5.2.2",
+    "@marsidev/react-turnstile": "^1.5.3",
     "@sanity/vision": "^5.26.0",
     "@sentry/core": "^10.30.0",
     "@sentry/nextjs": "^10.30.0",
@@ -32,6 +34,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@vercel/analytics": "^1.6.1",
     "@vercel/speed-insights": "^2.0.0",
+    "ai": "^7.0.18",
     "axios": "^1.13.2",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
