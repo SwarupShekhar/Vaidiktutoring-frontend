@@ -12,7 +12,8 @@ import Navbar from "./components/navbar";
 import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import TitleBar from "./components/TitleBar";
-import AiChatbotWidget from "./components/AiChatbotWidget";
+import dynamic from 'next/dynamic';
+const AiChatbotWidget = dynamic(() => import('./components/AiChatbotWidget'), { ssr: false });
 import { CSPostHogProvider } from './providers/PostHogProvider'
 
 
