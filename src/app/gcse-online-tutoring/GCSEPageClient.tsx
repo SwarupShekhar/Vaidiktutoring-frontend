@@ -396,7 +396,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
                 Early intervention is the key to protecting their potential.
               </p>
               <Link
-                href="/signup?type=assessment"
+                href="/contact"
                 className="inline-flex items-center gap-2 px-10 py-5 bg-sapphire text-white font-black rounded-3xl hover:bg-primary transition-all shadow-xl"
               >
                 Speak to an Advisor

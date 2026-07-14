@@ -30,10 +30,10 @@ export default function ContactPage() {
           
           <h2 className="text-sm font-black text-sapphire uppercase tracking-[0.4em] mb-4">Official Support</h2>
           <a 
-            href="mailto:support@studyhours.com" 
+            href="mailto:info@studyhours.com" 
             className="text-2xl md:text-4xl font-black text-deep-navy dark:text-white hover:text-sapphire transition-colors tracking-tight text-center break-all"
           >
-            support@studyhours.com
+            info@studyhours.com
           </a>
           <p className="mt-6 text-text-secondary dark:text-slate-400 font-medium opacity-60 text-center">
             We typically respond within 12–24 hours.

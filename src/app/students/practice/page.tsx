@@ -20,7 +20,39 @@ import {
 const ACCENT = { indigo: '129,140,248', amber: '245,158,11', emerald: '16,185,129', rose: '244,63,94' };
 const fmtTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
+// ── Coming Soon gate ────────────────────────────────────────────────────────
+// The practice/assessments backend isn't live yet (GET /assessments/personalized
+// 404s in prod), so we ship a Coming-Soon screen instead of a half-working flow.
+// The full implementation is preserved below as `PracticePageImpl`; to re-enable,
+// make it the default export again.
 export default function PracticePage() {
+  const router = useRouter();
+  return (
+    <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-6 py-20">
+      <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-6">
+        <Zap size={28} className="text-indigo-500" />
+      </div>
+      <span className="text-xs font-black uppercase tracking-[0.2em] text-indigo-500 mb-3">
+        Coming Soon
+      </span>
+      <h1 className="text-3xl md:text-4xl font-black text-deep-navy dark:text-white mb-4">
+        Practice Center is almost ready.
+      </h1>
+      <p className="max-w-md text-text-secondary leading-relaxed mb-8">
+        We&apos;re putting the finishing touches on a personalized practice experience —
+        adaptive questions matched to your curriculum and grade. It&apos;ll be live shortly.
+      </p>
+      <button
+        onClick={() => router.push('/students/dashboard')}
+        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-deep-navy dark:bg-white text-white dark:text-black font-bold hover:opacity-90 transition-opacity"
+      >
+        <ArrowLeft size={18} /> Back to dashboard
+      </button>
+    </div>
+  );
+}
+
+export function PracticePageImpl() {
   const { user } = useAuthContext();
   const router = useRouter();
   const queryClient = useQueryClient();

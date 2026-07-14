@@ -24,11 +24,14 @@ export default function StickyCTA() {
 
     if (!isVisible) return null;
 
+    // Current month, so the scarcity line never goes stale (was hardcoded "February").
+    const monthName = new Date().toLocaleString('en-US', { month: 'long' });
+
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-in slide-in-from-bottom-full duration-500">
-            <div className="max-w-5xl mx-auto bg-surface dark:bg-[#1C2433] text-(--color-text-primary) dark:text-white rounded-2xl shadow-2xl p-4 md:p-5 flex flex-col md:flex-row items-center justify-between gap-4 border border-border dark:border-sapphire/30 backdrop-blur-md bg-opacity-95">
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-in slide-in-from-bottom-full duration-500 pointer-events-none">
+            <div className="pointer-events-auto max-w-5xl mx-auto bg-surface dark:bg-[#1C2433] text-(--color-text-primary) dark:text-white rounded-2xl shadow-2xl p-4 md:p-5 flex flex-col md:flex-row items-center justify-between gap-4 border border-border dark:border-sapphire/30 backdrop-blur-md bg-opacity-95">
                 <div className="flex-1 text-center md:text-left">
-                    <p className="font-bold text-lg md:text-xl text-deep-navy dark:text-white">Limited spots available for February.</p>
+                    <p className="font-bold text-lg md:text-xl text-deep-navy dark:text-white">Limited spots available for {monthName}.</p>
                 </div>
 
                 <Link

@@ -14,7 +14,7 @@ const ThemeToggle = () => {
 
     if (!mounted) {
         // Avoid hydration mismatch by rendering a placeholder or not rendering
-        return <div style={{ width: '60px', height: '30px' }} />;
+        return <div style={{ width: '54px', height: '28px' }} />;
     }
 
     const isDark = resolvedTheme === 'dark';

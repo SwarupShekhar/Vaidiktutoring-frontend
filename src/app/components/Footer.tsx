@@ -6,6 +6,8 @@ import SHLogo from "./SHLogo";
 import InstagramButton from "./InstagramButton";
 import LinkedInButton from "./LinkedInButton";
 import DiscordButton from "./DiscordButton";
+import FacebookButton from "./FacebookButton";
+import RedditButton from "./RedditButton";
 import dynamic from "next/dynamic";
 
 const Galaxy = dynamic(() => import("./home/narrative/galaxy/Galaxy"), { ssr: false });
@@ -59,7 +61,7 @@ export default function Footer() {
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className={`grid grid-cols-1 md:grid-cols-3 ${featuredResources.length > 0 ? 'lg:grid-cols-6' : 'lg:grid-cols-5'} gap-12 mb-16`}>
+        <div className={`grid grid-cols-1 md:grid-cols-3 ${featuredResources.length > 0 ? 'lg:grid-cols-7' : 'lg:grid-cols-6'} gap-12 mb-16`}>
           {/* Brand Column */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -438,6 +440,8 @@ export default function Footer() {
             <InstagramButton />
             <LinkedInButton />
             <DiscordButton />
+            <FacebookButton />
+            <RedditButton />
           </div>
         </div>
       </div>

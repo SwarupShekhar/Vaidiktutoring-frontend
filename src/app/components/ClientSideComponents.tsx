@@ -8,6 +8,7 @@ const GlobalNotification = dynamic(() => import("./GlobalNotification"), { ssr: 
 const VerificationModal = dynamic(() => import("./auth/VerificationModal"), { ssr: false });
 const VerificationBanner = dynamic(() => import("./auth/VerificationBanner"), { ssr: false });
 const AuthRoleRedirect = dynamic(() => import("./AuthRoleRedirect"), { ssr: false });
+const AiChatbotWidget = dynamic(() => import("./AiChatbotWidget"), { ssr: false });
 
 import { useEffect } from 'react';
 
@@ -31,6 +32,7 @@ export function ClientSideComponents() {
       <VerificationModal />
       <CookieConsentBanner />
       <GoogleAnalytics />
+      <AiChatbotWidget />
     </>
   );
 }

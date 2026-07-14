@@ -20,11 +20,6 @@ import confetti from 'canvas-confetti';
 import { DashboardLoadingSkeleton } from '@/app/components/dashboard/student/DashboardLoadingSkeleton';
 import { SetupBanner } from '@/app/components/dashboard/student/SetupBanner';
 
-const BlogSection = dynamic(
-  () => import('@/app/components/dashboard/student/BlogSection').then(mod => mod.BlogSection),
-  { ssr: false }
-);
-
 // Modals - also dynamic to save initial bundle size
 const EditStudentProfileModal = dynamic(
   () => import('@/app/components/dashboard/EditStudentProfileModal').then(mod => mod.EditStudentProfileModal),
@@ -154,7 +149,11 @@ function StudentDashboardContent() {
     <ErrorBoundary>
       <div className={isAppShell ? "h-full" : "space-y-8 pb-12"}>
         {!isAppShell && <SetupBanner />}
-        {!isAppShell && <PlanBadgeWeb credit={creditStatus} />}
+        {!isAppShell && (
+          <div className="flex justify-end">
+            <PlanBadgeWeb credit={creditStatus} />
+          </div>
+        )}
         {!isAppShell && user && user.phone_verified !== true && (
             <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/40 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
@@ -230,9 +229,6 @@ function StudentDashboardContent() {
 
         {/* Your subjects + topics covered (web dashboards only) */}
         {!isAppShell && <SubjectsCardWeb progressSummary={progressSummary} />}
-
-        {/* Blogs are at the bottom of web dashboards only */}
-        {!isAppShell && <BlogSection />}
       </div>
 
       {/* Modals */}

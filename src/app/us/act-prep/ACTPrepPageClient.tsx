@@ -157,6 +157,23 @@ export default function ACTPrepPageClient() {
                 <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-semibold text-text-secondary"
+            >
+              <span className="inline-flex items-center gap-2">
+                <CheckCircle2 size={16} className="text-rose-500" /> 100% online
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <CheckCircle2 size={16} className="text-rose-500" /> Private 1-on-1 sessions
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <CheckCircle2 size={16} className="text-rose-500" /> Start with 3 free sessions
+              </span>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -338,7 +355,7 @@ export default function ACTPrepPageClient() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-20">
             <div className="text-xs font-black uppercase tracking-[0.2em] text-primary mb-4">
-              05 — The Methodology
+              03 — The Methodology
             </div>
             <h2 className="text-4xl md:text-5xl font-black text-deep-navy dark:text-white mb-6">
               How We Engineer Your Score.
@@ -421,6 +438,142 @@ export default function ACTPrepPageClient() {
         </div>
       </section>
 
+      {/* ── 5b. Tutor Credibility & Trust ─────────────────────────────────── */}
+      <section className="py-24 bg-slate-50 dark:bg-[#08080f] border-b border-border">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className="text-xs font-black uppercase tracking-[0.2em] text-primary mb-4">
+              04 — Who You Learn With
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-deep-navy dark:text-white mb-6">
+              Prep With Tutors You Can Trust.
+            </h2>
+            <p className="text-lg text-text-secondary leading-relaxed">
+              You are working one-on-one with a specialist, not a rotating pool. Every StudyHours tutor clears a multi-stage vetting process before they ever meet a student.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {[
+              { icon: <Award size={24} className="text-rose-500" />, stat: "3+ Years", label: "Tutoring experience per tutor" },
+              { icon: <Clock size={24} className="text-amber-500" />, stat: "1,000–3,000+", label: "Hours taught" },
+              { icon: <Brain size={24} className="text-sapphire" />, stat: "Deep Screening", label: "Subject & skills test to qualify" },
+              { icon: <ShieldCheck size={24} className="text-emerald-500" />, stat: "Verified", label: "Background & identity checks" },
+            ].map((item, i) => (
+              <div key={i} className="bg-white dark:bg-[#0f1117] border border-border rounded-3xl p-6 md:p-8 text-center hover:shadow-xl transition-all">
+                <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4">
+                  {item.icon}
+                </div>
+                <div className="text-2xl md:text-3xl font-black text-deep-navy dark:text-white mb-1">{item.stat}</div>
+                <div className="text-xs md:text-sm text-text-secondary leading-snug">{item.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="max-w-3xl mx-auto bg-white dark:bg-[#0f1117] border border-border rounded-3xl p-8 md:p-10">
+            <h3 className="text-xl font-black text-deep-navy dark:text-white mb-6">Our vetting process</h3>
+            <ul className="space-y-4 text-sm md:text-base text-text-secondary">
+              <li className="flex items-start gap-3">
+                <CheckCircle2 size={20} className="text-rose-500 shrink-0 mt-0.5" />
+                <span><strong className="text-deep-navy dark:text-white">Deep screening test</strong> — subject-matter and ACT-specific skills assessment before onboarding.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle2 size={20} className="text-rose-500 shrink-0 mt-0.5" />
+                <span><strong className="text-deep-navy dark:text-white">Background verification</strong> — identity and background checks on every tutor.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <CheckCircle2 size={20} className="text-rose-500 shrink-0 mt-0.5" />
+                <span><strong className="text-deep-navy dark:text-white">Security & safeguarding measures</strong> — because most of our students are minors, safety is non-negotiable.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 6a. What Your Free Diagnostic Reveals ─────────────────────────── */}
+      <section className="py-24 bg-white dark:bg-black border-b border-border">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/20 text-xs font-black tracking-widest text-rose-600 dark:text-rose-400 mb-6 uppercase">
+                <Zap size={14} /> Your First 3 Sessions Are Free
+              </div>
+              <h2 className="text-3xl md:text-4xl font-black text-deep-navy dark:text-white mb-6">
+                What your free diagnostic reveals.
+              </h2>
+              <p className="text-lg text-text-secondary leading-relaxed">
+                No sales call in disguise. Your diagnostic is a real, timed working session that maps exactly where your score is leaking — so your very first paid hour is already targeted.
+              </p>
+            </div>
+            <div className="space-y-4">
+              {[
+                { icon: <Clock size={20} className="text-rose-500" />, title: "Pacing breakdown", desc: "Where your speed drops off and triggers a cascade of errors." },
+                { icon: <BarChart4 size={20} className="text-amber-500" />, title: "Section-by-section weaknesses", desc: "Exactly which question types cost you points in English, Math, Reading, and Science." },
+                { icon: <Target size={20} className="text-sapphire" />, title: "SAT-vs-ACT fit", desc: "An honest read on whether the ACT or the Digital SAT plays to your strengths." },
+                { icon: <TrendingUp size={20} className="text-emerald-500" />, title: "A concrete prep plan", desc: "A realistic point-gain target and the hours it takes to get there." },
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-4 bg-slate-50 dark:bg-white/5 border border-border rounded-2xl p-5">
+                  <div className="w-10 h-10 rounded-xl bg-white dark:bg-[#0f1117] border border-border flex items-center justify-center shrink-0">
+                    {item.icon}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-deep-navy dark:text-white mb-1">{item.title}</h4>
+                    <p className="text-sm text-text-secondary leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 6b. Related Programs (Internal Linking) ───────────────────────── */}
+      <section className="py-24 bg-white dark:bg-black border-b border-border">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <h2 className="text-3xl md:text-4xl font-black text-deep-navy dark:text-white mb-4">
+              Explore Related Programs
+            </h2>
+            <p className="text-lg text-text-secondary leading-relaxed">
+              Still deciding, or prepping on multiple fronts? Explore the rest of our US admissions prep.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                href: "/us/sat-prep",
+                title: "Digital SAT Prep",
+                desc: "Not sure the ACT is your test? Master the adaptive Digital SAT and exploit the built-in Desmos calculator.",
+              },
+              {
+                href: "/us/ap-tutoring",
+                title: "AP Tutoring",
+                desc: "Push your GPA and college credit with 1-on-1 prep across AP subjects and exams.",
+              },
+              {
+                href: "/us/american-curriculum",
+                title: "American Curriculum",
+                desc: "Full-spectrum US curriculum support from core coursework through standardized testing.",
+              },
+            ].map((prog) => (
+              <Link
+                key={prog.href}
+                href={prog.href}
+                className="group bg-slate-50 dark:bg-[#0f1117] border border-border rounded-3xl p-8 hover:shadow-xl hover:border-rose-500/30 transition-all flex flex-col"
+              >
+                <h3 className="text-xl font-black text-deep-navy dark:text-white mb-3">{prog.title}</h3>
+                <p className="text-sm text-text-secondary leading-relaxed mb-6 grow">{prog.desc}</p>
+                <span className="inline-flex items-center gap-2 text-sm font-bold text-rose-500">
+                  Explore
+                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── 7. Final CTA ────────────────────────────────────────────────── */}
       <section className="py-32 relative overflow-hidden bg-slate-900">
         <Image src={optimizeCloudinaryUrl(PLACEHOLDER_IMAGE)} alt="Student studying" fill className="object-cover opacity-20 mix-blend-overlay" />
@@ -438,7 +591,7 @@ export default function ACTPrepPageClient() {
               <span className="text-transparent bg-clip-text bg-linear-to-r from-rose-400 to-amber-400">the 30+ Barrier?</span>
             </h2>
             <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-2xl mx-auto">
-              Our diagnostic assessment will immediately reveal whether you are better suited for the SAT or the ACT. Stop wasting time preparing for the wrong test.
+              Your first 3 sessions are free. Your diagnostic will immediately reveal whether you are better suited for the SAT or the ACT — so you stop wasting time preparing for the wrong test.
             </p>
             
             <Link 

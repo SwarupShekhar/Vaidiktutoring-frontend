@@ -65,9 +65,9 @@ export default function CookieConsentBanner() {
         <div 
             role="dialog" 
             aria-label="Cookie consent"
-            className="fixed bottom-0 left-0 w-full z-100 p-4 md:p-6 animate-in fade-in slide-in-from-bottom-5 duration-700"
+            className="fixed bottom-0 left-0 w-full z-100 p-4 md:p-6 animate-in fade-in slide-in-from-bottom-5 duration-700 pointer-events-none"
         >
-            <div className="max-w-7xl mx-auto bg-white dark:bg-[#0A0F29] border border-gray-200 dark:border-white/10 shadow-2xl rounded-2xl md:rounded-4xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 backdrop-blur-xl bg-opacity-95 dark:bg-opacity-95">
+            <div className="pointer-events-auto max-w-7xl mx-auto bg-white dark:bg-[#0A0F29] border border-gray-200 dark:border-white/10 shadow-2xl rounded-2xl md:rounded-4xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 backdrop-blur-xl bg-opacity-95 dark:bg-opacity-95">
                 <div className="flex-1 space-y-2">
                     <h3 className="text-xl font-extrabold text-deep-navy dark:text-white">We use cookies</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 font-medium leading-relaxed max-w-3xl">

@@ -10,11 +10,7 @@ export default function HomeCTA() {
     const { user } = useAuthContext();
 
     const handleBookClick = () => {
-        if (user) {
-            window.open('https://calendly.com/swarupshekhar-vaidikedu/30min', '_blank');
-        } else {
-            router.push('/signup?intent=advisor');
-        }
+        router.push('/contact');
     };
 
     const handleGetStartedClick = () => {

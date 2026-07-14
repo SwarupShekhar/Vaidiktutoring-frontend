@@ -67,7 +67,7 @@ function AccordionItem({ question, answer }: { question: string, answer: string 
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex items-center justify-between py-8 text-left transition-colors"
             >
-                <h3 className="font-black text-deep-navy dark:text-white text-xl pr-8 tracking-tighter uppercase italic leading-none group-hover:text-primary transition-colors">{question}</h3>
+                <h3 className="font-bold text-deep-navy dark:text-white text-xl pr-8 tracking-tight leading-snug group-hover:text-primary transition-colors">{question}</h3>
                 <span className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-primary transition-all duration-500 ${isOpen ? 'bg-primary text-white rotate-180' : 'bg-primary/5 hover:bg-primary/10'}`}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                         <path d="m6 9 6 6 6-6"/>
@@ -82,7 +82,7 @@ function AccordionItem({ question, answer }: { question: string, answer: string 
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <div className="pb-8 text-text-secondary font-medium leading-relaxed italic text-lg opacity-80">
+                        <div className="pb-8 text-text-secondary font-normal leading-relaxed text-lg opacity-90">
                             {answer}
                         </div>
                     </motion.div>

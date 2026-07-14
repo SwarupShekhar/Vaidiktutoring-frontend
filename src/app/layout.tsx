@@ -12,14 +12,12 @@ import Navbar from "./components/navbar";
 import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import TitleBar from "./components/TitleBar";
-import dynamic from 'next/dynamic';
-const AiChatbotWidget = dynamic(() => import('./components/AiChatbotWidget'), { ssr: false });
 import { CSPostHogProvider } from './providers/PostHogProvider'
 
 
 
 import { ClerkProvider } from "@clerk/nextjs";
-import { Luckiest_Guy, Space_Grotesk, DM_Sans } from "next/font/google";
+import { Luckiest_Guy, Plus_Jakarta_Sans, DM_Sans } from "next/font/google";
 import { Metadata } from "next";
 import { draftMode, cookies } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
@@ -30,10 +28,11 @@ const luckiestGuy = Luckiest_Guy({
   variable: "--font-luckiest-guy",
 });
 
-const spaceGrotesk = Space_Grotesk({
-  weight: ["500", "600", "700"],
+const plusJakartaSans = Plus_Jakarta_Sans({
+  weight: ["500", "600", "700", "800"],
   subsets: ["latin"],
-  variable: "--font-space-grotesk",
+  variable: "--font-plus-jakarta-sans",
+  display: "swap",
 });
 
 const dmSans = DM_Sans({
@@ -74,7 +73,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     );
     return (
       <html lang="en" suppressHydrationWarning>
-        <body suppressHydrationWarning className={`${luckiestGuy.variable} ${spaceGrotesk.variable} ${dmSans.variable}`}>
+        <body suppressHydrationWarning className={`${luckiestGuy.variable} ${plusJakartaSans.variable} ${dmSans.variable}`}>
           <CSPostHogProvider>
             <QueryProvider>
               <AuthProvider>
@@ -86,7 +85,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                   {children}
                   {isDraftMode && <VisualEditing />}
                   {!isAppShell && <Footer />}
-                  <AiChatbotWidget />
                 </NotificationProvider>
               </AuthProvider>
             </QueryProvider>
@@ -123,7 +121,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             }}
           />
         </head>
-        <body suppressHydrationWarning className={`${luckiestGuy.variable} ${spaceGrotesk.variable} ${dmSans.variable} ${isAppShell ? 'app-shell-mode' : ''}`}>
+        <body suppressHydrationWarning className={`${luckiestGuy.variable} ${plusJakartaSans.variable} ${dmSans.variable} ${isAppShell ? 'app-shell-mode' : ''}`}>
           <CSPostHogProvider>
             <QueryProvider>
               <AuthProvider>
@@ -134,7 +132,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                   {children}
                   {isDraftMode && <VisualEditing />}
                   {!isAppShell && <Footer />}
-                  <AiChatbotWidget />
                 </NotificationProvider>
               </AuthProvider>
             </QueryProvider>

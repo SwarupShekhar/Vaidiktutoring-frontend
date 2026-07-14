@@ -21,11 +21,13 @@ export default function Navbar() {
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
   const { activeCurriculum, setCurriculum } = useCurriculum();
 
-  const isActive = (path: string) => pathname?.startsWith(path);
+  const isActive = (path: string) =>
+    path === "/" ? pathname === "/" : pathname?.startsWith(path);
 
   if (pathname?.startsWith("/session")) return null;
 
   const navLinks = [
+    { name: "Home", href: "/" },
     { name: "Subjects", href: "/subjects" },
     { name: "Methodology", href: "/methodology" },
     { name: "About", href: "/about" },
@@ -204,7 +206,9 @@ export default function Navbar() {
 
         {/* Right: Auth & Toggle Group */}
         <div className="flex items-center gap-2 lg:gap-4 shrink-0">
-          {/* Country Selector */}
+          {/* Country Selector — guests only. Authenticated users have a region
+              from geo-detection / onboarding, so the picker adds only clutter. */}
+          {!user && (
           <div className="relative group/country">
             <button
               onClick={() => setCountryDropdownOpen(!countryDropdownOpen)}
@@ -248,6 +252,7 @@ export default function Navbar() {
               </div>
             )}
           </div>
+          )}
 
           <div className="h-4 w-px bg-slate-200 dark:bg-white/10 hidden xl:block mx-1" />
 
@@ -299,9 +304,7 @@ export default function Navbar() {
 
           <div className="flex items-center gap-1">
             {user && <NotificationsBtn />}
-            <div className="scale-50 origin-right">
-              <ThemeToggle />
-            </div>
+            <ThemeToggle />
           </div>
 
           {/* Mobile Menu Button */}

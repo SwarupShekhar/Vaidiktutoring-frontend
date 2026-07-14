@@ -4,6 +4,7 @@ import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import ChatLoader from './ChatLoader';
 import ReactMarkdown from 'react-markdown';
 import { usePathname } from 'next/navigation';
+import { CheckCircle2 } from 'lucide-react';
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || (process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://api.studyhours.com')).replace(/\/$/, '');
 
@@ -187,7 +188,7 @@ function LeadFunnel({
                             <button
                                 key={opt}
                                 onClick={() => { setAnswers((a) => ({ ...a, goal: opt })); setStep('level'); }}
-                                className="text-left px-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 rounded-xl transition-all shadow-sm text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"
+                                className="text-left px-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-sapphire dark:hover:border-sapphire rounded-xl transition-all shadow-sm text-gray-700 dark:text-gray-200 hover:text-sapphire dark:hover:text-sapphire cursor-pointer focus:outline-none focus:ring-2 focus:ring-sapphire"
                             >
                                 {opt}
                             </button>
@@ -205,7 +206,7 @@ function LeadFunnel({
                             <button
                                 key={opt}
                                 onClick={() => { setAnswers((a) => ({ ...a, level: opt })); setStep('region'); }}
-                                className="text-left px-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 rounded-xl transition-all shadow-sm text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"
+                                className="text-left px-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-sapphire dark:hover:border-sapphire rounded-xl transition-all shadow-sm text-gray-700 dark:text-gray-200 hover:text-sapphire dark:hover:text-sapphire cursor-pointer focus:outline-none focus:ring-2 focus:ring-sapphire"
                             >
                                 {opt}
                             </button>
@@ -223,7 +224,7 @@ function LeadFunnel({
                             <button
                                 key={opt}
                                 onClick={() => { setAnswers((a) => ({ ...a, region: opt })); setStep('contact'); }}
-                                className="text-left px-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 rounded-xl transition-all shadow-sm text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"
+                                className="text-left px-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-sapphire dark:hover:border-sapphire rounded-xl transition-all shadow-sm text-gray-700 dark:text-gray-200 hover:text-sapphire dark:hover:text-sapphire cursor-pointer focus:outline-none focus:ring-2 focus:ring-sapphire"
                             >
                                 {opt}
                             </button>
@@ -251,14 +252,14 @@ function LeadFunnel({
                                 disabled={submitting}
                                 aria-required="true"
                                 aria-invalid={email.length > 0 && !emailValid}
-                                className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 disabled:opacity-50"
+                                className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-none focus:ring-2 focus:ring-sapphire text-sm text-gray-800 dark:text-gray-100 placeholder-gray-500 disabled:opacity-50"
                             />
                             {email.length > 0 && !emailValid && (
                                 <span className="text-[11px] text-red-500">Please enter a valid email address.</span>
                             )}
                         </label>
                         <label className="flex flex-col gap-1">
-                            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Name <span className="text-gray-400 font-normal">(optional)</span></span>
+                            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Name <span className="text-gray-500 font-normal">(optional)</span></span>
                             <input
                                 type="text"
                                 autoComplete="name"
@@ -266,11 +267,11 @@ function LeadFunnel({
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="Your name"
                                 disabled={submitting}
-                                className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 disabled:opacity-50"
+                                className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-none focus:ring-2 focus:ring-sapphire text-sm text-gray-800 dark:text-gray-100 placeholder-gray-500 disabled:opacity-50"
                             />
                         </label>
                         <label className="flex flex-col gap-1">
-                            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Phone <span className="text-gray-400 font-normal">(optional)</span></span>
+                            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Phone <span className="text-gray-500 font-normal">(optional)</span></span>
                             <input
                                 type="tel"
                                 autoComplete="tel"
@@ -278,18 +279,18 @@ function LeadFunnel({
                                 onChange={(e) => setPhone(e.target.value)}
                                 placeholder="+44 …"
                                 disabled={submitting}
-                                className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 disabled:opacity-50"
+                                className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-none focus:ring-2 focus:ring-sapphire text-sm text-gray-800 dark:text-gray-100 placeholder-gray-500 disabled:opacity-50"
                             />
                         </label>
                         <label className="flex flex-col gap-1">
-                            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Anything specific? <span className="text-gray-400 font-normal">(optional)</span></span>
+                            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Anything specific? <span className="text-gray-500 font-normal">(optional)</span></span>
                             <textarea
                                 value={note}
                                 onChange={(e) => setNote(e.target.value)}
                                 placeholder="e.g. Year 11 Chemistry, exam in May…"
                                 disabled={submitting}
                                 rows={2}
-                                className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 disabled:opacity-50 resize-none"
+                                className="px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-none focus:ring-2 focus:ring-sapphire text-sm text-gray-800 dark:text-gray-100 placeholder-gray-500 disabled:opacity-50 resize-none"
                             />
                         </label>
 
@@ -302,10 +303,10 @@ function LeadFunnel({
                                     onClick={() => setPreferredContact(pc)}
                                     aria-pressed={preferredContact === pc}
                                     disabled={submitting}
-                                    className={`px-3 py-1.5 text-xs rounded-full border transition-all capitalize disabled:opacity-50 ${
+                                    className={`px-3 py-1.5 text-xs rounded-full border transition-all capitalize disabled:opacity-50 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sapphire ${
                                         preferredContact === pc
-                                            ? 'bg-blue-600 text-white border-blue-600'
-                                            : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-blue-500'
+                                            ? 'bg-sapphire text-white border-sapphire'
+                                            : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-sapphire'
                                     }`}
                                 >
                                     {pc}
@@ -324,7 +325,7 @@ function LeadFunnel({
                             onClick={() => void submit()}
                             disabled={!canSubmit}
                             aria-label="Submit request for a personalized plan"
-                            className="w-full mt-1 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
+                            className="w-full mt-1 px-4 py-2.5 rounded-xl bg-sapphire text-white text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-sapphire/90 transition-all shadow-lg shadow-sapphire/20 flex items-center justify-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sapphire focus:ring-offset-2 dark:focus:ring-offset-gray-900"
                         >
                             {submitting ? (
                                 <>
@@ -336,7 +337,7 @@ function LeadFunnel({
                             )}
                         </button>
                         {!turnstileToken && (
-                            <p className="text-[11px] text-center text-gray-400">Validating session…</p>
+                            <p className="text-[11px] text-center text-gray-500">Validating session…</p>
                         )}
                     </div>
                 </div>
@@ -344,8 +345,8 @@ function LeadFunnel({
 
             {step === 'done' && (
                 <div className="flex-1 flex flex-col items-center justify-center text-center px-4 py-8">
-                    <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-                        ✅
+                    <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <CheckCircle2 className="w-8 h-8" />
                     </div>
                     <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-2">Thanks{name.trim() ? `, ${name.trim()}` : ''}!</h4>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
@@ -354,7 +355,7 @@ function LeadFunnel({
                     <button
                         type="button"
                         onClick={onExit}
-                        className="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
+                        className="px-4 py-2 rounded-xl bg-sapphire text-white text-sm font-semibold hover:bg-sapphire/90 transition-all shadow-lg shadow-sapphire/20 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sapphire focus:ring-offset-2 dark:focus:ring-offset-gray-900"
                     >
                         Back to chat
                     </button>
@@ -562,7 +563,7 @@ export default function AiChatbotWidget() {
             {isOpen && (
                 <div className="pointer-events-auto w-[350px] md:w-[400px] h-[550px] max-h-[80vh] flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-white/20 shadow-2xl origin-bottom-right transition-all animate-in fade-in zoom-in-95 duration-200">
                     {/* Header */}
-                    <div className="p-4 border-b border-white/10 bg-linear-to-r from-blue-600 to-purple-600 text-white flex justify-between items-center backdrop-blur-md">
+                    <div className="p-4 border-b border-white/10 bg-sapphire text-white flex justify-between items-center backdrop-blur-md">
                         <div className="flex items-center gap-3">
                             <div className="relative">
                                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold tracking-wider">
@@ -581,7 +582,7 @@ export default function AiChatbotWidget() {
                         <button
                             onClick={() => setIsOpen(false)}
                             aria-label="Close chat"
-                            className="p-2 hover:bg-white/10 rounded-full transition-colors font-bold text-lg"
+                            className="p-2 hover:bg-white/10 rounded-full transition-colors font-bold text-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-white"
                         >
                             &times;
                         </button>
@@ -612,7 +613,7 @@ export default function AiChatbotWidget() {
                                         <button
                                             key={idx}
                                             onClick={() => handleChipClick(chip)}
-                                            className="text-left px-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 rounded-xl transition-all shadow-sm text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"
+                                            className="text-left px-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-sapphire dark:hover:border-sapphire rounded-xl transition-all shadow-sm text-gray-700 dark:text-gray-200 hover:text-sapphire dark:hover:text-sapphire cursor-pointer focus:outline-none focus:ring-2 focus:ring-sapphire"
                                         >
                                             {chip.label}
                                         </button>
@@ -632,7 +633,7 @@ export default function AiChatbotWidget() {
                                 <div className={`
                                     max-w-[85%] px-4 py-2 rounded-2xl text-sm shadow-sm break-words whitespace-pre-wrap prose dark:prose-invert prose-p:leading-relaxed prose-pre:p-0
                                     ${msg.role === 'user'
-                                        ? 'bg-blue-600 text-white rounded-tr-sm prose-a:text-white hover:prose-a:text-blue-100'
+                                        ? 'bg-sapphire text-white rounded-tr-sm prose-a:text-white hover:prose-a:text-blue-100'
                                         : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 border border-gray-100 dark:border-gray-600 rounded-tl-sm prose-a:text-blue-600 dark:prose-a:text-blue-400'}
                                 `}>
                                     <ReactMarkdown components={{
@@ -673,13 +674,13 @@ export default function AiChatbotWidget() {
                                 onChange={handleInputChange}
                                 placeholder={turnstileToken ? 'Ask StudyHours…' : 'Verifying…'}
                                 disabled={isLoading || !turnstileToken}
-                                className="flex-1 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-none focus:ring-2 focus:ring-blue-500 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 disabled:opacity-50"
+                                className="flex-1 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 border-none focus:ring-2 focus:ring-sapphire text-sm text-gray-800 dark:text-gray-100 placeholder-gray-500 disabled:opacity-50"
                             />
                             <button
                                 type="submit"
                                 disabled={!(input || '').trim() || isLoading || !turnstileToken}
                                 aria-label="Send message"
-                                className="p-2 rounded-xl bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
+                                className="p-2 rounded-xl bg-sapphire text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-sapphire/90 transition-all shadow-lg shadow-sapphire/20 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sapphire"
                             >
                                 <svg className="w-5 h-5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
                             </button>
@@ -689,14 +690,14 @@ export default function AiChatbotWidget() {
                             <button
                                 type="button"
                                 onClick={() => openFunnel()}
-                                className="w-full text-center text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                                className="w-full text-center text-xs font-medium text-sapphire dark:text-blue-400 hover:text-sapphire/80 dark:hover:text-blue-300 transition-colors cursor-pointer focus:outline-none focus:underline"
                             >
                                 Book a free assessment
                             </button>
                             <button
                                 type="button"
                                 onClick={() => openFunnel()}
-                                className="w-full text-center text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                className="w-full text-center text-xs text-gray-500 dark:text-gray-400 hover:text-sapphire dark:hover:text-blue-400 transition-colors cursor-pointer focus:outline-none focus:underline"
                             >
                                 Prefer a human? Get a personalized plan from an advisor →
                             </button>

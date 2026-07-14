@@ -11,6 +11,7 @@ const isProtectedRoute = createRouteMatcher([
     '/settings(.*)',
     '/session(.*)',
     '/verify-phone(.*)',
+    '/studio(.*)',
 ]);
 
 const isPublicRoute = createRouteMatcher([
@@ -42,7 +43,6 @@ const isPublicRoute = createRouteMatcher([
     '/australia(.*)',
     '/saudi(.*)',
     '/resources(.*)',
-    '/studio(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
@@ -79,18 +79,22 @@ export default clerkMiddleware(async (auth, req) => {
         const authObject = await auth();
         const { userId, sessionClaims, redirectToSignIn } = authObject;
 
+        // Restrict /studio to admin role only (internal team)
+        if (path.startsWith('/studio')) {
+            if (!userId) {
+                return redirectToSignIn({ returnBackUrl: req.url });
+            }
+            const cookieUserRole = req.cookies.get('user_role')?.value;
+            const role = (sessionClaims?.publicMetadata as any)?.role || (sessionClaims?.metadata as any)?.role || cookieUserRole;
+            if (role !== 'admin') {
+                return NextResponse.redirect(new URL('/unauthorized', req.url));
+            }
+        }
+
         // Redirect authenticated users to their specific dashboards if they hit marketing pages or /dashboard
         if (userId) {
-            const marketingPaths = ['/', '/about', '/methodology', '/blog', '/blogs', '/careers', '/contact', '/home', '/login', '/signup', '/subjects', '/resources', '/studio', '/experts'];
-            // '/pricing' is marketing on the WEBSITE only (logged-in web users route to
-            // their dashboard, unchanged). Inside the desktop APP it is NOT marketing:
-            // a logged-in parent must be able to open Plans to upgrade. Treating it as
-            // marketing in-app bounced role-in-DB-but-not-Clerk accounts through
-            // /onboarding first, flashing the parent/student selector before landing
-            // back on the dashboard.
-            const isMarketingPath =
-                marketingPaths.some(p => p === path || path.startsWith(p + '/')) ||
-                (!isAppShell && (path === '/pricing' || path.startsWith('/pricing/')));
+            const marketingPaths = ['/', '/home', '/login', '/signup'];
+            const isMarketingPath = marketingPaths.some(p => p === path || path.startsWith(p + '/'));
             const isDashboardRoot = path === '/dashboard' || path === '/dashboard/';
 
             if (isMarketingPath || isDashboardRoot) {
@@ -109,6 +113,34 @@ export default clerkMiddleware(async (auth, req) => {
                 }
 
                 let dashboardPath = '/students/dashboard'; // real route, never the dead /dashboard
+                if (role === 'admin') dashboardPath = '/admin/dashboard';
+                else if (role === 'tutor') dashboardPath = '/tutor/dashboard';
+                else if (role === 'student') dashboardPath = '/students/dashboard';
+                else if (role === 'parent') dashboardPath = '/parent/dashboard';
+
+                return NextResponse.redirect(new URL(dashboardPath, req.url));
+            }
+        }
+
+        // Same marketing-page bounce for backend-JWT sessions (no Clerk userId).
+        // Dual auth means a user can be logged in via `manual_auth_token` without a
+        // Clerk session; the `if (userId)` block above misses them, so without this
+        // they'd still land on the homepage / login while authenticated. Scope is
+        // deliberately limited to entry pages ('/', '/home', '/login', '/signup') —
+        // authed users must still reach /pricing, /subjects, blogs, etc.
+        if (!userId && cookies.includes('manual_auth_token')) {
+            const marketingPaths = ['/', '/home', '/login', '/signup'];
+            const isMarketingPath = marketingPaths.some(p => p === path || path.startsWith(p + '/'));
+
+            if (isMarketingPath) {
+                const role = req.cookies.get('user_role')?.value;
+
+                if (!role) {
+                    // Logged in but no role yet → finish onboarding (self-corrects returning users).
+                    return NextResponse.redirect(new URL('/onboarding', req.url));
+                }
+
+                let dashboardPath = '/students/dashboard';
                 if (role === 'admin') dashboardPath = '/admin/dashboard';
                 else if (role === 'tutor') dashboardPath = '/tutor/dashboard';
                 else if (role === 'student') dashboardPath = '/students/dashboard';
