@@ -12,12 +12,7 @@ const ThemeToggle = () => {
         setMounted(true);
     }, []);
 
-    if (!mounted) {
-        // Avoid hydration mismatch by rendering a placeholder or not rendering
-        return <div style={{ width: '54px', height: '28px' }} />;
-    }
-
-    const isDark = resolvedTheme === 'dark';
+    const isDark = mounted ? resolvedTheme === 'dark' : true; // Default to dark on SSR so it matches the default theme
 
     const toggleTheme = () => {
         setTheme(isDark ? 'light' : 'dark');

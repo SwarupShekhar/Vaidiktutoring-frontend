@@ -103,7 +103,7 @@ export default function Navbar() {
 
   return (
     <nav className="w-full sticky top-0 z-50 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-white/20 dark:border-white/5 transition-all duration-300">
-      <div className="max-w-[1400px] mx-auto px-4 lg:px-8 xl:px-12 py-3 lg:py-4 flex items-center justify-between gap-4">
+      <div className="max-w-[1400px] mx-auto px-4 lg:px-8 xl:px-8 py-3 lg:py-4 flex items-center justify-between gap-2 xl:gap-3">
         {/* Left: Logo */}
         <Link href="/" className="flex items-center gap-2 group shrink-0">
           <div className="w-9 h-9 lg:w-11 lg:h-11 rounded-lg shadow-lg group-hover:scale-110 transition-all duration-300">
@@ -120,7 +120,7 @@ export default function Navbar() {
             <Link
               key={link.name}
               href={link.href}
-              className={`px-3 xl:px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all ${
+              className={`px-3 xl:px-4 py-2 rounded-full text-xs font-bold tracking-wide transition-all ${
                 isActive(link.href)
                   ? "bg-white dark:bg-white/10 text-primary shadow-sm"
                   : "text-text-secondary hover:text-primary"
@@ -135,7 +135,7 @@ export default function Navbar() {
             <button
               onClick={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}
               onMouseEnter={() => setResourcesDropdownOpen(true)}
-              className={`px-3 xl:px-5 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1 ${
+              className={`px-3 xl:px-4 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1 ${
                 resourceGroups.some((g) => g.links.some((link) => isActive(link.href)))
                   ? "bg-white dark:bg-white/10 text-primary shadow-sm"
                   : "text-text-secondary hover:text-primary"
@@ -205,7 +205,7 @@ export default function Navbar() {
         </div>
 
         {/* Right: Auth & Toggle Group */}
-        <div className="flex items-center gap-2 lg:gap-4 shrink-0">
+        <div className="flex items-center gap-2 lg:gap-3 shrink-0">
           {/* Country Selector — guests only. Authenticated users have a region
               from geo-detection / onboarding, so the picker adds only clutter. */}
           {!user && (
