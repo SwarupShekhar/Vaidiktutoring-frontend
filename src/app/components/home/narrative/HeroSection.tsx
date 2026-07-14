@@ -83,8 +83,11 @@ export default function HeroSection() {
         className="absolute bottom-20 right-10 w-96 h-96 bg-indigo-300/10 dark:bg-indigo-700/5 rounded-full blur-3xl hero-orb-right"
       />
 
-      {/* Main content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 min-h-screen flex items-center">
+      {/* Main content.
+          `isolate` (isolation: isolate) forces a clean compositing context so
+          the foreground text/buttons paint reliably above the blur-3xl orbs —
+          without it, Windows Chrome GPU can drop button-label glyphs. */}
+      <div className="relative z-10 isolate max-w-7xl mx-auto px-6 lg:px-12 min-h-screen flex items-center">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center w-full py-28 lg:py-0">
           {/* ─── Left: Copy + CTA ─── */}
           <div className="flex flex-col justify-center">
