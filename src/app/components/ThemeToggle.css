@@ -1,4 +1,21 @@
 /* src/app/components/ThemeToggle.css */
+
+/* Deterministic footprint: fixed height + reserved top room for the BB8
+   head/antenna (which pokes ~12px above the pill). Keeps the toggle
+   identically centered whether or not auth siblings (NotificationsBtn) are
+   present in the navbar row. */
+.theme-toggle-wrapper {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;        /* matches navbar logo height -> constant row height */
+  padding-top: 12px;   /* room for BB8 head + antennas above the pill */
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.theme-toggle-wrapper .bb8-toggle {
+  margin-top: 0;       /* wrapper handles vertical space; drop fragile hack */
+}
+
 .bb8-toggle {
   --toggle-size: 5px; /* Was 10px, scaled down to 5px to fit navbar natively */
   /* finally I removed the scale now everything depends on the font-size */
