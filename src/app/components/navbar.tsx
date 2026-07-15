@@ -119,20 +119,22 @@ export default function Navbar() {
             row is crowded (e.g. logged-in admin), so the right-side auth + theme
             toggle group (shrink-0) can never be pushed off the viewport edge.
             Scrollbar is hidden; scroll only engages in extreme crowding. */}
-        <div className="hidden xl:flex items-center gap-1 p-1 rounded-full bg-slate-100/50 dark:bg-white/5 border border-white/20 dark:border-white/5 shrink min-w-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={`px-3 xl:px-4 py-2 rounded-full text-xs font-bold tracking-wide transition-all ${
-                isActive(link.href)
-                  ? "bg-white dark:bg-white/10 text-primary shadow-sm"
-                  : "text-text-secondary hover:text-primary"
-              }`}
-            >
-              {link.name}
-            </Link>
-          ))}
+        <div className="hidden xl:flex items-center gap-1 p-1 rounded-full bg-slate-100/50 dark:bg-white/5 border border-white/20 dark:border-white/5 shrink min-w-0">
+          <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink min-w-0">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`px-3 xl:px-4 py-2 rounded-full text-xs font-bold tracking-wide transition-all shrink-0 ${
+                  isActive(link.href)
+                    ? "bg-white dark:bg-white/10 text-primary shadow-sm"
+                    : "text-text-secondary hover:text-primary"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
 
           {/* Resources Dropdown */}
           <div className="relative">
