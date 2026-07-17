@@ -202,13 +202,23 @@ export default function SubjectsPage() {
 
   const filtered = useMemo(() => {
     return ALL_SUBJECTS.filter(s => {
-      const matches = filterCurriculumId === 'global' ? true : s.curricula.includes(filterCurriculumId);
+      const matchesCurriculum = filterCurriculumId === 'global' ? true : s.curricula.includes(filterCurriculumId);
+      
       const q = search.toLowerCase().trim();
-      const matchesSearch = q === '' ? true :
-        s.name.toLowerCase().includes(q) ||
-        s.topics.some(t => t.toLowerCase().includes(q)) ||
-        s.exams.some(e => e.toLowerCase().includes(q));
-      return matches && matchesSearch;
+      if (!q) return matchesCurriculum;
+      
+      // Split query into individual keywords for Boolean AND search
+      const searchTerms = q.split(/\s+/);
+      
+      // Every keyword must be found in at least one of the subject's fields
+      const matchesSearch = searchTerms.every(term => 
+        s.name.toLowerCase().includes(term) ||
+        s.curricula.some(c => c.toLowerCase().includes(term)) ||
+        s.topics.some(t => t.toLowerCase().includes(term)) ||
+        s.exams.some(e => e.toLowerCase().includes(term))
+      );
+      
+      return matchesCurriculum && matchesSearch;
     });
   }, [filterCurriculumId, search]);
 
@@ -225,9 +235,9 @@ export default function SubjectsPage() {
       <StickyCTA />
 
       {/* ── HERO ────────────────────────────────────────────────────────── */}
-      <section ref={heroRef} className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+      <section ref={heroRef} className={`relative flex items-center justify-center overflow-hidden transition-all duration-700 ease-in-out ${search ? 'min-h-[30vh]' : 'min-h-[70vh]'}`}>
         {/* Aurora background */}
-        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="absolute inset-0 z-0">
+        <motion.div style={{ y: heroY, opacity: heroOpacity }} className={`absolute inset-0 z-0 transition-opacity duration-700 ${search ? 'opacity-50' : 'opacity-100'}`}>
           <div className="absolute top-[-10%] left-[10%] w-[60vw] h-[60vh] rounded-full bg-blue-400/20 dark:bg-blue-600/25 blur-[130px]" />
           <div className="absolute top-[20%] right-[5%] w-[40vw] h-[40vh] rounded-full bg-violet-400/15 dark:bg-violet-600/20 blur-[100px]" />
           <div className="absolute bottom-[10%] left-[30%] w-[30vw] h-[30vh] rounded-full bg-cyan-400/10 dark:bg-cyan-500/15 blur-[90px]" />
@@ -241,40 +251,43 @@ export default function SubjectsPage() {
           />
         </motion.div>
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6 pt-32 pb-20 text-center">
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-block mb-5 px-4 py-1.5 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 dark:text-white/60"
-          >
-            14 Subjects · 8 Curricula · Every Exam Board
-          </motion.p>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.1 }}
-            className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.88] mb-8"
-          >
-            <span className="text-slate-900 dark:text-white">Find your</span>
-            <br />
-            <span
-              className="bg-clip-text text-transparent"
-              style={{ backgroundImage: 'linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #34d399 100%)' }}
+        <div className={`relative z-10 w-full max-w-6xl mx-auto px-6 text-center transition-all duration-700 ${search ? 'pt-24 pb-12' : 'pt-32 pb-20'}`}>
+          
+          <div className={`transition-all duration-700 ease-in-out overflow-hidden flex flex-col items-center ${search ? 'max-h-0 opacity-0 mb-0 scale-95' : 'max-h-[600px] opacity-100 mb-12 scale-100'}`}>
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="inline-block mb-5 px-4 py-1.5 rounded-full border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-xs font-semibold tracking-[0.15em] uppercase text-slate-500 dark:text-white/60"
             >
-              subject.
-            </span>
-          </motion.h1>
+              14 Subjects · 8 Curricula · Every Exam Board
+            </motion.p>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg text-slate-500 dark:text-white/50 max-w-xl mx-auto mb-12 leading-relaxed font-light"
-          >
-            Expert 1-on-1 tutoring aligned to your exact curriculum, exam board, and grade level. No guesswork.
-          </motion.p>
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.1 }}
+              className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.88] mb-8"
+            >
+              <span className="text-slate-900 dark:text-white">Find your</span>
+              <br />
+              <span
+                className="bg-clip-text text-transparent"
+                style={{ backgroundImage: 'linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #34d399 100%)' }}
+              >
+                subject.
+              </span>
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-lg text-slate-500 dark:text-white/50 max-w-xl mx-auto leading-relaxed font-light"
+            >
+              Expert 1-on-1 tutoring aligned to your exact curriculum, exam board, and grade level. No guesswork.
+            </motion.p>
+          </div>
 
           {/* Hero search */}
           <motion.div
