@@ -162,13 +162,12 @@ export default function Navbar({ initialRegionalPages }: { initialRegionalPages?
             row is crowded (e.g. logged-in admin), so the right-side auth + theme
             toggle group (shrink-0) can never be pushed off the viewport edge.
             Scrollbar is hidden; scroll only engages in extreme crowding. */}
-        <div className="hidden xl:flex items-center gap-1 p-1 rounded-full bg-slate-100/50 dark:bg-white/5 border border-white/20 dark:border-white/5 shrink min-w-0">
-          <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink min-w-0">
-            {navLinks.map((link) => (
+        <div className="hidden xl:flex items-center gap-0.5 xl:gap-1 p-1 rounded-full bg-slate-100/50 dark:bg-white/5 border border-white/20 dark:border-white/5 shrink-0">
+            {navLinks.slice(0, 2).map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`px-3 xl:px-4 py-2 rounded-full text-xs font-bold tracking-wide transition-all shrink-0 ${
+                className={`px-2.5 xl:px-3 py-2 rounded-full text-xs font-bold tracking-wide transition-all shrink-0 ${
                   isActive(link.href)
                     ? "bg-white dark:bg-white/10 text-primary shadow-sm"
                     : "text-text-secondary hover:text-primary"
@@ -177,14 +176,97 @@ export default function Navbar({ initialRegionalPages }: { initialRegionalPages?
                 {link.name}
               </Link>
             ))}
+
+          {/* Tutoring Dropdown — populated dynamically from Sanity regional pages */}
+          {tutoringGroups.length > 0 && (
+          <div className="relative shrink-0">
+            <button
+              onClick={() => setTutoringDropdownOpen(!tutoringDropdownOpen)}
+              onMouseEnter={() => setTutoringDropdownOpen(true)}
+              className={`px-2.5 xl:px-3 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1 ${
+                isActive("/tutoring")
+                  ? "bg-white dark:bg-white/10 text-primary shadow-sm"
+                  : "text-text-secondary hover:text-primary"
+              }`}
+            >
+              Tutoring
+              <svg
+                className={`w-3 h-3 transition-transform ${tutoringDropdownOpen ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {/* Tier 1: Countries */}
+            {tutoringDropdownOpen && (
+              <div
+                className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-black rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 py-3 animate-in fade-in slide-in-from-top-2 duration-200 z-70"
+                onMouseLeave={() => {
+                  setTutoringDropdownOpen(false);
+                  setActiveTutoringGroup(null);
+                }}
+              >
+                {tutoringGroups.map((group) => (
+                  <div
+                    key={group.name}
+                    className="relative group/sub"
+                    onMouseEnter={() => setActiveTutoringGroup(group.name)}
+                  >
+                    <div className={`flex items-center justify-between px-4 py-3 text-sm font-bold transition-all cursor-pointer ${activeTutoringGroup === group.name ? "bg-primary/10 text-primary" : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10"}`}>
+                      <span className="flex items-center gap-2">{group.flag && <span className="text-base">{group.flag}</span>}{group.name}</span>
+                      <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+
+                    {/* Tier 2: Pages in this country (Flyout) */}
+                    {activeTutoringGroup === group.name && (
+                      <div className="absolute left-full top-0 ml-1 w-64 max-h-[70vh] overflow-y-auto bg-white dark:bg-black rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 py-3 animate-in fade-in zoom-in-95 duration-150">
+                        {group.links.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className={`block px-4 py-2.5 text-xs font-bold transition-all ${
+                              isActive(link.href)
+                                ? "bg-primary/10 text-primary"
+                                : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10 hover:text-primary"
+                            }`}
+                          >
+                            {link.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
+          )}
+
+            {navLinks.slice(2).map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`px-2.5 xl:px-3 py-2 rounded-full text-xs font-bold tracking-wide transition-all shrink-0 ${
+                  isActive(link.href)
+                    ? "bg-white dark:bg-white/10 text-primary shadow-sm"
+                    : "text-text-secondary hover:text-primary"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
 
           {/* Resources Dropdown */}
-          <div className="relative">
+          <div className="relative shrink-0">
             <button
               onClick={() => setResourcesDropdownOpen(!resourcesDropdownOpen)}
               onMouseEnter={() => setResourcesDropdownOpen(true)}
-              className={`px-3 xl:px-4 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1 ${
+              className={`px-2.5 xl:px-3 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1 ${
                 resourceGroups.some((g) => g.links.some((link) => isActive(link.href)))
                   ? "bg-white dark:bg-white/10 text-primary shadow-sm"
                   : "text-text-secondary hover:text-primary"
@@ -251,76 +333,6 @@ export default function Navbar({ initialRegionalPages }: { initialRegionalPages?
               </div>
             )}
           </div>
-
-          {/* Tutoring Dropdown — populated dynamically from Sanity regional pages */}
-          {tutoringGroups.length > 0 && (
-          <div className="relative">
-            <button
-              onClick={() => setTutoringDropdownOpen(!tutoringDropdownOpen)}
-              onMouseEnter={() => setTutoringDropdownOpen(true)}
-              className={`px-3 xl:px-4 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1 ${
-                isActive("/tutoring")
-                  ? "bg-white dark:bg-white/10 text-primary shadow-sm"
-                  : "text-text-secondary hover:text-primary"
-              }`}
-            >
-              Tutoring
-              <svg
-                className={`w-3 h-3 transition-transform ${tutoringDropdownOpen ? "rotate-180" : ""}`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            {/* Tier 1: Countries */}
-            {tutoringDropdownOpen && (
-              <div
-                className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-black rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 py-3 animate-in fade-in slide-in-from-top-2 duration-200 z-70"
-                onMouseLeave={() => {
-                  setTutoringDropdownOpen(false);
-                  setActiveTutoringGroup(null);
-                }}
-              >
-                {tutoringGroups.map((group) => (
-                  <div
-                    key={group.name}
-                    className="relative group/sub"
-                    onMouseEnter={() => setActiveTutoringGroup(group.name)}
-                  >
-                    <div className={`flex items-center justify-between px-4 py-3 text-sm font-bold transition-all cursor-pointer ${activeTutoringGroup === group.name ? "bg-primary/10 text-primary" : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10"}`}>
-                      <span className="flex items-center gap-2">{group.flag && <span className="text-base">{group.flag}</span>}{group.name}</span>
-                      <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-
-                    {/* Tier 2: Pages in this country (Flyout) */}
-                    {activeTutoringGroup === group.name && (
-                      <div className="absolute left-full top-0 ml-1 w-64 max-h-[70vh] overflow-y-auto bg-white dark:bg-black rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 py-3 animate-in fade-in zoom-in-95 duration-150">
-                        {group.links.map((link) => (
-                          <Link
-                            key={link.href}
-                            href={link.href}
-                            className={`block px-4 py-2.5 text-xs font-bold transition-all ${
-                              isActive(link.href)
-                                ? "bg-primary/10 text-primary"
-                                : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10 hover:text-primary"
-                            }`}
-                          >
-                            {link.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          )}
         </div>
 
         {/* Right: Auth & Toggle Group */}

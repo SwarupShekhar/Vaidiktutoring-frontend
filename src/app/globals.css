@@ -69,6 +69,12 @@
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
 }
 
+html {
+  /* Reserve the scrollbar's width so Windows' visible scrollbar (~17px) doesn't
+     shift/crop layout vs macOS overlay scrollbars. */
+  scrollbar-gutter: stable;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -76,6 +82,21 @@ body {
   overflow-x: hidden;
   /* fallback */
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Windows/hi-DPI display scaling (125–150%) shrinks the effective CSS viewport,
+   so the one-screen hero must compact on short heights or its bottom CTAs +
+   download buttons fall below the fold (fine on macOS at 100%). */
+@media (max-height: 860px) {
+  .hero-copy {
+    justify-content: flex-start;
+    padding-top: 6rem;
+    padding-bottom: 1.5rem;
+  }
+  .hero-root h1 span {
+    font-size: 3.25rem;
+    line-height: 1.05;
+  }
 }
 
 /* Typography System — Plus Jakarta Sans for headings */

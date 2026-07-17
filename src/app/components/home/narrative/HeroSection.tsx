@@ -71,7 +71,7 @@ export default function HeroSection() {
 
   return (
     <>
-    <section className="relative min-h-screen overflow-hidden bg-background">
+    <section className="hero-root relative min-h-[100svh] flex flex-col overflow-hidden bg-background">
       {/* Gradient background */}
       <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-background to-indigo-50/30 dark:from-primary/10 dark:via-background dark:to-indigo-950/20" />
 
@@ -87,8 +87,8 @@ export default function HeroSection() {
           `isolate` (isolation: isolate) forces a clean compositing context so
           the foreground text/buttons paint reliably above the blur-3xl orbs —
           without it, Windows Chrome GPU can drop button-label glyphs. */}
-      <div className="relative z-10 isolate max-w-7xl mx-auto px-6 lg:px-12 min-h-screen flex items-center">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center w-full py-28 lg:py-0">
+      <div className="hero-copy relative z-10 isolate max-w-7xl mx-auto px-6 lg:px-12 flex-1 flex flex-col justify-center w-full pt-32 pb-12 lg:pt-32 lg:pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center w-full">
           {/* ─── Left: Copy + CTA ─── */}
           <div className="flex flex-col justify-center">
             {/* Geo-detection banner */}
