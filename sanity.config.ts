@@ -16,6 +16,8 @@ const apiVersion = '2024-01-01'
 const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost'
 const previewOrigin = isLocalhost ? 'http://localhost:3000' : 'https://studyhours.com'
 
+const previewSecret = process.env.NEXT_PUBLIC_SANITY_PREVIEW_SECRET || 'fallback_preview_secret';
+
 export default defineConfig({
   name: 'studyhours-cms',
   title: 'StudyHours CMS',
@@ -34,8 +36,8 @@ export default defineConfig({
               .title('PDF Resources & Lead Magnets')
               .child(S.documentTypeList('pdfResource').title('PDF Resources')),
             S.listItem()
-              .title('SEO Landing Pages')
-              .child(S.documentTypeList('landingPage').title('Landing Pages')),
+              .title('Tutoring Pages')
+              .child(S.documentTypeList('landingPage').title('Tutoring Pages')),
             S.divider(),
             S.listItem()
               .title('Authors')
@@ -45,7 +47,7 @@ export default defineConfig({
     presentationTool({
       previewUrl: {
         previewMode: {
-          enable: `${previewOrigin}/api/preview?secret=vaidikeduservicespvtltd_preview_2026_key`,
+          enable: `${previewOrigin}/api/preview?secret=${previewSecret}`,
         },
       },
       // Only connect to the current environment — not both localhost and prod simultaneously
@@ -53,7 +55,7 @@ export default defineConfig({
       resolve: {
         mainDocuments: defineDocuments([
           {
-            route: '/resources/:slug',
+            route: '/tutoring/:slug',
             filter: `_type == "landingPage" && slug.current == $slug`,
           },
         ]),
@@ -67,7 +69,7 @@ export default defineConfig({
               locations: [
                 {
                   title: doc?.title || 'Untitled Landing Page',
-                  href: `/resources/${doc?.slug ? doc.slug.trim() : ''}`,
+                  href: `/tutoring/${doc?.slug ? doc.slug.trim() : ''}`,
                 },
               ],
             }),

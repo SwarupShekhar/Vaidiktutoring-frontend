@@ -27,9 +27,56 @@ export const landingPageSchema = defineType({
       name: 'slug',
       title: 'Slug (URL path)',
       type: 'slug',
-      options: { source: 'title' },
-      description: 'The URL will be /resources/[slug]',
-      validation: (Rule) => Rule.required(),
+      options: {
+        source: 'title',
+        // Preserve forward slashes so regional editors can type full paths
+        // like `uk/gcse/maths`. Each segment is normalized independently:
+        // lowercase, trim, collapse whitespace to hyphens, strip stray chars.
+        // Example: ' UK/GCSE Maths / ' -> 'uk/gcse-maths'
+        slugify: (input: string) =>
+          input
+            .toLowerCase()
+            .trim()
+            .split('/')
+            .map((segment) =>
+              segment
+                .trim()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]+/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-+|-+$/g, '')
+            )
+            .filter(Boolean)
+            .join('/'),
+      },
+      description:
+        'For /resources pages, a single segment (e.g. "gcse-maths"). For regional /tutors pages (Country set), the FULL path e.g. "uk", "uk/gcse", "uk/gcse/maths". Forward slashes are preserved.',
+      validation: (Rule) =>
+        Rule.required().custom(async (value, context) => {
+          const current = value?.current
+          if (!current) return true // `required` above handles the empty case
+
+          // Segments must be lowercase [a-z0-9-] with no leading/trailing slash.
+          const pattern = /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/
+          if (!pattern.test(current)) {
+            return 'Use lowercase path segments (a–z, 0–9, hyphens) separated by "/", with no leading or trailing slash, e.g. "uk/gcse/maths".'
+          }
+
+          // Enforce uniqueness across all landingPage documents.
+          const { document, getClient } = context
+          const client = getClient({ apiVersion: '2024-01-01' })
+          const id = document?._id.replace(/^drafts\./, '') || ''
+          const draftId = `drafts.${id}`
+          const isUnique = await client.fetch(
+            `count(*[_type=="landingPage" && slug.current==$slug && !(_id in [$id, $draftId])])==0`,
+            { slug: current, id, draftId }
+          )
+          if (!isUnique) {
+            return 'Another landing page already uses this slug — slugs must be unique.'
+          }
+
+          return true
+        }),
       group: 'content',
     }),
     defineField({
@@ -81,6 +128,38 @@ export const landingPageSchema = defineType({
       type: 'array',
       group: 'content',
       of: [
+        // ── Hero Block ───────────────────────────────────────────────────────
+        {
+          name: 'heroBlock',
+          title: 'Hero Section',
+          type: 'object',
+          options: { collapsible: true, collapsed: false },
+          preview: {
+            select: { title: 'heading', media: 'image' },
+            prepare: ({ title, media }) => ({
+              title: title || 'Hero Block',
+              subtitle: 'Top of page hero section with image',
+              media,
+            }),
+          },
+          fields: [
+            defineField({ name: 'pillBadge', title: 'Top Pill Badge (e.g. 🇬🇧 UK Specialists)', type: 'string' }),
+            defineField({ name: 'heading', title: 'Main Heading', type: 'string', validation: (Rule) => Rule.required() }),
+            defineField({ name: 'tagline', title: 'Tagline / Subheading', type: 'text', rows: 3 }),
+            defineField({ name: 'primaryButtonText', title: 'Primary Button Text', type: 'string' }),
+            defineField({ name: 'primaryButtonLink', title: 'Primary Button Link', type: 'string' }),
+            defineField({ name: 'secondaryButtonText', title: 'Secondary Button Text', type: 'string' }),
+            defineField({ name: 'secondaryButtonLink', title: 'Secondary Button Link', type: 'string' }),
+            defineField({
+              name: 'image',
+              title: 'Hero Image',
+              type: 'image',
+              options: { hotspot: true },
+              fields: [defineField({ name: 'alt', title: 'Alt Text', type: 'string' })]
+            }),
+          ],
+        },
+
         // ── Rich Text ───────────────────────────────────────────────────────
         {
           name: 'richTextBlock',
@@ -531,6 +610,38 @@ export const landingPageSchema = defineType({
         }),
       ],
     }),
+    defineField({
+      name: 'alternates',
+      title: 'hreflang Alternates',
+      type: 'array',
+      group: 'seo',
+      description:
+        'Drives hreflang tags pointing to the equivalent page in other countries (the same course/subject on a different regional /tutors path). Add one entry per sibling locale. Leave empty and the page self-canonicals with no cluster.',
+      of: [{
+        type: 'object',
+        preview: {
+          select: { locale: 'locale', path: 'path' },
+          prepare: ({ locale, path }) => ({
+            title: locale || 'No locale set',
+            subtitle: path ? `/tutoring/${path}` : 'No path set',
+          }),
+        },
+        fields: [
+          defineField({
+            name: 'locale',
+            title: 'Locale',
+            type: 'string',
+            description: 'BCP-47 locale of the alternate page, e.g. en-GB, en-US, en-AU, en-SG, en-AE',
+          }),
+          defineField({
+            name: 'path',
+            title: 'Regional Path',
+            type: 'string',
+            description: 'Sibling regional path WITHOUT the leading /tutoring/, e.g. "usa/gcse/maths".',
+          }),
+        ],
+      }],
+    }),
 
     // ── Settings Tab ─────────────────────────────────────────────────────────
 
@@ -539,6 +650,39 @@ export const landingPageSchema = defineType({
       title: 'Published At',
       type: 'datetime',
       initialValue: () => new Date().toISOString(),
+      group: 'settings',
+    }),
+    defineField({
+      name: 'status',
+      title: 'Publish Status',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Draft', value: 'draft' },
+          { title: 'In Review', value: 'review' },
+          { title: 'Published', value: 'published' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'draft',
+      group: 'settings',
+    }),
+    defineField({
+      name: 'country',
+      title: 'Country slug (e.g. uk)',
+      type: 'string',
+      group: 'settings',
+    }),
+    defineField({
+      name: 'level',
+      title: 'Level slug (e.g. gcse)',
+      type: 'string',
+      group: 'settings',
+    }),
+    defineField({
+      name: 'subject',
+      title: 'Subject slug (e.g. maths)',
+      type: 'string',
       group: 'settings',
     }),
     defineField({
@@ -555,11 +699,12 @@ export const landingPageSchema = defineType({
     select: {
       title: 'title',
       slug: 'slug.current',
+      country: 'country',
     },
     prepare(sel) {
       return {
         title: sel.title,
-        subtitle: sel.slug ? `/resources/${sel.slug}` : 'No slug set',
+        subtitle: sel.slug ? (sel.country ? `/tutoring/${sel.slug}` : `/resources/${sel.slug}`) : 'No slug set',
       }
     },
   },

@@ -6,6 +6,7 @@
 import fs from "fs";
 import path from "path";
 import { MetadataRoute } from "next";
+import { cmsApi } from "./cms";
 
 interface BlogPost {
   id: string;
@@ -289,11 +290,8 @@ interface SitemapResource {
 }
 
 async function getResources(): Promise<SitemapResource[]> {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_API_URL || "https://api.studyhours.com";
-
   const timeoutMs = 5000;
-  
+
   try {
     const timeoutPromise = new Promise<SitemapResource[]>((resolve) =>
       setTimeout(() => {
@@ -302,18 +300,7 @@ async function getResources(): Promise<SitemapResource[]> {
       }, timeoutMs)
     );
 
-    const fetchPromise = (async () => {
-      try {
-        const res = await fetch(`${baseUrl}/cms/landing-pages`, {
-          next: { revalidate: 3600 },
-        });
-        if (!res.ok) return [];
-        const data = await res.json();
-        return Array.isArray(data) ? data : [];
-      } catch (e) {
-        return [];
-      }
-    })();
+    const fetchPromise = cmsApi.getLandingPages().catch(() => []);
 
     return await Promise.race([fetchPromise, timeoutPromise]);
   } catch (error) {

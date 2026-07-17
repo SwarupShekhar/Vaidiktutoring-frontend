@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { decodeToken } from '@/app/lib/jwt';
 import * as authLib from '@/app/lib/auth';
 import { setAuthToken, setTokenGetter } from '@/app/lib/api';
+import { cmsApi } from '@/app/lib/cms';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUser, useAuth } from '@clerk/nextjs';
 import { useQueryClient } from '@tanstack/react-query';
@@ -176,6 +177,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     }
   }, [user?.id, user?.email, user?.role, initialCheckDone]);
+
+  // Attribute a peer referral once the invited user is authenticated. The signup page
+  // stashed ?ref=<inviterId> in localStorage (the redirect drops query params). Fire once,
+  // then clear — the backend is one-shot and rejects self-referrals.
+  useEffect(() => {
+    if (!user?.id) return;
+    const ref = localStorage.getItem('sh_ref');
+    if (!ref) return;
+    localStorage.removeItem('sh_ref');
+    if (ref !== user.id) cmsApi.attributeReferral(ref).catch(() => {});
+  }, [user?.id]);
 
   async function login(email: string, password: string, shouldRedirect = true) {
     setLoading(true);

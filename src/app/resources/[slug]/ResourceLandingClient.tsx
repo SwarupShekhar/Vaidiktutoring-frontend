@@ -93,255 +93,64 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
     setTimeout(() => setIsCopied(false), 3000);
   };
 
-  // Curricula boards highlighted for targeted marketing
-  const curriculums = [
-    { name: 'GCSE / AQA / Edexcel', region: 'United Kingdom' },
-    { name: 'O-Level / PSLE / IP', region: 'Singapore' },
-    { name: 'ATAR / HSC / VCE', region: 'Australia' },
-    { name: 'Moe UAE / Saudi Ministry', region: 'Middle East' },
-  ];
-
   return (
-    <main className="bg-background min-h-screen text-deep-navy dark:text-white transition-colors duration-300">
-      
-      {/* Dynamic Curriculum Ribbon Bar */}
-      <div className="pt-24 pb-2 bg-gradient-to-r from-sapphire to-primary text-white text-xs font-bold text-center overflow-hidden whitespace-nowrap shadow-md select-none">
-        <div className="inline-flex items-center gap-8 md:gap-16 animate-marquee">
-          {curriculums.map((cur, i) => (
-            <span key={i} className="inline-flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
-              <span>{cur.region}: <strong className="font-extrabold text-secondary">{cur.name}</strong> Syllabus</span>
-            </span>
-          ))}
-          {/* Duplicate for infinite feel */}
-          {curriculums.map((cur, i) => (
-            <span key={`dup-${i}`} className="inline-flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
-              <span>{cur.region}: <strong className="font-extrabold text-secondary">{cur.name}</strong> Syllabus</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Hero Section */}
-      <section className="relative pt-16 pb-24 px-6 overflow-hidden">
-        {/* Glow circles */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-35 pointer-events-none">
-          <div className="absolute top-[20%] left-[10%] w-[350px] h-[350px] bg-primary/10 rounded-full blur-[80px] animate-blob" />
-          <div className="absolute top-[30%] right-[15%] w-[450px] h-[450px] bg-sapphire/15 rounded-full blur-[100px] animate-blob animation-delay-2000" />
-        </div>
-
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
-          
-          {/* Main Title & CTA copy */}
-          <div className="lg:col-span-7 space-y-8 text-left">
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/50 dark:bg-white/5 backdrop-blur-md border border-white/20 text-xs font-bold text-sapphire dark:text-secondary mb-6 shadow-sm">
-                <ShieldCheck size={14} className="text-primary dark:text-secondary" />
-                Verified curriculum resource
-              </div>
-              
-              <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-deep-navy dark:text-white leading-tight">
-                {heroSection?.heading || title}
-              </h1>
-              
-              <p className="mt-6 text-lg md:text-xl text-text-secondary dark:text-slate-300 max-w-2xl leading-relaxed font-medium">
-                {heroSection?.subheading}
-              </p>
-              
-              {/* Exam Boards Bullet Tags */}
-              <div className="mt-8 flex flex-wrap gap-2">
-                <span className="px-3 py-1 text-xs font-bold bg-ice-blue dark:bg-blue-950/40 text-sapphire dark:text-secondary border border-powder-blue/40 rounded-lg">
-                  United Kingdom GCSE
-                </span>
-                <span className="px-3 py-1 text-xs font-bold bg-ice-blue dark:bg-blue-950/40 text-sapphire dark:text-secondary border border-powder-blue/40 rounded-lg">
-                  Singapore O-Level / PSLE
-                </span>
-                <span className="px-3 py-1 text-xs font-bold bg-ice-blue dark:bg-blue-950/40 text-sapphire dark:text-secondary border border-powder-blue/40 rounded-lg">
-                  Australia HSC / ATAR
-                </span>
-                <span className="px-3 py-1 text-xs font-bold bg-ice-blue dark:bg-blue-950/40 text-sapphire dark:text-secondary border border-powder-blue/40 rounded-lg">
-                  Middle East Ministry
-                </span>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Lead Magnet Interactive Box */}
-          <div className="lg:col-span-5">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.15 }}
-              className="p-8 rounded-4xl bg-white/70 dark:bg-slate-900/60 border border-white/20 dark:border-white/10 backdrop-blur-3xl shadow-xl hover:shadow-2xl transition-all"
-            >
-              {featuredResource ? (
-                <div className="space-y-6">
-                  {/* Subject Tag */}
-                  <div className="flex justify-between items-center">
-                    <span className="px-3 py-1 rounded-md bg-sapphire text-white text-[10px] font-black tracking-widest uppercase">
-                      {featuredResource.subject}
-                    </span>
-                    <span className="text-xs font-bold text-text-secondary uppercase">
-                      {featuredResource.examBoard}
-                    </span>
-                  </div>
-
-                  <h3 className="text-2xl font-bold text-deep-navy dark:text-white leading-tight">
-                    {featuredResource.title}
-                  </h3>
-                  
-                  <p className="text-sm text-text-secondary dark:text-slate-300 font-medium">
-                    {featuredResource.description}
-                  </p>
-
-                  <div className="pt-4 border-t border-border dark:border-white/5 space-y-4">
-                    {/* Free Access Flow */}
-                    {featuredResource.accessType === 'free' ? (
-                      <a
-                        href={featuredResource.fileUrl || '#'}
-                        download
-                        className="w-full py-4 px-6 rounded-xl bg-primary hover:bg-sapphire text-white font-bold text-center transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
-                      >
-                        <Download size={18} />
-                        Download Free Study Guide
-                      </a>
-                    ) : (
-                      /* Gated Referral Flow */
-                      <div className="space-y-4">
-                        {!isAuthLoaded ? (
-                          <div className="py-4 text-center text-text-secondary text-sm font-semibold animate-pulse">
-                            Loading secure lock context...
-                          </div>
-                        ) : !isSignedIn ? (
-                          /* Not Signed In */
-                          <div className="space-y-4 text-center p-6 rounded-2xl bg-blue-50/50 dark:bg-blue-950/10 border border-blue-100 dark:border-blue-900/20">
-                            <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-primary mx-auto">
-                              <Lock size={20} className="stroke-[2.5]" />
-                            </div>
-                            <div>
-                              <h4 className="text-base font-bold text-deep-navy dark:text-white">Premium Locked Guide</h4>
-                              <p className="text-xs text-text-secondary dark:text-slate-400 mt-1">
-                                Complete Clerk sign-in and invite {featuredResource.requiredReferrals} friends to unlock this resource.
-                              </p>
-                            </div>
-                            <Link_Next
-                              href={`/login?redirect_url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname : '')}`}
-                              className="w-full py-3.5 px-6 rounded-xl bg-primary hover:bg-sapphire text-white font-bold text-center transition-all flex items-center justify-center gap-2 shadow-md"
-                            >
-                              Sign In to Unlock
-                              <ArrowRight size={16} />
-                            </Link_Next>
-                          </div>
-                        ) : isVerifying ? (
-                          /* Verifying Invites */
-                          <div className="py-8 text-center space-y-3">
-                            <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                            <p className="text-xs font-bold text-text-secondary uppercase tracking-wider">
-                              Verifying referral invite counts...
-                            </p>
-                          </div>
-                        ) : referralStatus?.unlocked ? (
-                          /* Unlocked & Ready for Download */
-                          <div className="space-y-4">
-                            <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-center flex items-center gap-3 text-green-600 dark:text-green-400 font-semibold text-sm">
-                              <Unlock size={18} className="shrink-0 text-green-500" />
-                              <span>Congratulations! Download has been unlocked.</span>
-                            </div>
-                            <a
-                              href={referralStatus.fileUrl || '#'}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-full py-4 px-6 rounded-xl bg-green-500 hover:bg-green-600 text-white font-bold text-center transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-500/20"
-                            >
-                              <Download size={18} />
-                              Download Study Sheet (PDF)
-                            </a>
-                          </div>
-                        ) : (
-                          /* Gated - Locked and Invite Progress Active */
-                          <div className="space-y-5">
-                            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20">
-                              <div className="flex justify-between text-xs font-extrabold text-amber-700 dark:text-amber-400 uppercase mb-2">
-                                <span>Invite Progress</span>
-                                <span>{referralStatus?.referralsCount || 0} of {featuredResource.requiredReferrals} friends</span>
-                              </div>
-                              {/* Sleek HSL Progress Bar */}
-                              <div className="w-full h-3 rounded-full bg-slate-200 dark:bg-white/10 overflow-hidden">
-                                <motion.div
-                                  className="h-full bg-amber-500 rounded-full"
-                                  initial={{ width: 0 }}
-                                  animate={{ 
-                                    width: `${Math.min(
-                                      100, 
-                                      ((referralStatus?.referralsCount || 0) / featuredResource.requiredReferrals) * 100
-                                    )}%` 
-                                  }}
-                                  transition={{ duration: 0.6 }}
-                                />
-                              </div>
-                            </div>
-
-                            <p className="text-xs text-text-secondary dark:text-slate-300 leading-relaxed font-semibold">
-                              To download, copy your unique invite link below and share it with {featuredResource.requiredReferrals - (referralStatus?.referralsCount || 0)} more friends. Once they register a free student account, this file unlocks instantly.
-                            </p>
-
-                            {/* Copy Invite Link field */}
-                            <div className="flex gap-2">
-                              <div className="flex-1 bg-slate-100 dark:bg-white/5 border border-border dark:border-white/10 rounded-xl px-3.5 py-3 text-xs font-mono font-medium truncate select-all flex items-center">
-                                {typeof window !== 'undefined' ? `${window.location.origin}/signup?ref=${userId}` : ''}
-                              </div>
-                              <button
-                                onClick={handleCopyLink}
-                                className="px-4 bg-primary hover:bg-sapphire text-white rounded-xl font-bold transition-all flex items-center justify-center gap-1 shadow-sm"
-                              >
-                                {isCopied ? <Check size={16} /> : <Copy size={16} />}
-                              </button>
-                            </div>
-
-                            <button
-                              onClick={fetchReferralStatus}
-                              className="w-full py-2.5 text-xs font-bold text-primary dark:text-secondary hover:underline text-center"
-                            >
-                              Check Invite Count Again
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                /* Fallback CTA if no featured resource exists */
-                <div className="space-y-6 text-center">
-                  <BookOpen size={48} className="text-primary mx-auto" />
-                  <h3 className="text-xl font-bold">Request Customized Study Roadmap</h3>
-                  <p className="text-sm text-text-secondary leading-relaxed">
-                    Chat with an expert education planner to customize worksheets specifically for your upcoming exams.
-                  </p>
-                  <Link_Next
-                    href="/signup?type=assessment"
-                    className="w-full py-3.5 px-6 rounded-xl bg-primary text-white font-bold text-center block transition-all shadow-md"
-                  >
-                    Request Study Plan
-                  </Link_Next>
-                </div>
-              )}
-            </motion.div>
-          </div>
-
-        </div>
-      </section>
-
+    <main className="pt-24 bg-background min-h-screen text-deep-navy dark:text-white transition-colors duration-300">
       {/* Programmatic Block Rendering */}
       {pageBlocks && pageBlocks.length > 0 && (
         <div className="space-y-0">
           {pageBlocks.map((block, idx) => {
             
+            // 0. Hero Block Render
+            if (block._type === 'heroBlock') {
+              return (
+                <section key={idx} className="relative pt-24 pb-32 md:pt-32 md:pb-40 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-sapphire/5 to-primary/5 dark:from-sapphire/20 dark:to-primary/20 z-0" />
+                  {block.image?.asset?.url && (
+                    <div className="absolute inset-0 opacity-10 dark:opacity-20 z-0" style={{ backgroundImage: `url(${block.image.asset.url})`, backgroundSize: 'cover', backgroundPosition: 'center', mixBlendMode: 'overlay' }} />
+                  )}
+                  <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-12">
+                    <div className="flex-1 text-center md:text-left space-y-8">
+                      {block.pillBadge && (
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sapphire/10 text-sapphire dark:bg-sapphire/20 font-medium text-sm">
+                          {block.pillBadge}
+                        </div>
+                      )}
+                      <h1 className="text-4xl md:text-6xl font-extrabold text-deep-navy dark:text-white leading-tight tracking-tight">
+                        {block.heading}
+                      </h1>
+                      {block.tagline && (
+                        <p className="text-xl md:text-2xl text-deep-navy/70 dark:text-white/70 max-w-2xl">
+                          {block.tagline}
+                        </p>
+                      )}
+                      <div className="flex flex-col sm:flex-row items-center gap-4 pt-4 justify-center md:justify-start">
+                        {block.primaryButtonText && (
+                          <a href={block.primaryButtonLink || '#'} className="w-full sm:w-auto px-8 py-4 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/30 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 text-center">
+                            {block.primaryButtonText}
+                          </a>
+                        )}
+                        {block.secondaryButtonText && (
+                          <a href={block.secondaryButtonLink || '#'} className="w-full sm:w-auto px-8 py-4 bg-white dark:bg-white/10 text-deep-navy dark:text-white font-bold rounded-xl border-2 border-border dark:border-white/10 hover:border-sapphire dark:hover:border-sapphire transition-all duration-300 text-center">
+                            {block.secondaryButtonText}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                    {block.image?.asset?.url && (
+                      <div className="flex-1 w-full relative group">
+                        <div className="absolute -inset-4 bg-gradient-to-r from-sapphire to-primary rounded-3xl blur-2xl opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
+                        <img 
+                          src={block.image.asset.url} 
+                          alt={block.image.alt || block.heading || 'Hero image'} 
+                          className="relative rounded-3xl shadow-2xl w-full object-cover aspect-[4/3] transform transition duration-500 hover:scale-[1.02]"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </section>
+              );
+            }
+
             // 1. Features Block Render
             if (block._type === 'featuresBlock') {
               const isList = block.layout === 'list';

@@ -1,7 +1,7 @@
 // src/app/components/navbar.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
@@ -11,6 +11,21 @@ import SHLogo from "./SHLogo";
 import { useAuthContext } from "@/app/context/AuthContext";
 import { useCurriculum } from "../context/CurriculumContext";
 import { CURRICULA } from "../config/curricula";
+import { cmsApi } from "@/app/lib/cms";
+
+// Display metadata for the country buckets in the dynamic Tutoring menu.
+// Falls back to an uppercased slug when a country isn't listed here.
+const TUTORING_COUNTRY_META: Record<string, { name: string; flag: string }> = {
+  uk: { name: "United Kingdom", flag: "🇬🇧" },
+  usa: { name: "United States", flag: "🇺🇸" },
+  us: { name: "United States", flag: "🇺🇸" },
+  singapore: { name: "Singapore", flag: "🇸🇬" },
+  australia: { name: "Australia", flag: "🇦🇺" },
+  uae: { name: "UAE", flag: "🇦🇪" },
+  saudi: { name: "Saudi Arabia", flag: "🇸🇦" },
+};
+
+type RegionalPage = { slug: string; title?: string; country?: string };
 
 export default function Navbar() {
   const { user, logout } = useAuthContext();
@@ -19,7 +34,53 @@ export default function Navbar() {
   const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
   const [activeResourceGroup, setActiveResourceGroup] = useState<string | null>(null);
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
+  const [tutoringDropdownOpen, setTutoringDropdownOpen] = useState(false);
+  const [activeTutoringGroup, setActiveTutoringGroup] = useState<string | null>(null);
+  const [regionalPages, setRegionalPages] = useState<RegionalPage[]>([]);
   const { activeCurriculum, setCurriculum } = useCurriculum();
+
+  // Pull the published regional tutoring pages once so the Tutoring menu
+  // populates itself from Sanity — editors publish a page, it appears here.
+  useEffect(() => {
+    let mounted = true;
+    cmsApi
+      .getRegionalPages()
+      .then((pages) => {
+        console.log("Fetched regional pages:", pages);
+        if (mounted) setRegionalPages(pages || []);
+      })
+      .catch((err) => {
+        console.error("Error fetching regional pages:", err);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Group regional pages by country, each ordered shallowest-path first then
+  // alphabetically, so "Online Tutoring UK" precedes "GCSE Maths Tutor".
+  const tutoringGroups = useMemo(() => {
+    const byCountry = new Map<string, { name: string; flag: string; links: { name: string; href: string; slug: string }[] }>();
+    for (const page of regionalPages) {
+      if (!page.slug) continue;
+      const code = (page.country || page.slug.split("/")[0] || "").toLowerCase();
+      if (!code) continue;
+      const meta = TUTORING_COUNTRY_META[code] || { name: code.toUpperCase(), flag: "" };
+      if (!byCountry.has(code)) byCountry.set(code, { name: meta.name, flag: meta.flag, links: [] });
+      byCountry.get(code)!.links.push({
+        name: page.title || page.slug,
+        href: `/tutoring/${page.slug}`,
+        slug: page.slug,
+      });
+    }
+    for (const group of byCountry.values()) {
+      group.links.sort((a, b) => {
+        const depth = a.slug.split("/").length - b.slug.split("/").length;
+        return depth !== 0 ? depth : a.name.localeCompare(b.name);
+      });
+    }
+    return Array.from(byCountry.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }, [regionalPages]);
 
   const isActive = (path: string) =>
     path === "/" ? pathname === "/" : pathname?.startsWith(path);
@@ -208,6 +269,76 @@ export default function Navbar() {
               </div>
             )}
           </div>
+
+          {/* Tutoring Dropdown — populated dynamically from Sanity regional pages */}
+          {tutoringGroups.length > 0 && (
+          <div className="relative">
+            <button
+              onClick={() => setTutoringDropdownOpen(!tutoringDropdownOpen)}
+              onMouseEnter={() => setTutoringDropdownOpen(true)}
+              className={`px-3 xl:px-4 py-2 rounded-full text-xs font-bold tracking-wide transition-all flex items-center gap-1 ${
+                isActive("/tutoring")
+                  ? "bg-white dark:bg-white/10 text-primary shadow-sm"
+                  : "text-text-secondary hover:text-primary"
+              }`}
+            >
+              Tutoring
+              <svg
+                className={`w-3 h-3 transition-transform ${tutoringDropdownOpen ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {/* Tier 1: Countries */}
+            {tutoringDropdownOpen && (
+              <div
+                className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-black rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 py-3 animate-in fade-in slide-in-from-top-2 duration-200 z-70"
+                onMouseLeave={() => {
+                  setTutoringDropdownOpen(false);
+                  setActiveTutoringGroup(null);
+                }}
+              >
+                {tutoringGroups.map((group) => (
+                  <div
+                    key={group.name}
+                    className="relative group/sub"
+                    onMouseEnter={() => setActiveTutoringGroup(group.name)}
+                  >
+                    <div className={`flex items-center justify-between px-4 py-3 text-sm font-bold transition-all cursor-pointer ${activeTutoringGroup === group.name ? "bg-primary/10 text-primary" : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10"}`}>
+                      <span className="flex items-center gap-2">{group.flag && <span className="text-base">{group.flag}</span>}{group.name}</span>
+                      <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+
+                    {/* Tier 2: Pages in this country (Flyout) */}
+                    {activeTutoringGroup === group.name && (
+                      <div className="absolute left-full top-0 ml-1 w-64 max-h-[70vh] overflow-y-auto bg-white dark:bg-black rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 py-3 animate-in fade-in zoom-in-95 duration-150">
+                        {group.links.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className={`block px-4 py-2.5 text-xs font-bold transition-all ${
+                              isActive(link.href)
+                                ? "bg-primary/10 text-primary"
+                                : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10 hover:text-primary"
+                            }`}
+                          >
+                            {link.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          )}
         </div>
 
         {/* Right: Auth & Toggle Group */}
@@ -412,6 +543,45 @@ export default function Navbar() {
                 </div>
               ))}
             </div>
+
+            {/* Mobile Tutoring Submenu — dynamic from Sanity regional pages */}
+            {tutoringGroups.length > 0 && (
+              <div className="py-2 space-y-1">
+                <div className="px-3 pt-1 pb-2 text-[10px] font-black text-primary uppercase tracking-widest">Tutoring</div>
+                {tutoringGroups.map((group) => (
+                  <div key={group.name}>
+                    <button
+                      onClick={() => setActiveTutoringGroup(activeTutoringGroup === group.name ? null : group.name)}
+                      className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-black text-sapphire uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
+                    >
+                      <span className="flex items-center gap-2">{group.flag && <span className="text-sm">{group.flag}</span>}{group.name}</span>
+                      <svg className={`w-4 h-4 transition-transform ${activeTutoringGroup === group.name ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+
+                    {activeTutoringGroup === group.name && (
+                      <div className="grid grid-cols-1 gap-0.5 mt-1 border-l-2 border-sapphire/20 ml-4 pl-2 animate-in slide-in-from-top duration-200">
+                        {group.links.map((link) => (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={`block px-4 py-2.5 rounded-lg text-xs font-bold tracking-wide transition-all ${
+                              isActive(link.href)
+                                ? "bg-primary/10 text-primary"
+                                : "text-text-secondary hover:bg-slate-100 dark:hover:bg-white/10"
+                            }`}
+                          >
+                            {link.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
             {user && (
               <Link

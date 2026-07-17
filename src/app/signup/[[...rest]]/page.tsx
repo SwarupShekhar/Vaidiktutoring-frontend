@@ -2,11 +2,18 @@
 
 import { SignUp } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 
 function SignupContent() {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect_url') || '/onboarding';
+
+  // Persist the referral inviter id — the post-signup redirect drops query params,
+  // so AuthContext reads it back once the new user is authenticated.
+  useEffect(() => {
+    const ref = searchParams.get('ref');
+    if (ref) localStorage.setItem('sh_ref', ref);
+  }, [searchParams]);
 
   return (
     <main className="min-h-screen relative flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">

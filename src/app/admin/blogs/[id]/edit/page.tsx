@@ -287,7 +287,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                         {/* Main Editor Area */}
-                        <div className="lg:col-span-2">
+                        <div className="lg:col-span-2 min-w-0">
                             <form onSubmit={handleSubmit}>
                                 {/* TipTap Editor */}
                                 <BlogEditor
@@ -339,7 +339,7 @@ export default function EditBlogPage({ params }: { params: Promise<{ id: string 
                         </div>
 
                         {/* Sidebar */}
-                        <div className="lg:col-span-1">
+                        <div className="lg:col-span-1 min-w-0">
                             <BlogSidebar
                                 title={form.title}
                                 onTitleChange={(v) => handleChange('title', v)}

@@ -1,5 +1,6 @@
 // src/app/layout.tsx
 import "./globals.css";
+import Script from "next/script";
 import { ReactNode } from "react";
 import QueryProvider from "./providers";
 import { AuthProvider } from "./context/AuthContext";
@@ -111,7 +112,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
           <link rel="dns-prefetch" href="https://clerk.studyhours.com" />
           <link rel="dns-prefetch" href="https://cdn.sanity.io" />
-          <script
+          <Script
+            id="app-shell-mode"
+            strategy="beforeInteractive"
             dangerouslySetInnerHTML={{
               __html: `
                 if (typeof window !== 'undefined' && window.electron && window.electron.isDesktopApp) {

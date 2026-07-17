@@ -8,31 +8,20 @@ import LinkedInButton from "./LinkedInButton";
 import DiscordButton from "./DiscordButton";
 import FacebookButton from "./FacebookButton";
 import RedditButton from "./RedditButton";
-import dynamic from "next/dynamic";
-
-const Galaxy = dynamic(() => import("./home/narrative/galaxy/Galaxy"), { ssr: false });
+import { cmsApi } from "../lib/cms";
 
 export default function Footer() {
   const pathname = usePathname();
   const [year, setYear] = useState(2026);
-  const [hasMounted, setHasMounted] = useState(false);
   const [featuredResources, setFeaturedResources] = useState<{ title: string; slug: string; addToFooter?: boolean }[]>([]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setYear(new Date().getFullYear());
-    setHasMounted(true);
 
     // Fetch dynamic landing pages that should be featured in the footer
-    const API_URL = (process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.studyhours.com').replace(/\/$/, '');
-    fetch(`${API_URL}/cms/landing-pages`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          const featured = data.filter((page: any) => page.addToFooter === true);
-          setFeaturedResources(featured);
-        }
-      })
+    cmsApi.getLandingPages()
+      .then((data) => setFeaturedResources(data.filter((page) => page.addToFooter === true)))
       .catch((err) => console.warn("[Footer] Failed to fetch featured landing pages:", err));
   }, []);
 
@@ -40,25 +29,8 @@ export default function Footer() {
 
   return (
     <footer className="relative bg-black text-white border-t border-white/10 pt-16 pb-32 transition-colors duration-300 overflow-hidden">
-      {/* Interactive Galaxy Background - Only rendered on client to avoid hydration mismatch */}
-      {hasMounted && (
-        <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
-          <Galaxy 
-            mouseRepulsion
-            mouseInteraction
-            density={0.65} // Reduced particles by 35%
-            glowIntensity={0.5}
-            saturation={0.8}
-            hueShift={260}
-            twinkleIntensity={0.5}
-            rotationSpeed={0.08}
-            repulsionStrength={2}
-            autoCenterRepulsion={0}
-            starSpeed={0.4}
-            speed={1}
-          />
-        </div>
-      )}
+      {/* CSS-only space background */}
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-40" style={{ background: 'radial-gradient(circle at 50% 100%, #1a1a3a 0%, #000000 60%)' }}></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className={`grid grid-cols-1 md:grid-cols-3 ${featuredResources.length > 0 ? 'lg:grid-cols-7' : 'lg:grid-cols-6'} gap-12 mb-16`}>

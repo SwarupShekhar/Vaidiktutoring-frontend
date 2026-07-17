@@ -87,11 +87,24 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
             const match = line.match(/^(#{2,3})\s+(.+)/);
             if (match) {
                 const level = match[1].length;
-                const text = match[2];
+                const text = match[2].replace(/<[^>]*>?/gm, ''); // strip HTML in text
                 const id = makeSlug(text);
                 extracted.push({ id, text, level });
             }
         }
+        
+        // Support for new HTML-based blogs
+        if (extracted.length === 0) {
+            const htmlRegex = /<h([23])[^>]*>(.*?)<\/h\1>/gi;
+            let match;
+            while ((match = htmlRegex.exec(blog.content)) !== null) {
+                const level = parseInt(match[1], 10);
+                const text = match[2].replace(/<[^>]*>?/gm, '');
+                const id = makeSlug(text);
+                extracted.push({ id, text, level });
+            }
+        }
+        
         return extracted;
     }, [blog]);
 
@@ -145,12 +158,13 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
         hr: ({ ...props }: any) => <hr className="my-10 border-gray-200 dark:border-white/10" {...props} />,
         code: ({ children, ...props }: any) => <code className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>{children}</code>,
         img: ({ ...props }: any) => (
-            <span className="block my-8 relative aspect-video">
-                <Image 
+            <span className="block my-8 text-center flex justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img 
                     src={props.src || ''} 
                     alt={props.alt || ''} 
-                    fill 
-                    className="rounded-xl shadow-lg object-contain" 
+                    className="rounded-xl shadow-lg max-w-full h-auto" 
+                    loading="lazy"
                 />
             </span>
         )
@@ -278,7 +292,7 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
                 </div>
 
                 {/* FEATURE IMAGE - Cinematic Full Width */}
-                <div className="mt-28 relative aspect-21/9 rounded-[4rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.15)] group">
+                <div className="mt-28 relative aspect-video rounded-[4rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.15)] group">
                     {imgSrc ? (
                         <Image
                             src={imgSrc}
@@ -298,10 +312,10 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
             </header>
 
             {/* THREE-COLUMN LAYOUT (TOC | Article | Sidebar) */}
-            <div className="max-w-[1500px] mx-auto px-6 mt-24 lg:grid lg:grid-cols-[280px_1fr_400px] lg:gap-20 items-start relative">
+            <div className="max-w-[1500px] mx-auto px-6 mt-24 lg:grid lg:grid-cols-[1fr_300px] xl:grid-cols-[250px_1fr_350px] lg:gap-10 xl:gap-16 items-start relative">
                 
                 {/* Left Column: Sticky Table of Contents */}
-                <aside className="hidden lg:block sticky top-12 self-start pt-4">
+                <aside className="hidden xl:block sticky top-12 self-start pt-4">
                     {headings.length > 0 && (
                         <div className="space-y-10 pr-6 border-r border-gray-50 dark:border-white/5">
                             <div className="flex items-center gap-2 font-black text-gray-900 dark:text-white uppercase tracking-[0.3em] text-[9px]">
@@ -343,10 +357,10 @@ export default function BlogPostRenderer({ blog }: { blog: BlogPost }) {
                 </aside>
 
                 {/* Center Column: Article Content */}
-                <article className="w-full">
+                <article className="w-full min-w-0">
                     {/* Mobile TOC */}
                     {headings.length > 0 && (
-                        <div className="lg:hidden mb-16 border border-gray-100 dark:border-white/10 rounded-3xl overflow-hidden shadow-sm">
+                        <div className="xl:hidden mb-16 border border-gray-100 dark:border-white/10 rounded-3xl overflow-hidden shadow-sm">
                             <button
                                 onClick={() => setTocOpen(prev => !prev)}
                                 className="w-full flex items-center justify-between px-6 py-5 text-sm font-black text-gray-800 dark:text-white uppercase tracking-widest bg-gray-50 dark:bg-white/5"

@@ -9,13 +9,13 @@ import { useEffect, useState, useCallback } from 'react';
 import { debounce } from 'lodash';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Bold, Italic, Heading1, Heading2, Heading3, Heading4, Heading5, Heading6, List, Link as LinkIcon,
+  Bold, Italic, Heading1, List, Link as LinkIcon,
   Image as ImageIcon, Eye, Edit3, CheckCircle, XCircle, Trash2, Search, Globe, FileText, Wand2, Sparkles, AlertCircle, ChevronRight, ChevronDown
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { blogsApi } from '@/app/lib/blogs';
 import { SEO_KEYWORD_MAP } from '@/app/lib/seo-keywords';
-import { Markdown } from 'tiptap-markdown';
+
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
@@ -40,56 +40,7 @@ interface BlogEditorProps {
   authorName?: string;
 }
 
-// ===== CORE: Sanitize markdown output from TipTap =====
-// TipTap's getMarkdown() produces corrupted output where the Link extension
-// wraps URLs with <a> tags inside markdown image/link syntax.
-// e.g. ![alt](<a href="url">url</a>) instead of ![alt](url)
-// This function cleans ALL such corruption.
-function sanitizeMarkdown(raw: string): string {
-  if (!raw) return '';
-  let cleaned = raw
-    // Fix corrupted image tags: ![alt](<a ...>url</a>) → ![alt](url)
-    .replace(/!\[([^\]]*)\]\(\s*<a[^>]*href=["']([^"']+)["'][^>]*>[^<]*<\/a>\s*\)/gi, '![$1]($2)')
-    // Fix corrupted links: [text](<a ...>url</a>) → [text](url)
-    .replace(/\[([^\]]*)\]\(\s*<a[^>]*href=["']([^"']+)["'][^>]*>[^<]*<\/a>\s*\)/gi, '[$1]($2)')
-    // Fix backslash-escaped brackets that TipTap sometimes adds
-    .replace(/\\\[/g, '[')
-    .replace(/\\\]/g, ']')
-    // Strip any remaining inline <a> tags (convert to markdown links)
-    .replace(/<a[^>]*href=["']([^"']+)["'][^>]*>([^<]*)<\/a>/gi, '[$2]($1)')
-    // Strip remaining HTML tags like <strong>, <em>, <br>, <p>
-    .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
-    .replace(/<em>(.*?)<\/em>/gi, '*$1*')
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<p>(.*?)<\/p>/gi, '$1\n\n')
-    .replace(/<hr\s*\/?>/gi, '---\n\n')
-    // Convert heading HTML to markdown (for legacy content)
-    .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
-    .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n')
-    .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n\n')
-    .replace(/<h4[^>]*>(.*?)<\/h4>/gi, '#### $1\n\n')
-    .replace(/<h5[^>]*>(.*?)<\/h5>/gi, '##### $1\n\n')
-    .replace(/<h6[^>]*>(.*?)<\/h6>/gi, '###### $1\n\n')
-    // Convert img HTML to markdown (for legacy content)
-    .replace(/<img[^>]*src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*\/?>/gi, '![$2]($1)\n\n')
-    .replace(/<img[^>]*alt=["']([^"']*)["'][^>]*src=["']([^"']+)["'][^>]*\/?>/gi, '![$1]($2)\n\n')
-    .replace(/<img[^>]*src=["']([^"']+)["'][^>]*\/?>/gi, '![]($1)\n\n')
-    // Convert list items
-    .replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n')
-    // Convert blockquotes
-    .replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gi, '> $1\n\n')
-    // Strip any remaining HTML tags
-    .replace(/<\/?(?:ul|ol|div|span|section|article|figure|figcaption)[^>]*>/gi, '')
-    // Clean up excessive newlines
-    .replace(/\n{3,}/g, '\n\n')
-    // Remove trailing backslashes on heading lines (TipTap artifact)
-    .replace(/^(#{1,6}\s.*)\\$/gm, '$1')
-    // Remove trailing backslashes on markdown image lines (TipTap artifact)
-    .replace(/(!\[[^\]]*\]\([^)]+\))\\+/g, '$1')
-    .trim();
 
-  return cleaned;
-}
 
 // Post-process TipTap HTML for preview rendering
 // When users paste markdown into Visual mode, TipTap wraps markdown syntax
@@ -144,15 +95,15 @@ export default function BlogEditor({
   excerpt,
   authorName = 'Vaidik Author'
 }: BlogEditorProps) {
-  const [mode, setMode] = useState<'edit' | 'preview' | 'text'>('edit');
-  const [isRawMode, setIsRawMode] = useState(false);
+  const [mode, setMode] = useState<'edit' | 'preview'>('edit');
   const [linkUrl, setLinkUrl] = useState('');
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [inlineImageUrl, setInlineImageUrl] = useState('');
   const [showImageInput, setShowImageInput] = useState(false);
-  const isInternalChange = useRef(false);
+  const hasLoadedInitialContent = useRef(false);
   const hasShownPasteToast = useRef(false);
   const previewHtml = useRef('');
+  const isInternalChange = useRef(false);
   const [internalLinks, setInternalLinks] = useState<Record<string, { title: string; url: string }[]>>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [showInternalLinks, setShowInternalLinks] = useState(false);
@@ -176,13 +127,13 @@ export default function BlogEditor({
   // Magic Link Scanner
   const scanForLinks = () => {
     if (!editor) return;
-    const content = (editor.storage as any).markdown.getMarkdown();
+    const content = editor.getHTML();
     const suggestions: { keyword: string; url: string; pos: number }[] = [];
 
     Object.entries(SEO_KEYWORD_MAP).forEach(([keyword, url]) => {
       // Regex to find keyword NOT inside a link already
       // This is a naive check but good for a start
-      const regex = new RegExp(`(?<!\\[)${keyword}(?!\\]|\\(|\\w)`, 'gi');
+      const regex = new RegExp(`(?<!<a[^>]*>)${keyword}(?!</a>|\\w)`, 'gi');
       let match: RegExpExecArray | null;
       while ((match = regex.exec(content)) !== null) {
         suggestions.push({
@@ -213,7 +164,7 @@ export default function BlogEditor({
     if (!editor) return;
     
     let linkCount = 0;
-    const content = (editor.storage as any).markdown.getMarkdown();
+    const content = editor.getHTML();
     let newContent = content;
 
     // Sort keywords by length (desc) to avoid partial matching issues
@@ -222,11 +173,11 @@ export default function BlogEditor({
 
     sortedKeywords.forEach(([keyword, url]) => {
       // Regex: Case-insensitive, word boundaries, not already in a link
-      const regex = new RegExp(`(?<!\\[)${keyword}(?!\\]|\\(|\\w)`, 'gi');
+      const regex = new RegExp(`(?<!<a[^>]*>)${keyword}(?!</a>|\\w)`, 'gi');
       if (regex.test(newContent)) {
         newContent = newContent.replace(regex, (match: string) => {
           linkCount++;
-          return `[${match}](${url})`;
+          return `<a target="_blank" rel="noopener noreferrer nofollow" class="text-primary underline" href="${url}">${match}</a>`;
         });
       }
     });
@@ -235,7 +186,7 @@ export default function BlogEditor({
       if (!confirm(`Apply ${linkCount} internal links? This will clear the undo history for this action. You can restore via Version History if needed.`)) return;
       isInternalChange.current = true;
       editor.commands.setContent(newContent);
-      onChange(sanitizeMarkdown(newContent));
+      onChange(newContent);
       setSuggestedLinks([]);
       setShowScanner(false);
       toast.success(`✨ Magic Complete! Added ${linkCount} links.`, {
@@ -284,16 +235,7 @@ export default function BlogEditor({
           class: 'text-primary underline',
         },
       }),
-      Markdown.configure({
-        html: false,
-        tightLists: true,
-        tightListClass: 'tight-list',
-        bulletListMarker: '-',
-        linkify: false,
-        breaks: false,
-        transformPastedText: true,  // KEY: Parse pasted markdown into proper TipTap nodes
-        transformCopiedText: true,  // Copy content as markdown format
-      }),
+
       Placeholder.configure({
         placeholder: 'Start writing your amazing blog post...',
       }),
@@ -301,86 +243,38 @@ export default function BlogEditor({
     content: content || '',
     editable,
     onUpdate: ({ editor }) => {
-      isInternalChange.current = true;
-      const rawMarkdown = (editor.storage as any).markdown.getMarkdown();
-      // Store the HTML for preview (TipTap's HTML is always correct)
-      previewHtml.current = editor.getHTML();
-      onChange(sanitizeMarkdown(rawMarkdown));
+      const htmlContent = editor.getHTML();
+      // Store the HTML for preview
+      previewHtml.current = htmlContent;
+      onChange(htmlContent);
     },
     editorProps: {
       attributes: {
         class: 'prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-6',
       },
       handlePaste: (view, event) => {
-        // Detect markdown paste in visual mode
-        if (!isRawMode && !hasShownPasteToast.current) {
-          const text = event.clipboardData?.getData('text/plain') || '';
-          const markdownPatterns = /(^#{1,6}\s|\*\*.+\*\*|\[.+\]\(.+\)|!\[.+\]\(.+\)|^[\-\*]\s|^\d+\.\s|^>\s|^---)/m;
-          if (markdownPatterns.test(text)) {
-            hasShownPasteToast.current = true;
-            // Reset after 10 seconds so it can trigger again later
-            setTimeout(() => { hasShownPasteToast.current = false; }, 10000);
-            toast('📝 Markdown Detected', {
-              description: 'It looks like you pasted Markdown content. Switch to Markdown mode for perfect formatting?',
-              action: {
-                label: 'Switch to Markdown',
-                onClick: () => {
-                  setIsRawMode(true);
-                  setMode('edit');
-                },
-              },
-              duration: 6000,
-            });
-          }
-        }
-        return false; // Let TipTap handle the paste normally
+        // Let TipTap handle the paste normally. It natively understands both HTML and Markdown paste.
+        return false;
       },
     },
   });
 
   useEffect(() => {
-    // Only sync back to TipTap if we are in Visual Mode to prevent heavy parsing lag
-    if (editor && !isInternalChange.current && mode === 'edit' && !isRawMode) {
-      const currentMarkdown = (editor.storage as any).markdown.getMarkdown();
-      const sanitizedCurrent = sanitizeMarkdown(currentMarkdown);
-      if (content !== sanitizedCurrent) {
-        editor.commands.setContent(content || '');
-        // Update preview HTML when content loaded externally
-        previewHtml.current = editor.getHTML();
-      }
+    // Only set the initial content once when the component mounts or receives its first DB fetch
+    if (editor && !hasLoadedInitialContent.current && content !== undefined) {
+      editor.commands.setContent(content || '');
+      previewHtml.current = editor.getHTML();
+      hasLoadedInitialContent.current = true;
     }
-    isInternalChange.current = false;
-  }, [content, editor, mode, isRawMode]);
+  }, [content, editor]);
 
   const setLink = () => {
-    if (isRawMode) {
-      // Logic for Raw Markdown Textarea
-      const textarea = document.querySelector('textarea[aria-label="Raw Markdown Editor"]') as HTMLTextAreaElement;
-      if (textarea) {
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const text = textarea.value;
-        const selectedText = text.substring(start, end);
-        
-        if (linkUrl === '') {
-          // If no URL but text selected, we can't really "unlink" easily in raw text without complex regex, 
-          // so we just do nothing or suggest manual edit
-          toast.info('In markdown mode, please manually remove the [text](url) syntax to unlink.');
-        } else {
-          // Insert [selected](url)
-          const newText = text.substring(0, start) + `[${selectedText || 'link'}](${linkUrl})` + text.substring(end);
-          onChange(newText);
-          toast.success('Link added to markdown!');
-        }
-      }
+    // Logic for Tiptap Visual Editor
+    if (linkUrl === '') {
+      editor?.chain().focus().extendMarkRange('link').unsetLink().run();
     } else {
-      // Logic for Tiptap Visual Editor
-      if (linkUrl === '') {
-        editor?.chain().focus().extendMarkRange('link').unsetLink().run();
-      } else {
-        editor?.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run();
-        toast.success(`Broadcasting link: ${linkUrl}`);
-      }
+      editor?.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run();
+      toast.success(`Broadcasting link: ${linkUrl}`);
     }
     
     setShowLinkInput(false);
@@ -398,31 +292,30 @@ export default function BlogEditor({
 
   const toggleBold = () => editor?.chain().focus().toggleBold().run();
   const toggleItalic = () => editor?.chain().focus().toggleItalic().run();
-  const toggleH1 = () => {
-    // Check if an H1 already exists in the document
-    const h1Count = (editor?.getHTML().match(/<h1/g) || []).length;
-    const isCurrentH1 = editor?.isActive('heading', { level: 1 });
 
-    if (h1Count >= 1 && !isCurrentH1) {
-      toast.error('SEO Tip: Only one H1 is allowed per blog for best search ranking.');
-      return;
+  const handleBlockFormatChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (!editor) return;
+    const val = e.target.value;
+    if (val === 'p') {
+      editor.chain().focus().setParagraph().run();
+    } else {
+      editor.chain().focus().toggleHeading({ level: parseInt(val.charAt(1)) as any }).run();
     }
-    editor?.chain().focus().toggleHeading({ level: 1 }).run();
   };
 
-  const toggleH2 = () => editor?.chain().focus().toggleHeading({ level: 2 }).run();
-  const toggleH3 = () => editor?.chain().focus().toggleHeading({ level: 3 }).run();
-  const toggleH4 = () => editor?.chain().focus().toggleHeading({ level: 4 }).run();
-  const toggleH5 = () => editor?.chain().focus().toggleHeading({ level: 5 }).run();
-  const toggleH6 = () => editor?.chain().focus().toggleHeading({ level: 6 }).run();
+  const getBlockFormat = () => {
+    if (editor?.isActive('heading', { level: 2 })) return 'h2';
+    if (editor?.isActive('heading', { level: 3 })) return 'h3';
+    if (editor?.isActive('heading', { level: 4 })) return 'h4';
+    if (editor?.isActive('heading', { level: 5 })) return 'h5';
+    if (editor?.isActive('heading', { level: 6 })) return 'h6';
+    return 'p';
+  };
   const toggleBulletList = () => editor?.chain().focus().toggleBulletList().run();
 
   if (!editor) return null;
 
   const isActive = (type: string, opts?: any) => editor.isActive(type, opts);
-  
-  // Logic to disable H1 button if one already exists elsewhere
-  const isH1Disabled = !isActive('heading', { level: 1 }) && (editor.getHTML().match(/<h1/g) || []).length >= 1;
 
   return (
     <div className="relative">
@@ -478,63 +371,23 @@ export default function BlogEditor({
             <button
               type="button"
               aria-label="Switch to Visual Editor"
-              aria-pressed={mode === 'edit' && !isRawMode}
+              aria-pressed={mode === 'edit'}
               onClick={() => {
                 setMode('edit');
-                setIsRawMode(false);
               }}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all relative ${
-                mode === 'edit' && !isRawMode
+                mode === 'edit'
                   ? 'text-white' 
                   : 'text-text-secondary hover:text-(--color-text-primary)'
               }`}
             >
-              {mode === 'edit' && !isRawMode && (
+              {mode === 'edit' && (
                 <motion.div layoutId="mode-bg" className="absolute inset-0 bg-primary rounded-md z-0" />
               )}
               <Edit3 size={14} className="relative z-10" /> 
               <span className="relative z-10">Visual</span>
             </button>
-            <button
-              type="button"
-              aria-label="Switch to Raw Markdown Editor"
-              aria-pressed={mode === 'edit' && isRawMode}
-              onClick={() => {
-                setMode('edit');
-                setIsRawMode(true);
-              }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all relative ${
-                mode === 'edit' && isRawMode
-                  ? 'text-white' 
-                  : 'text-text-secondary hover:text-(--color-text-primary)'
-              }`}
-            >
-              {mode === 'edit' && isRawMode && (
-                <motion.div layoutId="mode-bg" className="absolute inset-0 bg-indigo-600 rounded-md z-0" />
-              )}
-              <span className="text-[10px] relative z-10">#</span> 
-              <span className="relative z-10">Markdown</span>
-            </button>
-            <button
-              type="button"
-              aria-label="Switch to Plain Text"
-              aria-pressed={mode === 'text'}
-              onClick={() => {
-                setMode('text');
-                setIsRawMode(false);
-              }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all relative ${
-                mode === 'text'
-                  ? 'text-white' 
-                  : 'text-text-secondary hover:text-(--color-text-primary)'
-              }`}
-            >
-              {mode === 'text' && (
-                <motion.div layoutId="mode-bg" className="absolute inset-0 bg-emerald-600 rounded-md z-0" />
-              )}
-              <FileText size={14} className="relative z-10" /> 
-              <span className="relative z-10">Plain Text</span>
-            </button>
+
             <button
               type="button"
               aria-label="Switch to Preview Mode"
@@ -584,61 +437,25 @@ export default function BlogEditor({
               <Italic size={16} />
             </button>
             <div className="w-px h-5 bg-white/30 mx-1" />
-            <button
-              type="button"
-              onClick={toggleH1}
-              disabled={isH1Disabled}
-              className={`p-1.5 rounded-lg transition-colors ${
-                isActive('heading', { level: 1 }) 
-                  ? 'bg-primary text-white' 
-                  : isH1Disabled 
-                    ? 'text-white/20 cursor-not-allowed' 
-                    : 'text-white/80 hover:text-white hover:bg-white/20'
-              }`}
-              title={isH1Disabled ? "H1 already exists" : "Heading 1"}
+            <div className="w-px h-5 bg-white/30 mx-2" />
+            <select
+              value={getBlockFormat()}
+              onChange={handleBlockFormatChange}
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary appearance-none cursor-pointer pr-6 relative"
+              style={{
+                backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 0.5rem center',
+                backgroundSize: '1em 1em',
+              }}
             >
-              <Heading1 size={14} />
-            </button>
-            <button
-              type="button"
-              onClick={toggleH2}
-              className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 2 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
-              title="Heading 2"
-            >
-              <Heading2 size={14} />
-            </button>
-            <button
-              type="button"
-              onClick={toggleH3}
-              className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 3 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
-              title="Heading 3"
-            >
-              <Heading3 size={14} />
-            </button>
-            <button
-              type="button"
-              onClick={toggleH4}
-              className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 4 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
-              title="Heading 4"
-            >
-              <Heading4 size={14} />
-            </button>
-            <button
-              type="button"
-              onClick={toggleH5}
-              className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 5 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
-              title="Heading 5"
-            >
-              <Heading5 size={14} />
-            </button>
-            <button
-              type="button"
-              onClick={toggleH6}
-              className={`p-1.5 rounded-lg transition-colors ${isActive('heading', { level: 6 }) ? 'bg-primary text-white' : 'text-white/80 hover:text-white hover:bg-white/20'}`}
-              title="Heading 6"
-            >
-              <Heading6 size={14} />
-            </button>
+              <option value="p" className="text-gray-900">Paragraph</option>
+              <option value="h2" className="text-gray-900">Heading 2</option>
+              <option value="h3" className="text-gray-900">Heading 3</option>
+              <option value="h4" className="text-gray-900">Heading 4</option>
+              <option value="h5" className="text-gray-900">Heading 5</option>
+              <option value="h6" className="text-gray-900">Heading 6</option>
+            </select>
             <div className="w-px h-5 bg-white/30 mx-1" />
             <button
               type="button"
@@ -928,47 +745,9 @@ export default function BlogEditor({
                     <Eye size={12} /> Read-Only Mode
                   </div>
                 )}
-                {isRawMode ? (
-                  <textarea
-                    aria-label="Raw Markdown Editor"
-                    value={content}
-                    onChange={(e) => {
-                      isInternalChange.current = true;
-                      onChange(e.target.value);
-                    }}
-                    className="w-full min-h-[600px] p-10 bg-black/5 dark:bg-black/40 text-(--color-text-primary) font-mono text-sm leading-relaxed focus:bg-white/5 outline-none transition-all resize-none border-b border-white/5"
-                    placeholder="Paste or write your raw markdown here... Use ## for headers, ** for bold, etc."
-                  />
-                ) : (
-                  <EditorContent 
-                    editor={editor} 
-                    className={`min-h-[500px] ${!editable ? 'pointer-events-none opacity-70' : ''}`}
-                  />
-                )}
-              </motion.div>
-            ) : mode === 'text' ? (
-              <motion.div
-                key="text-view"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                transition={{ duration: 0.2 }}
-                className="w-full"
-              >
-                {!editable && (
-                  <div className="absolute top-4 right-4 z-20 px-3 py-1.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-bold rounded-full flex items-center gap-1.5 border border-yellow-200 dark:border-yellow-800">
-                    <Eye size={12} /> Read-Only Mode
-                  </div>
-                )}
-                <textarea
-                  aria-label="Plain Text Editor"
-                  value={content}
-                  onChange={(e) => {
-                    isInternalChange.current = true;
-                    onChange(e.target.value);
-                  }}
-                  className="w-full min-h-[600px] p-10 bg-white/5 dark:bg-black/80 text-(--color-text-primary) font-sans text-base leading-relaxed focus:bg-white/10 outline-none transition-all resize-none border-b border-emerald-500/20"
-                  placeholder="Write pure text here... It will automatically be formatted as paragraphs."
+                <EditorContent 
+                  editor={editor} 
+                  className={`min-h-[500px] ${!editable ? 'pointer-events-none opacity-70' : ''}`}
                 />
               </motion.div>
             ) : (
@@ -1007,8 +786,8 @@ export default function BlogEditor({
                     </div>
                   </div>
 
-                  {/* 21:9 HERO IMAGE PREVIEW */}
-                  <div className="mt-28 relative aspect-21/9 rounded-[4rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.15)] group bg-white/5 border border-white/10">
+                  {/* 16:9 HERO IMAGE PREVIEW */}
+                  <div className="mt-28 relative aspect-video rounded-[4rem] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.15)] group bg-white/5 border border-white/10">
                     {imageUrl ? (
                       <img src={imageUrl} alt={imageAlt || title} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-1000" />
                     ) : (
@@ -1020,10 +799,10 @@ export default function BlogEditor({
                 </div>
 
                 {/* THREE-COLUMN PREVIEW LAYOUT */}
-                <div className="max-w-[1500px] mx-auto px-8 mt-24 lg:grid lg:grid-cols-[280px_1fr_400px] lg:gap-20 items-start">
+                <div className="max-w-[1500px] mx-auto px-8 mt-24 lg:grid lg:grid-cols-[1fr_300px] xl:grid-cols-[250px_1fr_350px] lg:gap-10 xl:gap-16 items-start relative">
                   
                   {/* Left Column: TOC Mockup */}
-                  <aside className="hidden lg:block space-y-10 opacity-30 pointer-events-none sticky top-12 self-start pb-10">
+                  <aside className="hidden xl:block space-y-10 opacity-30 pointer-events-none sticky top-12 self-start pb-10">
                     <div className="flex items-center gap-2 font-black text-gray-400 uppercase tracking-[0.3em] text-[9px]">
                         <List size={14} className="text-gray-400" />
                         Index
@@ -1036,7 +815,7 @@ export default function BlogEditor({
                   </aside>
 
                   {/* Center Column: Content */}
-                  <div className="w-full pb-24">
+                  <div className="w-full min-w-0 pb-24">
                     <div className="prose prose-lg md:prose-xl prose-gray dark:prose-invert max-w-none 
                       prose-headings:font-black prose-headings:text-gray-900 dark:prose-headings:text-white prose-headings:tracking-tighter 
                       prose-p:text-[1.125rem] prose-p:leading-[2.1] prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:mb-10
@@ -1044,34 +823,6 @@ export default function BlogEditor({
                       prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-primary/5 prose-blockquote:py-8 prose-blockquote:px-10 prose-blockquote:rounded-3xl prose-blockquote:not-italic prose-blockquote:my-16
                       prose-li:text-[1.125rem] prose-li:leading-[2] prose-li:mb-4
                       first-letter:text-6xl first-letter:font-black first-letter:text-primary first-letter:mr-4 first-letter:mt-2 first-letter:float-left">
-                      {isRawMode ? (
-                        <ReactMarkdown 
-                          remarkPlugins={[remarkGfm, remarkBreaks]}
-                          rehypePlugins={[rehypeRaw]}
-                          components={{
-                            h1: (props) => <h2 className="text-3xl font-black mt-10 mb-6 text-gray-900 dark:text-white leading-tight tracking-tight" {...props} />,
-                            h2: (props) => <h2 className="text-2xl font-bold mt-8 mb-4 text-gray-900 dark:text-white leading-snug tracking-tight" {...props} />,
-                            h3: (props) => <h3 className="text-xl font-bold mt-6 mb-3 text-gray-900 dark:text-white" {...props} />,
-                            p: (props) => <p className="mb-6 leading-loose text-lg text-gray-800 dark:text-gray-300" {...props} />,
-                            img: (props) => (
-                              <span className="block my-10 group relative aspect-video overflow-hidden rounded-2xl shadow-2xl">
-                                <img 
-                                  className="w-full h-full object-cover transition-transform hover:scale-[1.01]" 
-                                  src={props.src || ''}
-                                  alt={props.alt || 'Content image'} 
-                                />
-                                {props.alt && <span className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-2 text-center text-[10px] text-white uppercase tracking-widest italic">{props.alt}</span>}
-                              </span>
-                            ),
-                            a: (props) => <a className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-medium transition-colors" {...props} />,
-                            ul: (props) => <ul className="list-disc list-outside ml-6 mb-6 space-y-2 text-lg text-gray-800 dark:text-gray-300" {...props} />,
-                            ol: (props) => <ol className="list-decimal list-outside ml-6 mb-6 space-y-2 text-lg text-gray-800 dark:text-gray-300" {...props} />,
-                            blockquote: (props) => <blockquote className="border-l-4 border-primary pl-6 py-2 italic my-8 bg-primary/5 text-xl text-gray-900 dark:text-gray-100 font-serif leading-relaxed rounded-r-lg" {...props} />,
-                          }}
-                        >
-                          {content || '*Start writing to see the preview...*'}
-                        </ReactMarkdown>
-                      ) : (
                         <div
                           dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(processPreviewHtml(
@@ -1079,7 +830,6 @@ export default function BlogEditor({
                             ), { ADD_ATTR: ['class', 'style'] })
                           }}
                         />
-                      )}
                     </div>
                   </div>
 

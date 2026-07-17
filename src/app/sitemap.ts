@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
- 
-export default function sitemap(): MetadataRoute.Sitemap {
+import { cmsApi } from './lib/cms'
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.studyhours.com' // Replace with actual domain
 
   // We can programmatically generate this, but for now we list the core routes
@@ -46,10 +47,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/online-tutoring-uk',
   ]
  
-  return routes.map((route) => ({
+  const coreEntries: MetadataRoute.Sitemap = routes.map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: route === '' ? 1 : 0.8,
   }))
+
+  // Programmatic regional tutor landing pages (from the CMS)
+  const regionalPages = await cmsApi.getRegionalPages()
+  const regionalEntries: MetadataRoute.Sitemap = regionalPages.map((p) => ({
+    url: `https://studyhours.com/tutoring/${p.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly',
+    priority: 0.8,
+  }))
+
+  return [...coreEntries, ...regionalEntries]
 }

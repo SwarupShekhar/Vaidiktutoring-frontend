@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
@@ -366,3 +367,12 @@ input[type="range"]::-moz-range-thumb {
   user-select: text;
   -webkit-user-select: text;
 }
+
+/* Explicit Prose Fallback for Typography (Tailwind v4 bridge) */
+.prose h1 { font-size: 2.25em !important; margin-top: 0 !important; margin-bottom: 0.8888889em !important; line-height: 1.1111111 !important; font-weight: 700 !important; }
+.prose h2 { font-size: 1.5em !important; margin-top: 2em !important; margin-bottom: 1em !important; line-height: 1.3333333 !important; font-weight: 700 !important; }
+.prose h3 { font-size: 1.25em !important; margin-top: 1.6em !important; margin-bottom: 0.6em !important; line-height: 1.6 !important; font-weight: 700 !important; }
+.prose h4 { font-size: 1.125em !important; margin-top: 1.5em !important; margin-bottom: 0.5em !important; line-height: 1.5 !important; font-weight: 700 !important; }
+.prose h5 { font-size: 1em !important; margin-top: 1.5em !important; margin-bottom: 0.5em !important; line-height: 1.5 !important; font-weight: 700 !important; }
+.prose h6 { font-size: 0.875em !important; margin-top: 1.5em !important; margin-bottom: 0.5em !important; line-height: 1.5 !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; }
+.prose p { margin-top: 1.25em !important; margin-bottom: 1.25em !important; }

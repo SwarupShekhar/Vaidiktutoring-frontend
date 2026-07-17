@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type') || 'blogPost';
 
     // Verify the secret against environment variable
-    const previewSecret = process.env.PREVIEW_SECRET || 'vaidikeduservicespvtltd_preview_2026_key';
+    const previewSecret = process.env.NEXT_PUBLIC_SANITY_PREVIEW_SECRET || 'vaidikeduservicespvtltd_preview_2026_key';
     if (secret !== previewSecret) {
         return new Response('Invalid preview token', { status: 401 });
     }
@@ -27,6 +27,13 @@ export async function GET(request: NextRequest) {
 
     // Dynamically route to correct visual template
     const cleanSlug = slug.trim();
-    const redirectPath = type === 'landingPage' ? `/resources/${cleanSlug}` : `/blogs/${cleanSlug}`;
+    // Regional (tutors) pages carry multi-segment slugs like "uk/gcse" and live only
+    // under /tutors; single-segment landingPage slugs are the /resources pages.
+    const redirectPath =
+        type === 'landingPage'
+            ? cleanSlug.includes('/')
+                ? `/tutoring/${cleanSlug}`
+                : `/resources/${cleanSlug}`
+            : `/blogs/${cleanSlug}`;
     redirect(redirectPath);
 }
