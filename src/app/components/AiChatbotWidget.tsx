@@ -565,7 +565,7 @@ export default function AiChatbotWidget() {
     return (
         <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end gap-2 pointer-events-none">
             {isOpen && (
-                <div className="pointer-events-auto w-[calc(100vw-3rem)] sm:w-[350px] md:w-[400px] h-[550px] max-h-[calc(100dvh-120px)] flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-white/20 shadow-2xl origin-bottom-right transition-all animate-in fade-in zoom-in-95 duration-200">
+                <div className="pointer-events-auto w-[calc(100vw-3rem)] sm:w-[350px] md:w-[400px] h-[550px] max-h-[calc(100dvh-180px)] flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-slate-200 dark:border-white/10 shadow-2xl origin-bottom-right transition-all animate-in fade-in zoom-in-95 duration-200">
                     {/* Header */}
                     <div className="p-4 border-b border-white/10 bg-sapphire text-white flex justify-between items-center backdrop-blur-md">
                         <div className="flex items-center gap-3">
