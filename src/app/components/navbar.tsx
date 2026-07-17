@@ -1,7 +1,7 @@
 // src/app/components/navbar.tsx
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
@@ -27,7 +27,7 @@ const TUTORING_COUNTRY_META: Record<string, { name: string; flag: string }> = {
 
 type RegionalPage = { slug: string; title?: string; country?: string };
 
-export default function Navbar() {
+export default function Navbar({ initialRegionalPages }: { initialRegionalPages?: RegionalPage[] } = {}) {
   const { user, logout } = useAuthContext();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -36,26 +36,8 @@ export default function Navbar() {
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
   const [tutoringDropdownOpen, setTutoringDropdownOpen] = useState(false);
   const [activeTutoringGroup, setActiveTutoringGroup] = useState<string | null>(null);
-  const [regionalPages, setRegionalPages] = useState<RegionalPage[]>([]);
+  const [regionalPages, setRegionalPages] = useState<RegionalPage[]>(initialRegionalPages || []);
   const { activeCurriculum, setCurriculum } = useCurriculum();
-
-  // Pull the published regional tutoring pages once so the Tutoring menu
-  // populates itself from Sanity — editors publish a page, it appears here.
-  useEffect(() => {
-    let mounted = true;
-    cmsApi
-      .getRegionalPages()
-      .then((pages) => {
-        console.log("Fetched regional pages:", pages);
-        if (mounted) setRegionalPages(pages || []);
-      })
-      .catch((err) => {
-        console.error("Error fetching regional pages:", err);
-      });
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   // Group regional pages by country, each ordered shallowest-path first then
   // alphabetically, so "Online Tutoring UK" precedes "GCSE Maths Tutor".

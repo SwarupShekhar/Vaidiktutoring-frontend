@@ -13,6 +13,7 @@ import Navbar from "./components/navbar";
 import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import TitleBar from "./components/TitleBar";
+import { cmsApi } from "./lib/cms";
 import { CSPostHogProvider } from './providers/PostHogProvider'
 
 
@@ -66,6 +67,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   const cookieStore = await cookies();
   const isAppShell = cookieStore.get("sh_app")?.value === "1";
+  
+  // Fetch regional pages on the server for immediate HTML rendering and SEO
+  const regionalPages = await cmsApi.getRegionalPages().catch(() => []);
 
   // If Clerk key is missing, show a fallback layout without Clerk
   if (!clerkPublishableKey) {
@@ -82,7 +86,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                   <ClientSideComponents />
                   {isAppShell && <TitleBar />}
                   {!isAppShell && <AnnouncementBar />}
-                  {!isAppShell && <Navbar />}
+                  {!isAppShell && <Navbar initialRegionalPages={regionalPages} />}
                   {children}
                   {isDraftMode && <VisualEditing />}
                   {!isAppShell && <Footer />}
@@ -131,7 +135,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                 <NotificationProvider>
                   <ClientSideComponents />
                   {isAppShell && <TitleBar />}
-                  {!isAppShell && <Navbar />}
+                  {!isAppShell && <Navbar initialRegionalPages={regionalPages} />}
                   {children}
                   {isDraftMode && <VisualEditing />}
                   {!isAppShell && <Footer />}
