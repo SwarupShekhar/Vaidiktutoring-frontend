@@ -43,7 +43,9 @@ export default function ShareNotesModal({
       if (file) formData.append('file', file);
 
       await api.post(`/sessions/${sessionId}/notes`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        // 'multipart/form-data' without a boundary is invalid; null lets axios
+        // set the full multipart header (with boundary) from the FormData body.
+        headers: { 'Content-Type': null },
       });
       toast.success('Notes shared with student!');
       onClose();

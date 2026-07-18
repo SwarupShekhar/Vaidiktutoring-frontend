@@ -64,6 +64,43 @@ interface SessionProps {
     params: Promise<{ id: string }>;
 }
 
+/**
+ * Produce a clean, human "First L." display name.
+ *
+ * Handles the messy real-world inputs we actually get:
+ *  - Proper split names  → formatDisplayName('Swarup', 'Shekhar') = 'Swarup S.'
+ *  - Single first name    → formatDisplayName('Swarup')            = 'Swarup'
+ *  - An email local-part accidentally stored as the name (e.g. test accounts
+ *    signed up as `swarup.shekhar+9@gmail.com`, where `first_name` ends up as
+ *    `swarup.shekhar+9`) → 'Swarup S.'  (strips the +tag / @domain, splits on
+ *    . _ - and treats the second token as a surname initial).
+ *  - Empty / undefined    → the provided fallback.
+ *
+ * NOTE: the real fix is upstream — the backend should store a proper
+ * first_name/last_name instead of the email local-part. This is a defensive
+ * display-layer cleanup so minors never see a raw login handle on the board.
+ */
+function formatDisplayName(first?: string | null, last?: string | null, fallback = 'Student'): string {
+    const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+    const rawFirst = (first || '').trim();
+    const rawLast = (last || '').trim();
+
+    if (!rawFirst && !rawLast) return fallback;
+
+    // Proper last name present → "First L."
+    if (rawLast) {
+        return `${cap(rawFirst)} ${rawLast.charAt(0).toUpperCase()}.`.trim();
+    }
+
+    // No last name: the first name may actually be an email local-part.
+    const local = rawFirst.split('@')[0].split('+')[0];
+    const tokens = local.split(/[._-]+/).filter(Boolean);
+    if (tokens.length >= 2) {
+        return `${cap(tokens[0])} ${tokens[1].charAt(0).toUpperCase()}.`;
+    }
+    return cap(tokens[0] || rawFirst) || fallback;
+}
+
 export default function SessionPage({ params }: SessionProps) {
     const { id: sessionId } = React.use(params);
     const { user, token, loading: authLoading } = useAuthContext();
@@ -297,7 +334,7 @@ export default function SessionPage({ params }: SessionProps) {
     // recording/not-recording indicator) when consent is absent.
     const recordingAllowed = !!primaryStudent?.recording_consent_granted;
     const studentData = {
-        name: primaryStudent ? `${primaryStudent.first_name} ${primaryStudent.last_name ? primaryStudent.last_name.charAt(0) + '.' : ''}`.trim() : 'Student',
+        name: primaryStudent ? formatDisplayName(primaryStudent.first_name, primaryStudent.last_name, 'Student') : 'Student',
         grade: primaryStudent?.grade ? parseInt(String(primaryStudent.grade).replace(/\D/g, '')) : 0,
         interests: primaryStudent?.interests || [],
         recentProgress: primaryStudent?.recent_focus || 'Waiting for initial session assessment.',
@@ -355,7 +392,9 @@ export default function SessionPage({ params }: SessionProps) {
                             }
                         }
                     } else if (user.role === 'student') {
-                        newSocket.emit('whiteboard.syncRequest', { sessionId });
+                        // Server subscribes to 'whiteboard.requestSync' and relays it
+                        // outbound as 'whiteboard.syncRequest' for the tutor to answer.
+                        newSocket.emit('whiteboard.requestSync', { sessionId });
                     }
                 }
             });
@@ -529,7 +568,7 @@ export default function SessionPage({ params }: SessionProps) {
         socket.emit('whiteboard.pointerUpdate', {
             sessionId,
             userId: user?.id,
-            username: user?.first_name || 'User',
+            username: formatDisplayName(user?.first_name, (user as any)?.last_name, 'User'),
             pointer: payload.pointer,
             button: payload.button,
             selectedElementIds: payload.selectedElementIds,
@@ -1018,7 +1057,10 @@ export default function SessionPage({ params }: SessionProps) {
             // Auth is injected by the shared api client's interceptor — do not read
             // localStorage directly (that can send a stale token for a different user).
             const res = await api.post(`/sessions/${sessionId}/slides`, formData, {
-                timeout: 60000
+                timeout: 60000,
+                // axios v1 JSON-stringifies FormData when the instance default
+                // Content-Type is application/json; null forces multipart w/ boundary.
+                headers: { 'Content-Type': null }
             });
 
             if (res.data.success && excalidrawAPI && res.data.sasUrl) {
@@ -1493,7 +1535,11 @@ export default function SessionPage({ params }: SessionProps) {
             const formData = new FormData();
             formData.append('file', pdfBlob, `Session_${sessionId}_Annotations.pdf`);
             
-            await api.post(`/sessions/${sessionId}/shared-pdf`, formData);
+            await api.post(`/sessions/${sessionId}/shared-pdf`, formData, {
+                // axios v1 JSON-stringifies FormData when the instance default
+                // Content-Type is application/json; null forces multipart w/ boundary.
+                headers: { 'Content-Type': null }
+            });
 
             return true;
         } catch (error: any) {
