@@ -1420,10 +1420,6 @@ export default function SessionPage({ params }: SessionProps) {
 
     const exportAndSharePdf = useCallback(async () => {
         if (isExporting) return;
-        if (slides.length === 0) {
-            toast.error("No slides available to export");
-            return;
-        }
 
         setIsExporting(true);
         try {
@@ -1436,21 +1432,10 @@ export default function SessionPage({ params }: SessionProps) {
                 format: [800, 600] // Matching whiteboard aspect ratio
             });
 
-            // Store current state to restore later
-            const originalSlide = currentSlideIndex;
-            
-            toast.info("Generating session PDF... please don't switch slides.");
-
-            for (let i = 0; i < slides.length; i++) {
-                if (i > 0) pdf.addPage([800, 600], 'landscape');
+            if (slides.length === 0) {
+                toast.info("Generating session PDF...");
                 
-                // 1. Explicitly switch slide and wait for its full render (loading image + annotations)
-                await switchSlide(i, undefined, true);
-                
-                // Extra buffer to ensure Excalidraw internal state is updated
-                await new Promise(r => setTimeout(r, 600)); 
-
-                // 2. Export current view
+                // Export current view only
                 const canvas = await exportToCanvas({
                     elements: excalidrawAPIRef.current.getSceneElements(),
                     appState: {
@@ -1464,19 +1449,47 @@ export default function SessionPage({ params }: SessionProps) {
 
                 const imgData = canvas.toDataURL('image/jpeg', 0.9);
                 pdf.addImage(imgData, 'JPEG', 0, 0, 800, 600);
-            }
+            } else {
+                // Store current state to restore later
+                const originalSlide = currentSlideIndex;
+                
+                toast.info("Generating session PDF... please don't switch slides.");
 
-            // Restore original slide
-            await switchSlide(originalSlide, undefined, true);
+                for (let i = 0; i < slides.length; i++) {
+                    if (i > 0) pdf.addPage([800, 600], 'landscape');
+                    
+                    // 1. Explicitly switch slide and wait for its full render (loading image + annotations)
+                    await switchSlide(i, undefined, true);
+                    
+                    // Extra buffer to ensure Excalidraw internal state is updated
+                    await new Promise(r => setTimeout(r, 600)); 
+
+                    // 2. Export current view
+                    const canvas = await exportToCanvas({
+                        elements: excalidrawAPIRef.current.getSceneElements(),
+                        appState: {
+                            ...excalidrawAPIRef.current.getAppState(),
+                            exportBackground: false,
+                            viewBackgroundColor: '#ffffff',
+                        },
+                        files: excalidrawAPIRef.current.getFiles(),
+                        exportPadding: 0,
+                    });
+
+                    const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                    pdf.addImage(imgData, 'JPEG', 0, 0, 800, 600);
+                }
+
+                // Restore original slide
+                await switchSlide(originalSlide, undefined, true);
+            }
 
             // 3. Convert to blob and upload
             const pdfBlob = pdf.output('blob');
             const formData = new FormData();
             formData.append('file', pdfBlob, `Session_${sessionId}_Annotations.pdf`);
             
-            await api.post(`/sessions/${sessionId}/shared-pdf`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            await api.post(`/sessions/${sessionId}/shared-pdf`, formData);
 
             return true;
         } catch (error: any) {
