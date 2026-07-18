@@ -109,7 +109,7 @@ export default function NewBookingPage() {
                         )}
                     </div>
                 )}
-                <BookingWizard students={students} isStudentsLoading={isLoading} />
+                <BookingWizard students={students} isStudentsLoading={isLoading} creditStatus={creditStatus} />
             </ProtectedClient>
         );
     }
@@ -145,7 +145,7 @@ export default function NewBookingPage() {
                     </div>
                 )}
 
-                <BookingWizard students={students} isStudentsLoading={isLoading} />
+                <BookingWizard students={students} isStudentsLoading={isLoading} creditStatus={creditStatus} />
             </div>
         </ProtectedClient>
     );

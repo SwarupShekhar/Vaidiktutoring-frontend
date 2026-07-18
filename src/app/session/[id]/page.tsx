@@ -2090,6 +2090,19 @@ export default function SessionPage({ params }: SessionProps) {
                     <span className="ml-auto text-white/25 text-[9px] font-semibold shrink-0 tabular-nums">
                         {currentSlideIndex + 1} / {slides.length}
                     </span>
+                    {user?.role === 'tutor' && (
+                        <button 
+                            onClick={() => {
+                                if(window.confirm('Clear all slides?')) {
+                                    setSlides([]);
+                                    socket?.emit('whiteboard.syncSlides', { sessionId, slides: [] });
+                                }
+                            }}
+                            className="ml-3 text-[9px] font-black text-red-500/50 hover:text-red-400 uppercase tracking-widest shrink-0"
+                        >
+                            CLEAR
+                        </button>
+                    )}
                 </div>
             )}
 

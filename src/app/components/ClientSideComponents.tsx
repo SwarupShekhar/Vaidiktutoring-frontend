@@ -26,7 +26,8 @@ export function ClientSideComponents() {
   }, []);
 
   const pathname = usePathname();
-  const isSessionPage = pathname?.startsWith('/session/');
+  // Hide AI Chatbot from all logged-in app routes and session rooms.
+  const isAppRoute = pathname?.match(/^\/(students|parents|tutors|admin|session|onboarding|bookings|login)/);
 
   return (
     <>
@@ -36,7 +37,7 @@ export function ClientSideComponents() {
       <VerificationModal />
       <CookieConsentBanner />
       <GoogleAnalytics />
-      {!isSessionPage && <AiChatbotWidget />}
+      {!isAppRoute && <AiChatbotWidget />}
     </>
   );
 }

@@ -108,7 +108,9 @@ function StudentDashboardContent() {
   const onboardingSteps = useMemo(() => {
     if (!studentProfile || !progressSummary) return [];
     const step1 = !!(
-      (studentProfile.grade && studentProfile.school) ||
+      studentProfile.curriculum_preference ||
+      studentProfile.grade ||
+      studentProfile.school ||
       (studentProfile.interests && studentProfile.interests.length > 0) ||
       studentProfile.recent_focus ||
       (studentProfile.struggle_areas && studentProfile.struggle_areas.length > 0)

@@ -171,6 +171,7 @@ type StudentOption = {
 interface BookingWizardProps {
     students: StudentOption[];
     isStudentsLoading?: boolean;
+    creditStatus?: any;
 }
 
 // MOCK TUTORS (Ideally fetch /programs/:id/staffing)
@@ -186,12 +187,17 @@ const MOCK_PROGRAMS = [
     { id: '12345678-1234-1234-1234-123456789abc', name: 'College Admissions Counseling' } // Placeholder UUID
 ];
 
-export default function BookingWizard({ students, isStudentsLoading = false }: BookingWizardProps) {
+export default function BookingWizard({ students, isStudentsLoading = false, creditStatus }: BookingWizardProps) {
     const router = useRouter();
     const { user } = useAuthContext();
     const queryClient = useQueryClient();
     const isAppShell = useIsAppShell();
     const { subjects, curricula, packages, loading: loadingCatalog } = useCatalog();
+
+    // Determine duration: 1st trial session is 1 hr, subsequent trial sessions are 0.5 hr, paid is 1 hr.
+    const isTrialActive = creditStatus?.mode === 'trial_active';
+    const trialSessionsUsed = creditStatus?.sessionsUsed || 0;
+    const durationHours = (isTrialActive && trialSessionsUsed > 0) ? 0.5 : 1;
 
     // STATE
     const [step, setStep] = useState<Step>(0);
@@ -699,6 +705,7 @@ export default function BookingWizard({ students, isStudentsLoading = false }: B
                                         start={start}
                                         end={end}
                                         onSelect={handleTimeSelect}
+                                        durationHours={durationHours}
                                     />
                                 </div>
                             </div>
