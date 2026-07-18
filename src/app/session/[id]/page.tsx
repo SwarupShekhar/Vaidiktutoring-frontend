@@ -1014,10 +1014,7 @@ export default function SessionPage({ params }: SessionProps) {
             // Auth is injected by the shared api client's interceptor — do not read
             // localStorage directly (that can send a stale token for a different user).
             const res = await api.post(`/sessions/${sessionId}/slides`, formData, {
-                timeout: 60000,
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                timeout: 60000
             });
 
             if (res.data.success && excalidrawAPI && res.data.sasUrl) {
