@@ -93,6 +93,14 @@ function VaultContent() {
       }
     };
     fetchAssets();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchAssets();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [subjectFilter]);
 
   const filteredAssets = assets.filter(a =>

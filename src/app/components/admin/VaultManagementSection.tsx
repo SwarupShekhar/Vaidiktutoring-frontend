@@ -49,6 +49,14 @@ export default function VaultManagementSection() {
     useEffect(() => {
         fetchAssets();
         fetchCurricula();
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                fetchAssets();
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, []);
 
     const handleUpload = async (e: React.FormEvent) => {
