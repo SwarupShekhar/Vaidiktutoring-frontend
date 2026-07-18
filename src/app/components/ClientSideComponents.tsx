@@ -11,6 +11,7 @@ const AuthRoleRedirect = dynamic(() => import("./AuthRoleRedirect"), { ssr: fals
 const AiChatbotWidget = dynamic(() => import("./AiChatbotWidget"), { ssr: false });
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 export function ClientSideComponents() {
   useEffect(() => {
@@ -24,6 +25,9 @@ export function ClientSideComponents() {
     }
   }, []);
 
+  const pathname = usePathname();
+  const isSessionPage = pathname?.startsWith('/session/');
+
   return (
     <>
       <AuthRoleRedirect />
@@ -32,7 +36,7 @@ export function ClientSideComponents() {
       <VerificationModal />
       <CookieConsentBanner />
       <GoogleAnalytics />
-      <AiChatbotWidget />
+      {!isSessionPage && <AiChatbotWidget />}
     </>
   );
 }

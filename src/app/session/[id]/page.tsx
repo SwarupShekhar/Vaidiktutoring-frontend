@@ -328,7 +328,6 @@ export default function SessionPage({ params }: SessionProps) {
         const newSocket = io(SOCKET_URL, {
             auth: { token: authToken },
             query: { sessionId, userId: user.id },
-            transports: ['websocket'], // Force websocket to resolve "xhr poll error"
             withCredentials: true
         });
 
