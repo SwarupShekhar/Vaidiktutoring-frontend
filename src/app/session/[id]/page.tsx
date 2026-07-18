@@ -14,6 +14,7 @@ const VaultSidebar = dynamic(() => import('@/app/components/session/VaultSidebar
 const AttentionFrameworkPanel = dynamic(() => import('@/app/components/session/AttentionFrameworkPanel'), { ssr: false });
 import { vaultApi, VaultAsset } from '@/app/lib/vault';
 import { io, Socket } from 'socket.io-client';
+import DailyIframe from '@daily-co/daily-js';
 
 import { toast } from 'sonner';
 import {
@@ -271,6 +272,10 @@ export default function SessionPage({ params }: SessionProps) {
     const [showLibraryTip, setShowLibraryTip] = useState(false);
     const [isToolbarCollapsed, setIsToolbarCollapsed] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
+
+    // Daily call references
+    const dailyContainerRef = useRef<HTMLDivElement>(null);
+    const dailyCallRef = useRef<any>(null);
 
     useEffect(() => {
         if (!hasJoined) return;
@@ -1448,7 +1453,7 @@ export default function SessionPage({ params }: SessionProps) {
                 .then(res => {
                     setDailyRoomUrl(res.data.roomUrl);
                     setDailyToken(res.data.token);
-                    setVideoLoading(false);
+                    // Wait for daily-js to join before hiding loader
                 })
                 .catch(err => {
                     console.error('[Daily] Failed to get token:', err);
@@ -1463,6 +1468,43 @@ export default function SessionPage({ params }: SessionProps) {
                 });
         }
     }, [hasJoined, sessionId]);
+
+    // Initialize Daily.co using daily-js
+    useEffect(() => {
+        if (!dailyRoomUrl || !dailyToken || !hasJoined) return;
+        if (!dailyContainerRef.current) return;
+        if (dailyCallRef.current) return; // already created
+
+        const callObject = DailyIframe.createFrame(dailyContainerRef.current, {
+            iframeStyle: {
+                width: '100%',
+                height: '100%',
+                border: '0',
+                position: 'absolute',
+                inset: '0'
+            },
+            showLeaveButton: false,
+            showFullscreenButton: false,
+            activeSpeakerMode: true,
+        });
+
+        dailyCallRef.current = callObject;
+
+        callObject.join({ url: `${dailyRoomUrl}?t=${dailyToken}` }).then(() => {
+            setVideoLoading(false);
+        }).catch(err => {
+            console.error("[Daily] Error joining call:", err);
+            setVideoLoading(false);
+        });
+
+        return () => {
+            if (callObject) {
+                callObject.destroy().then(() => {
+                    dailyCallRef.current = null;
+                });
+            }
+        };
+    }, [dailyRoomUrl, dailyToken, hasJoined]);
 
     const exportAndSharePdf = useCallback(async () => {
         if (isExporting) return;
@@ -2855,14 +2897,9 @@ export default function SessionPage({ params }: SessionProps) {
                             </div>
                         </div>
 
-                        {/* The Iframe itself - Removed key to prevent unmounting on re-render */}
+                        {/* The Iframe itself - Managed by daily-js */}
                         <div className="flex-1 relative bg-black">
-                            <iframe
-                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false&prejoin_ui_enabled=false&layout=active`}
-                                allow="camera; microphone; fullscreen; speaker; display-capture"
-                                className="absolute inset-0 w-full h-full border-0"
-                                title="Daily.co video conference"
-                            />
+                            <div ref={dailyContainerRef} className="absolute inset-0 w-full h-full border-0" />
                             
                             {/* Loading state just in case */}
                             {videoLoading && (
