@@ -2812,7 +2812,7 @@ export default function SessionPage({ params }: SessionProps) {
                         {/* The Iframe itself - Removed key to prevent unmounting on re-render */}
                         <div className="flex-1 relative bg-black">
                             <iframe
-                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false&prejoin_ui_enabled=false&layout=grid`}
+                                src={`${dailyRoomUrl}?t=${dailyToken}&showLeaveButton=false&showFullscreenButton=false&prejoin_ui_enabled=false&layout=active`}
                                 allow="camera; microphone; fullscreen; speaker; display-capture"
                                 className="absolute inset-0 w-full h-full border-0"
                                 title="Daily.co video conference"
