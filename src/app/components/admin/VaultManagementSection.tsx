@@ -86,6 +86,20 @@ export default function VaultManagementSection() {
         }
     };
 
+    const handleDelete = async (id: string, title: string) => {
+        if (!confirm(`Are you sure you want to delete "${title}" from the vault? This cannot be undone.`)) {
+            return;
+        }
+        try {
+            await vaultApi.deleteAsset(id);
+            alert('Asset deleted successfully.');
+            fetchAssets();
+        } catch (error: any) {
+            console.error('Delete failed', error);
+            alert('Failed to delete asset: ' + (error.response?.data?.message || error.message));
+        }
+    };
+
     return (
         <div className="w-full">
             <div className="flex justify-between items-center mb-6">
@@ -163,7 +177,10 @@ export default function VaultManagementSection() {
                                         <Download size={14} />
                                     </button>
                                     {user?.role === 'admin' && (
-                                        <button className="p-1.5 hover:bg-rose-500/10 rounded-lg text-text-secondary hover:text-rose-500 transition-colors">
+                                        <button 
+                                            onClick={() => handleDelete(asset.id, asset.title)}
+                                            className="p-1.5 hover:bg-rose-500/10 rounded-lg text-text-secondary hover:text-rose-500 transition-colors"
+                                        >
                                             <Trash2 size={14} />
                                         </button>
                                     )}

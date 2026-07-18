@@ -40,6 +40,11 @@ export const vaultApi = {
     return res.data;
   },
 
+  deleteAsset: async (id: string) => {
+    const res = await api.delete(`/vault/assets/${id}`);
+    return res.data;
+  },
+
   // View-only: stream the bytes through our backend (authenticated, same-origin)
   // instead of fetching an Azure SAS URL directly from the browser. Avoids the
   // Azure CORS block and keeps the file un-downloadable from the Network tab.

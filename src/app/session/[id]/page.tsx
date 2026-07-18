@@ -340,21 +340,22 @@ export default function SessionPage({ params }: SessionProps) {
                 if (response.success) {
                     sessionStartRef.current = response.sessionStartTime;
                     sessionDurationRef.current = response.sessionDuration;
-                }
-            });
-            // On every (re)connect the tutor pushes the current scene so late-joining
-            // or reconnecting students receive the current whiteboard state immediately.
-            if (user.role === 'tutor') {
-                const api = excalidrawAPIRef.current;
-                if (api) {
-                    const elements = api.getSceneElements();
-                    const files = api.getFiles();
-                    if (elements.length > 0) {
-                        newSocket.emit('whiteboard.update', { sessionId, update: { elements } });
-                        newSocket.emit('whiteboard.syncFiles', { sessionId, files });
+
+                    // On every (re)connect the tutor pushes the current scene so late-joining
+                    // or reconnecting students receive the current whiteboard state immediately.
+                    if (user.role === 'tutor') {
+                        const api = excalidrawAPIRef.current;
+                        if (api) {
+                            const elements = api.getSceneElements();
+                            const files = api.getFiles();
+                            if (elements.length > 0) {
+                                newSocket.emit('whiteboard.update', { sessionId, update: { elements } });
+                                newSocket.emit('whiteboard.syncFiles', { sessionId, files });
+                            }
+                        }
                     }
                 }
-            }
+            });
         });
 
         newSocket.on('session.reaction', (payload: { emoji: string }) => {
