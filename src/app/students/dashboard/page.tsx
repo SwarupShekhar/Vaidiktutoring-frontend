@@ -107,7 +107,12 @@ function StudentDashboardContent() {
   // Onboarding Logic
   const onboardingSteps = useMemo(() => {
     if (!studentProfile || !progressSummary) return [];
-    const step1 = !!(studentProfile.grade && studentProfile.school);
+    const step1 = !!(
+      (studentProfile.grade && studentProfile.school) ||
+      (studentProfile.interests && studentProfile.interests.length > 0) ||
+      studentProfile.recent_focus ||
+      (studentProfile.struggle_areas && studentProfile.struggle_areas.length > 0)
+    );
     const step2 = upcomingSessions.length > 0 || pastSessions.length > 0;
     const step3 = progressSummary.totalSessions > 0;
     return [

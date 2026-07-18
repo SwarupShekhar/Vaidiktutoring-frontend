@@ -5,7 +5,8 @@ const isProtectedRoute = createRouteMatcher([
     '/dashboard(.*)',
     '/parent(.*)',
     '/students(.*)',
-    '/tutor(.*)',
+    '/tutor',
+    '/tutor/(.*)',
     '/admin(.*)',
     '/profile(.*)',
     '/settings(.*)',
@@ -43,6 +44,7 @@ const isPublicRoute = createRouteMatcher([
     '/australia(.*)',
     '/saudi(.*)',
     '/resources(.*)',
+    '/tutoring(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
