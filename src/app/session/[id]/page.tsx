@@ -176,7 +176,7 @@ export default function SessionPage({ params }: SessionProps) {
     const pendingSlideIndexRef = useRef<number | null>(null);
     const [slideAnnotations, setSlideAnnotations] = useState<Record<number, any[]>>({});
     const [collaborators, setCollaborators] = useState<Map<string, any>>(new Map());
-    const [hasPenAccess, setHasPenAccess] = useState(user?.role === 'tutor');
+    const [hasPenAccess, setHasPenAccess] = useState(false);
     const lastInsertionPositions = useRef<Record<string, { x: number; y: number }>>({});
 
     useEffect(() => {
@@ -297,7 +297,7 @@ export default function SessionPage({ params }: SessionProps) {
     // recording/not-recording indicator) when consent is absent.
     const recordingAllowed = !!primaryStudent?.recording_consent_granted;
     const studentData = {
-        name: primaryStudent ? `${primaryStudent.first_name} ${primaryStudent.last_name || ''}`.trim() : 'Student',
+        name: primaryStudent ? `${primaryStudent.first_name} ${primaryStudent.last_name ? primaryStudent.last_name.charAt(0) + '.' : ''}`.trim() : 'Student',
         grade: primaryStudent?.grade ? parseInt(String(primaryStudent.grade).replace(/\D/g, '')) : 0,
         interests: primaryStudent?.interests || [],
         recentProgress: primaryStudent?.recent_focus || 'Waiting for initial session assessment.',
@@ -324,6 +324,8 @@ export default function SessionPage({ params }: SessionProps) {
                 ? document.cookie.match(/manual_auth_token=([^;]+)/)?.[1]
                 : undefined)
             || '';
+
+        if (!authToken) return;
 
         const newSocket = io(SOCKET_URL, {
             auth: { token: authToken },
@@ -352,6 +354,8 @@ export default function SessionPage({ params }: SessionProps) {
                                 newSocket.emit('whiteboard.syncFiles', { sessionId, files });
                             }
                         }
+                    } else if (user.role === 'student') {
+                        newSocket.emit('whiteboard.syncRequest', { sessionId });
                     }
                 }
             });
