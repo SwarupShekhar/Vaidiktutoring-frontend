@@ -984,6 +984,9 @@ export default function SessionPage({ params }: SessionProps) {
     // Handle slide upload
     const handleSlideUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
+        // Reset the input value so the same file can be selected again
+        e.target.value = '';
+        
         if (!file || !sessionId) return;
 
         const name = file.name.toLowerCase();

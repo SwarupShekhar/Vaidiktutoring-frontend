@@ -31,7 +31,7 @@ export const vaultApi = {
 
   // `studentId` lets a parent view a specific child's materials (verified server-side).
   getAssets: async (params?: { subject?: string; studentId?: string }) => {
-    const res = await api.get(`/vault/assets`, { params });
+    const res = await api.get(`/vault/assets`, { params: { ...params, _t: Date.now() } });
     return res.data;
   },
 
