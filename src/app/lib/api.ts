@@ -35,6 +35,96 @@ export const setAuthToken = (token: string | null) => {
   }
 };
 
+// ---- Sliding-session refresh for the manual/backend-JWT path ----
+// Clerk auto-refreshes its own tokens; manual-login users hold a static stored
+// JWT that used to expire mid-session (1d expiry, no refresh) -> 401s + dropped
+// socket. This getter swaps the token for a fresh one via /auth/refresh once it
+// enters the refresh window while still valid, so an active session slides
+// forward instead of dying. Registered as the token getter for manual users.
+const MANUAL_REFRESH_WINDOW_SECONDS = 15 * 60; // refresh when <15min from expiry
+let manualRefreshInFlight: Promise<string | null> | null = null;
+
+const decodeJwtExp = (jwt: string): number | null => {
+  try {
+    const b64 = jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(b64));
+    return typeof payload.exp === 'number' ? payload.exp : null;
+  } catch {
+    return null;
+  }
+};
+
+// Entry-time guard: is there a usable (non-expired) auth token right now?
+// Calls the registered getter, which for Clerk auto-refreshes and for manual
+// users slides the token forward if it's within the refresh window. Returns
+// 'expired' only when we end up with no token or a still-expired one — the
+// signal to send the user through a clean re-login instead of letting them
+// limp into a session on a dead token (can't join / socket rejected / no sync).
+export const ensureValidToken = async (): Promise<'ok' | 'expired'> => {
+  if (!authTokenPromise) return 'expired';
+  const token = await getFreshAuthToken();
+  if (!token) return 'expired';
+  const exp = decodeJwtExp(token);
+  if (exp !== null && exp <= Date.now() / 1000) return 'expired';
+  return 'ok';
+};
+
+export const getManualAuthToken = async (): Promise<string | null> => {
+  let stored: string | null = null;
+  try {
+    stored = localStorage.getItem('auth_token');
+  } catch {
+    return null;
+  }
+  if (!stored) return null;
+
+  const exp = decodeJwtExp(stored);
+  const now = Date.now() / 1000;
+  // Already expired, or no exp claim, or not near expiry -> hand back as-is.
+  // (An expired token can't be refreshed; the 401 interceptor handles re-login.)
+  if (!exp || exp <= now || exp - now > MANUAL_REFRESH_WINDOW_SECONDS) {
+    return stored;
+  }
+
+  // Within the window and still valid -> refresh once, deduping concurrent callers.
+  // Uses raw axios (not `api`) so it bypasses the interceptor and can't recurse.
+  if (!manualRefreshInFlight) {
+    manualRefreshInFlight = axios
+      .post<{ token?: string }>(`${API_URL}/auth/refresh`, {}, {
+        headers: { Authorization: `Bearer ${stored}` },
+      })
+      .then((res) => {
+        const fresh = res.data?.token;
+        if (fresh) {
+          try { localStorage.setItem('auth_token', fresh); } catch { /* ignore */ }
+          setAuthToken(fresh);
+          return fresh;
+        }
+        return stored;
+      })
+      .catch(() => stored)
+      .finally(() => { manualRefreshInFlight = null; });
+  }
+  return manualRefreshInFlight;
+};
+
+export const getAuthToken = () => cachedAuthToken;
+
+export const getFreshAuthToken = async (): Promise<string | null> => {
+  if (authTokenPromise) {
+    try {
+      const token = await authTokenPromise();
+      if (token) {
+        cachedAuthToken = token;
+      }
+      return token || cachedAuthToken;
+    } catch (e) {
+      return cachedAuthToken;
+    }
+  }
+  return cachedAuthToken;
+};
+
 /**
  * Request interceptor - ensures token is fresh if getter is provided
  */
@@ -102,9 +192,10 @@ api.interceptors.response.use(
         cachedAuthToken = null;
         if (typeof window !== 'undefined') {
           localStorage.removeItem('auth_token');
-          // optional: show message here (toast)
-          // window.location.href = '/login';
-          // window.location.href = '/login'; // Force redirect to refresh session
+          // Prevent redirect loops if we're already on login
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = `/login?expired=true&redirect=${encodeURIComponent(window.location.pathname)}`;
+          }
         }
       } catch { }
       return Promise.reject(err);

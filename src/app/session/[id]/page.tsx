@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
 import dynamic from 'next/dynamic';
-import api from '@/app/lib/api';
+import api, { getFreshAuthToken, getAuthToken, ensureValidToken } from '@/app/lib/api';
 // import { DailyProvider } from '@daily-co/daily-react'; // Not used directly, using iframe
 
 const SessionChat = dynamic(() => import('@/app/components/SessionChat'), { ssr: false });
@@ -120,13 +120,30 @@ export default function SessionPage({ params }: SessionProps) {
     // record-the-session prompt (rendered below) and join from there.
     const [hasJoined, setHasJoined] = useState(false);
 
-    // Auto-join everyone EXCEPT tutors. Tutors must acknowledge the record prompt
-    // first, so we never auto-join them.
+    // Entry-time token guard: never let anyone join on a dead JWT. If the token
+    // can't be made valid (already expired, beyond the refresh window), send them
+    // through a clean re-login that returns here — instead of limping into the
+    // session unable to join with the whiteboard out of sync (the exact failure a
+    // student hit). ensureValidToken refreshes Clerk/manual tokens where possible.
+    const joinWithValidToken = useCallback(async () => {
+        const status = await ensureValidToken();
+        if (status === 'expired') {
+            toast.error('Your session expired — please log in again to join.', { duration: 8000 });
+            if (typeof window !== 'undefined') {
+                router.push(`/login?redirect_url=${encodeURIComponent(window.location.pathname)}`);
+            }
+            return;
+        }
+        setHasJoined(true);
+    }, [router]);
+
+    // Auto-join everyone EXCEPT tutors (after validating their token). Tutors must
+    // acknowledge the record prompt first, so we never auto-join them.
     useEffect(() => {
         if (user && user.role !== 'tutor') {
-            setHasJoined(true);
+            joinWithValidToken();
         }
-    }, [user]);
+    }, [user, joinWithValidToken]);
 
     // Suppresses the tutor record prompt during end-of-session teardown
     // (hasJoined flips false right before the redirect fires).
@@ -181,6 +198,9 @@ export default function SessionPage({ params }: SessionProps) {
     const [isPanelExpanded, setIsPanelExpanded] = useState(true);
     const [floatingPosition, setFloatingPosition] = useState({ x: 0, y: 0 });
     const [floatingSize, setFloatingSize] = useState({ width: 220, height: 165 });
+    // True when a REMOTE participant is sharing their screen — drives auto-enlarging
+    // the video panel so the viewer (e.g. the tutor) can read it without zooming.
+    const [isScreenShareActive, setIsScreenShareActive] = useState(false);
 
     // Whiteboard Enhancements State
     const [uploadingSlides, setUploadingSlides] = useState(false);
@@ -364,16 +384,15 @@ export default function SessionPage({ params }: SessionProps) {
         // (JWT) and ignores any client-supplied userId. Source the token the same
         // way authenticated HTTP requests do: the AuthContext-managed JWT, with the
         // manual_auth_token cookie as a fallback (matches admin dashboard socket).
-        const authToken = token
-            || (typeof document !== 'undefined'
-                ? document.cookie.match(/manual_auth_token=([^;]+)/)?.[1]
-                : undefined)
-            || '';
-
-        if (!authToken) return;
-
         const newSocket = io(SOCKET_URL, {
-            auth: { token: authToken },
+            auth: (cb) => {
+                getFreshAuthToken().then(freshToken => {
+                    const fallbackToken = typeof document !== 'undefined'
+                        ? document.cookie.match(/manual_auth_token=([^;]+)/)?.[1]
+                        : undefined;
+                    cb({ token: freshToken || fallbackToken || '' });
+                });
+            },
             query: { sessionId, userId: user.id },
             withCredentials: true
         });
@@ -409,6 +428,32 @@ export default function SessionPage({ params }: SessionProps) {
                     // once their canvas + listeners are ready (avoids dropped state).
                 }
             });
+        });
+
+        // Self-heal on auth failure: refresh the token once and let socket.io's
+        // built-in reconnection retry with it (the auth callback re-runs on each
+        // attempt). Only give up — and send the user to a clean re-login — when the
+        // token is truly dead and can't be refreshed. Prevents a mid-session token
+        // blip from silently killing whiteboard sync.
+        let authHealAttempted = false;
+        newSocket.on('connect_error', async (err) => {
+            console.error('Socket connection error:', err);
+            const msg = (err.message || '').toLowerCase();
+            const isAuthError = msg.includes('unauthorized') || msg.includes('jwt') || msg.includes('expired');
+            if (!isAuthError) return;
+
+            if (!authHealAttempted) {
+                authHealAttempted = true;
+                const status = await ensureValidToken();
+                if (status === 'ok') return; // fresh token in place; allow auto-reconnect
+            }
+
+            // Recovery failed — token is truly dead. Stop looping and re-login here.
+            toast.error('Your session expired. Please log in again to reconnect.', { duration: 10000 });
+            newSocket.disconnect();
+            if (typeof window !== 'undefined') {
+                router.push(`/login?redirect_url=${encodeURIComponent(window.location.pathname)}`);
+            }
         });
 
         newSocket.on('session.reaction', (payload: { emoji: string }) => {
@@ -1504,11 +1549,31 @@ export default function SessionPage({ params }: SessionProps) {
                 inset: '0'
             },
             showLeaveButton: false,
-            showFullscreenButton: false,
+            showFullscreenButton: true, // manual override if auto-enlarge misjudges
             activeSpeakerMode: true,
         });
 
         dailyCallRef.current = callObject;
+
+        // Auto-enlarge the panel while a REMOTE participant is screen-sharing so the
+        // viewer (tutor) can read the shared screen without zooming. Ignores the
+        // local user's own share (they don't need their screen mirrored huge).
+        const updateScreenShare = () => {
+            try {
+                const participants = callObject.participants();
+                const remoteSharing = Object.entries(participants).some(([id, p]: [string, any]) => {
+                    if (id === 'local') return false;
+                    const s = p?.tracks?.screenVideo?.state;
+                    return s === 'playable' || s === 'loading' || s === 'sendable' || p?.screen === true;
+                });
+                setIsScreenShareActive(remoteSharing);
+            } catch { /* participants() not ready yet */ }
+        };
+        callObject.on('participant-updated', updateScreenShare);
+        callObject.on('participant-joined', updateScreenShare);
+        callObject.on('participant-left', updateScreenShare);
+        callObject.on('track-started', updateScreenShare);
+        callObject.on('track-stopped', updateScreenShare);
 
         callObject.join({ url: `${dailyRoomUrl}?t=${dailyToken}` }).then(() => {
             setVideoLoading(false);
@@ -1525,6 +1590,37 @@ export default function SessionPage({ params }: SessionProps) {
             }
         };
     }, [dailyRoomUrl, dailyToken, hasJoined, isDailyContainerReady]);
+
+    // Effective video-panel geometry. Three modes, in priority order:
+    //  1. remote screen-share  -> large centered overlay (tutor reads it easily)
+    //  2. expanded             -> fixed 450px right-side panel
+    //  3. floating             -> user-draggable/resizable thumbnail
+    const videoPanel = useMemo(() => {
+        if (isScreenShareActive) {
+            const width = Math.min(windowSize.width - 60, 1280);
+            const height = windowSize.height - 60;
+            return {
+                size: { width, height },
+                position: { x: Math.max(20, (windowSize.width - width) / 2), y: 40 },
+                locked: true,
+            };
+        }
+        if (isPanelExpanded) {
+            return {
+                size: { width: 450, height: windowSize.height - 52 },
+                position: { x: windowSize.width - 450, y: 52 },
+                locked: true,
+            };
+        }
+        return {
+            size: { width: floatingSize.width, height: floatingSize.height },
+            position: {
+                x: floatingPosition.x || (windowSize.width - 240),
+                y: floatingPosition.y || (windowSize.height - 320),
+            },
+            locked: false,
+        };
+    }, [isScreenShareActive, isPanelExpanded, windowSize, floatingSize, floatingPosition]);
 
     const exportAndSharePdf = useCallback(async () => {
         if (isExporting) return;
@@ -1728,7 +1824,7 @@ export default function SessionPage({ params }: SessionProps) {
                             </>
                         )}
                         <button
-                            onClick={() => setHasJoined(true)}
+                            onClick={joinWithValidToken}
                             className="w-full h-12 bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2"
                         >
                             Got it — Join Session →
@@ -2844,37 +2940,30 @@ export default function SessionPage({ params }: SessionProps) {
             {/* Unified Video Container - Using a single Rnd instance to prevent iframe unmounting/resetting */}
             {hasJoined && dailyRoomUrl && dailyToken && (
                 <Rnd
-                    size={isPanelExpanded ? 
-                        { width: 450, height: windowSize.height - 52 } : 
-                        { width: floatingSize.width, height: floatingSize.height }
-                    }
-                    position={isPanelExpanded ? 
-                        { x: windowSize.width - 450, y: 52 } : 
-                        { x: floatingPosition.x || (windowSize.width - 240), y: floatingPosition.y || (windowSize.height - 320) }
-                    }
+                    size={videoPanel.size}
+                    position={videoPanel.position}
                     onDragStop={(e, d) => {
-                        if (!isPanelExpanded) {
+                        if (!videoPanel.locked) {
                             setFloatingPosition({ x: d.x, y: d.y });
                         }
                     }}
                     onResizeStop={(e, direction, ref, delta, position) => {
-                        if (!isPanelExpanded) {
+                        if (!videoPanel.locked) {
                             setFloatingSize({ width: parseInt(ref.style.width), height: parseInt(ref.style.height) });
                             setFloatingPosition(position);
                         }
                     }}
-                    minWidth={isPanelExpanded ? 450 : 150}
-                    minHeight={isPanelExpanded ? windowSize.height - 52 : 120}
-                    maxWidth={isPanelExpanded ? 450 : 800}
-                    maxHeight={isPanelExpanded ? windowSize.height - 52 : 600}
-                    disableDragging={isPanelExpanded}
-                    enableResizing={!isPanelExpanded}
-                    style={{ 
-                        zIndex: 100, 
-                        transition: isPanelExpanded ? 'all 0.5s ease-in-out' : 'none',
-                        // If it's expanding, we might want to disable transition on position if it feel janky
+                    minWidth={videoPanel.locked ? videoPanel.size.width : 150}
+                    minHeight={videoPanel.locked ? videoPanel.size.height : 120}
+                    maxWidth={videoPanel.locked ? videoPanel.size.width : 800}
+                    maxHeight={videoPanel.locked ? videoPanel.size.height : 600}
+                    disableDragging={videoPanel.locked}
+                    enableResizing={!videoPanel.locked}
+                    style={{
+                        zIndex: 100,
+                        transition: videoPanel.locked ? 'all 0.4s ease-in-out' : 'none',
                     }}
-                    className={isPanelExpanded ? "" : "shadow-2xl"}
+                    className={isPanelExpanded || isScreenShareActive ? "" : "shadow-2xl"}
                 >
                     <div className={`w-full h-full flex flex-col bg-black overflow-hidden border-white/10 ${isPanelExpanded ? 'border-l' : 'rounded-xl border-2 shadow-2xl overflow-hidden'}`}>
                         {/* Header for the video window */}

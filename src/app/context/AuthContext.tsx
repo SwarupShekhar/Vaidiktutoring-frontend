@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { decodeToken } from '@/app/lib/jwt';
 import * as authLib from '@/app/lib/auth';
-import { setAuthToken, setTokenGetter } from '@/app/lib/api';
+import { setAuthToken, setTokenGetter, getManualAuthToken } from '@/app/lib/api';
 import { cmsApi } from '@/app/lib/cms';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUser, useAuth } from '@clerk/nextjs';
@@ -70,13 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (savedToken) {
         setToken(savedToken);
         setAuthToken(savedToken);
-        setTokenGetter(async () => {
-          try {
-            return localStorage.getItem('auth_token');
-          } catch (e) {
-            return null;
-          }
-        });
+        setTokenGetter(getManualAuthToken); // sliding refresh keeps long sessions alive
 
         // Decode JWT immediately (no network) so ProtectedClient can unblock now.
         // getMe() runs in the background to validate and replace with full profile.
@@ -200,7 +194,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setBackendUser(u);
 
       localStorage.setItem('auth_token', newToken); // Persist for session
-      setTokenGetter(async () => localStorage.getItem('auth_token')); // Register getter
+      setTokenGetter(getManualAuthToken); // sliding refresh keeps long sessions alive
       
       document.cookie = `manual_auth_token=${newToken}; path=/; max-age=604800; SameSite=Lax`; // 1 week
       document.cookie = `user_role=${u.role || 'student'}; path=/; max-age=604800; SameSite=Lax`;
