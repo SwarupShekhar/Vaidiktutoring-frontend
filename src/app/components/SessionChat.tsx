@@ -113,9 +113,9 @@ export default function SessionChat({ sessionId: propSessionId, socket }: Sessio
                     return [...prev, msg];
                 });
 
-                // Increment unread count if chat is closed
+                // Open chat automatically when receiving a message if it's closed
                 if (!isOpenRef.current) {
-                    setUnreadCount(prev => prev + 1);
+                    setIsOpen(true);
                 }
 
                 playNotification();
