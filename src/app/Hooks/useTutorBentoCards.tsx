@@ -40,20 +40,26 @@ const ROW_BG = 'var(--bento-row, rgba(255,255,255,0.04))';
 const CardButton: React.FC<{
   accent: string;
   disabled?: boolean;
+  pulse?: boolean;
   onClick?: (e: React.MouseEvent) => void;
   children: React.ReactNode;
-}> = ({ accent, disabled, onClick, children }) => (
+}> = ({ accent, disabled, pulse, onClick, children }) => (
   <button
     type="button"
     disabled={disabled}
     onClick={onClick}
-    className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition-all ${
-      disabled ? 'cursor-not-allowed opacity-40' : 'text-white active:scale-95'
+    className={`relative inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition-all ${
+      disabled 
+        ? 'cursor-not-allowed opacity-40' 
+        : `text-white hover:opacity-90 active:scale-95 ${pulse ? 'animate-pulse' : ''}`
     }`}
     style={
       disabled
         ? { background: `rgba(${accent},0.15)`, color: FG }
-        : { background: `rgb(${accent})` }
+        : { 
+            background: `rgb(${accent})`,
+            boxShadow: pulse ? `0 0 15px rgba(${accent}, 0.6)` : 'none'
+          }
     }
   >
     {children}
@@ -135,6 +141,7 @@ export function useTutorBentoCards({ cardColor, onShareNotes }: UseTutorBentoCar
             <CardButton
               accent={ACCENT.indigo}
               disabled={!canJoin}
+              pulse={true}
               onClick={(e) => {
                 e.stopPropagation();
                 handleJoin();
