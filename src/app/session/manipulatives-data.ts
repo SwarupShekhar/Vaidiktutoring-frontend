@@ -307,5 +307,57 @@ export const MANIPULATIVES_DATA = {
         { type: 'line', x: 20, y: 0, points: [[0,0], [20,0]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 }
       ]
     }
+  ],
+  'chemistry': [
+    {
+      id: 'chem-benzene',
+      label: 'Benzene Ring',
+      thumbnail: '⬡',
+      elements: [
+        // Hexagon base
+        { type: 'line', x: -50, y: -43.3, points: [[50,0], [25,43.3], [-25,43.3], [-50,0], [-25,-43.3], [25,-43.3], [50,0]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 },
+        // Inner circle (delocalized electrons)
+        { type: 'ellipse', x: -25, y: -25, width: 50, height: 50, strokeColor: '#1e293b', backgroundColor: 'transparent', strokeWidth: 2, roughness: 0 }
+      ]
+    },
+    {
+      id: 'chem-tetrahedral',
+      label: 'Tetrahedral',
+      thumbnail: '🜬',
+      elements: [
+        // Central atom
+        { type: 'ellipse', x: -10, y: -10, width: 20, height: 20, strokeColor: '#1e293b', backgroundColor: '#334155', fillStyle: 'solid', roughness: 0 },
+        // Top bond (in plane)
+        { type: 'line', x: 0, y: -10, points: [[0,0], [0,-40]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 },
+        { type: 'ellipse', x: -7.5, y: -57.5, width: 15, height: 15, strokeColor: '#1e293b', backgroundColor: '#94a3b8', fillStyle: 'solid', roughness: 0 },
+        // Bottom left bond (in plane)
+        { type: 'line', x: -7, y: 7, points: [[0,0], [-25,25]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 },
+        { type: 'ellipse', x: -42, y: 27, width: 15, height: 15, strokeColor: '#1e293b', backgroundColor: '#94a3b8', fillStyle: 'solid', roughness: 0 },
+        // Bottom right bond (wedge - coming out)
+        { type: 'line', x: 7, y: 7, points: [[0,0], [25,15]], strokeColor: '#1e293b', strokeWidth: 4, roughness: 0 },
+        { type: 'ellipse', x: 30, y: 15, width: 15, height: 15, strokeColor: '#1e293b', backgroundColor: '#94a3b8', fillStyle: 'solid', roughness: 0 },
+        // Back bond (dash - going in)
+        { type: 'line', x: 5, y: 5, points: [[0,0], [15,30]], strokeColor: '#1e293b', strokeWidth: 2, strokeStyle: 'dashed', roughness: 0 },
+        { type: 'ellipse', x: 17, y: 32, width: 15, height: 15, strokeColor: '#1e293b', backgroundColor: '#94a3b8', fillStyle: 'solid', roughness: 0 }
+      ]
+    },
+    {
+      id: 'chem-trigonal-planar',
+      label: 'Trigonal Planar',
+      thumbnail: '⛬',
+      elements: [
+        // Central atom
+        { type: 'ellipse', x: -10, y: -10, width: 20, height: 20, strokeColor: '#1e293b', backgroundColor: '#334155', fillStyle: 'solid', roughness: 0 },
+        // Top bond
+        { type: 'line', x: 0, y: -10, points: [[0,0], [0,-40]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 },
+        { type: 'ellipse', x: -7.5, y: -55, width: 15, height: 15, strokeColor: '#1e293b', backgroundColor: '#94a3b8', fillStyle: 'solid', roughness: 0 },
+        // Bottom right bond (120 deg)
+        { type: 'line', x: 8.6, y: 5, points: [[0,0], [34.6, 20]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 },
+        { type: 'ellipse', x: 38.2, y: 20, width: 15, height: 15, strokeColor: '#1e293b', backgroundColor: '#94a3b8', fillStyle: 'solid', roughness: 0 },
+        // Bottom left bond (120 deg)
+        { type: 'line', x: -8.6, y: 5, points: [[0,0], [-34.6, 20]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 },
+        { type: 'ellipse', x: -53.2, y: 20, width: 15, height: 15, strokeColor: '#1e293b', backgroundColor: '#94a3b8', fillStyle: 'solid', roughness: 0 }
+      ]
+    }
   ]
 };

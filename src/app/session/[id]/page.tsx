@@ -2162,7 +2162,13 @@ export default function SessionPage({ params }: SessionProps) {
                         <div className="w-5 h-px bg-white/10 my-0.5" />
 
                         <button
-                            onClick={() => setIsLaserMode(!isLaserMode)}
+                            onClick={() => {
+                                const newLaserMode = !isLaserMode;
+                                setIsLaserMode(newLaserMode);
+                                if (excalidrawAPI) {
+                                    excalidrawAPI.updateScene({ appState: { activeTool: { type: newLaserMode ? 'laser' : 'selection', customType: null } } });
+                                }
+                            }}
                             className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${isLaserMode ? 'bg-red-500 border-red-400 animate-pulse' : 'bg-white/10 hover:bg-white/20 border-white/10'
                                 }`}
                             title="Laser Pointer"
@@ -2179,6 +2185,8 @@ export default function SessionPage({ params }: SessionProps) {
                             <Share2 size={16} className={isFocusMode ? 'animate-pulse' : ''} />
                         </button>
 
+                        {/* Sticker and Attention framework temporarily removed as requested */}
+                        {/*
                         <button
                             onClick={() => setShowStickerPanel(!showStickerPanel)}
                             className={`w-9 h-9 rounded-lg flex items-center justify-center text-white transition-all border ${showStickerPanel ? 'bg-orange-500 border-orange-400' : 'bg-white/10 hover:bg-white/20 border-white/10'
@@ -2217,6 +2225,7 @@ export default function SessionPage({ params }: SessionProps) {
                                 </button>
                             </div>
                         )}
+                        */}
 
                         {slides.length > 0 && (
                             <>
@@ -2932,8 +2941,10 @@ export default function SessionPage({ params }: SessionProps) {
                             </button>
                             <button
                                 onClick={() => {
-                                    excalidrawAPI.updateScene({ elements: [] });
-                                    socket?.emit('whiteboard.update', { sessionId, update: { elements: [] } });
+                                    if (!excalidrawAPI) return;
+                                    const deletedElements = excalidrawAPI.getSceneElements().map(e => ({ ...e, isDeleted: true }));
+                                    excalidrawAPI.updateScene({ elements: deletedElements });
+                                    socket?.emit('whiteboard.update', { sessionId, update: { elements: deletedElements } });
                                     setShowClearConfirm(false);
                                     toast.success("Board cleared");
                                 }}
