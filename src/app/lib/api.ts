@@ -48,14 +48,19 @@ api.interceptors.request.use(async (config) => {
         cachedAuthToken = token;
         config.headers['Authorization'] = `Bearer ${token}`;
         return config;
+      } else {
+        cachedAuthToken = null;
+        delete config.headers['Authorization'];
       }
     } catch (err) {
       console.error('[API Interceptor] Failed to fetch token via getter:', err);
+      cachedAuthToken = null;
+      delete config.headers['Authorization'];
     }
   }
 
-  // Fallback to cached token if the getter is not available or returned null
-  if (cachedAuthToken) {
+  // Fallback to cached token if the getter is not available (only if authTokenPromise is not set)
+  if (!authTokenPromise && cachedAuthToken) {
     config.headers['Authorization'] = `Bearer ${cachedAuthToken}`;
   }
   return config;

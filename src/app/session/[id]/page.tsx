@@ -199,6 +199,7 @@ export default function SessionPage({ params }: SessionProps) {
     const [showClearConfirm, setShowClearConfirm] = useState(false);
 
     const [socket, setSocket] = useState<Socket | null>(null);
+    const [isSocketJoined, setIsSocketJoined] = useState(false);
     const sessionStartRef = useRef<number>(Date.now());
     const sessionDurationRef = useRef<number>(60);
 
@@ -381,6 +382,7 @@ export default function SessionPage({ params }: SessionProps) {
             newSocket.emit('joinSession', { sessionId, userId: user.id }, (response: any) => {
 
                 if (response.success) {
+                    setIsSocketJoined(true);
                     sessionStartRef.current = response.sessionStartTime;
                     sessionDurationRef.current = response.sessionDuration;
 
@@ -1437,10 +1439,10 @@ export default function SessionPage({ params }: SessionProps) {
     }, [socket, sessionId]);
 
     useEffect(() => {
-        if (!excalidrawAPI || !socket || !sessionId) return;
+        if (!excalidrawAPI || !socket || !sessionId || !isSocketJoined) return;
         if (user?.role === 'tutor') return;
         forceResync();
-    }, [excalidrawAPI, socket, sessionId, user?.role, forceResync]);
+    }, [excalidrawAPI, socket, sessionId, user?.role, forceResync, isSocketJoined]);
 
     // Fetch Daily.co Room & Token
     useEffect(() => {
@@ -1857,15 +1859,7 @@ export default function SessionPage({ params }: SessionProps) {
                 </div>
             </div>
 
-            {/* Loading Overlay for Video */}
-            {hasJoined && videoLoading && (
-                <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center">
-                    <div className="text-white text-center">
-                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent mx-auto mb-4"></div>
-                        <p className="font-bold text-lg">Connecting to video session...</p>
-                    </div>
-                </div>
-            )}
+            {/* Loading Overlay for Video removed to allow whiteboard access during Daily connect */}
 
             {/* ── TOP HUD BAR ─────────────────────────────────────────────── */}
             <div className="absolute top-0 left-0 right-0 h-[52px] z-20 bg-black/80 backdrop-blur-xl border-b border-white/8 flex items-center px-4 gap-3 overflow-x-auto no-scrollbar">
