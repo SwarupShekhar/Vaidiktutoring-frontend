@@ -120,7 +120,7 @@ function StudentDashboardContent() {
     return [
       { id: 1, label: 'Complete your student profile', complete: step1 },
       { id: 2, label: 'Book your Diagnostic Assessment', complete: step2, link: '/bookings/new' },
-      { id: 3, label: 'Unlock your targeted gap fix', complete: step3 }
+      { id: 3, label: 'Unlock your targeted gap fix', complete: step3, link: '/bookings/new' }
     ];
   }, [studentProfile, progressSummary, upcomingSessions, pastSessions]);
 

@@ -17,6 +17,7 @@ import { MaterialsVaultSection } from './MaterialsVaultSection';
 import { OnboardingCard } from './OnboardingCard';
 import { UpcomingSchedule } from './UpcomingSchedule';
 import { PastSessionsSidebar } from './PastSessionsSidebar';
+import TutorCommunication from '@/app/students/dashboard/TutorCommunication';
 import { TrialBanner } from '@/app/components/dashboard/TrialBanner';
 import { UpgradeNudge } from '@/app/components/dashboard/UpgradeNudge';
 
@@ -221,6 +222,11 @@ export const TrialDashboard: React.FC<TrialDashboardProps> = ({
             </div>
 
             <div className="lg:col-span-1 space-y-8">
+              {/* Two-way chat: trial students can reach their assigned tutor. */}
+              <TutorCommunication
+                tutorName={nextSession?.tutor?.name ?? null}
+                currentUserId={user?.id}
+              />
               <PastSessionsSidebar
                 pastSessions={pastSessions}
                 fmtDate={fmtDate}

@@ -20,6 +20,7 @@ import { StickerRewards } from './StickerRewards';
 import { TutorCommunicationSection } from './TutorCommunicationSection';
 import { MaterialsVaultSection } from './MaterialsVaultSection';
 import { WeeklySchedule } from './WeeklySchedule';
+import TutorCommunication from '@/app/students/dashboard/TutorCommunication';
 
 const LearningLab = dynamic(
   () => import('./LearningLab').then(mod => mod.LearningLab),
@@ -260,7 +261,12 @@ export const EnrolledDashboard: React.FC<EnrolledDashboardProps> = ({
         </div>
 
         <div className="space-y-8">
-          <TutorCommunicationSection 
+          {/* Two-way chat: students initiate here → routed to their assigned tutor. */}
+          <TutorCommunication
+            tutorName={nextSession?.tutor?.name ?? null}
+            currentUserId={user?.id}
+          />
+          <TutorCommunicationSection
             feedback={progressSummary?.recentFeedback || []}
             fmtDate={fmtDate}
           />
