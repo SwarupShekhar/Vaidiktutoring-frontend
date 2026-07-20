@@ -7,7 +7,7 @@ import { useTheme } from 'next-themes';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
 import { useIsAppShell } from '@/app/Hooks/useIsAppShell';
-import { Mail, Lock, Loader2, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Mail, Lock, Loader2, ArrowLeft, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 function LoginContent() {
   const { login } = useAuthContext();
@@ -20,6 +20,7 @@ function LoginContent() {
   const redirectUrl = searchParams.get('redirect_url') || '/dashboard';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showManual, setShowManual] = useState(false);
@@ -147,12 +148,19 @@ function LoginContent() {
                     <Lock className={`absolute left-4 top-4 h-5 w-5 ${isAppShell ? 'text-white/30' : 'text-slate-400'}`} />
                     <input
                       required
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className={`w-full pl-12 pr-4 py-4 rounded-xl border focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all outline-none font-semibold ${isAppShell ? 'bg-[#0a0a0f] border-white/10 text-white placeholder:text-white/30' : 'bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white'}`}
+                      className={`w-full pl-12 pr-12 py-4 rounded-xl border focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all outline-none font-semibold ${isAppShell ? 'bg-[#0a0a0f] border-white/10 text-white placeholder:text-white/30' : 'bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white'}`}
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className={`absolute right-4 top-4 ${isAppShell ? 'text-white/30 hover:text-white/50' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                    >
+                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
                   </div>
                 </div>
 

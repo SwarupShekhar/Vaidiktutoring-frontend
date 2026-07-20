@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
 import Loader from '@/app/components/Loader';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function ChangePasswordPage() {
     const router = useRouter();
@@ -15,6 +16,10 @@ export default function ChangePasswordPage() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [busy, setBusy] = useState(false);
+    
+    const [showCurrent, setShowCurrent] = useState(false);
+    const [showNew, setShowNew] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
 
     const validatePassword = (pwd: string) => {
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -99,45 +104,72 @@ export default function ChangePasswordPage() {
                                         <label htmlFor="current" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Current Password
                                         </label>
-                                        <input
-                                            id="current"
-                                            type="password"
-                                            required
-                                            value={currentPassword}
-                                            onChange={(e) => setCurrentPassword(e.target.value)}
-                                            className="appearance-none relative block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm bg-white/50 dark:bg-white/5"
-                                            placeholder="Enter current password"
-                                        />
+                                        <div className="relative">
+                                            <input
+                                                id="current"
+                                                type={showCurrent ? "text" : "password"}
+                                                required
+                                                value={currentPassword}
+                                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                                className="appearance-none relative block w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm bg-white/50 dark:bg-white/5"
+                                                placeholder="Enter current password"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowCurrent(!showCurrent)}
+                                                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                            >
+                                                {showCurrent ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <div>
                                         <label htmlFor="new" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             New Password
                                         </label>
-                                        <input
-                                            id="new"
-                                            type="password"
-                                            required
-                                            value={newPassword}
-                                            onChange={(e) => setNewPassword(e.target.value)}
-                                            className="appearance-none relative block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm bg-white/50 dark:bg-white/5"
-                                            placeholder="Min 8 chars, mixed case & symbols"
-                                        />
+                                        <div className="relative">
+                                            <input
+                                                id="new"
+                                                type={showNew ? "text" : "password"}
+                                                required
+                                                value={newPassword}
+                                                onChange={(e) => setNewPassword(e.target.value)}
+                                                className="appearance-none relative block w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm bg-white/50 dark:bg-white/5"
+                                                placeholder="Min 8 chars, mixed case & symbols"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowNew(!showNew)}
+                                                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                            >
+                                                {showNew ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <div>
                                         <label htmlFor="confirm" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Confirm New Password
                                         </label>
-                                        <input
-                                            id="confirm"
-                                            type="password"
-                                            required
-                                            value={confirmPassword}
-                                            onChange={(e) => setConfirmPassword(e.target.value)}
-                                            className="appearance-none relative block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm bg-white/50 dark:bg-white/5"
-                                            placeholder="Re-enter new password"
-                                        />
+                                        <div className="relative">
+                                            <input
+                                                id="confirm"
+                                                type={showConfirm ? "text" : "password"}
+                                                required
+                                                value={confirmPassword}
+                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                className="appearance-none relative block w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm bg-white/50 dark:bg-white/5"
+                                                placeholder="Re-enter new password"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowConfirm(!showConfirm)}
+                                                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                            >
+                                                {showConfirm ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 

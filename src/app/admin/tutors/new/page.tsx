@@ -5,11 +5,13 @@ import ProtectedClient from '@/app/components/ProtectedClient';
 import api from '@/app/lib/api';
 import { useRouter } from 'next/navigation';
 import useCatalog from '@/app/Hooks/useCatalog';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function NewTutorPage() {
     const router = useRouter();
     const { subjects, loading: loadingSubjects } = useCatalog();
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -77,7 +79,16 @@ export default function NewTutorPage() {
 
                         <div>
                             <label className="block text-sm font-medium text-text-secondary mb-1">Password</label>
-                            <input required type="password" name="password" onChange={handleChange} className="w-full px-4 py-2 rounded-lg bg-surface border border-border text-(--color-text-primary)" />
+                            <div className="relative">
+                                <input required type={showPassword ? "text" : "password"} name="password" onChange={handleChange} className="w-full px-4 py-2 pr-10 rounded-lg bg-surface border border-border text-(--color-text-primary)" />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                >
+                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                </button>
+                            </div>
                         </div>
 
                         <div>
