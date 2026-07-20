@@ -2942,7 +2942,7 @@ export default function SessionPage({ params }: SessionProps) {
                             <button
                                 onClick={() => {
                                     if (!excalidrawAPI) return;
-                                    const deletedElements = excalidrawAPI.getSceneElements().map(e => ({ ...e, isDeleted: true }));
+                                    const deletedElements = excalidrawAPI.getSceneElements().map((e: any) => ({ ...e, isDeleted: true }));
                                     excalidrawAPI.updateScene({ elements: deletedElements });
                                     socket?.emit('whiteboard.update', { sessionId, update: { elements: deletedElements } });
                                     setShowClearConfirm(false);
