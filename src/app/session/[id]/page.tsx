@@ -277,6 +277,7 @@ export default function SessionPage({ params }: SessionProps) {
 
     // Daily call references
     const dailyContainerRef = useRef<HTMLDivElement>(null);
+    const [isDailyContainerReady, setIsDailyContainerReady] = useState(false);
     const dailyCallRef = useRef<any>(null);
 
     useEffect(() => {
@@ -1523,7 +1524,7 @@ export default function SessionPage({ params }: SessionProps) {
                 });
             }
         };
-    }, [dailyRoomUrl, dailyToken, hasJoined]);
+    }, [dailyRoomUrl, dailyToken, hasJoined, isDailyContainerReady]);
 
     const exportAndSharePdf = useCallback(async () => {
         if (isExporting) return;
@@ -2910,7 +2911,12 @@ export default function SessionPage({ params }: SessionProps) {
 
                         {/* The Iframe itself - Managed by daily-js */}
                         <div className="flex-1 relative bg-black">
-                            <div ref={dailyContainerRef} className="absolute inset-0 w-full h-full border-0" />
+                            <div ref={(el) => {
+                                dailyContainerRef.current = el;
+                                if (el && !isDailyContainerReady) {
+                                    setIsDailyContainerReady(true);
+                                }
+                            }} className="absolute inset-0 w-full h-full border-0" />
                             
                             {/* Loading state just in case */}
                             {videoLoading && (
