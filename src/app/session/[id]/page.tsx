@@ -1550,7 +1550,7 @@ export default function SessionPage({ params }: SessionProps) {
             },
             showLeaveButton: false,
             showFullscreenButton: true, // manual override if auto-enlarge misjudges
-            activeSpeakerMode: true,
+            activeSpeakerMode: false,
         });
 
         dailyCallRef.current = callObject;
