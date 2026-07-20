@@ -1021,6 +1021,10 @@ export default function SessionPage({ params }: SessionProps) {
             elements: [...currentScene, ...nextAnnotations],
             appState: { isLoading: false }
         });
+        
+        // CRITICAL FIX: Reset the undo history baseline to the newly loaded slide.
+        // Otherwise, pressing Cmd+Z will undo all the way back to an empty board!
+        excalidrawAPI.history.clear();
 
         setCurrentSlideIndex(index);
         slideRef.current = index;
@@ -1195,6 +1199,8 @@ export default function SessionPage({ params }: SessionProps) {
                                 excalidrawAPI.updateScene({
                                     elements: [...currentScene, ...slide0Annotations]
                                 });
+                                // CRITICAL FIX: Reset baseline after vault load
+                                excalidrawAPI.history.clear();
                             }
                         }, 1500);
                     }
@@ -1337,10 +1343,19 @@ export default function SessionPage({ params }: SessionProps) {
 
                 const mergedElements = [...updatedElements, ...studentOnlyElements];
 
+                const isInitialSync = localElements.length === 0 && remoteElements.length > 0;
+
                 excalidrawAPIRef.current.updateScene({
                     elements: mergedElements,
                     commitToHistory: false
                 });
+
+                // CRITICAL FIX: If this is the first time we are receiving elements (e.g. joining mid-session),
+                // we must reset the undo history baseline. Otherwise, pressing Cmd+Z will undo
+                // this initial sync and wipe the entire board!
+                if (isInitialSync) {
+                    excalidrawAPIRef.current.history.clear();
+                }
             } finally {
                 setTimeout(() => {
                     whiteboardRef.current.isUpdating = false;

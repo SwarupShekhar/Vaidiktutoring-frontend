@@ -52,12 +52,16 @@ export const OnboardingCard: React.FC<OnboardingCardProps> = ({
                 </div>
               </div>
               <p className="font-semibold text-foreground mb-3">{step.label}</p>
-              {!step.complete && (
+              {!step.complete && (step.link || step.id === 1) ? (
                 <button onClick={() => onCompleteStep(step.id, step.link)}
                   className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
                   Complete Now <ChevronRight size={14} />
                 </button>
-              )}
+              ) : !step.complete ? (
+                <span className="text-sm font-medium text-text-tertiary flex items-center gap-1">
+                  Waiting for your next session
+                </span>
+              ) : null}
             </div>
           ))}
         </div>
