@@ -172,7 +172,7 @@ export const TrialDashboard: React.FC<TrialDashboardProps> = ({
 
       {creditStatus?.mode === 'trial_active' && <TrialBanner status={creditStatus} />}
 
-      {isExhausted ? (
+      {isExhausted && upcomingSessions.length === 0 ? (
         <UpgradeNudge
           status={creditStatus}
           pastSessions={pastSessions}
