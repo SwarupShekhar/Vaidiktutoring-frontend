@@ -200,6 +200,7 @@ export default function SessionPage({ params }: SessionProps) {
 
     const [socket, setSocket] = useState<Socket | null>(null);
     const [isSocketJoined, setIsSocketJoined] = useState(false);
+    const activeSocketRef = useRef<Socket | null>(null);
     const sessionStartRef = useRef<number>(Date.now());
     const sessionDurationRef = useRef<number>(60);
 
@@ -377,9 +378,13 @@ export default function SessionPage({ params }: SessionProps) {
         });
 
         setSocket(newSocket);
+        activeSocketRef.current = newSocket;
+        setIsSocketJoined(false);
 
         newSocket.on('connect', () => {
             newSocket.emit('joinSession', { sessionId, userId: user.id }, (response: any) => {
+                // Ignore acks from a socket that has already been replaced/torn down.
+                if (activeSocketRef.current !== newSocket) return;
 
                 if (response.success) {
                     setIsSocketJoined(true);
@@ -398,11 +403,9 @@ export default function SessionPage({ params }: SessionProps) {
                                 newSocket.emit('whiteboard.syncFiles', { sessionId, files });
                             }
                         }
-                    } else if (user.role === 'student') {
-                        // Server subscribes to 'whiteboard.requestSync' and relays it
-                        // outbound as 'whiteboard.syncRequest' for the tutor to answer.
-                        newSocket.emit('whiteboard.requestSync', { sessionId });
                     }
+                    // Students/parents wait for the forceResync effect to request sync
+                    // once their canvas + listeners are ready (avoids dropped state).
                 }
             });
         });
@@ -473,7 +476,13 @@ export default function SessionPage({ params }: SessionProps) {
             }
         });
 
+        newSocket.on('disconnect', () => {
+            if (activeSocketRef.current === newSocket) setIsSocketJoined(false);
+        });
+
         return () => {
+            if (activeSocketRef.current === newSocket) activeSocketRef.current = null;
+            setIsSocketJoined(false);
             newSocket.disconnect();
         };
     }, [user, token, sessionId, hasJoined]);
@@ -1440,7 +1449,15 @@ export default function SessionPage({ params }: SessionProps) {
 
     useEffect(() => {
         if (!excalidrawAPI || !socket || !sessionId || !isSocketJoined) return;
-        if (user?.role === 'tutor') return;
+        if (user?.role === 'tutor') {
+            const elements = excalidrawAPI.getSceneElements();
+            const files = excalidrawAPI.getFiles();
+            if (elements.length > 0) {
+                socket.emit('whiteboard.update', { sessionId, update: { elements } });
+                socket.emit('whiteboard.syncFiles', { sessionId, files });
+            }
+            return;
+        }
         forceResync();
     }, [excalidrawAPI, socket, sessionId, user?.role, forceResync, isSocketJoined]);
 
