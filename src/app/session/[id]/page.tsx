@@ -2275,7 +2275,7 @@ export default function SessionPage({ params }: SessionProps) {
             )}
 
             {/* 3. OVERLAY LAYER: CHAT SIDEBAR (Elevated z-index to stay above video panel) */}
-            <div className={`absolute bottom-24 z-1000 w-80 pointer-events-auto transition-all duration-300 ${isPanelExpanded ? 'right-[464px]' : 'right-4'}`}>
+            <div className={`absolute bottom-24 z-1000 w-80 pointer-events-none transition-all duration-300 ${isPanelExpanded ? 'right-[464px]' : 'right-4'}`}>
                 <SessionChat
                     key={sessionId}
                     sessionId={booking?.sessions?.[0]?.id || sessionId}
@@ -2373,11 +2373,20 @@ export default function SessionPage({ params }: SessionProps) {
                                     <input
                                         id="asset-upload-input"
                                         type="file"
-                                        accept="image/*"
+                                        accept=".pdf,image/*"
                                         className="hidden"
                                         onChange={(e) => {
                                             const file = e.target.files?.[0];
                                             if (file) {
+                                                const name = file.name.toLowerCase();
+                                                if (name.endsWith('.ppt') || name.endsWith('.pptx')) {
+                                                    toast.error('PowerPoint files cannot be rendered directly. Please export your slides as a PDF first, then upload the PDF.', { duration: 8000 });
+                                                    return;
+                                                }
+                                                if (name.endsWith('.pdf')) {
+                                                    renderPdfLocally(file);
+                                                    return;
+                                                }
                                                 const reader = new FileReader();
                                                 reader.onload = (event) => {
                                                     const url = event.target?.result as string;
@@ -2428,7 +2437,7 @@ export default function SessionPage({ params }: SessionProps) {
                                             className="w-full flex items-center justify-between py-2 text-left hover:bg-gray-50 rounded-lg px-2 transition-colors"
                                         >
                                             <span className="text-[11px] font-black text-purple-900 uppercase tracking-widest">
-                                                {grade === 'k-1' ? 'Grades K–1' : grade === '2-3' ? 'Grades 2–3' : 'Grades 4–6'}
+                                                {grade === 'k-1' ? 'Grades K–1' : grade === '2-3' ? 'Grades 2–3' : grade === '4-6' ? 'Grades 4–6' : grade === 'math' ? 'Advanced Math' : grade === 'physics' ? 'Physics' : grade === 'chemistry' ? 'Chemistry' : grade}
                                             </span>
                                             {expandedSections[grade] ? <ChevronDown size={14} className="text-purple-400" /> : <ChevronRight size={14} className="text-purple-400" />}
                                         </button>

@@ -212,5 +212,100 @@ export const MANIPULATIVES_DATA = {
         }))
       ]
     }
+  ],
+  'math': [
+    {
+      id: 'triangle-30-60-90',
+      label: '30-60-90 Triangle',
+      thumbnail: '📐',
+      elements: [
+        { type: 'line', x: -50, y: 86.6, points: [[0,0], [100,0], [100,-173.2], [0,0]], strokeColor: '#1e293b', backgroundColor: '#f8fafc', fillStyle: 'solid', roughness: 0 },
+        { type: 'text', x: 25, y: 70, text: '30°', fontSize: 12 },
+        { type: 'text', x: 80, y: -40, text: '60°', fontSize: 12 },
+        { type: 'line', x: 85, y: 86.6, points: [[0,0], [0,-15], [15,-15]], strokeColor: '#1e293b', strokeWidth: 1, roughness: 0 }
+      ]
+    },
+    {
+      id: 'protractor-180',
+      label: '180° Protractor',
+      thumbnail: '🌈',
+      elements: [
+        { type: 'ellipse', x: -150, y: -150, width: 300, height: 300, strokeColor: '#1e293b', backgroundColor: 'transparent', strokeWidth: 2, roughness: 0 },
+        { type: 'rectangle', x: -160, y: 0, width: 320, height: 160, strokeColor: 'transparent', backgroundColor: '#ffffff', fillStyle: 'solid', roughness: 0 }, 
+        { type: 'line', x: -150, y: 0, points: [[0,0], [300,0]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 },
+        { type: 'ellipse', x: -5, y: -5, width: 10, height: 10, strokeColor: '#b91c1c', backgroundColor: 'transparent', strokeWidth: 2, roughness: 0 },
+        { type: 'line', x: 0, y: 0, points: [[0,0], [0,-150]], strokeColor: '#94a3b8', strokeWidth: 1, strokeStyle: 'dashed', roughness: 0 },
+        { type: 'line', x: 0, y: 0, points: [[0,0], [106,-106]], strokeColor: '#94a3b8', strokeWidth: 1, strokeStyle: 'dashed', roughness: 0 },
+        { type: 'line', x: 0, y: 0, points: [[0,0], [-106,-106]], strokeColor: '#94a3b8', strokeWidth: 1, strokeStyle: 'dashed', roughness: 0 }
+      ]
+    },
+    {
+      id: 'xyz-axes',
+      label: '3D Axes (x,y,z)',
+      thumbnail: '🧊',
+      elements: [
+        { type: 'arrow', x: 0, y: 0, points: [[0,0], [0,-100]], strokeColor: '#1d4ed8', strokeWidth: 2, roughness: 0, endArrowhead: 'triangle' },
+        { type: 'arrow', x: 0, y: 0, points: [[0,0], [100,30]], strokeColor: '#b91c1c', strokeWidth: 2, roughness: 0, endArrowhead: 'triangle' },
+        { type: 'arrow', x: 0, y: 0, points: [[0,0], [-80,60]], strokeColor: '#15803d', strokeWidth: 2, roughness: 0, endArrowhead: 'triangle' },
+        { type: 'text', x: -10, y: -120, text: 'z', fontSize: 16, strokeColor: '#1d4ed8' },
+        { type: 'text', x: 110, y: 25, text: 'y', fontSize: 16, strokeColor: '#b91c1c' },
+        { type: 'text', x: -95, y: 65, text: 'x', fontSize: 16, strokeColor: '#15803d' }
+      ]
+    }
+  ],
+  'physics': [
+    {
+      id: 'mass-block-1kg',
+      label: 'Mass Block',
+      thumbnail: '📦',
+      elements: [
+        { type: 'rectangle', x: -40, y: -40, width: 80, height: 80, strokeColor: '#1e293b', backgroundColor: '#cbd5e1', fillStyle: 'solid', roughness: 0, roundness: { type: 3 } },
+        { type: 'text', x: -10, y: -12, text: 'm', fontSize: 20, strokeColor: '#0f172a' },
+        { type: 'ellipse', x: -3, y: -3, width: 6, height: 6, strokeColor: '#b91c1c', backgroundColor: '#b91c1c', fillStyle: 'solid', roughness: 0 }
+      ]
+    },
+    {
+      id: 'vector-arrow',
+      label: 'Force Vector',
+      thumbnail: '➡️',
+      elements: [
+        { type: 'arrow', x: -50, y: 0, points: [[0,0], [100,0]], strokeColor: '#e11d48', strokeWidth: 3, roughness: 0, endArrowhead: 'triangle' },
+        { type: 'text', x: 10, y: -25, text: 'F', fontSize: 20, strokeColor: '#e11d48' }
+      ]
+    },
+    {
+      id: 'circuit-battery',
+      label: 'Battery (DC)',
+      thumbnail: '🔋',
+      elements: [
+        { type: 'line', x: -30, y: 0, points: [[0,0], [20,0]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 }, 
+        { type: 'line', x: -10, y: -20, points: [[0,0], [0,40]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 }, 
+        { type: 'line', x: 10, y: -10, points: [[0,0], [0,20]], strokeColor: '#1e293b', strokeWidth: 5, roughness: 0 }, 
+        { type: 'line', x: 10, y: 0, points: [[0,0], [20,0]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 }, 
+        { type: 'text', x: -25, y: -35, text: '+', fontSize: 16, strokeColor: '#1e293b' },
+        { type: 'text', x: 15, y: -35, text: '-', fontSize: 16, strokeColor: '#1e293b' }
+      ]
+    },
+    {
+      id: 'circuit-resistor',
+      label: 'Resistor',
+      thumbnail: '⚡',
+      elements: [
+        { type: 'line', x: -50, y: 0, points: [[0,0], [20,0], [25,-15], [35,15], [45,-15], [55,15], [65,-15], [75,15], [80,0], [100,0]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 },
+        { type: 'text', x: 15, y: -35, text: 'R', fontSize: 16, strokeColor: '#1e293b' }
+      ]
+    },
+    {
+      id: 'circuit-bulb',
+      label: 'Light Bulb',
+      thumbnail: '💡',
+      elements: [
+        { type: 'line', x: -40, y: 0, points: [[0,0], [20,0]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 },
+        { type: 'ellipse', x: -20, y: -20, width: 40, height: 40, strokeColor: '#1e293b', backgroundColor: 'transparent', strokeWidth: 2, roughness: 0 },
+        { type: 'line', x: -10, y: -10, points: [[0,0], [20,20]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 },
+        { type: 'line', x: -10, y: 10, points: [[0,0], [20,-20]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 },
+        { type: 'line', x: 20, y: 0, points: [[0,0], [20,0]], strokeColor: '#1e293b', strokeWidth: 2, roughness: 0 }
+      ]
+    }
   ]
 };
