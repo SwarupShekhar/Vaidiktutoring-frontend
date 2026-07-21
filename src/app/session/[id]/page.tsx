@@ -15,11 +15,11 @@ const AttentionFrameworkPanel = dynamic(() => import('@/app/components/session/A
 import { vaultApi, VaultAsset } from '@/app/lib/vault';
 import { io, Socket } from 'socket.io-client';
 import DailyIframe from '@daily-co/daily-js';
+import { motion, useDragControls } from 'framer-motion';
 
 import { toast } from 'sonner';
 import {
     Video,
-    VideoOff,
     ClipboardList,
     Library,
     FileUp,
@@ -41,7 +41,6 @@ import {
 } from 'lucide-react';
 import { MANIPULATIVES_DATA, DICE_FACES } from '../manipulatives-data';
 import { throttle } from '@/app/lib/utils';
-const Rnd = dynamic(() => import('react-rnd').then(mod => mod.Rnd), { ssr: false });
 
 
 
@@ -103,6 +102,7 @@ function formatDisplayName(first?: string | null, last?: string | null, fallback
 }
 
 export default function SessionPage({ params }: SessionProps) {
+    const dragControls = useDragControls();
     const { id: sessionId } = React.use(params);
     const { user, token, loading: authLoading } = useAuthContext();
     const router = useRouter();
@@ -119,6 +119,8 @@ export default function SessionPage({ params }: SessionProps) {
     // Students/parents auto-join straight into the session. Tutors first get a
     // record-the-session prompt (rendered below) and join from there.
     const [hasJoined, setHasJoined] = useState(false);
+    // Just-in-time "this session is being recorded" notice for students/parents.
+    const [showRecordingNotice, setShowRecordingNotice] = useState(false);
 
     // Entry-time token guard: never let anyone join on a dead JWT. If the token
     // can't be made valid (already expired, beyond the refresh window), send them
@@ -137,13 +139,20 @@ export default function SessionPage({ params }: SessionProps) {
         setHasJoined(true);
     }, [router]);
 
-    // Auto-join everyone EXCEPT tutors (after validating their token). Tutors must
-    // acknowledge the record prompt first, so we never auto-join them.
+    // Auto-join everyone EXCEPT tutors (record prompt) and un-acknowledged
+    // students/parents. Students/parents must acknowledge the "being recorded"
+    // notice BEFORE the video connects — the modal blocks the join until they do.
+    // Once acknowledged (persisted per-session) a refresh/reconnect joins directly.
     useEffect(() => {
-        if (user && user.role !== 'tutor') {
-            joinWithValidToken();
+        if (!user || user.role === 'tutor') return;
+        const needsNotice = user.role === 'student' || user.role === 'parent';
+        if (needsNotice && sessionId && typeof window !== 'undefined'
+            && !sessionStorage.getItem(`recNotice:${sessionId}`)) {
+            setShowRecordingNotice(true); // blocks; ack handler joins
+            return;
         }
-    }, [user, joinWithValidToken]);
+        joinWithValidToken();
+    }, [user, sessionId, joinWithValidToken]);
 
     // Suppresses the tutor record prompt during end-of-session teardown
     // (hasJoined flips false right before the redirect fires).
@@ -226,6 +235,9 @@ export default function SessionPage({ params }: SessionProps) {
 
     // Timer & Reactions State
     const [timeRemaining, setTimeRemaining] = useState(60 * 60);
+    const [recordingStatus, setRecordingStatus] = useState<'idle' | 'recording'>('idle');
+    const [recordingStartTime, setRecordingStartTime] = useState<number | null>(null);
+    const [recordingElapsed, setRecordingElapsed] = useState<number>(0);
     const [showWrapUp, setShowWrapUp] = useState(false);
     const [reactions, setReactions] = useState<{ id: string; emoji: string; x: number; delay?: number }[]>([]);
 
@@ -356,11 +368,8 @@ export default function SessionPage({ params }: SessionProps) {
     }, [slideAnnotations]);
 
     const primaryStudent = Array.isArray(booking?.students) ? booking.students[0] : (booking?.students as any);
-    // Recording is only permitted when the child's parent has consented. The
-    // backend independently enforces this on upload; here we drive the UI so the
-    // tutor never sees a "record" instruction (and everyone sees an honest
-    // recording/not-recording indicator) when consent is absent.
-    const recordingAllowed = !!primaryStudent?.recording_consent_granted;
+    // All tutoring sessions are recorded; students/parents are notified via the
+    // in-session recording notice (consent gating removed).
     const studentData = {
         name: primaryStudent ? formatDisplayName(primaryStudent.first_name, primaryStudent.last_name, 'Student') : 'Student',
         grade: primaryStudent?.grade ? parseInt(String(primaryStudent.grade).replace(/\D/g, '')) : 0,
@@ -557,6 +566,15 @@ export default function SessionPage({ params }: SessionProps) {
 
         return () => clearInterval(interval);
     }, [hasJoined, booking]);
+
+    useEffect(() => {
+        if (recordingStatus === 'recording' && recordingStartTime) {
+            const interval = setInterval(() => {
+                setRecordingElapsed(Math.floor((Date.now() - recordingStartTime) / 1000));
+            }, 1000);
+            return () => clearInterval(interval);
+        }
+    }, [recordingStatus, recordingStartTime]);
 
     const formatTime = (seconds: number) => {
         const m = Math.floor(seconds / 60);
@@ -1597,6 +1615,25 @@ export default function SessionPage({ params }: SessionProps) {
             setVideoLoading(false);
         });
 
+        callObject.on('recording-started', () => {
+            setRecordingStatus('recording');
+            const storedTime = sessionStorage.getItem(`rec_start_${sessionId}`);
+            if (!storedTime) {
+                const now = Date.now();
+                sessionStorage.setItem(`rec_start_${sessionId}`, now.toString());
+                setRecordingStartTime(now);
+            } else {
+                setRecordingStartTime(parseInt(storedTime, 10));
+            }
+        });
+
+        callObject.on('recording-stopped', () => {
+            setRecordingStatus('idle');
+            sessionStorage.removeItem(`rec_start_${sessionId}`);
+            setRecordingStartTime(null);
+            setRecordingElapsed(0);
+        });
+
         return () => {
             if (callObject) {
                 callObject.destroy().then(() => {
@@ -1611,12 +1648,10 @@ export default function SessionPage({ params }: SessionProps) {
     //  2. expanded             -> fixed 450px right-side panel
     //  3. floating             -> user-draggable/resizable thumbnail
     const videoPanel = useMemo(() => {
-        if (isScreenShareActive) {
-            const width = Math.min(windowSize.width - 60, 1280);
-            const height = windowSize.height - 60;
+        if (isScreenShareActive && isPanelExpanded) {
             return {
-                size: { width, height },
-                position: { x: Math.max(20, (windowSize.width - width) / 2), y: 40 },
+                size: { width: windowSize.width / 2, height: windowSize.height - 52 },
+                position: { x: windowSize.width / 2, y: 52 },
                 locked: true,
             };
         }
@@ -1801,43 +1836,23 @@ export default function SessionPage({ params }: SessionProps) {
             )}
 
             {/* Tutor-only pre-join prompt. Students auto-join (never see this).
-                The message + instruction depend on whether the parent has consented
-                to recording — we never tell a tutor to record a child whose parent
-                hasn't opted in. */}
+                All sessions are recorded — the tutor is asked to start the screen
+                recording after joining. */}
             {!hasJoined && user?.role === 'tutor' && !isEnding && (
                 <div className="absolute inset-0 z-50 bg-gray-950/95 flex items-center justify-center p-6">
-                    <div className={`w-full max-w-md bg-gray-900 border rounded-2xl p-8 text-white shadow-2xl ${recordingAllowed ? 'border-purple-500/30' : 'border-white/10'}`}>
-                        {recordingAllowed ? (
-                            <>
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
-                                        <Video className="text-amber-400" size={24} />
-                                    </div>
-                                    <h2 className="text-2xl font-bold leading-tight">Record this session</h2>
-                                </div>
-                                <p className="text-gray-300 text-sm leading-relaxed mb-2">
-                                    The parent has consented to recording. Please record this session so your student can review it afterwards.
-                                </p>
-                                <p className="text-gray-400 text-xs leading-relaxed mb-6">
-                                    After you join, click <strong className="text-white">Share Screen</strong> in the video panel and share <strong className="text-white">this browser tab</strong> — that captures both the video call and the whiteboard.
-                                </p>
-                            </>
-                        ) : (
-                            <>
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-12 h-12 rounded-full bg-rose-500/15 flex items-center justify-center shrink-0">
-                                        <VideoOff className="text-rose-400" size={24} />
-                                    </div>
-                                    <h2 className="text-2xl font-bold leading-tight">Do not record</h2>
-                                </div>
-                                <p className="text-gray-300 text-sm leading-relaxed mb-2">
-                                    This student's parent has <strong className="text-white">not</strong> consented to recording. Please run the class live but <strong className="text-white">do not record or screen-share to capture it</strong>.
-                                </p>
-                                <p className="text-gray-400 text-xs leading-relaxed mb-6">
-                                    The parent can enable recording anytime from Profile → Settings. Until then, uploads are blocked.
-                                </p>
-                            </>
-                        )}
+                    <div className="w-full max-w-md bg-gray-900 border border-purple-500/30 rounded-2xl p-8 text-white shadow-2xl">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
+                                <Video className="text-amber-400" size={24} />
+                            </div>
+                            <h2 className="text-2xl font-bold leading-tight">Record this session</h2>
+                        </div>
+                        <p className="text-gray-300 text-sm leading-relaxed mb-2">
+                            All tutoring sessions are recorded. Please record this session so your student can review it afterwards.
+                        </p>
+                        <p className="text-gray-400 text-xs leading-relaxed mb-6">
+                            After you join, click <strong className="text-white">Share Screen</strong> in the video panel and share <strong className="text-white">this browser tab</strong> — that captures both the video call and the whiteboard.
+                        </p>
                         <button
                             onClick={joinWithValidToken}
                             className="w-full h-12 bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2"
@@ -1848,25 +1863,15 @@ export default function SessionPage({ params }: SessionProps) {
                 </div>
             )}
 
-            {/* Honest, always-visible recording status for everyone in the room —
-                the two-party-consent notice. Green "recording may occur" when the
-                parent has opted in; neutral "not recorded" otherwise. */}
+            {/* Always-visible recording status — all sessions may be recorded. */}
             {hasJoined && (
-                <div
-                    className={`fixed right-3 top-[40px] z-[9999] inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold shadow-lg ${
-                        recordingAllowed
-                            ? 'bg-red-500/90 text-white shadow-red-900/30'
-                            : 'bg-gray-800/90 text-gray-300 ring-1 ring-white/10'
-                    }`}
-                    title={recordingAllowed
-                        ? 'The parent has consented — this session may be recorded for later review.'
-                        : 'This session is not being recorded.'}
+                <div className={`fixed right-3 top-[40px] z-[9999] flex items-center gap-2 px-3 py-1.5 ${recordingStatus === 'recording' ? 'bg-red-500' : 'bg-gray-500'} text-white rounded-full text-xs font-bold shadow-lg transition-colors`}
+                    title="This session is recorded for safety and quality."
                 >
-                    {recordingAllowed ? (
-                        <><span className="h-2 w-2 rounded-full bg-white animate-pulse" /> May be recorded</>
-                    ) : (
-                        <><VideoOff size={12} /> Not recorded</>
-                    )}
+                    <span className={`h-2 w-2 rounded-full bg-white ${recordingStatus === 'recording' ? 'animate-pulse' : ''}`} />
+                    {recordingStatus === 'recording' 
+                        ? `Recording: ${formatTime(recordingElapsed)}` 
+                        : 'May be recorded'}
                 </div>
             )}
 
@@ -1939,12 +1944,12 @@ export default function SessionPage({ params }: SessionProps) {
 
                 {/* Daily.co sidebar panel - using width transition to prevent iframe unmounting/re-rendering */}
                 <div 
-                    className={`h-full border-l border-white/10 bg-black/80 flex flex-col transition-all duration-500 ease-in-out ${isPanelExpanded ? 'w-[450px] opacity-100' : 'w-0 opacity-0 overflow-hidden border-none'}`} 
+                    className={`h-full border-l border-white/10 bg-black/80 flex flex-col transition-all duration-500 ease-in-out ${isScreenShareActive && isPanelExpanded ? 'w-1/2 opacity-100' : isPanelExpanded ? 'w-[450px] opacity-100' : 'w-0 opacity-0 overflow-hidden border-none'}`} 
                     role="complementary" 
                     aria-label="Video session panel"
                 >
                     {/* Inner wrapper to keep content size stable during transition */}
-                    <div className="w-[450px] h-full flex flex-col flex-none">
+                    <div className={`${isScreenShareActive && isPanelExpanded ? 'w-full' : 'w-[450px]'} h-full flex flex-col flex-none`}>
                         {/* Header with title and collapse button */}
                         <div className="h-12 border-b border-white/10 flex items-center justify-between px-4 bg-linear-to-r from-purple-600 to-indigo-600 shrink-0">
                             <div className="flex flex-col">
@@ -2299,13 +2304,20 @@ export default function SessionPage({ params }: SessionProps) {
             )}
 
             {/* 3. OVERLAY LAYER: CHAT SIDEBAR (Elevated z-index to stay above video panel) */}
-            <div className={`absolute bottom-24 z-1000 w-80 pointer-events-none transition-all duration-300 ${isPanelExpanded ? 'right-[464px]' : 'right-4'}`}>
+            <motion.div 
+                className={`absolute bottom-24 z-1000 w-80 pointer-events-none transition-all duration-300 ${isPanelExpanded ? 'right-[464px]' : 'right-4'}`}
+                drag
+                dragControls={dragControls}
+                dragListener={false}
+                dragMomentum={false}
+            >
                 <SessionChat
                     key={sessionId}
                     sessionId={booking?.sessions?.[0]?.id || sessionId}
                     socket={socket}
+                    onDragStart={(e) => dragControls.start(e)}
                 />
-            </div>
+            </motion.div>
 
             {/* ── PDF THUMBNAIL STRIP ──────────────────────────────────────── */}
             {slides.length > 0 && (
@@ -2968,6 +2980,31 @@ export default function SessionPage({ params }: SessionProps) {
                                 Clear All
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Just-in-time recording disclosure — shown to students/parents on join */}
+            {showRecordingNotice && (
+                <div className="fixed inset-0 z-100 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+                    <div className="bg-gray-900 border border-white/10 rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <ShieldCheck className="text-red-500" size={32} />
+                        </div>
+                        <h3 className="text-xl font-bold text-white text-center mb-2">This session is being recorded</h3>
+                        <p className="text-white/60 text-center text-sm mb-8">
+                            For safety and teaching quality, all tutoring sessions are recorded. Recordings help us safeguard students, support tutor training, and resolve any concerns about a session. They&apos;re stored securely with limited access and deleted automatically after our retention period.
+                        </p>
+                        <button
+                            onClick={() => {
+                                try { sessionStorage.setItem(`recNotice:${sessionId}`, '1'); } catch { /* private mode */ }
+                                setShowRecordingNotice(false);
+                                if (!hasJoined) joinWithValidToken();
+                            }}
+                            className="w-full py-3 px-6 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-lg shadow-purple-500/20 transition-all"
+                        >
+                            I understand — join session
+                        </button>
                     </div>
                 </div>
             )}

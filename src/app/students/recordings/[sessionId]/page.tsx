@@ -4,13 +4,26 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import { api } from '@/app/lib/api';
-import { Play, Image as ImageIcon, ArrowLeft, Loader2, AlertCircle, Camera } from 'lucide-react';
+import { Play, Image as ImageIcon, ArrowLeft, Loader2, AlertCircle, Camera, Lock, Clock, Crown } from 'lucide-react';
 
 interface Recording {
   id: string;
   created_at: string;
   duration_seconds: number | null;
   file_size_bytes: number | null;
+  locked?: boolean;
+}
+
+// Map a stream-endpoint error to a gated state:
+//  403 + UPGRADE_REQUIRED  -> 'locked'  (trial student/parent; show upgrade CTA)
+//  410 + RECORDING_EXPIRED -> 'expired' (>29-day retention; neutral message)
+function readRecordingBlock(err: unknown): 'locked' | 'expired' | null {
+  const e = err as { response?: { status?: number; data?: { reason?: string } } };
+  const status = e?.response?.status;
+  const reason = e?.response?.data?.reason;
+  if (status === 403 && reason === 'UPGRADE_REQUIRED') return 'locked';
+  if (status === 410 && reason === 'RECORDING_EXPIRED') return 'expired';
+  return null;
 }
 
 function SessionRecordingContent() {
@@ -24,6 +37,8 @@ function SessionRecordingContent() {
   const [loadingRecording, setLoadingRecording] = useState(false);
   const [loadingSnapshot, setLoadingSnapshot] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Per-recording gated state, set when the stream request is refused.
+  const [blocked, setBlocked] = useState<Record<string, 'locked' | 'expired'>>({});
 
   useEffect(() => {
     if (!sessionId) return;
@@ -47,8 +62,13 @@ function SessionRecordingContent() {
       const url = res.data?.streamUrl || res.data?.url || res.data?.sasUrl;
       if (!url) throw new Error('No stream URL returned');
       setStreamUrl(url);
-    } catch {
-      setError('Could not load recording. Please try again.');
+    } catch (err) {
+      const reason = readRecordingBlock(err);
+      if (reason) {
+        setBlocked((prev) => ({ ...prev, [recordingId]: reason }));
+      } else {
+        setError('Could not load recording. Please try again.');
+      }
     } finally {
       setLoadingRecording(false);
     }
@@ -120,14 +140,41 @@ function SessionRecordingContent() {
                   </p>
                 )}
               </div>
-              <button
-                onClick={() => handleWatch(rec.id)}
-                disabled={loadingRecording}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
-              >
-                {loadingRecording ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
-                Watch
-              </button>
+              {(() => {
+                const state = rec.locked ? 'locked' : blocked[rec.id];
+                if (state === 'expired') {
+                  return (
+                    <span className="flex items-center gap-1.5 text-xs text-text-secondary text-right">
+                      <Clock size={14} /> This recording has expired (29-day retention)
+                    </span>
+                  );
+                }
+                if (state === 'locked') {
+                  return (
+                    <div className="flex flex-col items-end gap-1.5">
+                      <span className="flex items-center gap-1.5 text-xs text-text-secondary">
+                        <Lock size={13} /> Recording available on paid plans
+                      </span>
+                      <button
+                        onClick={() => router.push('/pricing')}
+                        className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
+                      >
+                        <Crown size={14} /> Upgrade
+                      </button>
+                    </div>
+                  );
+                }
+                return (
+                  <button
+                    onClick={() => handleWatch(rec.id)}
+                    disabled={loadingRecording}
+                    className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
+                  >
+                    {loadingRecording ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
+                    Watch
+                  </button>
+                );
+              })()}
             </div>
           ))}
         </section>

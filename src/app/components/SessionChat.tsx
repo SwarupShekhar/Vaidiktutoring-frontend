@@ -17,9 +17,10 @@ type Message = {
 interface SessionChatProps {
     sessionId?: string; // Explicit session ID from booking data
     socket: Socket | null;
+    onDragStart?: (e: React.PointerEvent) => void;
 }
 
-export default function SessionChat({ sessionId: propSessionId, socket }: SessionChatProps) {
+export default function SessionChat({ sessionId: propSessionId, socket, onDragStart }: SessionChatProps) {
     const { user } = useAuthContext();
     const params = useParams();
 
@@ -206,7 +207,10 @@ export default function SessionChat({ sessionId: propSessionId, socket }: Sessio
                 {isOpen && (
                     <div className="pointer-events-auto w-[350px] md:w-[400px] h-[500px] max-h-[70vh] flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-white/20 shadow-2xl origin-bottom-right transition-all animate-in fade-in zoom-in-95 duration-200">
                         {/* Header */}
-                        <div className="p-4 border-b border-white/10 bg-linear-to-r from-blue-600 to-purple-600 text-white flex justify-between items-center backdrop-blur-md">
+                        <div 
+                            className="chat-drag-handle p-4 border-b border-white/10 bg-linear-to-r from-blue-600 to-purple-600 text-white flex justify-between items-center backdrop-blur-md cursor-grab active:cursor-grabbing"
+                            onPointerDown={onDragStart}
+                        >
                             <div className="flex items-center gap-3">
                                 <div className="relative">
                                     <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">
@@ -288,7 +292,8 @@ export default function SessionChat({ sessionId: propSessionId, socket }: Sessio
                 {/* LOADER TRIGGER */}
                 <div
                     onClick={toggleChat}
-                    className={`pointer-events-auto cursor-pointer hover:scale-105 transition-transform relative ${unreadCount > 0 ? 'animate-bounce' : ''}`}
+                    onPointerDown={onDragStart}
+                    className={`chat-drag-handle pointer-events-auto cursor-grab active:cursor-grabbing hover:scale-105 transition-transform relative ${unreadCount > 0 ? 'animate-bounce' : ''}`}
                 >
                     <ChatLoader />
                     {unreadCount > 0 && (

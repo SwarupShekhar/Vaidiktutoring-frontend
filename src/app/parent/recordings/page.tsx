@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Video, PlayCircle, Loader2, Baby, X, UserPlus } from 'lucide-react';
+import { Video, PlayCircle, Loader2, Baby, X, UserPlus, Lock, Clock, Crown } from 'lucide-react';
 import { format } from 'date-fns';
 import ProtectedClient from '@/app/components/ProtectedClient';
 import { ErrorBoundary } from '@/app/components/ErrorBoundary';
@@ -45,6 +45,18 @@ export default function ParentRecordingsPage() {
 const childLabel = (s: { first_name?: string; last_name?: string }) =>
   `${s.first_name ?? ''} ${s.last_name ?? ''}`.trim() || 'Child';
 
+// Map a stream-endpoint error to a gated state:
+//  403 + UPGRADE_REQUIRED  -> 'locked'  (trial parent; show upgrade CTA)
+//  410 + RECORDING_EXPIRED -> 'expired' (>29-day retention; neutral message)
+function readRecordingBlock(err: unknown): 'locked' | 'expired' | null {
+  const e = err as { response?: { status?: number; data?: { reason?: string } } };
+  const status = e?.response?.status;
+  const reason = e?.response?.data?.reason;
+  if (status === 403 && reason === 'UPGRADE_REQUIRED') return 'locked';
+  if (status === 410 && reason === 'RECORDING_EXPIRED') return 'expired';
+  return null;
+}
+
 function ParentRecordings() {
   const router = useRouter();
   const { students, loadingStudentList } = useParentDashboard();
@@ -70,6 +82,7 @@ function ParentRecordings() {
   const [playing, setPlaying] = useState<ChildSession | null>(null);
   const [streamUrl, setStreamUrl] = useState<string | null>(null);
   const [streamLoading, setStreamLoading] = useState(false);
+  const [blockState, setBlockState] = useState<'locked' | 'expired' | null>(null);
 
   useEffect(() => {
     if (!selectedChildId) return;
@@ -97,14 +110,17 @@ function ParentRecordings() {
     if (!recordingId) return;
     setPlaying(session);
     setStreamUrl(null);
+    setBlockState(null);
     setStreamLoading(true);
     try {
       const res = await api.get(`/sessions/${session.id}/recordings/${recordingId}/stream`);
       const url = res.data?.streamUrl || res.data?.url || res.data?.sasUrl;
       if (!url) throw new Error('No stream URL');
       setStreamUrl(url);
-    } catch {
-      setPlaying(null);
+    } catch (err) {
+      const reason = readRecordingBlock(err);
+      if (reason) setBlockState(reason);
+      else setPlaying(null);
     } finally {
       setStreamLoading(false);
     }
@@ -113,6 +129,7 @@ function ParentRecordings() {
   const closePlayer = () => {
     setPlaying(null);
     setStreamUrl(null);
+    setBlockState(null);
   };
 
   useEffect(() => {
@@ -237,7 +254,31 @@ function ParentRecordings() {
             </button>
           </div>
           <div className="relative flex flex-1 items-center justify-center p-4">
-            {streamLoading || !streamUrl ? (
+            {blockState === 'locked' ? (
+              <div className="flex max-w-md flex-col items-center gap-4 text-center">
+                <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-500/15 text-violet-300">
+                  <Lock size={30} />
+                </span>
+                <div>
+                  <p className="text-lg font-bold text-white">Recording available on paid plans</p>
+                  <p className="mt-1 text-sm text-white/50">
+                    Upgrade to unlock session recordings for your child.
+                  </p>
+                </div>
+                <AppPillButton accent="violet" variant="solid" onClick={() => router.push('/pricing')}>
+                  <Crown size={14} /> Upgrade
+                </AppPillButton>
+              </div>
+            ) : blockState === 'expired' ? (
+              <div className="flex max-w-md flex-col items-center gap-3 text-center text-white/50">
+                <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 text-white/40">
+                  <Clock size={30} />
+                </span>
+                <p className="text-sm font-medium text-white/70">
+                  This recording has expired (29-day retention)
+                </p>
+              </div>
+            ) : streamLoading || !streamUrl ? (
               <div className="flex flex-col items-center gap-3 text-white/50">
                 <Loader2 size={30} className="animate-spin text-violet-400" />
                 <p className="text-xs font-bold uppercase tracking-widest">Loading…</p>
