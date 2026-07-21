@@ -67,11 +67,12 @@ export default defineConfig({
           landingPage: defineLocations({
             select: {
               title: 'title',
-              slug: 'slug.current',
+              slug: 'slug',
+              country: 'country',
             },
             resolve: (doc) => {
-              const cleanSlug = doc?.slug ? doc.slug.trim() : '';
-              const isRegional = cleanSlug.includes('/');
+              const cleanSlug = (doc?.slug?.current ?? '').trim();
+              const isRegional = !!doc?.country;
               return {
                 locations: [
                   {

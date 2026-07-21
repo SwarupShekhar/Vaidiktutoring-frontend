@@ -27,13 +27,19 @@ export async function GET(request: NextRequest) {
 
     // Dynamically route to correct visual template
     const cleanSlug = slug.trim();
-    // Regional (tutors) pages carry multi-segment slugs like "uk/gcse" and live only
-    // under /tutors; single-segment landingPage slugs are the /resources pages.
-    const redirectPath =
-        type === 'landingPage'
-            ? cleanSlug.includes('/')
-                ? `/tutoring/${cleanSlug}`
-                : `/resources/${cleanSlug}`
-            : `/blogs/${cleanSlug}`;
+    let redirectPath = `/blogs/${cleanSlug}`;
+
+    if (type === 'landingPage') {
+        const { getSanityClient } = await import('@/sanity/lib/client');
+        const query = `*[_type == "landingPage" && slug.current == $slug][0] { country }`;
+        const doc = await getSanityClient(true).fetch(query, { slug: cleanSlug });
+        
+        if (doc?.country) {
+            redirectPath = `/tutoring/${cleanSlug}`;
+        } else {
+            redirectPath = `/resources/${cleanSlug}`;
+        }
+    }
+
     redirect(redirectPath);
 }
