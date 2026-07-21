@@ -16,7 +16,7 @@ const apiVersion = '2024-01-01'
 const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost'
 const previewOrigin = isLocalhost ? 'http://localhost:3000' : 'https://studyhours.com'
 
-const previewSecret = process.env.NEXT_PUBLIC_SANITY_PREVIEW_SECRET || 'fallback_preview_secret';
+const previewSecret = process.env.NEXT_PUBLIC_SANITY_PREVIEW_SECRET || 'vaidikeduservicespvtltd_preview_2026_key';
 
 export default defineConfig({
   name: 'studyhours-cms',
