@@ -56,8 +56,12 @@ export default defineConfig({
         mainDocuments: defineDocuments([
           {
             route: '/tutoring/:slug',
-            filter: `_type == "landingPage" && slug.current == $slug`,
+            filter: `_type == "landingPage" && defined(country) && slug.current == $slug`,
           },
+          {
+            route: '/resources/:slug',
+            filter: `_type == "landingPage" && !defined(country) && slug.current == $slug`,
+          }
         ]),
         locations: {
           landingPage: defineLocations({
@@ -65,14 +69,18 @@ export default defineConfig({
               title: 'title',
               slug: 'slug.current',
             },
-            resolve: (doc) => ({
-              locations: [
-                {
-                  title: doc?.title || 'Untitled Landing Page',
-                  href: `/tutoring/${doc?.slug ? doc.slug.trim() : ''}`,
-                },
-              ],
-            }),
+            resolve: (doc) => {
+              const cleanSlug = doc?.slug ? doc.slug.trim() : '';
+              const isRegional = cleanSlug.includes('/');
+              return {
+                locations: [
+                  {
+                    title: doc?.title || 'Untitled Landing Page',
+                    href: isRegional ? `/tutoring/${cleanSlug}` : `/resources/${cleanSlug}`,
+                  },
+                ],
+              };
+            },
           }),
         },
       },
