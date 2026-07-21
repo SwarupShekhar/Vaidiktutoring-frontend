@@ -12,7 +12,6 @@ const isProtectedRoute = createRouteMatcher([
     '/settings(.*)',
     '/session(.*)',
     '/verify-phone(.*)',
-    '/studio(.*)',
 ]);
 
 const isPublicRoute = createRouteMatcher([
@@ -45,6 +44,7 @@ const isPublicRoute = createRouteMatcher([
     '/saudi(.*)',
     '/resources(.*)',
     '/tutoring(.*)',
+    '/studio(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
@@ -80,18 +80,6 @@ export default clerkMiddleware(async (auth, req) => {
 
         const authObject = await auth();
         const { userId, sessionClaims, redirectToSignIn } = authObject;
-
-        // Restrict /studio to admin role only (internal team)
-        if (path.startsWith('/studio')) {
-            if (!userId) {
-                return redirectToSignIn({ returnBackUrl: req.url });
-            }
-            const cookieUserRole = req.cookies.get('user_role')?.value;
-            const role = (sessionClaims?.publicMetadata as any)?.role || (sessionClaims?.metadata as any)?.role || cookieUserRole;
-            if (role !== 'admin') {
-                return NextResponse.redirect(new URL('/unauthorized', req.url));
-            }
-        }
 
         // Redirect authenticated users to their specific dashboards if they hit marketing pages or /dashboard
         if (userId) {

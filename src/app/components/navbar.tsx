@@ -178,7 +178,7 @@ export default function Navbar({ initialRegionalPages }: { initialRegionalPages?
             ))}
 
           {/* Tutoring Dropdown — populated dynamically from Sanity regional pages */}
-          {tutoringGroups.length > 0 && (
+          {process.env.NEXT_PUBLIC_SHOW_TUTORING_MENU === 'true' && tutoringGroups.length > 0 && (
           <div className="relative shrink-0">
             <button
               onClick={() => setTutoringDropdownOpen(!tutoringDropdownOpen)}
@@ -539,7 +539,7 @@ export default function Navbar({ initialRegionalPages }: { initialRegionalPages?
             </div>
 
             {/* Mobile Tutoring Submenu — dynamic from Sanity regional pages */}
-            {tutoringGroups.length > 0 && (
+            {process.env.NEXT_PUBLIC_SHOW_TUTORING_MENU === 'true' && tutoringGroups.length > 0 && (
               <div className="py-2 space-y-1">
                 <div className="px-3 pt-1 pb-2 text-[10px] font-black text-primary uppercase tracking-widest">Tutoring</div>
                 {tutoringGroups.map((group) => (

@@ -27,6 +27,7 @@ export default function SupportTicketsSection() {
   const [filter, setFilter] = useState<string>('');
   const [expanded, setExpanded] = useState<string | null>(null);
   const [noteInputs, setNoteInputs] = useState<Record<string, string>>({});
+  const [replyInputs, setReplyInputs] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState<string | null>(null);
 
   const fetchTickets = useCallback(async () => {
@@ -53,9 +54,18 @@ export default function SupportTicketsSection() {
   const updateTicket = async (id: string, status: string) => {
     setSaving(id);
     try {
-      await api.patch(`/support/tickets/${id}`, { status, admin_note: noteInputs[id] ?? undefined });
+      await api.patch(`/support/tickets/${id}`, { 
+        status, 
+        admin_note: noteInputs[id] ?? undefined,
+        reply_message: replyInputs[id] || undefined
+      });
       toast.success('Ticket updated');
       fetchTickets();
+      setReplyInputs(prev => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
     } catch {
       toast.error('Failed to update ticket');
     } finally {
@@ -156,15 +166,28 @@ export default function SupportTicketsSection() {
                       </div>
                     )}
 
-                    <div>
-                      <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-1">Admin Note (optional)</p>
-                      <textarea
-                        value={noteInputs[ticket.id] ?? (ticket.admin_note || '')}
-                        onChange={e => setNoteInputs(n => ({ ...n, [ticket.id]: e.target.value }))}
-                        placeholder="Internal note for this ticket..."
-                        className="w-full bg-background border border-border rounded-xl p-3 text-sm resize-none focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-                        rows={2}
-                      />
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-1">Reply to User (Emails them directly)</p>
+                        <textarea
+                          value={replyInputs[ticket.id] || ''}
+                          onChange={e => setReplyInputs(r => ({ ...r, [ticket.id]: e.target.value }))}
+                          placeholder="Type your reply here... (They will receive an email)"
+                          className="w-full bg-background border border-indigo-200 dark:border-indigo-900 rounded-xl p-3 text-sm resize-none focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                          rows={3}
+                        />
+                      </div>
+
+                      <div>
+                        <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-1">Internal Admin Note (optional)</p>
+                        <textarea
+                          value={noteInputs[ticket.id] ?? (ticket.admin_note || '')}
+                          onChange={e => setNoteInputs(n => ({ ...n, [ticket.id]: e.target.value }))}
+                          placeholder="Internal note for this ticket..."
+                          className="w-full bg-background border border-border rounded-xl p-3 text-sm resize-none focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                          rows={2}
+                        />
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap">
