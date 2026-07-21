@@ -16,6 +16,7 @@ import { vaultApi, VaultAsset } from '@/app/lib/vault';
 import { io, Socket } from 'socket.io-client';
 import DailyIframe from '@daily-co/daily-js';
 import { motion, useDragControls } from 'framer-motion';
+import { Rnd } from 'react-rnd';
 
 import { toast } from 'sonner';
 import {
@@ -210,6 +211,7 @@ export default function SessionPage({ params }: SessionProps) {
     // True when a REMOTE participant is sharing their screen — drives auto-enlarging
     // the video panel so the viewer (e.g. the tutor) can read it without zooming.
     const [isScreenShareActive, setIsScreenShareActive] = useState(false);
+    const [isLocalScreenShareActive, setIsLocalScreenShareActive] = useState(false);
 
     // Whiteboard Enhancements State
     const [uploadingSlides, setUploadingSlides] = useState(false);
@@ -618,6 +620,12 @@ export default function SessionPage({ params }: SessionProps) {
     // Excalidraw State
     const [excalidrawAPI, setExcalidrawAPI] = useState<any>(null);
     const excalidrawAPIRef = useRef<any>(null);
+
+    useEffect(() => {
+        if (excalidrawAPI) {
+            excalidrawAPI.updateScene({ collaborators });
+        }
+    }, [collaborators, excalidrawAPI]);
     const [ExcalidrawComp, setExcalidrawComp] = useState<any>(null);
 
     // Patch for process.env
@@ -1142,9 +1150,7 @@ export default function SessionPage({ params }: SessionProps) {
             // localStorage directly (that can send a stale token for a different user).
             const res = await api.post(`/sessions/${sessionId}/slides`, formData, {
                 timeout: 60000,
-                // axios v1 JSON-stringifies FormData when the instance default
-                // Content-Type is application/json; null forces multipart w/ boundary.
-                headers: { 'Content-Type': null }
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
 
             if (res.data.success && excalidrawAPI && res.data.sasUrl) {
@@ -1154,7 +1160,8 @@ export default function SessionPage({ params }: SessionProps) {
                     toast.error(`Cannot display file type "${mime}". Upload a PNG, JPG, or PDF instead.`);
                     return;
                 }
-                const imgFetch = await fetch(res.data.sasUrl);
+                const proxyUrl = `/api/vault/proxy?url=${encodeURIComponent(res.data.sasUrl)}`;
+                const imgFetch = await fetch(proxyUrl);
                 const imgBlob = await imgFetch.blob();
                 const dataUrl = await new Promise<string>((resolve) => {
                     const reader = new FileReader();
@@ -1314,10 +1321,6 @@ export default function SessionPage({ params }: SessionProps) {
                     isLaserActive: payload.isLaserActive,
                     color: payload.isLaserActive ? "#ef4444" : undefined
                 });
-                // Use the freshly-built Map — not the stale closure value
-                if (excalidrawAPI) {
-                    excalidrawAPI.updateScene({ collaborators: next });
-                }
                 return next;
             });
         };
@@ -1600,6 +1603,10 @@ export default function SessionPage({ params }: SessionProps) {
                     return s === 'playable' || s === 'loading' || s === 'sendable' || p?.screen === true;
                 });
                 setIsScreenShareActive(remoteSharing);
+
+                const localP = participants?.local;
+                const localSharing = localP?.tracks?.screenVideo?.state === 'playable' || localP?.tracks?.screenVideo?.state === 'loading' || localP?.tracks?.screenVideo?.state === 'sendable' || localP?.screen === true;
+                setIsLocalScreenShareActive(!!localSharing);
             } catch { /* participants() not ready yet */ }
         };
         callObject.on('participant-updated', updateScreenShare);
@@ -1744,9 +1751,7 @@ export default function SessionPage({ params }: SessionProps) {
             formData.append('file', pdfBlob, `Session_${sessionId}_Annotations.pdf`);
             
             await api.post(`/sessions/${sessionId}/shared-pdf`, formData, {
-                // axios v1 JSON-stringifies FormData when the instance default
-                // Content-Type is application/json; null forces multipart w/ boundary.
-                headers: { 'Content-Type': null }
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
 
             return true;
@@ -1872,6 +1877,17 @@ export default function SessionPage({ params }: SessionProps) {
                     {recordingStatus === 'recording' 
                         ? `Recording: ${formatTime(recordingElapsed)}` 
                         : 'May be recorded'}
+                </div>
+            )}
+
+            {user?.role === 'tutor' && recordingStatus === 'recording' && !isLocalScreenShareActive && (
+                <div 
+                    className="fixed top-[12px] left-1/2 -translate-x-1/2 z-[9999] bg-yellow-500 text-black px-4 py-2 rounded-full shadow-2xl font-bold flex items-center gap-3 animate-bounce cursor-pointer hover:bg-yellow-400 transition-colors border-2 border-yellow-600"
+                    onClick={() => dailyCallRef.current?.startScreenShare()}
+                    title="Click to start screen share"
+                >
+                    <span className="text-xl">⚠️</span>
+                    <span>Click here to share your screen so the whiteboard is recorded</span>
                 </div>
             )}
 
