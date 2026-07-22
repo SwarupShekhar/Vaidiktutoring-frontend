@@ -96,7 +96,11 @@ export function useTutorDashboard() {
         const hasNotEnded = sessionEnd > now;
 
         return isSameCalendarDay && hasNotEnded;
-    }) || [];
+    }) || []).sort((a: TutorBooking, b: TutorBooking) => {
+        const dateA = getBookingDate(a)?.getTime() || 0;
+        const dateB = getBookingDate(b)?.getTime() || 0;
+        return dateA - dateB;
+    });
 
     const upcomingBookings = bookings?.filter((b: TutorBooking) => {
         const bookingDate = getBookingDate(b);
@@ -109,7 +113,11 @@ export function useTutorDashboard() {
         const isNotToday = bookingDate.toDateString() !== todayString;
 
         return isFuture && isNotToday;
-    }) || [];
+    }) || []).sort((a: TutorBooking, b: TutorBooking) => {
+        const dateA = getBookingDate(a)?.getTime() || 0;
+        const dateB = getBookingDate(b)?.getTime() || 0;
+        return dateA - dateB;
+    });
 
     return {
         todaySessions,
