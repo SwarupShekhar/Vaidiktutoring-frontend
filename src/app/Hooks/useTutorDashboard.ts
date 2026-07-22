@@ -75,7 +75,7 @@ export function useTutorDashboard() {
 
 
 
-    const todaySessions = bookings?.filter((b: TutorBooking) => {
+    const todaySessions = (bookings?.filter((b: TutorBooking) => {
         const bookingDate = getBookingDate(b);
         if (!bookingDate) {
             return false;
@@ -102,7 +102,7 @@ export function useTutorDashboard() {
         return dateA - dateB;
     });
 
-    const upcomingBookings = bookings?.filter((b: TutorBooking) => {
+    const upcomingBookings = (bookings?.filter((b: TutorBooking) => {
         const bookingDate = getBookingDate(b);
         if (!bookingDate) return false;
 
