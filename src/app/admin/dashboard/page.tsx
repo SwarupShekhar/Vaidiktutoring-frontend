@@ -515,7 +515,7 @@ export default function AdminDashboardPage() {
                                     </span>
                                 )}
                             </div>
-                            <div className="max-h-[400px] overflow-hidden">
+                            <div className="max-h-[400px] overflow-y-auto pb-20 pr-2 custom-scrollbar">
                                 <SupportTicketsSection />
                             </div>
                             <div className="absolute bottom-0 left-0 right-0 h-20 bg-linear-to-t from-background to-transparent pointer-events-none" />
