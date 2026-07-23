@@ -352,32 +352,27 @@ const PricingPlans = () => {
 
                 {/* Region / curriculum selector */}
                 <div className="mb-5 flex flex-wrap items-center gap-1.5">
-                    {(showAllRegions 
-                        ? CURRICULA 
-                        : CURRICULA.filter(c => c.id === activeCurriculum.id || c.id === 'test-prep' || (activeCurriculum.id === 'test-prep' && c.id === 'us'))
-                    ).map((c) => {
-                        const active = activeCurriculum.id === c.id;
-                        return (
-                            <button
-                                key={c.id}
-                                onClick={() => setCurriculum(c.id)}
-                                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-semibold transition-all ${
-                                    active
-                                        ? 'bg-indigo-500/20 text-indigo-200 ring-1 ring-indigo-400/40'
-                                        : 'bg-white/5 text-white/55 ring-1 ring-white/10 hover:bg-white/10 hover:text-white/80'
-                                }`}
-                            >
-                                <span>{c.flag}</span>
-                                {c.country}
-                            </button>
-                        );
-                    })}
-
                     <button
-                        onClick={() => setShowAllRegions(!showAllRegions)}
-                        className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold text-white/50 hover:text-white/80 transition-colors"
+                        onClick={() => setCurriculum(lastAcademicRegion)}
+                        className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-semibold transition-all ${
+                            activeCurriculum.id !== 'test-prep'
+                                ? 'bg-indigo-500/20 text-indigo-200 ring-1 ring-indigo-400/40'
+                                : 'bg-white/5 text-white/55 ring-1 ring-white/10 hover:bg-white/10 hover:text-white/80'
+                        }`}
                     >
-                        🌐 {showAllRegions ? "Hide Other Regions" : "All Regions"}
+                        <span>{lastAcademicCurriculum.flag}</span>
+                        Academic Tutoring ({lastAcademicCurriculum.country})
+                    </button>
+                    <button
+                        onClick={() => setCurriculum('test-prep')}
+                        className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-semibold transition-all ${
+                            activeCurriculum.id === 'test-prep'
+                                ? 'bg-indigo-500/20 text-indigo-200 ring-1 ring-indigo-400/40'
+                                : 'bg-white/5 text-white/55 ring-1 ring-white/10 hover:bg-white/10 hover:text-white/80'
+                        }`}
+                    >
+                        <span>🎓</span>
+                        Test Prep (SAT, ACT, AP) ✨
                     </button>
                 </div>
 
