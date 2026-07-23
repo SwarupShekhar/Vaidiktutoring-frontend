@@ -14,14 +14,15 @@ export default function Footer() {
   const pathname = usePathname();
   const [year, setYear] = useState(2026);
   const [featuredResources, setFeaturedResources] = useState<{ title: string; slug: string; addToFooter?: boolean }[]>([]);
+  const [isResourcesExpanded, setIsResourcesExpanded] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setYear(new Date().getFullYear());
 
-    // Fetch dynamic landing pages that should be featured in the footer
+    // Fetch dynamic landing pages to show in the footer
     cmsApi.getLandingPages()
-      .then((data) => setFeaturedResources(data.filter((page) => page.addToFooter === true)))
+      .then((data) => setFeaturedResources(data))
       .catch((err) => console.warn("[Footer] Failed to fetch featured landing pages:", err));
   }, []);
 
@@ -33,9 +34,9 @@ export default function Footer() {
       <div className="absolute inset-0 z-0 pointer-events-none opacity-40" style={{ background: 'radial-gradient(circle at 50% 100%, #1a1a3a 0%, #000000 60%)' }}></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className={`grid grid-cols-1 md:grid-cols-3 ${featuredResources.length > 0 ? 'lg:grid-cols-7' : 'lg:grid-cols-6'} gap-12 mb-16`}>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-8 mb-16">
           {/* Brand Column */}
-          <div className="space-y-4">
+          <div className="space-y-4 col-span-2 md:col-span-4 lg:col-span-2 xl:col-span-2">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-lg">
                 <SHLogo className="w-full h-full" />
@@ -184,7 +185,7 @@ export default function Footer() {
                 Resources
               </h3>
               <ul className="space-y-3">
-                {featuredResources.map((res) => (
+                {featuredResources.slice(0, isResourcesExpanded ? featuredResources.length : 5).map((res) => (
                   <li key={res.slug}>
                     <Link
                       href={`/resources/${res.slug}`}
@@ -198,6 +199,16 @@ export default function Footer() {
                     </Link>
                   </li>
                 ))}
+                {featuredResources.length > 5 && (
+                  <li>
+                    <button
+                      onClick={() => setIsResourcesExpanded(!isResourcesExpanded)}
+                      className="text-primary hover:text-white transition-colors text-xs font-bold mt-2"
+                    >
+                      {isResourcesExpanded ? "Show Less" : "Show More"}
+                    </button>
+                  </li>
+                )}
               </ul>
             </div>
           )}

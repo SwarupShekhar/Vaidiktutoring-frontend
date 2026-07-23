@@ -506,11 +506,11 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
               return (
                 <section key={idx} id={blockId} className={`w-full relative ${sectionBg} ${sectionPad}`}>
                   {hasCss && (
-                    <style dangerouslySetInnerHTML={{ __html: block.css || '' }} />
+                    <style dangerouslySetInnerHTML={{ __html: `#${blockId} {\n${block.css || ''}\n}` }} />
                   )}
                   {hasHtml ? (
                     <div
-                      className={innerMw}
+                      className={`${innerMw} prose dark:prose-invert max-w-none prose-headings:font-black prose-a:text-primary prose-p:font-medium`}
                       dangerouslySetInnerHTML={{ __html: block.html || '' }}
                     />
                   ) : (
@@ -539,7 +539,7 @@ export default function ResourceLandingClient({ landingPage }: ResourceLandingCl
       )}
 
       {/* Unified footer call to action */}
-      <section className="py-20 px-6 text-center bg-white dark:bg-[#000926] border-t border-border dark:border-white/5 transition-colors relative overflow-hidden">
+      <section className="py-20 px-6 text-center bg-black border-t border-white/10 relative overflow-hidden">
         <div className="max-w-4xl mx-auto">
           <div className="p-12 rounded-[2.5rem] bg-gradient-to-r from-primary to-sapphire text-white shadow-2xl relative overflow-hidden">
             <div className="relative z-10">
