@@ -147,11 +147,24 @@ const PricingPlans = () => {
     const [leadData, setLeadData] = useState({ name: '', email: '', phone: '', target_test: '' });
     const [leadStatus, setLeadStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [selectedTestPlan, setSelectedTestPlan] = useState('');
+    const [lastAcademicRegion, setLastAcademicRegion] = useState<string>(
+        activeCurriculum.id !== 'test-prep' ? activeCurriculum.id : 'us'
+    );
+
+    React.useEffect(() => {
+        if (activeCurriculum.id !== 'test-prep') {
+            setLastAcademicRegion(activeCurriculum.id);
+        }
+    }, [activeCurriculum.id]);
+
+    const lastAcademicCurriculum = CURRICULA.find(c => c.id === lastAcademicRegion) || CURRICULA.find(c => c.id === 'us') || CURRICULA[0];
 
     React.useEffect(() => {
         api.get('/packages')
             .then(res => setDynamicPackages(res.data))
-            .catch(err => console.error('Failed to fetch packages:', err));
+            .catch(() => {
+                // Backend API offline or unreachable locally; fallback to default pricing config
+            });
     }, []);
 
     const packageIds: Record<string, Record<string, string>> = {
@@ -338,8 +351,11 @@ const PricingPlans = () => {
                 </div>
 
                 {/* Region / curriculum selector */}
-                <div className="mb-5 flex flex-wrap gap-1.5">
-                    {CURRICULA.map((c) => {
+                <div className="mb-5 flex flex-wrap items-center gap-1.5">
+                    {(showAllRegions 
+                        ? CURRICULA 
+                        : CURRICULA.filter(c => c.id === activeCurriculum.id || c.id === 'test-prep' || (activeCurriculum.id === 'test-prep' && c.id === 'us'))
+                    ).map((c) => {
                         const active = activeCurriculum.id === c.id;
                         return (
                             <button
@@ -356,6 +372,13 @@ const PricingPlans = () => {
                             </button>
                         );
                     })}
+
+                    <button
+                        onClick={() => setShowAllRegions(!showAllRegions)}
+                        className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold text-white/50 hover:text-white/80 transition-colors"
+                    >
+                        🌐 {showAllRegions ? "Hide Other Regions" : "All Regions"}
+                    </button>
                 </div>
 
                 {/* Region name + exams */}
@@ -459,35 +482,32 @@ const PricingPlans = () => {
                     )}
                 </div>
 
-                {/* Region Toggle - Now using Global Context */}
-                <div className="flex justify-center mb-16">
-                    <div className="p-1.5 rounded-2xl bg-white/50 dark:bg-white/5 border border-border dark:border-white/10 backdrop-blur-md flex flex-wrap justify-center gap-1">
-                        {CURRICULA.map((c) => {
-                            const isTestPrep = c.id === 'test-prep';
-                            const isActive = activeCurriculum.id === c.id;
+                {/* 100% Geo-Targeted Plan Switcher */}
+                <div className="flex flex-col items-center mb-16">
+                    <div className="p-1.5 rounded-2xl bg-white/50 dark:bg-white/5 border border-border dark:border-white/10 backdrop-blur-md flex flex-wrap justify-center items-center gap-2 shadow-sm">
+                        <button
+                            onClick={() => setCurriculum(lastAcademicRegion)}
+                            className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 text-sm flex items-center gap-2.5 ${
+                                activeCurriculum.id !== 'test-prep'
+                                    ? 'bg-primary text-white shadow-lg scale-105'
+                                    : 'text-text-secondary hover:text-primary hover:bg-slate-100 dark:hover:bg-white/5'
+                            }`}
+                        >
+                            <span>{lastAcademicCurriculum.flag}</span>
+                            <span>1-on-1 Academic Tutoring ({lastAcademicCurriculum.country})</span>
+                        </button>
 
-                            return (
-                                <button
-                                    key={c.id}
-                                    onClick={() => setCurriculum(c.id)}
-                                    className={`px-5 py-2.5 rounded-xl font-bold transition-all duration-300 text-sm flex items-center gap-2 relative overflow-hidden group ${
-                                        isActive 
-                                            ? 'bg-primary text-white shadow-lg scale-105' 
-                                            : isTestPrep
-                                                ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-[0_0_20px_rgba(168,85,247,0.6)] hover:shadow-[0_0_30px_rgba(168,85,247,0.8)] hover:scale-105 animate-[pulse_3s_ease-in-out_infinite]'
-                                                : 'text-text-secondary hover:text-primary hover:bg-slate-100 dark:hover:bg-white/5'
-                                    }`}
-                                >
-                                    {isTestPrep && !isActive && (
-                                        <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                    )}
-                                    <span className="relative z-10">{c.flag}</span>
-                                    <span className={`relative z-10 ${isActive ? 'block' : 'hidden md:block'}`}>
-                                        {c.country} {isTestPrep && !isActive && '✨'}
-                                    </span>
-                                </button>
-                            );
-                        })}
+                        <button
+                            onClick={() => setCurriculum('test-prep')}
+                            className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 text-sm flex items-center gap-2.5 relative overflow-hidden group ${
+                                activeCurriculum.id === 'test-prep'
+                                    ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg scale-105'
+                                    : 'text-text-secondary hover:text-primary hover:bg-slate-100 dark:hover:bg-white/5'
+                            }`}
+                        >
+                            <span>🎓</span>
+                            <span>Test Prep (SAT, ACT, AP) ✨</span>
+                        </button>
                     </div>
                 </div>
 

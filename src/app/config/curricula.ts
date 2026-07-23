@@ -80,4 +80,4 @@ export const CURRICULA = [
     pricingHint: 'Custom Pricing',
   }
 ]
-export const DEFAULT_CURRICULUM = 'global'
+export const DEFAULT_CURRICULUM = 'us'
