@@ -41,7 +41,7 @@ import {
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
-    const { user } = useAuthContext();
+    const { user, loading: authLoading } = useAuthContext();
     const [stats, setStats] = React.useState({ 
         students: 0, 
         parents: 0, 
@@ -117,6 +117,8 @@ export default function AdminDashboardPage() {
     }, []);
 
     React.useEffect(() => {
+        if (authLoading) return;
+
         const fetchStats = async () => {
             try {
                 const res = await api.get('/admin/stats');
@@ -174,7 +176,7 @@ export default function AdminDashboardPage() {
             window.removeEventListener('open-admin-session-summary', handleOpenSummary);
             window.removeEventListener('open-reschedule-modal', handleOpenReschedule);
         };
-    }, []);
+    }, [authLoading]);
 
     const getGreeting = () => {
         const hour = new Date().getHours();

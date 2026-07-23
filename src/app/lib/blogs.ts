@@ -50,6 +50,19 @@ export interface BlogVersion {
     related_blog_ids?: string[];
 }
 
+const triggerRevalidate = (slug?: string) => {
+    try {
+        const secret = 'vaidikeduservicespvtltd_revalidate_2026_key';
+        // Fire-and-forget calls to frontend API route
+        fetch(`/api/revalidate?path=/blogs&secret=${secret}`, { method: 'POST' }).catch(console.error);
+        if (slug) {
+            fetch(`/api/revalidate?path=/blogs/${slug}&secret=${secret}`, { method: 'POST' }).catch(console.error);
+        }
+    } catch (error) {
+        console.error('Failed to trigger revalidation', error);
+    }
+};
+
 const normalizeBlog = (data: any): BlogPost => {
     return {
         ...data,
@@ -137,7 +150,9 @@ export const blogsApi = {
         }
 
         const res = await api.post('/admin/blogs', payload);
-        return normalizeBlog(res.data);
+        const blog = normalizeBlog(res.data);
+        triggerRevalidate(blog.slug);
+        return blog;
     },
 
     // Admin: Get all blogs (including pending)
@@ -153,7 +168,9 @@ export const blogsApi = {
     // Admin: Approve/Reject
     updateStatus: async (id: string, status: 'PUBLISHED' | 'PENDING' | 'REJECTED', reason?: string) => {
         const res = await api.patch(`/admin/blogs/${id}/status`, { status, reason });
-        return normalizeBlog(res.data);
+        const blog = normalizeBlog(res.data);
+        triggerRevalidate(blog.slug);
+        return blog;
     },
 
     // Update blog (Protected: Admin/Tutor)
@@ -179,7 +196,9 @@ export const blogsApi = {
         }
 
         const res = await api.patch(`/admin/blogs/${id}`, payload);
-        return normalizeBlog(res.data);
+        const blog = normalizeBlog(res.data);
+        triggerRevalidate(blog.slug);
+        return blog;
     },
 
     // Upload media (Protected: Admin/Tutor)
@@ -201,12 +220,15 @@ export const blogsApi = {
     // Restore a version
     restoreVersion: async (blogId: string, versionId: string): Promise<BlogPost> => {
         const res = await api.post(`/admin/blogs/${blogId}/versions/${versionId}/restore`);
-        return normalizeBlog(res.data);
+        const blog = normalizeBlog(res.data);
+        triggerRevalidate(blog.slug);
+        return blog;
     },
 
     // Delete a blog (Protected: Admin Only)
     delete: async (id: string) => {
         const res = await api.delete(`/admin/blogs/${id}`);
+        triggerRevalidate();
         return res.data;
     },
 

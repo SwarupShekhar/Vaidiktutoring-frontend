@@ -84,7 +84,10 @@ export default clerkMiddleware(async (auth, req) => {
         // Redirect authenticated users to their specific dashboards if they hit marketing pages or /dashboard
         if (userId) {
             const marketingPaths = ['/', '/home', '/login', '/signup'];
-            const isMarketingPath = marketingPaths.some(p => p === path || path.startsWith(p + '/'));
+            let isMarketingPath = marketingPaths.some(p => p === path || path.startsWith(p + '/'));
+            if (path === '/login' && req.nextUrl.searchParams.get('expired') === 'true') {
+                isMarketingPath = false;
+            }
             const isDashboardRoot = path === '/dashboard' || path === '/dashboard/';
 
             if (isMarketingPath || isDashboardRoot) {
@@ -120,7 +123,10 @@ export default clerkMiddleware(async (auth, req) => {
         // authed users must still reach /pricing, /subjects, blogs, etc.
         if (!userId && cookies.includes('manual_auth_token')) {
             const marketingPaths = ['/', '/home', '/login', '/signup'];
-            const isMarketingPath = marketingPaths.some(p => p === path || path.startsWith(p + '/'));
+            let isMarketingPath = marketingPaths.some(p => p === path || path.startsWith(p + '/'));
+            if (path === '/login' && req.nextUrl.searchParams.get('expired') === 'true') {
+                isMarketingPath = false;
+            }
 
             if (isMarketingPath) {
                 const role = req.cookies.get('user_role')?.value;
