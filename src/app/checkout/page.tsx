@@ -277,22 +277,18 @@ const CheckoutContent = () => {
         if (!code) return;
 
         if (code === 'SPECIAL349') {
-            if (basePrice > 349) {
-                const discount = basePrice - 349;
-                setCouponDiscountAmount(discount);
-                setAppliedCoupon(code);
-                setCouponMsg({ text: `Coupon "${code}" applied! Discounted to ${currentConfig.currency}349/mo.`, type: 'success' });
-            } else {
-                setCouponDiscountAmount(0);
-                setAppliedCoupon(code);
-                setCouponMsg({ text: `Coupon "${code}" active! Price is locked at ${currentConfig.currency}${basePrice}/mo.`, type: 'success' });
-            }
+            // Calculate a ~30% discount to mimic the US $499 -> $349 drop, but scaled for all currencies
+            const discountPercentage = 0.30;
+            const discount = Math.round(basePrice * discountPercentage);
+            setCouponDiscountAmount(discount);
+            setAppliedCoupon(code);
+            setCouponMsg({ text: `Special Offer "${code}" applied! 30% Off.`, type: 'success' });
         } else {
             setCouponMsg({ text: `Invalid or expired promo code.`, type: 'error' });
         }
     };
 
-    const currentPrice = Math.max(1, basePrice - couponDiscountAmount);
+    const currentPrice = Math.max(1, Math.round(basePrice - couponDiscountAmount));
 
     // ---- App-shell (desktop) native checkout ----
     if (isAppShell) {
