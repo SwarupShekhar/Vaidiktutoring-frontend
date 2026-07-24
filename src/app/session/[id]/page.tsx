@@ -1816,7 +1816,7 @@ export default function SessionPage({ params }: SessionProps) {
                     : '/students/dashboard';
                   router.push(dest);
                 }}
-                className="fixed left-1/2 top-[40px] z-[9999] -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-red-500 px-4 py-1.5 text-xs font-bold text-white shadow-lg shadow-red-900/30 transition-all hover:bg-red-600 active:scale-95"
+                className="fixed left-1/2 top-10 z-9999 -translate-x-1/2 inline-flex items-center gap-1.5 rounded-full bg-red-500 px-4 py-1.5 text-xs font-bold text-white shadow-lg shadow-red-900/30 transition-all hover:bg-red-600 active:scale-95"
                 title="Leave session"
               >
                 <LogOut size={14} /> Leave session
@@ -1824,7 +1824,7 @@ export default function SessionPage({ params }: SessionProps) {
             )}
             {/* Access denied — backend rejected this session (e.g. not the assigned tutor / not a participant). */}
             {accessDenied && (
-                <div className="absolute inset-0 z-[60] bg-gray-950/97 flex items-center justify-center p-6">
+                <div className="absolute inset-0 z-60 bg-gray-950/97 flex items-center justify-center p-6">
                     <div className="w-full max-w-md bg-gray-900 border border-red-500/30 rounded-2xl p-8 text-white shadow-2xl text-center">
                         <h2 className="text-2xl font-bold mb-3">You don't have access to this session</h2>
                         <p className="text-gray-400 text-sm leading-relaxed mb-6">
@@ -1870,7 +1870,7 @@ export default function SessionPage({ params }: SessionProps) {
 
             {/* Always-visible recording status — all sessions may be recorded. */}
             {hasJoined && (
-                <div className={`fixed right-3 top-[40px] z-[9999] flex items-center gap-2 px-3 py-1.5 ${recordingStatus === 'recording' ? 'bg-red-500' : 'bg-gray-500'} text-white rounded-full text-xs font-bold shadow-lg transition-colors`}
+                <div className={`fixed right-3 top-10 z-9999 flex items-center gap-2 px-3 py-1.5 ${recordingStatus === 'recording' ? 'bg-red-500' : 'bg-gray-500'} text-white rounded-full text-xs font-bold shadow-lg transition-colors`}
                     title="This session is recorded for safety and quality."
                 >
                     <span className={`h-2 w-2 rounded-full bg-white ${recordingStatus === 'recording' ? 'animate-pulse' : ''}`} />
@@ -1882,7 +1882,7 @@ export default function SessionPage({ params }: SessionProps) {
 
             {user?.role === 'tutor' && recordingStatus === 'recording' && !isLocalScreenShareActive && (
                 <div 
-                    className="fixed top-[12px] left-1/2 -translate-x-1/2 z-[9999] bg-yellow-500 text-black px-4 py-2 rounded-full shadow-2xl font-bold flex items-center gap-3 animate-bounce cursor-pointer hover:bg-yellow-400 transition-colors border-2 border-yellow-600"
+                    className="fixed top-3 left-1/2 -translate-x-1/2 z-9999 bg-yellow-500 text-black px-4 py-2 rounded-full shadow-2xl font-bold flex items-center gap-3 animate-bounce cursor-pointer hover:bg-yellow-400 transition-colors border-2 border-yellow-600"
                     onClick={() => dailyCallRef.current?.startScreenShare()}
                     title="Click to start screen share"
                 >
@@ -1892,7 +1892,7 @@ export default function SessionPage({ params }: SessionProps) {
             )}
 
             {/* FLEX LAYOUT: Whiteboard + Sidebar Container */}
-            <div className="flex-1 flex flex-row overflow-hidden mt-[52px]">
+            <div className="flex-1 flex flex-row overflow-hidden mt-13">
                 {/* 1. BASE LAYER: EXCALIDRAW WHITEBOARD (left side) */}
                 <div className={`flex-1 relative z-0 whiteboard-container ${isToolbarCollapsed ? "whiteboard-collapsed" : ""} ${user?.role === 'student' || user?.role === 'parent' ? (hasPenAccess ? '' : 'pointer-events-none') : ''}`}>
                 {ExcalidrawComp ? (
@@ -1960,12 +1960,12 @@ export default function SessionPage({ params }: SessionProps) {
 
                 {/* Daily.co sidebar panel - using width transition to prevent iframe unmounting/re-rendering */}
                 <div 
-                    className={`h-full border-l border-white/10 bg-black/80 flex flex-col transition-all duration-500 ease-in-out ${isScreenShareActive && isPanelExpanded ? 'w-1/2 opacity-100' : isPanelExpanded ? 'w-[450px] opacity-100' : 'w-0 opacity-0 overflow-hidden border-none'}`} 
+                    className={`h-full border-l border-white/10 bg-black/80 flex flex-col transition-all duration-500 ease-in-out ${isScreenShareActive && isPanelExpanded ? 'w-1/2 opacity-100' : isPanelExpanded ? 'w-112.5 opacity-100' : 'w-0 opacity-0 overflow-hidden border-none'}`} 
                     role="complementary" 
                     aria-label="Video session panel"
                 >
                     {/* Inner wrapper to keep content size stable during transition */}
-                    <div className={`${isScreenShareActive && isPanelExpanded ? 'w-full' : 'w-[450px]'} h-full flex flex-col flex-none`}>
+                    <div className={`${isScreenShareActive && isPanelExpanded ? 'w-full' : 'w-112.5'} h-full flex flex-col flex-none`}>
                         {/* Header with title and collapse button */}
                         <div className="h-12 border-b border-white/10 flex items-center justify-between px-4 bg-linear-to-r from-purple-600 to-indigo-600 shrink-0">
                             <div className="flex flex-col">
@@ -2012,7 +2012,7 @@ export default function SessionPage({ params }: SessionProps) {
             {/* Loading Overlay for Video removed to allow whiteboard access during Daily connect */}
 
             {/* ── TOP HUD BAR ─────────────────────────────────────────────── */}
-            <div className="absolute top-0 left-0 right-0 h-[52px] z-20 bg-black/80 backdrop-blur-xl border-b border-white/8 flex items-center px-4 gap-3 overflow-x-auto no-scrollbar">
+            <div className="absolute top-0 left-0 right-0 h-13 z-20 bg-black/80 backdrop-blur-xl border-b border-white/8 flex items-center px-4 gap-3 overflow-x-auto no-scrollbar">
                 {/* Left: live indicator + subject (shrinks/truncates first) */}
                 <div className="flex items-center gap-2 min-w-0">
                     <div className="relative shrink-0">
@@ -2106,7 +2106,7 @@ export default function SessionPage({ params }: SessionProps) {
 
             {/* ── STUDENT SNAPSHOT (tutor only, collapsible) ───────────────── */}
             {user?.role === 'tutor' && !snapshotHidden && (
-                <div className="absolute top-[60px] left-2 z-10">
+                <div className="absolute top-15 left-2 z-10">
                     <button
                         onClick={() => setSnapshotExpanded(v => !v)}
                         className="flex items-center gap-2 bg-black/70 backdrop-blur-xl border border-white/10 rounded-xl px-2.5 py-1.5 text-white hover:bg-black/80 transition-all"
@@ -2142,7 +2142,7 @@ export default function SessionPage({ params }: SessionProps) {
 
             {/* ── TUTOR TOOLS STRIP (right side, vertical) ─────────────────── */}
             {user?.role === 'tutor' && (
-                <div className={`absolute top-[60px] z-50 pointer-events-auto transition-all duration-300 ${isPanelExpanded ? 'right-[460px] md:right-[460px]' : 'right-2'}`}>
+                <div className={`absolute top-15 z-50 pointer-events-auto transition-all duration-300 ${isPanelExpanded ? 'right-115 md:right-115' : 'right-2'}`}>
                     <div className="bg-black/70 backdrop-blur-xl border border-white/10 rounded-xl p-1.5 flex flex-col gap-1.5 items-center max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-hide shadow-xl">
                         <span className="text-white/20 text-[8px] font-black tracking-widest pt-0.5 pb-1">TOOLS</span>
 
@@ -2162,7 +2162,7 @@ export default function SessionPage({ params }: SessionProps) {
                                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse border-2 border-black" />
                                     <div className="absolute right-12 top-0 bg-green-600 text-white text-[10px] font-black px-3 py-2 rounded-xl whitespace-nowrap shadow-2xl animate-in fade-in slide-in-from-right-2 duration-300 pointer-events-none">
                                         Click to open Manipulatives & Assets
-                                        <div className="absolute right-[-4px] top-1/2 -translate-y-1/2 w-2 h-2 bg-green-600 rotate-45" />
+                                        <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-green-600 rotate-45" />
                                     </div>
                                 </>
                             )}
@@ -2304,10 +2304,10 @@ export default function SessionPage({ params }: SessionProps) {
             {/* ATTENTION SIDEBAR (Tutor Only) */}
             {user?.role === 'tutor' && showAttentionPanel && (
                 <div
-                    className={`absolute bottom-24 z-50 flex flex-col gap-4 transition-all duration-300 pointer-events-auto ${isPanelExpanded ? 'left-4 w-[400px]' : 'left-4 w-80'}`}
+                    className={`absolute bottom-24 z-50 flex flex-col gap-4 transition-all duration-300 pointer-events-auto ${isPanelExpanded ? 'left-4 w-100' : 'left-4 w-80'}`}
                 >
                     {showAttentionPanel && (
-                        <div className="h-[450px] animate-in slide-in-from-left-4 duration-500 delay-100">
+                        <div className="h-112.5 animate-in slide-in-from-left-4 duration-500 delay-100">
                             <AttentionFrameworkPanel 
                                 sessionId={sessionId}
                                 studentId={booking?.students?.id || ''}
@@ -2321,7 +2321,7 @@ export default function SessionPage({ params }: SessionProps) {
 
             {/* 3. OVERLAY LAYER: CHAT SIDEBAR (Elevated z-index to stay above video panel) */}
             <motion.div 
-                className={`absolute bottom-24 z-1000 w-80 pointer-events-none transition-all duration-300 ${isPanelExpanded ? 'right-[464px]' : 'right-4'}`}
+                className={`absolute bottom-24 z-1000 w-80 pointer-events-none transition-all duration-300 ${isPanelExpanded ? 'right-116' : 'right-4'}`}
                 drag
                 dragControls={dragControls}
                 dragListener={false}
@@ -2337,13 +2337,13 @@ export default function SessionPage({ params }: SessionProps) {
 
             {/* ── PDF THUMBNAIL STRIP ──────────────────────────────────────── */}
             {slides.length > 0 && (
-                <div className="absolute bottom-0 left-0 right-0 h-[68px] z-10 bg-black/88 backdrop-blur-xl border-t border-white/6 flex items-center gap-2 px-3 overflow-x-auto">
+                <div className="absolute bottom-0 left-0 right-0 h-17 z-10 bg-black/88 backdrop-blur-xl border-t border-white/6 flex items-center gap-2 px-3 overflow-x-auto">
                     <span className="text-white/25 text-[9px] font-black tracking-widest shrink-0 mr-1">SLIDES</span>
                     {slides.map((slide, index) => (
                         <button
                             key={index}
                             onClick={() => switchSlide(index)}
-                            className={`shrink-0 w-[44px] h-[44px] rounded-md overflow-hidden border-2 transition-all ${index === currentSlideIndex
+                            className={`shrink-0 w-11 h-11 rounded-md overflow-hidden border-2 transition-all ${index === currentSlideIndex
                                     ? 'border-white scale-105 shadow-lg shadow-purple-500/30'
                                     : 'border-white/15 hover:border-white/40 opacity-60 hover:opacity-100'
                                 }`}
@@ -2373,7 +2373,7 @@ export default function SessionPage({ params }: SessionProps) {
 
             {/* ASSET LIBRARY PANEL (TUTOR ONLY) - Hidden on Mobile */}
             {user?.role === 'tutor' && showAssetLibrary && (
-                <div className="absolute left-4 top-[60px] bottom-24 w-72 hidden md:flex bg-white/95 backdrop-blur-xl border border-purple-500/20 shadow-2xl rounded-2xl p-4 overflow-y-auto flex-col pointer-events-auto z-50">
+                <div className="absolute left-4 top-15 bottom-24 w-72 hidden md:flex bg-white/95 backdrop-blur-xl border border-purple-500/20 shadow-2xl rounded-2xl p-4 overflow-y-auto flex-col pointer-events-auto z-50">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="font-bold text-lg text-purple-900 leading-none">Session Library</h2>
                         <button onClick={() => setShowAssetLibrary(false)} className="text-gray-400 hover:text-gray-600">
@@ -2474,7 +2474,7 @@ export default function SessionPage({ params }: SessionProps) {
                                         <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300">
                                             <FileUp size={24} />
                                         </div>
-                                        <p className="text-[10px] font-bold text-gray-400 leading-normal max-w-[140px] mx-auto uppercase tracking-wider">
+                                        <p className="text-[10px] font-bold text-gray-400 leading-normal max-w-35 mx-auto uppercase tracking-wider">
                                             No assets uploaded yet. Upload an image or PDF slide to add it here.
                                         </p>
                                     </div>
@@ -2720,7 +2720,7 @@ export default function SessionPage({ params }: SessionProps) {
 
             {/* TUTOR ACTIVE POLL RESULTS PANEL */}
             {user?.role === 'tutor' && activePoll && (
-                <div className="absolute top-[60px] left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-4">
+                <div className="absolute top-15 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-4">
                     <div className="bg-gray-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl p-5 animate-in slide-in-from-top-4 duration-300">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
@@ -3061,7 +3061,7 @@ export default function SessionPage({ params }: SessionProps) {
                                     {isPanelExpanded ? "Session Room" : "Video"}
                                 </span>
                                 {isPanelExpanded && (
-                                    <span className="text-xs font-bold text-white truncate max-w-[200px]">
+                                    <span className="text-xs font-bold text-white truncate max-w-50">
                                         {booking?.students?.first_name || 'Student'}&apos;s Classroom
                                     </span>
                                 )}

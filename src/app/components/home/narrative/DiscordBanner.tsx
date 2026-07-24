@@ -30,7 +30,7 @@ export default function DiscordBanner() {
             </p>
           </div>
 
-          <div className="relative z-10 flex-shrink-0">
+          <div className="relative z-10 shrink-0">
             <Link
               href="https://discord.gg/gDhGVWd6Cm"
               target="_blank"

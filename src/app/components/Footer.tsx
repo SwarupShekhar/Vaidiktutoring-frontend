@@ -32,7 +32,7 @@ export default function Footer() {
   return (
     <footer className="relative bg-black text-white border-t border-white/10 pt-12 pb-16 transition-colors duration-300 overflow-hidden">
       {/* Sleek top glowing border gradient */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent pointer-events-none" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-primary/40 to-transparent pointer-events-none" />
 
       {/* CSS-only space background */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-40" style={{ background: 'radial-gradient(circle at 50% 100%, #1a1a3a 0%, #000000 60%)' }}></div>
@@ -323,7 +323,7 @@ export default function Footer() {
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 min-h-0 pt-2">
               {/* US */}
-              <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors">
+              <div className="p-3 rounded-2xl bg-white/2 border border-white/5 hover:border-white/10 transition-colors">
                 <Link href="/us/american-curriculum" className="text-[11px] font-bold text-white uppercase tracking-widest mb-2.5 flex items-center gap-1.5 hover:text-primary transition-colors">
                   <span>🇺🇸</span> US &amp; AP
                 </Link>
@@ -343,7 +343,7 @@ export default function Footer() {
                 </ul>
               </div>
               {/* Australia */}
-              <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors">
+              <div className="p-3 rounded-2xl bg-white/2 border border-white/5 hover:border-white/10 transition-colors">
                 <Link href="/australia" className="text-[11px] font-bold text-white uppercase tracking-widest mb-2.5 flex items-center gap-1.5 hover:text-primary transition-colors">
                   <span>🇦🇺</span> Australia
                 </Link>
@@ -365,7 +365,7 @@ export default function Footer() {
                 </ul>
               </div>
               {/* Singapore */}
-              <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors">
+              <div className="p-3 rounded-2xl bg-white/2 border border-white/5 hover:border-white/10 transition-colors">
                 <Link href="/singapore" className="text-[11px] font-bold text-white uppercase tracking-widest mb-2.5 flex items-center gap-1.5 hover:text-primary transition-colors">
                   <span>🇸🇬</span> Singapore
                 </Link>
@@ -388,7 +388,7 @@ export default function Footer() {
                 </ul>
               </div>
               {/* UAE */}
-              <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors">
+              <div className="p-3 rounded-2xl bg-white/2 border border-white/5 hover:border-white/10 transition-colors">
                 <Link href="/uae" className="text-[11px] font-bold text-white uppercase tracking-widest mb-2.5 flex items-center gap-1.5 hover:text-primary transition-colors">
                   <span>🇦🇪</span> UAE &amp; Middle East
                 </Link>

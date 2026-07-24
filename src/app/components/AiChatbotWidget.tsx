@@ -563,9 +563,9 @@ export default function AiChatbotWidget() {
     }
 
     return (
-        <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end gap-2 pointer-events-none">
+        <div className="fixed bottom-6 right-6 z-100 flex flex-col items-end gap-2 pointer-events-none">
             {isOpen && (
-                <div className="pointer-events-auto w-[calc(100vw-3rem)] sm:w-[350px] md:w-[400px] h-[550px] max-h-[calc(100dvh-180px)] flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-slate-200 dark:border-white/10 shadow-2xl origin-bottom-right transition-all animate-in fade-in zoom-in-95 duration-200">
+                <div className="pointer-events-auto w-[calc(100vw-3rem)] sm:w-87.5 md:w-100 h-137.5 max-h-[calc(100dvh-180px)] flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-slate-200 dark:border-white/10 shadow-2xl origin-bottom-right transition-all animate-in fade-in zoom-in-95 duration-200">
                     {/* Header */}
                     <div className="p-4 border-b border-white/10 bg-sapphire text-white flex justify-between items-center backdrop-blur-md">
                         <div className="flex items-center gap-3">
@@ -635,7 +635,7 @@ export default function AiChatbotWidget() {
                                     {msg.role === 'user' ? 'You' : 'StudyHours Assistant'}
                                 </span>
                                 <div className={`
-                                    max-w-[85%] px-4 py-2 rounded-2xl text-sm shadow-sm break-words whitespace-pre-wrap prose dark:prose-invert prose-p:leading-relaxed prose-pre:p-0
+                                    max-w-[85%] px-4 py-2 rounded-2xl text-sm shadow-sm wrap-break-word whitespace-pre-wrap prose dark:prose-invert prose-p:leading-relaxed prose-pre:p-0
                                     ${msg.role === 'user'
                                         ? 'bg-sapphire text-white rounded-tr-sm prose-a:text-white hover:prose-a:text-blue-100'
                                         : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 border border-gray-100 dark:border-gray-600 rounded-tl-sm prose-a:text-blue-600 dark:prose-a:text-blue-400'}
@@ -735,7 +735,7 @@ export default function AiChatbotWidget() {
             >
                 <ChatLoader />
                 {unreadCount > 0 && (
-                    <div className="absolute -top-1 -right-1 min-w-[22px] h-[22px] px-1.5 bg-red-500 text-white text-[11px] font-black rounded-full flex items-center justify-center ring-2 ring-white shadow-lg shadow-red-500/40 animate-pulse">
+                    <div className="absolute -top-1 -right-1 min-w-5.5 h-5.5 px-1.5 bg-red-500 text-white text-[11px] font-black rounded-full flex items-center justify-center ring-2 ring-white shadow-lg shadow-red-500/40 animate-pulse">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </div>
                 )}

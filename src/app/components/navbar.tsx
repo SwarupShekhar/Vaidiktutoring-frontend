@@ -146,7 +146,7 @@ export default function Navbar({ initialRegionalPages }: { initialRegionalPages?
 
   return (
     <nav className="w-full sticky top-0 z-50 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-white/20 dark:border-white/5 transition-all duration-300">
-      <div className="max-w-[1400px] mx-auto px-4 lg:px-8 xl:px-8 py-3 lg:py-4 flex items-center justify-between gap-2 xl:gap-3">
+      <div className="max-w-350 mx-auto px-4 lg:px-8 xl:px-8 py-3 lg:py-4 flex items-center justify-between gap-2 xl:gap-3">
         {/* Left: Logo */}
         <Link href="/" className="flex items-center gap-2 group shrink-0">
           <div className="w-9 h-9 lg:w-11 lg:h-11 rounded-lg shadow-lg group-hover:scale-110 transition-all duration-300">
@@ -491,7 +491,7 @@ export default function Navbar({ initialRegionalPages }: { initialRegionalPages?
       {/* Mobile Menu Dropdown - Inside nav, properly aligned */}
       {mobileMenuOpen && (
         <div className="xl:hidden border-t border-white/20 dark:border-white/5 bg-white dark:bg-black">
-          <div className="max-w-[1400px] mx-auto px-4 py-3 flex flex-col gap-1">
+          <div className="max-w-350 mx-auto px-4 py-3 flex flex-col gap-1">
             {navLinks.map((link) => (
               <Link
                 key={link.name}

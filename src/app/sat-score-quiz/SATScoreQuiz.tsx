@@ -327,7 +327,7 @@ export default function SATScoreQuiz() {
           </h2>
           <p className="text-gray-400 mb-10">{result.headline}</p>
 
-          <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-7 mb-4">
+          <div className="bg-white/3 border border-white/10 rounded-3xl p-7 mb-4">
             <p className="text-xs text-gray-500 uppercase tracking-widest mb-3">What your answers reveal</p>
             <p className="text-gray-200 leading-relaxed text-[15px]">{result.analysis}</p>
           </div>

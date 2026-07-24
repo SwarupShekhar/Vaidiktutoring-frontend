@@ -64,7 +64,7 @@ export const TimeSlotPicker = ({ start, end, onSelect, durationMinutes = 45 }: T
                                 onSelect(firstSlot.toISOString(), addMinutes(firstSlot, durationMinutes).toISOString());
                             }}
                             className={`
-                                flex flex-col items-center justify-center min-w-[80px] h-20 rounded-2xl border transition-all
+                                flex flex-col items-center justify-center min-w-20 h-20 rounded-2xl border transition-all
                                 ${isDisabled ? 'opacity-30 cursor-not-allowed grayscale bg-white/5 border-white/5' : ''}
                                 ${isSelected && !isDisabled
                                     ? 'bg-blue-600 border-blue-500 text-white shadow-lg scale-105'

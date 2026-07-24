@@ -568,7 +568,7 @@ function DashboardContent() {
                     <div key={booking.id} className="relative pl-8 group">
                       {/* Timeline Line */}
                       {idx !== childPastSessions[selectedChildId || ''].length - 1 && (
-                        <div className="absolute left-[11px] top-6 bottom-[-24px] w-0.5 bg-gray-100 group-hover:bg-purple-100 transition-colors" />
+                        <div className="absolute left-2.75 top-6 -bottom-6 w-0.5 bg-gray-100 group-hover:bg-purple-100 transition-colors" />
                       )}
                       
                       {/* Timeline Dot */}

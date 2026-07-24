@@ -253,7 +253,7 @@ export default function SubjectsPage() {
 
         <div className={`relative z-10 w-full max-w-6xl mx-auto px-6 text-center transition-all duration-700 ${search ? 'pt-24 pb-12' : 'pt-32 pb-20'}`}>
           
-          <div className={`transition-all duration-700 ease-in-out overflow-hidden flex flex-col items-center ${search ? 'max-h-0 opacity-0 mb-0 scale-95' : 'max-h-[600px] opacity-100 mb-12 scale-100'}`}>
+          <div className={`transition-all duration-700 ease-in-out overflow-hidden flex flex-col items-center ${search ? 'max-h-0 opacity-0 mb-0 scale-95' : 'max-h-150 opacity-100 mb-12 scale-100'}`}>
             <motion.p
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -325,7 +325,7 @@ export default function SubjectsPage() {
       </section>
 
       {/* ── CURRICULUM SELECTOR ─────────────────────────────────────────── */}
-      <section className="sticky top-[60px] z-40 border-b border-slate-200 dark:border-white/5 bg-white/90 dark:bg-[#050508]/85 backdrop-blur-2xl">
+      <section className="sticky top-15 z-40 border-b border-slate-200 dark:border-white/5 bg-white/90 dark:bg-[#050508]/85 backdrop-blur-2xl">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide">
             {CURRICULA.map((c, i) => {
@@ -334,7 +334,7 @@ export default function SubjectsPage() {
                 <button
                   key={c.id}
                   onClick={() => handleSelect(c.id)}
-                  className={`relative flex-shrink-0 flex items-center gap-2.5 px-5 py-4 text-sm font-semibold transition-all duration-200 cursor-pointer border-b-2 ${
+                  className={`relative shrink-0 flex items-center gap-2.5 px-5 py-4 text-sm font-semibold transition-all duration-200 cursor-pointer border-b-2 ${
                     isActive
                       ? 'text-slate-900 dark:text-white border-blue-500 dark:border-blue-400'
                       : 'text-slate-400 dark:text-white/40 border-transparent hover:text-slate-700 dark:hover:text-white/80 hover:border-slate-300 dark:hover:border-white/20'
@@ -347,7 +347,7 @@ export default function SubjectsPage() {
               );
             })}
 
-            <div className="ml-auto pl-4 pr-2 flex-shrink-0">
+            <div className="ml-auto pl-4 pr-2 shrink-0">
               <div className="relative">
                 <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-white/30 pointer-events-none" />
                 <input
@@ -371,7 +371,7 @@ export default function SubjectsPage() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]"
+          className="border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/2"
         >
           <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -460,7 +460,7 @@ export default function SubjectsPage() {
               { board: 'MOE Singapore', region: 'PSLE, O & A Levels' },
               { board: 'ACARA', region: 'Australian Curriculum' },
             ].map((b) => (
-              <div key={b.board} className="group flex items-center gap-3 px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/6 bg-white dark:bg-white/[0.03] hover:border-blue-200 dark:hover:border-white/12 hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-all duration-200 cursor-default shadow-sm dark:shadow-none">
+              <div key={b.board} className="group flex items-center gap-3 px-4 py-3.5 rounded-xl border border-slate-200 dark:border-white/6 bg-white dark:bg-white/3 hover:border-blue-200 dark:hover:border-white/12 hover:bg-slate-50 dark:hover:bg-white/5 transition-all duration-200 cursor-default shadow-sm dark:shadow-none">
                 <CheckCircle2 size={14} className="text-emerald-500 dark:text-emerald-400/60 shrink-0" />
                 <div>
                   <div className="text-sm font-semibold text-slate-800 dark:text-white/80">{b.board}</div>
@@ -558,7 +558,7 @@ function SubjectCard({
         <div className="flex items-start justify-between gap-3 mb-4">
           {/* Icon */}
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110"
+            className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110"
             style={{ background: hslBgLight, color: hslLight, border: `1px solid ${hslBorderLight}` }}
           >
             <SubjectIcon name={subject.iconName} size={20} />
@@ -629,7 +629,7 @@ function SubjectCard({
                 <div className="space-y-1.5">
                   {subject.topics.map(t => (
                     <div key={t} className="flex items-center gap-2">
-                      <div className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: hslLight, opacity: 0.7 }} />
+                      <div className="w-1 h-1 rounded-full shrink-0" style={{ background: hslLight, opacity: 0.7 }} />
                       <span className="text-xs text-slate-600 dark:text-white/50">{t}</span>
                     </div>
                   ))}

@@ -661,7 +661,7 @@ export default function GCSEOnlineTutoringPage({ testimonials }: { testimonials?
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
             {/* Connecting Line (Desktop) */}
-            <div className="hidden lg:block absolute top-[28px] left-[15%] right-[15%] h-[2px] bg-border z-0" />
+            <div className="hidden lg:block absolute top-7 left-[15%] right-[15%] h-0.5 bg-border z-0" />
 
             {[
               {

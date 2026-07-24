@@ -81,7 +81,7 @@ export default function ContactPage() {
               
               <div 
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  openIndex === idx ? "max-h-[500px] border-t border-gray-100 dark:border-white/5 opacity-100" : "max-h-0 opacity-0"
+                  openIndex === idx ? "max-h-125 border-t border-gray-100 dark:border-white/5 opacity-100" : "max-h-0 opacity-0"
                 }`}
               >
                 <p className="px-8 py-6 text-sm md:text-base text-text-secondary dark:text-slate-400 font-medium leading-relaxed bg-slate-50/50 dark:bg-slate-900/50">

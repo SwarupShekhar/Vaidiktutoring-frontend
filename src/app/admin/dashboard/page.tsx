@@ -206,7 +206,7 @@ export default function AdminDashboardPage() {
                 <div className="grid grid-cols-12 gap-6 pb-20">
                     
                     {/* 1. WELCOME & IDENTITY TILE (Col 1-5, Row 1) */}
-                    <div className="col-span-full lg:col-span-5 bg-glass dark:bg-slate-900 rounded-4xl p-10 text-(--color-text-primary) dark:text-white relative overflow-hidden shadow-sm dark:shadow-2xl flex flex-col justify-center min-h-[260px] group border border-border dark:border-white/5">
+                    <div className="col-span-full lg:col-span-5 bg-glass dark:bg-slate-900 rounded-4xl p-10 text-(--color-text-primary) dark:text-white relative overflow-hidden shadow-sm dark:shadow-2xl flex flex-col justify-center min-h-65 group border border-border dark:border-white/5">
                         {/* Dynamic Background Noise */}
                         <div className="absolute inset-0 opacity-/5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
                         <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-600/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:bg-indigo-600/30 transition-colors duration-1000" />
@@ -515,7 +515,7 @@ export default function AdminDashboardPage() {
                                     </span>
                                 )}
                             </div>
-                            <div className="max-h-[400px] overflow-y-auto pb-20 pr-2 custom-scrollbar">
+                            <div className="max-h-100 overflow-y-auto pb-20 pr-2 custom-scrollbar">
                                 <SupportTicketsSection />
                             </div>
                             <div className="absolute bottom-0 left-0 right-0 h-20 bg-linear-to-t from-background to-transparent pointer-events-none" />

@@ -62,18 +62,6 @@ const CheckoutContent = () => {
         }
     }, [user, authLoading, router, plan, region]);
 
-    // Show loading while checking auth
-    if (authLoading || !user) {
-        return (
-            <div className={`min-h-screen ${pageTopPad} pb-24 px-6 bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background flex items-center justify-center`}>
-                <div className="animate-pulse flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/20" />
-                    <p className="text-text-secondary font-medium">Verifying authentication...</p>
-                </div>
-            </div>
-        );
-    }
-
     // Handle successful payment
     useEffect(() => {
         if (paymentState === 'success') {
@@ -89,6 +77,21 @@ const CheckoutContent = () => {
             return () => clearTimeout(timer);
         }
     }, [paymentState, router, enrollingStudentId, user?.role]);
+
+    // Auth loading guard. MUST stay below EVERY hook: an early return above the
+    // hooks changes hook count between renders (auth resolves async) and throws
+    // "Rendered more hooks than during the previous render", crashing the tab
+    // ~50% of loads (hard reload / redirect-from-login hit it, warm client nav doesn't).
+    if (authLoading || !user) {
+        return (
+            <div className={`min-h-screen ${pageTopPad} pb-24 px-6 bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background flex items-center justify-center`}>
+                <div className="animate-pulse flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/20" />
+                    <p className="text-text-secondary font-medium">Verifying authentication...</p>
+                </div>
+            </div>
+        );
+    }
 
     const handlePayment = async () => {
         setPaymentState('loading');
@@ -313,7 +316,7 @@ const CheckoutContent = () => {
                         </div>
                     </div>
 
-                    <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                    <div className="mt-6 rounded-xl border border-white/10 bg-white/3 p-4">
                         <span className="text-[11px] font-bold uppercase tracking-widest text-indigo-300">
                             Plan · {region}
                         </span>

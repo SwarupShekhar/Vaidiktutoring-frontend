@@ -270,8 +270,8 @@ export default function DesmosTool() {
                     isSelected
                       ? 'border-indigo-500 bg-indigo-500/10'
                       : isDisabled
-                      ? 'border-white/5 bg-white/[0.02] opacity-40 cursor-not-allowed'
-                      : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06]'
+                      ? 'border-white/5 bg-white/2 opacity-40 cursor-not-allowed'
+                      : 'border-white/10 bg-white/3 hover:border-white/20 hover:bg-white/6'
                   }`}
                 >
                   {isSelected && (
@@ -365,14 +365,14 @@ export default function DesmosTool() {
 
         <div className="space-y-6 mb-10">
           {selectedTopics.map((topic, i) => (
-            <div key={topic.id} className="bg-white/[0.03] border border-white/10 rounded-3xl overflow-hidden">
+            <div key={topic.id} className="bg-white/3 border border-white/10 rounded-3xl overflow-hidden">
               <div className="px-7 pt-7 pb-5 border-b border-white/5">
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div>
                     <span className="text-xs text-indigo-400 font-semibold uppercase tracking-widest">Shortcut {i + 1}</span>
                     <h3 className="text-xl font-bold text-white mt-1">{topic.label}</h3>
                   </div>
-                  <span className="flex-shrink-0 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-semibold">
+                  <span className="shrink-0 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-semibold">
                     {topic.timeSaved}
                   </span>
                 </div>
@@ -384,7 +384,7 @@ export default function DesmosTool() {
                 <ol className="space-y-2">
                   {topic.how.map((step, idx) => (
                     <li key={idx} className="flex gap-3 text-sm text-gray-300">
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-400 text-xs flex items-center justify-center font-bold mt-0.5">
+                      <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-400 text-xs flex items-center justify-center font-bold mt-0.5">
                         {idx + 1}
                       </span>
                       {step}
@@ -393,7 +393,7 @@ export default function DesmosTool() {
                 </ol>
               </div>
 
-              <div className="px-7 py-5 border-b border-white/5 bg-white/[0.02]">
+              <div className="px-7 py-5 border-b border-white/5 bg-white/2">
                 <p className="text-xs text-gray-600 uppercase tracking-widest mb-3">Worked example</p>
                 <p className="text-white font-medium text-sm mb-3">"{topic.example.problem}"</p>
                 <ol className="space-y-1 mb-3">

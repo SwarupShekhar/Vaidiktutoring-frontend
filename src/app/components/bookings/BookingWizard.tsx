@@ -61,7 +61,7 @@ function AppSelect({ label, value, options, onChange, placeholder, icon, accent 
 
             {open && (
                 <div
-                    className="absolute top-full left-0 right-0 mt-2 rounded-xl shadow-2xl z-50 overflow-hidden max-h-[250px] overflow-y-auto scrollbar-thin"
+                    className="absolute top-full left-0 right-0 mt-2 rounded-xl shadow-2xl z-50 overflow-hidden max-h-62.5 overflow-y-auto scrollbar-thin"
                     style={{ background: '#1a1830', border: '1px solid rgba(255,255,255,0.1)' }}
                 >
                     {options.length === 0 ? (
@@ -126,7 +126,7 @@ function GlassSelect({ label, value, options, onChange, placeholder, icon }: Gla
 
             {open && (
                 <div
-                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1a1830] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-[250px] overflow-y-auto scrollbar-thin transition-opacity duration-150"
+                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#1a1830] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden max-h-62.5 overflow-y-auto scrollbar-thin transition-opacity duration-150"
                 >
                         {options.length === 0 ? (
                             <div className="p-3 text-gray-500 text-sm text-center italic">No options available</div>
@@ -407,7 +407,7 @@ export default function BookingWizard({ students, isStudentsLoading = false, cre
                 )}
 
                 <AppPageItem>
-                    <AppCard accent="indigo" interactive={false} className="!p-7 min-h-[380px]">
+                    <AppCard accent="indigo" interactive={false} className="p-7! min-h-95">
                         {step === 0 && (
                             <div className="space-y-5">
                                 <h2 className="flex items-center gap-2 text-base font-black text-white mb-1">
@@ -552,7 +552,7 @@ export default function BookingWizard({ students, isStudentsLoading = false, cre
                             variant="ghost"
                             disabled={step === 0 || submitting}
                             onClick={() => setStep(s => Math.max(0, s - 1) as Step)}
-                            className="!py-3 !px-5 disabled:opacity-0"
+                            className="py-3! px-5! disabled:opacity-0"
                         >
                             Back
                         </AppPillButton>
@@ -564,7 +564,7 @@ export default function BookingWizard({ students, isStudentsLoading = false, cre
                                     variant="solid"
                                     disabled={!canProceed()}
                                     onClick={() => setStep(s => Math.min(2, s + 1) as Step)}
-                                    className="!py-3 !px-7"
+                                    className="py-3! px-7!"
                                 >
                                     Continue
                                 </AppPillButton>
@@ -588,7 +588,7 @@ export default function BookingWizard({ students, isStudentsLoading = false, cre
                                 variant="solid"
                                 disabled={submitting}
                                 onClick={submitBooking}
-                                className="!py-3 !px-7 !text-sm"
+                                className="py-3! px-7! text-sm!"
                             >
                                 {submitting ? 'Creating Session…' : 'Confirm Assessment'} <CheckCircle size={18} />
                             </AppPillButton>
@@ -651,9 +651,9 @@ export default function BookingWizard({ students, isStudentsLoading = false, cre
             )}
 
             {/* MAIN CONTENT AREA */}
-            <div className="bg-white dark:bg-[#15131f] border border-gray-200 dark:border-white/10 rounded-3xl p-8 min-h-[420px] overflow-visible relative shadow-lg">
+            <div className="bg-white dark:bg-[#15131f] border border-gray-200 dark:border-white/10 rounded-3xl p-8 min-h-105 overflow-visible relative shadow-lg">
                 {/* Decorative accent wash (matches home bento) */}
-                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
+                <div className="absolute top-0 right-0 w-100 h-100 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none" />
 
                 <div className="relative w-full h-full">
                     {/* STEP 0: CONTEXT */}

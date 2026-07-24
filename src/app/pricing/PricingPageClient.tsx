@@ -17,7 +17,7 @@ const HeroPricing = () => {
     return (
         <section className="pt-32 pb-20 px-6 relative overflow-hidden bg-linear-to-b from-ice-blue to-background dark:from-slate-900/50 dark:to-background">
             <div className="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none">
-                <div className="absolute top-[10%] right-[5%] w-[500px] h-[500px] bg-sapphire/10 rounded-full blur-[120px]" />
+                <div className="absolute top-[10%] right-[5%] w-125 h-125 bg-sapphire/10 rounded-full blur-[120px]" />
             </div>
 
             <div className="max-w-7xl mx-auto text-center relative z-10">
@@ -78,12 +78,12 @@ const TestPrepLeadForm = () => {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative max-w-2xl mx-auto rounded-4xl bg-gradient-to-br from-white via-blue-50 to-white dark:from-slate-900 dark:via-blue-900/20 dark:to-slate-900 border-2 border-primary/40 backdrop-blur-3xl shadow-[0_0_50px_-12px_rgba(37,99,235,0.6)] overflow-hidden group"
+            className="relative max-w-2xl mx-auto rounded-4xl bg-linear-to-br from-white via-blue-50 to-white dark:from-slate-900 dark:via-blue-900/20 dark:to-slate-900 border-2 border-primary/40 backdrop-blur-3xl shadow-[0_0_50px_-12px_rgba(37,99,235,0.6)] overflow-hidden group"
         >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 dark:via-white/10 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-1000 skew-x-12"></div>
+            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/50 dark:via-white/10 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 skew-x-12"></div>
             <div className="relative p-8">
                 <div className="text-center mb-8">
-                    <h3 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-2">Custom Test Prep Plans</h3>
+                    <h3 className="text-2xl font-bold bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-2">Custom Test Prep Plans</h3>
                     <p className="text-text-secondary font-medium">Classes starting at $20/hour. Let us know your goals and we'll craft the perfect plan.</p>
                 </div>
 
@@ -431,7 +431,7 @@ const PricingPlans = () => {
                                         <span className="text-sm text-white/45">/ month</span>
                                     </div>
 
-                                    <div className="mt-3 flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+                                    <div className="mt-3 flex items-center justify-between rounded-xl border border-white/10 bg-white/3 px-3 py-2">
                                         <span className="text-xs font-bold text-indigo-300">Monthly credits</span>
                                         <span className="text-sm font-black text-white">
                                             {plan.credits}
@@ -453,7 +453,7 @@ const PricingPlans = () => {
                                         className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold transition-opacity hover:opacity-90 ${
                                             recommended
                                                 ? 'bg-indigo-500 text-white'
-                                                : 'bg-white/[0.06] text-indigo-200 ring-1 ring-white/10'
+                                                : 'bg-white/6 text-indigo-200 ring-1 ring-white/10'
                                         }`}
                                     >
                                         Choose {plan.name}
@@ -508,7 +508,7 @@ const PricingPlans = () => {
                             onClick={() => setCurriculum('test-prep')}
                             className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 text-sm flex items-center gap-2.5 relative overflow-hidden group ${
                                 activeCurriculum.id === 'test-prep'
-                                    ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg scale-105'
+                                    ? 'bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg scale-105'
                                     : 'text-text-secondary hover:text-primary hover:bg-slate-100 dark:hover:bg-white/5'
                             }`}
                         >
@@ -552,7 +552,7 @@ const PricingPlans = () => {
                                 }`}
                             >
                                 {plan.id === 'elite' && (
-                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-black px-5 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 whitespace-nowrap">
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-linear-to-r from-indigo-600 to-violet-600 text-white text-xs font-black px-5 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 whitespace-nowrap">
                                         <Star size={12} fill="white" /> BEST VALUE FOR MONEY
                                     </div>
                                 )}
@@ -598,7 +598,7 @@ const PricingPlans = () => {
                                         onClick={() => handlePlanClick(plan.id, activeCurriculum.id)}
                                         className={`w-full py-4 rounded-xl font-extrabold text-center transition-all flex items-center justify-center gap-2 text-base shadow-lg ${
                                             plan.id === 'elite'
-                                                ? 'bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 text-white shadow-indigo-500/35 hover:shadow-indigo-500/50 hover:scale-[1.02]'
+                                                ? 'bg-linear-to-r from-indigo-600 via-violet-600 to-purple-600 text-white shadow-indigo-500/35 hover:shadow-indigo-500/50 hover:scale-[1.02]'
                                                 : plan.id === 'mastery'
                                                 ? 'bg-blue-600 text-white shadow-blue-500/25 hover:bg-blue-700 hover:shadow-blue-500/40 hover:scale-[1.02]'
                                                 : 'bg-white dark:bg-white/10 text-slate-800 dark:text-white border-2 border-slate-200 dark:border-white/20 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 hover:scale-[1.02]'

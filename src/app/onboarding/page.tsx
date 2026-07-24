@@ -159,8 +159,8 @@ export default function OnboardingPage() {
       {/* Animated Blobs Background — web only, app shell stays clean dark */}
       {!isAppShell && (
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-400/20 dark:bg-blue-900/10 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-[100px] animate-blob"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-400/20 dark:bg-purple-900/10 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-[100px] animate-blob animation-delay-2000"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-150 h-150 bg-blue-400/20 dark:bg-blue-900/10 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-[100px] animate-blob"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-150 h-150 bg-purple-400/20 dark:bg-purple-900/10 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-[100px] animate-blob animation-delay-2000"></div>
       </div>
       )}
 
@@ -189,7 +189,7 @@ export default function OnboardingPage() {
             <button
               onClick={() => handleRoleSelect('parent')}
               disabled={isUpdating}
-              className={`flex flex-col items-center justify-center p-6 rounded-3xl border-2 border-transparent transition-all group ${isAppShell ? 'bg-white/[0.04] hover:border-indigo-400/60 hover:bg-white/[0.07]' : 'bg-white/50 dark:bg-white/5 hover:border-primary hover:bg-blue-50/50 dark:hover:bg-blue-900/20'}`}
+              className={`flex flex-col items-center justify-center p-6 rounded-3xl border-2 border-transparent transition-all group ${isAppShell ? 'bg-white/4 hover:border-indigo-400/60 hover:bg-white/[0.07]' : 'bg-white/50 dark:bg-white/5 hover:border-primary hover:bg-blue-50/50 dark:hover:bg-blue-900/20'}`}
             >
               <span className="text-4xl mb-4 group-hover:scale-110 transition-transform">👨‍👩‍👧‍👦</span>
               <span className={`text-lg font-bold ${isAppShell ? 'text-white' : 'text-gray-900 dark:text-white'}`}>I am a Parent</span>
@@ -199,7 +199,7 @@ export default function OnboardingPage() {
             <button
               onClick={() => handleRoleSelect('student')}
               disabled={isUpdating}
-              className={`flex flex-col items-center justify-center p-6 rounded-3xl border-2 border-transparent transition-all group ${isAppShell ? 'bg-white/[0.04] hover:border-indigo-400/60 hover:bg-white/[0.07]' : 'bg-white/50 dark:bg-white/5 hover:border-primary hover:bg-blue-50/50 dark:hover:bg-blue-900/20'}`}
+              className={`flex flex-col items-center justify-center p-6 rounded-3xl border-2 border-transparent transition-all group ${isAppShell ? 'bg-white/4 hover:border-indigo-400/60 hover:bg-white/[0.07]' : 'bg-white/50 dark:bg-white/5 hover:border-primary hover:bg-blue-50/50 dark:hover:bg-blue-900/20'}`}
             >
               <span className="text-4xl mb-4 group-hover:scale-110 transition-transform">🎓</span>
               <span className={`text-lg font-bold ${isAppShell ? 'text-white' : 'text-gray-900 dark:text-white'}`}>I am a Student</span>

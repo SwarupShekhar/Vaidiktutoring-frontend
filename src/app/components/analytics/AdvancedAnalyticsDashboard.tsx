@@ -17,7 +17,7 @@ export function AdvancedAnalyticsDashboard() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-600">
+          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-blue-700 to-indigo-600">
             Advanced Analytics
           </h2>
           <p className="text-gray-500 mt-1">AI-Powered Insights for {curriculum}</p>
@@ -36,7 +36,7 @@ export function AdvancedAnalyticsDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Predictive Grading Widget */}
-        <div className="col-span-1 md:col-span-1 relative overflow-hidden bg-gradient-to-br from-indigo-600 to-blue-700 rounded-xl p-6 text-white shadow-xl shadow-indigo-200">
+        <div className="col-span-1 md:col-span-1 relative overflow-hidden bg-linear-to-br from-indigo-600 to-blue-700 rounded-xl p-6 text-white shadow-xl shadow-indigo-200">
           <div className="absolute top-0 right-0 p-4 opacity-20">
             <svg className="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
           </div>
