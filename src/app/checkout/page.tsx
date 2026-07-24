@@ -276,7 +276,7 @@ const CheckoutContent = () => {
         const code = (codeToApply || couponInput).trim().toUpperCase();
         if (!code) return;
 
-        if (['SPECIAL349', 'SHAGUN349', 'COUNSELOR349', 'STUDY349', 'SHAGUN'].includes(code)) {
+        if (['SPECIAL349', 'COUNSELOR349', 'STUDY349'].includes(code)) {
             if (basePrice > 349) {
                 const discount = basePrice - 349;
                 setCouponDiscountAmount(discount);
@@ -453,7 +453,7 @@ const CheckoutContent = () => {
                                 <div className="flex gap-2">
                                     <input
                                         type="text"
-                                        placeholder="e.g. SHAGUN349, COUNSELOR10"
+                                        placeholder="e.g. WINTER20, COUNSELOR10"
                                         value={couponInput}
                                         onChange={(e) => setCouponInput(e.target.value)}
                                         onKeyDown={(e) => {
