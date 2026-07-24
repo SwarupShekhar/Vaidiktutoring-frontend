@@ -65,6 +65,16 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: '/payment',
+        destination: '/pricing',
+        permanent: true,
+      },
+      {
+        source: '/payments',
+        destination: '/pricing',
+        permanent: true,
+      },
+      {
         source: '/uae/saudi-ministry-curriculum-tutors',
         destination: '/saudi/saudi-ministry-curriculum-tutors',
         permanent: true,
