@@ -276,13 +276,13 @@ const CheckoutContent = () => {
         const code = (codeToApply || couponInput).trim().toUpperCase();
         if (!code) return;
 
-        if (code === 'SPECIAL30') {
-            // Calculate a ~30% discount to mimic the US $499 -> $349 drop, but scaled for all currencies
-            const discountPercentage = 0.30;
+        if (code === 'MOMENTUM7') {
+            // Apply a 7% discount (which perfectly drops $375 to $349, and scales correctly for Australia/other regions)
+            const discountPercentage = 0.07;
             const discount = Math.round(basePrice * discountPercentage);
             setCouponDiscountAmount(discount);
             setAppliedCoupon(code);
-            setCouponMsg({ text: `Special Offer "${code}" applied! 30% Off.`, type: 'success' });
+            setCouponMsg({ text: `Special Offer "${code}" applied! 7% Off.`, type: 'success' });
         } else {
             setCouponMsg({ text: `Invalid or expired promo code.`, type: 'error' });
         }
