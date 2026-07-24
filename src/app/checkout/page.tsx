@@ -276,7 +276,7 @@ const CheckoutContent = () => {
         const code = (codeToApply || couponInput).trim().toUpperCase();
         if (!code) return;
 
-        if (code === 'SPECIAL349') {
+        if (code === 'SPECIAL30') {
             // Calculate a ~30% discount to mimic the US $499 -> $349 drop, but scaled for all currencies
             const discountPercentage = 0.30;
             const discount = Math.round(basePrice * discountPercentage);
@@ -429,7 +429,7 @@ const CheckoutContent = () => {
                                 <div className="flex gap-2">
                                     <input
                                         type="text"
-                                        placeholder="e.g. SPECIAL349"
+                                        placeholder="Enter code here"
                                         value={couponInput}
                                         onChange={(e) => setCouponInput(e.target.value)}
                                         onKeyDown={(e) => {
