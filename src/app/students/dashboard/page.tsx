@@ -15,6 +15,8 @@ import { useStudentDashboardSummary } from '@/app/Hooks/useStudentDashboardSumma
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
+import TutorCommunication from '@/app/students/dashboard/TutorCommunication';
+import { MessageSquare } from 'lucide-react';
 
 // Loading Skeleton
 import { DashboardLoadingSkeleton } from '@/app/components/dashboard/student/DashboardLoadingSkeleton';
@@ -189,19 +191,40 @@ function StudentDashboardContent() {
         )}
         {isAppShell ? (
           // Desktop app: every user (trial or enrolled) gets the native bento dashboard.
-          <AppDashboard
-            studentProfile={studentProfile}
-            enrollment={enrollment}
-            upcomingSessions={upcomingSessions}
-            pastSessions={pastSessions}
-            bookings={bookings}
-            loading={isGlobalLoading}
-            user={user}
-            progressSummary={progressSummary}
-            isEnrolled={isEnrolled}
-            pendingRatings={pendingRatings}
-            creditStatus={creditStatus}
-          />
+          <>
+            <AppDashboard
+              studentProfile={studentProfile}
+              enrollment={enrollment}
+              upcomingSessions={upcomingSessions}
+              pastSessions={pastSessions}
+              bookings={bookings}
+              loading={isGlobalLoading}
+              user={user}
+              progressSummary={progressSummary}
+              isEnrolled={isEnrolled}
+              pendingRatings={pendingRatings}
+              creditStatus={creditStatus}
+            />
+            {isEnrolled && (
+              <div className="mx-auto w-full max-w-6xl px-4 py-3 md:px-6 mb-8 mt-4">
+                <section id="comm-center" className="scroll-mt-6 overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#13111a] shadow-2xl">
+                  <div className="flex items-center gap-3 border-b border-white/5 px-6 py-5">
+                    <MessageSquare size={20} className="text-indigo-400" />
+                    <div>
+                      <h2 className="text-lg font-bold text-white">Communication Center</h2>
+                      <p className="text-xs font-medium text-slate-400">Message your tutor</p>
+                    </div>
+                  </div>
+                  <div className="p-4 md:p-6">
+                    <TutorCommunication
+                      tutorName={upcomingSessions?.[0]?.tutor?.first_name ?? null}
+                      currentUserId={user?.id}
+                    />
+                  </div>
+                </section>
+              </div>
+            )}
+          </>
         ) : isEnrolled ? (
             <EnrolledDashboard
               studentProfile={studentProfile}
@@ -213,6 +236,8 @@ function StudentDashboardContent() {
               user={user}
               progressSummary={progressSummary}
               isEnrolled={true}
+              pendingRatings={pendingRatings}
+              creditStatus={creditStatus}
             />
         ) : (
           <TrialDashboard

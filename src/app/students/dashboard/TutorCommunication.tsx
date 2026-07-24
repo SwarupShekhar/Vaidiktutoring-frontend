@@ -7,21 +7,38 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 
+type TutorOption = { id: string; name: string };
+
 export default function TutorCommunication({ tutorName, currentUserId }: { tutorName: string | null, currentUserId: string | undefined }) {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [tutors, setTutors] = useState<TutorOption[]>([]);
+  const [selectedTutorId, setSelectedTutorId] = useState<string>('');
+
+  // Load the student's assigned tutors once, so a multi-tutor student can pick.
+  useEffect(() => {
+    api.get('/messages/my-tutors')
+      .then((res) => {
+        const list: TutorOption[] = res.data ?? [];
+        setTutors(list);
+        setSelectedTutorId((prev) => prev || list[0]?.id || '');
+      })
+      .catch((err) => console.error('Failed to fetch tutors:', err));
+  }, [currentUserId]);
 
   const fetchMessages = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/messages');
+      const res = await api.get('/messages', {
+        params: selectedTutorId ? { tutorId: selectedTutorId } : {},
+      });
       setMessages(res.data);
-      
+
       // Mark as read
       if (res.data.some((m: any) => !m.is_read && m.sender_id !== currentUserId)) {
-        await api.post(`/messages/read/tutor`);
+        await api.post('/messages/read/tutor', selectedTutorId ? { tutorId: selectedTutorId } : {});
       }
     } catch (err) {
       console.error('Failed to fetch messages:', err);
@@ -34,7 +51,9 @@ export default function TutorCommunication({ tutorName, currentUserId }: { tutor
     fetchMessages();
     const interval = setInterval(fetchMessages, 30000); // 30s interval
     return () => clearInterval(interval);
-  }, [currentUserId]);
+    // Re-fetch when the selected tutor changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUserId, selectedTutorId]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +61,10 @@ export default function TutorCommunication({ tutorName, currentUserId }: { tutor
 
     setSending(true);
     try {
-      await api.post('/messages/send', { text: message });
+      await api.post('/messages/send', {
+        text: message,
+        ...(selectedTutorId && { tutorId: selectedTutorId }),
+      });
       setMessage('');
       toast.success('Message sent to your tutor!');
       fetchMessages();
@@ -52,6 +74,9 @@ export default function TutorCommunication({ tutorName, currentUserId }: { tutor
       setSending(false);
     }
   };
+
+  const selectedTutorName =
+    tutors.find((t) => t.id === selectedTutorId)?.name || tutorName || 'Your Assigned Tutor';
 
   return (
     <div id="tutor-chat-section" className="bg-surface rounded-3xl border border-border shadow-sm flex flex-col h-[500px]">
@@ -63,9 +88,21 @@ export default function TutorCommunication({ tutorName, currentUserId }: { tutor
           </div>
           <div>
             <h3 className="font-bold text-foreground">Message your Tutor</h3>
-            <p className="text-xs text-muted-foreground">{tutorName || 'Your Assigned Tutor'}</p>
+            <p className="text-xs text-muted-foreground">{selectedTutorName}</p>
           </div>
         </div>
+
+        {tutors.length > 1 && (
+          <select
+            value={selectedTutorId}
+            onChange={(e) => setSelectedTutorId(e.target.value)}
+            className="bg-surface border border-border rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+          >
+            {tutors.map((t) => (
+              <option key={t.id} value={t.id}>{t.name}</option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* Messages area */}

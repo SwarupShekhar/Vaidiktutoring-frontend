@@ -190,15 +190,18 @@ const ParentAppDashboard: React.FC = () => {
         label: exhausted ? 'Free trial used up' : 'free classes left',
       };
     }
-    // paid / learning → plan sessions
+    // paid / learning → time-bank is MINUTES, show as hours not "sessions"
     const remaining = Math.max(0, credit.creditsRemaining ?? 0);
+    const hrs = Math.floor(remaining / 60);
+    const mins = remaining % 60;
     return {
       kind: 'paid' as const,
       remaining,
+      display: hrs > 0 ? `${hrs}h${mins ? ` ${mins}m` : ''}` : `${mins}m`,
       total: null as number | null,
       used: 0,
       exhausted: remaining <= 0,
-      label: remaining === 1 ? 'plan session left' : 'plan sessions left',
+      label: 'plan time left',
     };
   }, [credit]);
 
@@ -362,10 +365,10 @@ const ParentAppDashboard: React.FC = () => {
         accent: exhausted ? ACCENT.amber : ACCENT.cyan,
         colSpan: 4,
         href: exhausted ? '/pricing' : '/bookings/new',
-        label: 'Sessions',
+        label: 'Plan time',
         icon: <Ticket className="h-4 w-4" />,
-        value: `${sessionGauge.remaining}`,
-        title: exhausted ? 'Out of sessions' : undefined,
+        value: exhausted ? '0' : sessionGauge.display,
+        title: exhausted ? 'Out of plan time' : undefined,
         description: exhausted ? 'Renew your plan to keep classes going' : sessionGauge.label,
         children: exhausted ? <CardButton accent={ACCENT.amber}>Renew plan</CardButton> : undefined,
       });

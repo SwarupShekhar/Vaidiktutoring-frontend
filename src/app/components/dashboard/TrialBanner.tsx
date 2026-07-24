@@ -10,7 +10,7 @@ interface TrialBannerProps {
 }
 
 export function TrialBanner({ status }: TrialBannerProps) {
-  const progressPercent = (status.creditsRemaining / 10) * 100;
+  const progressPercent = (status.creditsRemaining / 120) * 100;
   const daysLeft = status.daysLeft ?? 7;
 
   return (
@@ -37,7 +37,7 @@ export function TrialBanner({ status }: TrialBannerProps) {
             <h3 className="text-xl font-black text-foreground tracking-tight">
               Trial Journey
               <span className="ml-2 text-indigo-500 dark:text-indigo-400">
-                · {status.creditsRemaining} credits left
+                · {Math.floor(status.creditsRemaining / 60)}h {status.creditsRemaining % 60}m left
               </span>
             </h3>
             <div className="flex flex-wrap items-center gap-3 mt-1.5">
@@ -63,7 +63,7 @@ export function TrialBanner({ status }: TrialBannerProps) {
               Trial Progress
             </span>
             <span className="text-xs font-black text-foreground">
-              {status.creditsRemaining} / 10
+              {Math.floor(status.creditsRemaining / 60)}h {status.creditsRemaining % 60}m
             </span>
           </div>
           <div className="relative h-3 w-full bg-background rounded-full overflow-hidden shadow-inner border border-border">

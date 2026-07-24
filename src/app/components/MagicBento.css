@@ -231,3 +231,21 @@
     display: none;
   }
 }
+
+.magic-bento-card--highlighted {
+  border: 1px solid rgba(var(--card-accent), 0.6);
+  box-shadow: 0 4px 30px rgba(var(--card-accent), 0.2), inset 0 0 20px rgba(var(--card-accent), 0.05);
+  animation: pulse-border 3s infinite ease-in-out;
+}
+
+@keyframes pulse-border {
+  0% { box-shadow: 0 4px 30px rgba(var(--card-accent), 0.2), inset 0 0 20px rgba(var(--card-accent), 0.05); border-color: rgba(var(--card-accent), 0.4); }
+  50% { box-shadow: 0 4px 40px rgba(var(--card-accent), 0.4), inset 0 0 30px rgba(var(--card-accent), 0.1); border-color: rgba(var(--card-accent), 0.8); }
+  100% { box-shadow: 0 4px 30px rgba(var(--card-accent), 0.2), inset 0 0 20px rgba(var(--card-accent), 0.05); border-color: rgba(var(--card-accent), 0.4); }
+}
+
+.theme-aware-bento .magic-bento-card {
+  --bento-surface: var(--color-surface);
+  --bento-fg: var(--color-text-primary);
+  --bento-fg-muted: var(--color-text-secondary);
+}

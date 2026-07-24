@@ -32,7 +32,7 @@ import ParentAppDashboard from "@/app/components/app-shell/ParentAppDashboard";
 
 function DashboardContent() {
   const { user } = useAuthContext();
-  const isAppShell = useIsAppShell();
+  const isAppShell = true; // useIsAppShell();
   const {
     studentCount,
     loadingStudents,

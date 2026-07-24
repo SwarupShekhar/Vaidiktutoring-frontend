@@ -21,6 +21,7 @@ export interface BentoCardProps {
   colSpan?: number;
   /** Per-card accent as an "r, g, b" string. Tints icon, label and a faint corner glow. */
   accent?: string;
+  highlighted?: boolean;
   children?: React.ReactNode;
 }
 
@@ -627,6 +628,7 @@ const BentoCard: React.FC<{
     textAutoHide ? 'magic-bento-card--text-autohide' : '',
     enableBorderGlow ? 'magic-bento-card--border-glow' : '',
     card.span === 2 ? 'magic-bento-card--span-2' : '',
+    card.highlighted ? 'magic-bento-card--highlighted' : '',
     isInteractive ? 'magic-bento-card--clickable' : ''
   ]
     .filter(Boolean)

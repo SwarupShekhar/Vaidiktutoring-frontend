@@ -405,6 +405,24 @@ export default function Navbar({ initialRegionalPages }: { initialRegionalPages?
             </Link>
           )}
 
+          {/* Profile Link */}
+          {user && (
+            <Link
+              href={
+                user.role === "admin"
+                  ? "/admin/profile"
+                  : user.role === "tutor"
+                    ? "/tutor/profile"
+                    : user.role === "student"
+                      ? "/students/profile"
+                      : "/parent/profile"
+              }
+              className="hidden xl:block text-xs font-bold tracking-wide transition-all text-text-secondary hover:text-primary"
+            >
+              Profile
+            </Link>
+          )}
+
           {/* Primary CTA */}
           {(!user || user.role !== "tutor") && (
             <Link

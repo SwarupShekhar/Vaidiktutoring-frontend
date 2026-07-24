@@ -52,6 +52,8 @@ interface AppDashboardProps {
   isEnrolled: boolean;
   pendingRatings?: any[];
   creditStatus?: any;
+  embedMode?: boolean;
+  themeAware?: boolean;
 }
 
 const containerVariants = {
@@ -109,11 +111,11 @@ const Pips: React.FC<{ filled: number; total: number; accent: string }> = ({ fil
 /** A labelled thin progress bar. */
 const MiniBar: React.FC<{ label: string; pct: number; accent: string }> = ({ label, pct, accent }) => (
   <div className="space-y-1">
-    <div className="flex items-baseline justify-between text-[11px] font-medium text-white/55">
+    <div className="flex items-baseline justify-between text-[11px] font-medium text-slate-500 dark:text-white/55">
       <span>{label}</span>
-      <span className="text-white/75">{pct}%</span>
+      <span className="text-slate-600 dark:text-white/75">{pct}%</span>
     </div>
-    <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+    <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
       <div
         className="h-full rounded-full"
         style={{ width: `${Math.max(0, Math.min(100, pct))}%`, background: `rgb(${accent})` }}
@@ -123,9 +125,10 @@ const MiniBar: React.FC<{ label: string; pct: number; accent: string }> = ({ lab
 );
 
 /** Pill button used inside cards (Join / Book / Launch). */
-const CardButton: React.FC<{ accent: string; disabled?: boolean; onClick?: (e: React.MouseEvent) => void; children: React.ReactNode }> = ({
+const CardButton: React.FC<{ accent: string; disabled?: boolean; glow?: boolean; onClick?: (e: React.MouseEvent) => void; children: React.ReactNode }> = ({
   accent,
   disabled,
+  glow,
   onClick,
   children,
 }) => (
@@ -134,9 +137,16 @@ const CardButton: React.FC<{ accent: string; disabled?: boolean; onClick?: (e: R
     disabled={disabled}
     onClick={onClick}
     className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition-all ${
-      disabled ? 'cursor-not-allowed bg-white/5 text-white/35 ring-1 ring-white/10' : 'text-white active:scale-95'
+      disabled ? 'cursor-not-allowed hover:translate-y-0 opacity-80' : 'hover:-translate-y-0.5 active:translate-y-0 active:scale-95'
     }`}
-    style={disabled ? undefined : { background: `rgb(${accent})` }}
+    style={disabled ? { 
+      background: `rgba(${accent}, 0.15)`,
+      color: `var(--bento-fg, inherit)`
+    } : { 
+      background: `rgb(${accent})`,
+      boxShadow: glow ? `0 0 15px rgba(${accent}, 0.5)` : undefined,
+      color: '#fff'
+    }}
   >
     {children}
   </button>
@@ -150,6 +160,8 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
   pendingRatings = [],
   creditStatus,
   studentProfile,
+  embedMode,
+  themeAware,
 }) => {
   // Authoritative live credit/trial status (/credits/trial-status), with prop/profile fallback.
   const { status: liveCredit } = useCreditStatus();
@@ -166,7 +178,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
     : null;
   // Join opens 5 min before start (joining a class days early hits a backend 403
   // on the daily-token). Stays open after start so a late student can still join.
-  const JOIN_LEAD_MS = 5 * 60_000;
+  const JOIN_LEAD_MS = 15 * 60_000;
   const canJoin =
     !!nextSession?.meet_link &&
     !!sessionStart &&
@@ -316,8 +328,9 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
     // 1. NEXT CLASS (hero, 8 cols)
     if (nextSession) {
       list.push({
-        color: CARD_COLOR,
-        accent: ACCENT.indigo,
+        color: 'rgba(91, 108, 247, 0.1)',
+        accent: '91, 108, 247',
+        highlighted: true,
         colSpan: 8,
         label: 'Next class',
         icon: <CalendarClock className="h-4 w-4" />,
@@ -329,19 +342,19 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
           .filter(Boolean)
           .join(' · '),
         children: isPending ? (
-          <span className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500/15 px-3 py-2 text-xs font-bold text-amber-300 ring-1 ring-amber-500/30">
+          <span className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500/15 px-3 py-2 text-xs font-bold text-amber-600 dark:text-amber-300 ring-1 ring-amber-500/30">
             <CalendarClock size={14} /> Awaiting confirmation
           </span>
         ) : (
-          <CardButton accent={ACCENT.indigo} disabled={!canJoin} onClick={(e) => { e.stopPropagation(); handleJoin(); }}>
-            <Video size={14} /> {canJoin ? 'Join class' : 'Join opens 5 min before'}
+          <CardButton accent="91, 108, 247" glow={canJoin} disabled={!canJoin} onClick={(e) => { e.stopPropagation(); handleJoin(); }}>
+            <Video size={14} /> {canJoin ? 'Join class' : 'Join opens 15 min before'}
           </CardButton>
         ),
       });
     } else {
       list.push({
-        color: CARD_COLOR,
-        accent: ACCENT.indigo,
+        color: 'rgba(91, 108, 247, 0.05)',
+        accent: '91, 108, 247',
         colSpan: 8,
         href: '/bookings/new',
         label: 'Next class',
@@ -349,7 +362,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
         title: 'No class scheduled yet',
         description: 'Book a 1-on-1 session with your tutor and it shows up right here.',
         children: (
-          <CardButton accent={ACCENT.indigo}>
+          <CardButton accent="91, 108, 247" glow>
             <CalendarPlus size={14} /> Book a session
           </CardButton>
         ),
@@ -359,7 +372,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
     // 2. MOMENTUM (4 cols) — weekly attendance streak + honest lifetime stats.
     // All values are real (attended >=30min / tutor-marked); taps to full history.
     list.push({
-      color: CARD_COLOR,
+      color: themeAware ? undefined : CARD_COLOR,
       accent: ACCENT.amber,
       colSpan: 4,
       href: '/students/sessions',
@@ -369,11 +382,11 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
       children: (
         <div className="space-y-2">
           <Pips filled={Math.min(streakWeeks, 8)} total={8} accent={ACCENT.amber} />
-          <p className="text-xs text-white/55">{totalHours}h attended · {totalSessions} sessions</p>
+          <p className="text-xs text-slate-500 dark:text-white/55">{totalHours}h attended · {totalSessions} sessions</p>
           <p className="inline-flex items-center gap-1 text-xs font-bold" style={{ color: `rgb(${ACCENT.indigo})` }}>
             <Zap size={12} /> {practiceXp.toLocaleString()} XP{practiceStreak > 0 ? ` · 🔥 ${practiceStreak}d practice` : ''}
           </p>
-          <p className="text-[11px] font-semibold text-white/35">→ tap to see full history</p>
+          <p className="text-[11px] font-semibold text-slate-400 dark:text-white/35">→ tap to see full history</p>
         </div>
       ),
     });
@@ -381,9 +394,10 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
     // 3. CREDITS / PACKAGE (4 cols) — trial credits for free users, package usage for enrolled
     if (isTrial) {
       const trialActive = credit.mode === 'trial_active';
-      const remaining = credit.creditsRemaining ?? 0;
+      // Trial = 3 free sessions. creditsRemaining is MINUTES (time-bank), so show sessions left, not minutes.
+      const remaining = Math.max(0, 3 - (credit.sessionsUsed ?? 0));
       list.push({
-        color: CARD_COLOR,
+        color: themeAware ? undefined : CARD_COLOR,
         accent: trialActive ? ACCENT.emerald : ACCENT.amber,
         colSpan: 4,
         href: trialActive ? '/bookings/new' : '/pricing',
@@ -409,7 +423,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
       });
     } else if (outOfCredits) {
       list.push({
-        color: CARD_COLOR,
+        color: themeAware ? undefined : CARD_COLOR,
         accent: ACCENT.amber,
         colSpan: 4,
         href: '/pricing',
@@ -420,20 +434,27 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
         children: <CardButton accent={ACCENT.amber}>Renew plan</CardButton>,
       });
     } else {
+      // Time-bank is MINUTES. Show hours off the authoritative live balance, not the
+      // legacy sessions_remaining count (which deductCredits subtracts minutes from).
+      const planMin: Record<string, number> = { foundation: 360, mastery: 720, elite: 1080 };
+      const totalMin = credit.plan ? planMin[credit.plan] ?? null : null;
+      const remMin = Math.max(0, credit.creditsRemaining ?? 0);
+      const usedMin = totalMin != null ? Math.max(0, totalMin - remMin) : null;
+      const h = Math.floor(remMin / 60), m = remMin % 60;
       list.push({
-        color: CARD_COLOR,
+        color: themeAware ? undefined : CARD_COLOR,
         accent: ACCENT.cyan,
         colSpan: 4,
         href: '/bookings',
-        label: 'Package',
+        label: 'Plan time',
         icon: <Ticket className="h-4 w-4" />,
-        value: sessionsRemaining != null && sessionsTotal != null ? `${sessionsRemaining} of ${sessionsTotal}` : `${sessionsRemaining ?? 0}`,
+        value: h > 0 ? `${h}h${m ? ` ${m}m` : ''}` : `${m}m`,
         title: undefined,
-        description: 'sessions left',
+        description: 'plan time left',
         children: (
           <div className="mt-1 space-y-2.5">
-            {used != null && sessionsTotal ? (
-              <MiniBar label="Used" pct={Math.round((used / sessionsTotal) * 100)} accent={ACCENT.cyan} />
+            {usedMin != null && totalMin ? (
+              <MiniBar label="Used" pct={Math.round((usedMin / totalMin) * 100)} accent={ACCENT.cyan} />
             ) : null}
             <MiniBar label="Attendance" pct={attendanceRate} accent={ACCENT.emerald} />
           </div>
@@ -443,7 +464,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
 
     // 4. WHAT'S NEW (4 cols)
     list.push({
-      color: CARD_COLOR,
+      color: themeAware ? undefined : CARD_COLOR,
       accent: ACCENT.violet,
       colSpan: 4,
       label: "What's new",
@@ -456,7 +477,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
     // 5. ACTION ITEMS (4 cols)
     if (actionTotal > 0) {
       list.push({
-        color: CARD_COLOR,
+        color: themeAware ? undefined : CARD_COLOR,
         accent: ACCENT.amber,
         colSpan: 4,
         href: '/students/assignments',
@@ -476,7 +497,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
       });
     } else {
       list.push({
-        color: CARD_COLOR,
+        color: themeAware ? undefined : CARD_COLOR,
         accent: ACCENT.emerald,
         colSpan: 4,
         label: 'To do',
@@ -492,7 +513,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
       // Set & counting down.
       const urgent = examInfo.days <= 14;
       list.push({
-        color: CARD_COLOR,
+        color: themeAware ? undefined : CARD_COLOR,
         accent: urgent ? ACCENT.amber : ACCENT.cyan,
         colSpan: 4,
         onClick: () => setExamModalOpen(true),
@@ -510,7 +531,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
     } else if (targetExam) {
       // Exam chosen but date missing/past → prompt to confirm the date.
       list.push({
-        color: CARD_COLOR,
+        color: themeAware ? undefined : CARD_COLOR,
         accent: ACCENT.amber,
         colSpan: 4,
         onClick: () => setExamModalOpen(true),
@@ -527,7 +548,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
     } else {
       // No target exam yet → prompt to choose one.
       list.push({
-        color: CARD_COLOR,
+        color: themeAware ? undefined : CARD_COLOR,
         accent: ACCENT.cyan,
         colSpan: 4,
         onClick: () => setExamModalOpen(true),
@@ -546,7 +567,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
     // 5c. ACHIEVEMENTS (4 cols) — earned badges (hidden if none)
     if (badges.length > 0) {
       list.push({
-        color: CARD_COLOR,
+        color: themeAware ? undefined : CARD_COLOR,
         accent: ACCENT.violet,
         colSpan: 4,
         label: 'Achievements',
@@ -558,7 +579,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
             {badges.slice(0, 6).map((b) => (
               <span
                 key={b}
-                className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-white/85"
+                className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-[rgb(var(--card-accent))] dark:text-white/85"
                 style={{ background: `rgba(${ACCENT.violet},0.14)`, border: `1px solid rgba(${ACCENT.violet},0.3)` }}
               >
                 <Award size={11} style={{ color: `rgb(${ACCENT.violet})` }} />
@@ -573,7 +594,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
     // 6. YOUR SUBJECTS (8 cols) — enrolled subjects (with trend) + topics covered
     if (subjectProgress.length > 0 || topicsCovered.length > 0) {
       list.push({
-        color: CARD_COLOR,
+        color: themeAware ? undefined : CARD_COLOR,
         accent: ACCENT.indigo,
         // No card-level href: each subject pill deep-links to its own materials
         // (avoids a nested-link with the buttons below).
@@ -595,7 +616,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
                         e.stopPropagation();
                         router.push(`/students/vault?subject=${encodeURIComponent(s.subject)}`);
                       }}
-                      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-white/85 transition-transform hover:scale-105 active:scale-95"
+                      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold text-[rgb(var(--card-accent))] dark:text-white/85 transition-transform hover:scale-105 active:scale-95"
                       style={{ background: `rgba(${accent},0.14)`, border: `1px solid rgba(${accent},0.3)` }}
                     >
                       <span style={{ color: `rgb(${accent})` }}>{glyph}</span>
@@ -607,15 +628,15 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
             )}
             {topicsCovered.length > 0 && (
               <div>
-                <p className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-white/40">
+                <p className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/40">
                   Topics covered
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {topicsCovered.map((t, i) => (
                     <span
                       key={i}
-                      className="rounded-full px-2.5 py-1 text-xs font-medium text-white/75"
-                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+                      className="rounded-full px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-white/75 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10"
+                      style={undefined}
                     >
                       {t}
                     </span>
@@ -630,7 +651,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
 
     // 7. PRACTICE (4 cols) — pairs with the Chemistry Lab (8) to fill one row.
     list.push({
-      color: CARD_COLOR,
+      color: themeAware ? undefined : CARD_COLOR,
       accent: ACCENT.teal,
       colSpan: 4,
       href: '/students/practice',
@@ -647,7 +668,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
 
     // 8. CHEMISTRY LAB (8 cols) — sits beside Practice Center.
     list.push({
-      color: CARD_COLOR,
+      color: themeAware ? undefined : CARD_COLOR,
       accent: ACCENT.magenta,
       colSpan: 8,
       label: 'Interactive lab',
@@ -666,7 +687,7 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
     if (tutorName) {
       const initial = tutorName.charAt(0).toUpperCase();
       list.push({
-        color: CARD_COLOR,
+        color: themeAware ? undefined : CARD_COLOR,
         accent: ACCENT.emerald,
         colSpan: 4,
         href: '/students/profile',
@@ -718,13 +739,8 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
     topicsCovered,
   ]);
 
-  return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="mx-auto w-full max-w-6xl space-y-5 px-4 py-3 md:px-6"
-    >
+  const content = (
+    <>
       {/* Dismissible setup/verify chips */}
       <motion.div variants={itemVariants}>
         <AppPrompts user={user} />
@@ -746,7 +762,20 @@ export const AppDashboard: React.FC<AppDashboardProps> = ({
           glowColor="132, 0, 255"
         />
       </motion.div>
+    </>
+  );
 
+  return (
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className={
+        (embedMode ? "w-full space-y-5 " : "mx-auto w-full max-w-6xl space-y-5 px-4 py-3 md:px-6 ") +
+        (themeAware ? "theme-aware-bento" : "")
+      }
+    >
+      {content}
       {/* Fullscreen Chemistry Lab modal (mirrors LearningLab) */}
       <AnimatePresence>
         {labOpen && chemTool && (

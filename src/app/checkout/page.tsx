@@ -28,6 +28,10 @@ const CheckoutContent = () => {
     const [enrollingStudentId, setEnrollingStudentId] = useState<string | null>(null);
     const [dynamicPrice, setDynamicPrice] = useState<number | null>(null);
     const [dynamicCurrency, setDynamicCurrency] = useState<string | null>(null);
+    const [couponInput, setCouponInput] = useState<string>('');
+    const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+    const [couponDiscountAmount, setCouponDiscountAmount] = useState<number>(0);
+    const [couponMsg, setCouponMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
     const isAppShell = useIsAppShell();
     // No marketing navbar in the desktop shell → collapse the top padding.
     const pageTopPad = isAppShell ? 'pt-6' : 'pt-32';
@@ -100,6 +104,7 @@ const CheckoutContent = () => {
             // Step 2: Create order on backend
             const response = await api.post('/payments/create-order', {
                 packageId: getPackageId(plan, region),
+                couponCode: appliedCoupon || undefined,
             });
 
             const { orderId, amount, currency, keyId } = response.data;
@@ -217,7 +222,7 @@ const CheckoutContent = () => {
             plans: {
                 'FOUNDATION': { monthlyPrice: 149, credits: 8 },
                 'MASTERY': { monthlyPrice: 249, credits: 16 },
-                'ELITE': { monthlyPrice: 375, credits: 24 }
+                'ELITE': { monthlyPrice: 349, credits: 24 }
             }
         },
         uk: {
@@ -225,7 +230,7 @@ const CheckoutContent = () => {
             plans: {
                 'FOUNDATION': { monthlyPrice: 149, credits: 8 },
                 'MASTERY': { monthlyPrice: 249, credits: 16 },
-                'ELITE': { monthlyPrice: 375, credits: 24 }
+                'ELITE': { monthlyPrice: 349, credits: 24 }
             }
         },
         middleeast: {
@@ -264,8 +269,50 @@ const CheckoutContent = () => {
 
     const currentConfig = pricingConfig[region] || pricingConfig['global'];
     const planConfig = currentConfig.plans[plan as keyof typeof currentConfig.plans];
-    const currentPrice = dynamicPrice !== null ? dynamicPrice : (planConfig?.monthlyPrice || 149);
+    const basePrice = dynamicPrice !== null ? dynamicPrice : (planConfig?.monthlyPrice || 149);
     const currentCredits = planConfig?.credits || 8;
+
+    const handleApplyCoupon = (codeToApply?: string) => {
+        const code = (codeToApply || couponInput).trim().toUpperCase();
+        if (!code) return;
+
+        if (['SPECIAL349', 'SHAGUN349', 'COUNSELOR349', 'STUDY349', 'SHAGUN'].includes(code)) {
+            if (basePrice > 349) {
+                const discount = basePrice - 349;
+                setCouponDiscountAmount(discount);
+                setAppliedCoupon(code);
+                setCouponMsg({ text: `Coupon "${code}" applied! Discounted to ${currentConfig.currency}349/mo.`, type: 'success' });
+            } else {
+                setCouponDiscountAmount(0);
+                setAppliedCoupon(code);
+                setCouponMsg({ text: `Coupon "${code}" active! Price is locked at ${currentConfig.currency}${basePrice}/mo.`, type: 'success' });
+            }
+        } else if (['STUDYHOURS10', 'WELCOME10', 'COUNSELOR10', 'SAVE10'].includes(code)) {
+            const discount = Math.round(basePrice * 0.10);
+            setCouponDiscountAmount(discount);
+            setAppliedCoupon(code);
+            setCouponMsg({ text: `10% Off Coupon "${code}" applied!`, type: 'success' });
+        } else if (['STUDYHOURS20', 'WELCOME20', 'COUNSELOR20', 'SAVE20'].includes(code)) {
+            const discount = Math.round(basePrice * 0.20);
+            setCouponDiscountAmount(discount);
+            setAppliedCoupon(code);
+            setCouponMsg({ text: `20% Off Coupon "${code}" applied!`, type: 'success' });
+        } else if (['STUDYHOURS25', 'SPECIAL25'].includes(code)) {
+            const discount = Math.round(basePrice * 0.25);
+            setCouponDiscountAmount(discount);
+            setAppliedCoupon(code);
+            setCouponMsg({ text: `25% Off Coupon "${code}" applied!`, type: 'success' });
+        } else if (['SAVE50', 'STUDYHOURS50'].includes(code)) {
+            const discount = Math.min(50, basePrice - 1);
+            setCouponDiscountAmount(discount);
+            setAppliedCoupon(code);
+            setCouponMsg({ text: `Special Coupon "${code}" applied (${currentConfig.currency}50 off)!`, type: 'success' });
+        } else {
+            setCouponMsg({ text: `Invalid or expired promo code.`, type: 'error' });
+        }
+    };
+
+    const currentPrice = Math.max(1, basePrice - couponDiscountAmount);
 
     // ---- App-shell (desktop) native checkout ----
     if (isAppShell) {
@@ -396,6 +443,40 @@ const CheckoutContent = () => {
                             <div className="flex items-start gap-3 p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800/30 text-green-800 dark:text-green-200 text-xs font-medium leading-relaxed">
                                 <CheckCircle size={16} className="shrink-0 mt-0.5" />
                                 <p>Secure payment powered by Razorpay. Your card details are encrypted and never stored on our servers. You get {currentCredits} monthly credits for 30-minute tutoring sessions.</p>
+                            </div>
+
+                            {/* Promo / Coupon Code Section */}
+                            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-left">
+                                <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Have a Counselor / Promo Code?
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. SHAGUN349, COUNSELOR10"
+                                        value={couponInput}
+                                        onChange={(e) => setCouponInput(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                handleApplyCoupon();
+                                            }
+                                        }}
+                                        className="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-white/20 bg-white dark:bg-slate-900 text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider outline-none focus:ring-2 focus:ring-blue-500/20"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => handleApplyCoupon()}
+                                        className="px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-sm hover:bg-sapphire transition-all shadow-md shrink-0"
+                                    >
+                                        Apply
+                                    </button>
+                                </div>
+                                {couponMsg && (
+                                    <p className={`mt-2.5 text-xs font-bold flex items-center gap-1 ${couponMsg.type === 'success' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                                        {couponMsg.type === 'success' ? '✓ ' : '✕ '}{couponMsg.text}
+                                    </p>
+                                )}
                             </div>
                         </div>
 

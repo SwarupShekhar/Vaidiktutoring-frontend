@@ -1,11 +1,10 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Layers, User, GraduationCap, Calendar, CheckCircle, ChevronDown, ClipboardList, Sparkles } from 'lucide-react';
+import { Layers, User, GraduationCap, Calendar, CheckCircle, ChevronDown, ClipboardList, Sparkles, Clock } from 'lucide-react';
 
 import useCatalog from '@/app/Hooks/useCatalog';
 import api from '@/app/lib/api';
@@ -194,10 +193,10 @@ export default function BookingWizard({ students, isStudentsLoading = false, cre
     const isAppShell = useIsAppShell();
     const { subjects, curricula, packages, loading: loadingCatalog } = useCatalog();
 
-    // Determine duration: 1st trial session is 1 hr, subsequent trial sessions are 0.5 hr, paid is 1 hr.
+    // Determine duration: 1st trial session is 1 hr, subsequent trial sessions are 0.5 hr, paid is 45/60 min.
     const isTrialActive = creditStatus?.mode === 'trial_active';
     const trialSessionsUsed = creditStatus?.sessionsUsed || 0;
-    const durationHours = (isTrialActive && trialSessionsUsed > 0) ? 0.5 : 1;
+    // We compute durationHours dynamically based on the state variable 'duration' later.
 
     // STATE
     const [step, setStep] = useState<Step>(0);
@@ -216,6 +215,16 @@ export default function BookingWizard({ students, isStudentsLoading = false, cre
     const [start, setStart] = useState<string>('');
     const [end, setEnd] = useState<string>('');
     const [note, setNote] = useState('');
+    // Auto-calculate default duration based on trial rules
+    const [duration, setDuration] = useState<number>(isTrialActive ? (trialSessionsUsed === 0 ? 60 : 30) : 45);
+
+    useEffect(() => {
+        if (isTrialActive) {
+            setDuration(trialSessionsUsed === 0 ? 60 : 30);
+        } else if (duration !== 45 && duration !== 60) {
+            setDuration(45);
+        }
+    }, [isTrialActive, trialSessionsUsed]);
 
     // Auto-select student if logged in as student
     useEffect(() => {
@@ -442,6 +451,20 @@ export default function BookingWizard({ students, isStudentsLoading = false, cre
                                     placeholder="Select a Subject"
                                     icon={<Layers size={16} />}
                                 />
+
+                                {!isTrialActive && (
+                                    <AppSelect
+                                        label="Duration"
+                                        value={duration.toString()}
+                                        options={[
+                                            { id: '45', label: '45 Minutes (Standard)' },
+                                            { id: '60', label: '60 Minutes (Deep Dive)' }
+                                        ]}
+                                        onChange={(val) => setDuration(Number(val))}
+                                        placeholder="Select Duration"
+                                        icon={<Clock size={16} />}
+                                    />
+                                )}
                             </div>
                         )}
 
@@ -451,7 +474,7 @@ export default function BookingWizard({ students, isStudentsLoading = false, cre
                                     <Calendar size={18} style={{ color: accentRgb('emerald') }} /> Schedule Session
                                 </h2>
                                 <div className="rounded-2xl p-5" style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                                    <TimeSlotPicker start={start} end={end} onSelect={handleTimeSelect} />
+                                    <TimeSlotPicker start={start} end={end} onSelect={handleTimeSelect} durationMinutes={duration} />
                                 </div>
                             </div>
                         )}
@@ -705,7 +728,7 @@ export default function BookingWizard({ students, isStudentsLoading = false, cre
                                         start={start}
                                         end={end}
                                         onSelect={handleTimeSelect}
-                                        durationHours={durationHours}
+                                        durationMinutes={duration}
                                     />
                                 </div>
                             </div>

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ArrowRight, ShieldCheck, Zap, Star, Layout, HelpCircle, ChevronDown, CheckCircle, Loader2, X } from 'lucide-react';
 import Link_Next from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthContext } from '@/app/context/AuthContext';
 import StickyCTA from '../components/subjects/StickyCTA';
 import { useCurriculum } from '../context/CurriculumContext';
@@ -151,6 +151,18 @@ const PricingPlans = () => {
         activeCurriculum.id !== 'test-prep' ? activeCurriculum.id : 'us'
     );
 
+    const searchParams = useSearchParams();
+    const regionParam = searchParams.get('region')?.toLowerCase();
+
+    React.useEffect(() => {
+        if (regionParam) {
+            const matched = CURRICULA.find(c => c.id === regionParam);
+            if (matched && matched.id !== activeCurriculum.id) {
+                setCurriculum(matched.id);
+            }
+        }
+    }, [regionParam, setCurriculum, activeCurriculum.id]);
+
     React.useEffect(() => {
         if (activeCurriculum.id !== 'test-prep') {
             setLastAcademicRegion(activeCurriculum.id);
@@ -238,9 +250,9 @@ const PricingPlans = () => {
             name: 'Global – International Curriculum Mastery',
             target: 'IB, IGCSE, A-Levels, SAT, AP',
             plans: [
-                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 149, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
-                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 249, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
-                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 375, credits: 25, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 149, credits: 8, features: ['8 Live 1-on-1 Sessions (30-min)', 'Matched Curriculum Specialist Tutor', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Student Progress & Confidence Reports', 'Cancel or Change Plan Anytime'] },
+                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 249, credits: 16, features: ['16 Live 1-on-1 Sessions (30-min)', 'Multi-Subject Support & Flex Booking', 'Priority Specialist Tutor Assignment', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Topic Mastery & Confidence Reports', 'Dedicated Academic Counselor Check-ins', 'Cancel or Change Plan Anytime'] },
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 349, credits: 24, features: ['24 Live 1-on-1 Sessions (30-min)', 'Full All-Subject Academic Coverage', 'Top 5% Senior Specialist Tutors', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Custom Diagnostic & Progress Analytics', '24/7 Priority Academic Support', 'Cancel or Change Plan Anytime'] }
             ]
         },
         uk: {
@@ -248,9 +260,9 @@ const PricingPlans = () => {
             name: 'United Kingdom – GCSE/A-Level Mastery',
             target: 'KS3, GCSE, A-Level',
             plans: [
-                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 149, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
-                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 249, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
-                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 375, credits: 25, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 149, credits: 8, features: ['8 Live 1-on-1 Sessions (30-min)', 'Matched Curriculum Specialist Tutor', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Student Progress & Confidence Reports', 'Cancel or Change Plan Anytime'] },
+                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 249, credits: 16, features: ['16 Live 1-on-1 Sessions (30-min)', 'Multi-Subject Support & Flex Booking', 'Priority Specialist Tutor Assignment', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Topic Mastery & Confidence Reports', 'Dedicated Academic Counselor Check-ins', 'Cancel or Change Plan Anytime'] },
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 349, credits: 24, features: ['24 Live 1-on-1 Sessions (30-min)', 'Full All-Subject Academic Coverage', 'Top 5% Senior Specialist Tutors', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Custom Diagnostic & Progress Analytics', '24/7 Priority Academic Support', 'Cancel or Change Plan Anytime'] }
             ]
         },
         australia: {
@@ -258,9 +270,9 @@ const PricingPlans = () => {
             name: 'Australia – NAPLAN/ATAR Mastery',
             target: 'Year 1–12, NAPLAN, VCE/HSC/ATAR',
             plans: [
-                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 250, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
-                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 450, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
-                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 650, credits: 25, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 250, credits: 8, features: ['8 Live 1-on-1 Sessions (30-min)', 'Matched Curriculum Specialist Tutor', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Student Progress & Confidence Reports', 'Cancel or Change Plan Anytime'] },
+                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 450, credits: 16, features: ['16 Live 1-on-1 Sessions (30-min)', 'Multi-Subject Support & Flex Booking', 'Priority Specialist Tutor Assignment', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Topic Mastery & Confidence Reports', 'Dedicated Academic Counselor Check-ins', 'Cancel or Change Plan Anytime'] },
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 650, credits: 24, features: ['24 Live 1-on-1 Sessions (30-min)', 'Full All-Subject Academic Coverage', 'Top 5% Senior Specialist Tutors', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Custom Diagnostic & Progress Analytics', '24/7 Priority Academic Support', 'Cancel or Change Plan Anytime'] }
             ]
         },
         singapore: {
@@ -268,9 +280,9 @@ const PricingPlans = () => {
             name: 'Singapore – PSLE/O-Level Mastery',
             target: 'P1–P6, S1–S5, PSLE, O-Level',
             plans: [
-                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 280, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
-                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 520, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
-                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 750, credits: 25, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 280, credits: 8, features: ['8 Live 1-on-1 Sessions (30-min)', 'Matched Curriculum Specialist Tutor', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Student Progress & Confidence Reports', 'Cancel or Change Plan Anytime'] },
+                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 520, credits: 16, features: ['16 Live 1-on-1 Sessions (30-min)', 'Multi-Subject Support & Flex Booking', 'Priority Specialist Tutor Assignment', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Topic Mastery & Confidence Reports', 'Dedicated Academic Counselor Check-ins', 'Cancel or Change Plan Anytime'] },
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 750, credits: 24, features: ['24 Live 1-on-1 Sessions (30-min)', 'Full All-Subject Academic Coverage', 'Top 5% Senior Specialist Tutors', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Custom Diagnostic & Progress Analytics', '24/7 Priority Academic Support', 'Cancel or Change Plan Anytime'] }
             ]
         },
         middleeast: {
@@ -278,9 +290,9 @@ const PricingPlans = () => {
             name: 'UAE / GCC – Global Curriculum Mastery',
             target: 'IB, IGCSE, British, American',
             plans: [
-                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 199, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
-                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 349, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
-                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 499, credits: 25, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 199, credits: 8, features: ['8 Live 1-on-1 Sessions (30-min)', 'Matched Curriculum Specialist Tutor', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Student Progress & Confidence Reports', 'Cancel or Change Plan Anytime'] },
+                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 349, credits: 16, features: ['16 Live 1-on-1 Sessions (30-min)', 'Multi-Subject Support & Flex Booking', 'Priority Specialist Tutor Assignment', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Topic Mastery & Confidence Reports', 'Dedicated Academic Counselor Check-ins', 'Cancel or Change Plan Anytime'] },
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 499, credits: 24, features: ['24 Live 1-on-1 Sessions (30-min)', 'Full All-Subject Academic Coverage', 'Top 5% Senior Specialist Tutors', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Custom Diagnostic & Progress Analytics', '24/7 Priority Academic Support', 'Cancel or Change Plan Anytime'] }
             ]
         },
         southafrica: {
@@ -288,9 +300,9 @@ const PricingPlans = () => {
             name: 'South Africa – CAPS/IEB Mastery',
             target: 'Grade R–12, Matric, NSC',
             plans: [
-                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 1500, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
-                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 2800, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
-                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 4200, credits: 25, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 1500, credits: 8, features: ['8 Live 1-on-1 Sessions (30-min)', 'Matched Curriculum Specialist Tutor', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Student Progress & Confidence Reports', 'Cancel or Change Plan Anytime'] },
+                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 2800, credits: 16, features: ['16 Live 1-on-1 Sessions (30-min)', 'Multi-Subject Support & Flex Booking', 'Priority Specialist Tutor Assignment', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Topic Mastery & Confidence Reports', 'Dedicated Academic Counselor Check-ins', 'Cancel or Change Plan Anytime'] },
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 4200, credits: 24, features: ['24 Live 1-on-1 Sessions (30-min)', 'Full All-Subject Academic Coverage', 'Top 5% Senior Specialist Tutors', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Custom Diagnostic & Progress Analytics', '24/7 Priority Academic Support', 'Cancel or Change Plan Anytime'] }
             ]
         },
         us: {
@@ -298,9 +310,9 @@ const PricingPlans = () => {
             name: 'United States – SAT/AP Mastery',
             target: 'Grade K–12, SAT, ACT, AP',
             plans: [
-                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 149, credits: 8, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in'] },
-                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 249, credits: 16, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support'] },
-                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 375, credits: 25, features: ['Tutor OS Access', 'AI Transcript + Summary', 'Confidence Tracking', 'Monthly Subscription', 'No Lock-in', 'Priority Support', 'Advanced Analytics'] }
+                { id: 'foundation', name: 'Foundation', frequency: '2 sessions / week', monthlyPrice: 149, credits: 8, features: ['8 Live 1-on-1 Sessions (30-min)', 'Matched Curriculum Specialist Tutor', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Student Progress & Confidence Reports', 'Cancel or Change Plan Anytime'] },
+                { id: 'mastery', name: 'Mastery', frequency: '4 sessions / week', monthlyPrice: 249, credits: 16, features: ['16 Live 1-on-1 Sessions (30-min)', 'Multi-Subject Support & Flex Booking', 'Priority Specialist Tutor Assignment', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Topic Mastery & Confidence Reports', 'Dedicated Academic Counselor Check-ins', 'Cancel or Change Plan Anytime'] },
+                { id: 'elite', name: 'Elite', frequency: '6 sessions / week', monthlyPrice: 349, credits: 24, features: ['24 Live 1-on-1 Sessions (30-min)', 'Full All-Subject Academic Coverage', 'Top 5% Senior Specialist Tutors', 'Interactive Whiteboard & Platform Access', 'HD Session Recordings & AI Summaries', 'Custom Diagnostic & Progress Analytics', '24/7 Priority Academic Support', 'Cancel or Change Plan Anytime'] }
             ]
         },
         'test-prep': {
@@ -531,11 +543,22 @@ const PricingPlans = () => {
                                 viewport={{ once: true }}
                                 transition={{ delay: idx * 0.1 }}
                                 whileHover={{ y: -6 }}
-                                className={`relative p-8 rounded-4xl bg-white/60 dark:bg-white/5 border backdrop-blur-3xl shadow-sm hover:shadow-2xl transition-all flex flex-col ${plan.id === 'mastery' ? 'border-primary border-2 ring-4 ring-blue-500/10' : 'border-border dark:border-white/10'}`}
+                                className={`relative p-8 rounded-4xl bg-white/60 dark:bg-white/5 border backdrop-blur-3xl shadow-sm hover:shadow-2xl transition-all flex flex-col ${
+                                    plan.id === 'elite' 
+                                        ? 'border-indigo-500 border-2 ring-4 ring-indigo-500/20 scale-105 z-10' 
+                                        : plan.id === 'mastery'
+                                        ? 'border-primary border-2 ring-2 ring-blue-500/10'
+                                        : 'border-border dark:border-white/10'
+                                }`}
                             >
+                                {plan.id === 'elite' && (
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-black px-5 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 whitespace-nowrap">
+                                        <Star size={12} fill="white" /> BEST VALUE FOR MONEY
+                                    </div>
+                                )}
                                 {plan.id === 'mastery' && (
-                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-black px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1">
-                                        <Star size={12} fill="white" /> RECOMMENDED
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-slate-800 dark:bg-slate-700 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-sm flex items-center gap-1">
+                                        POPULAR
                                     </div>
                                 )}
 
@@ -573,9 +596,15 @@ const PricingPlans = () => {
                                 <div className="space-y-3 pt-6 border-t border-border dark:border-white/5">
                                     <button
                                         onClick={() => handlePlanClick(plan.id, activeCurriculum.id)}
-                                        className={`w-full py-4 rounded-xl font-bold text-center transition-all flex items-center justify-center gap-2 ${plan.id === 'mastery' ? 'bg-primary text-white shadow-lg shadow-blue-500/30 hover:bg-sapphire' : 'bg-ice-blue dark:bg-white/5 text-primary hover:bg-powder-blue'}`}
+                                        className={`w-full py-4 rounded-xl font-extrabold text-center transition-all flex items-center justify-center gap-2 text-base shadow-lg ${
+                                            plan.id === 'elite'
+                                                ? 'bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 text-white shadow-indigo-500/35 hover:shadow-indigo-500/50 hover:scale-[1.02]'
+                                                : plan.id === 'mastery'
+                                                ? 'bg-blue-600 text-white shadow-blue-500/25 hover:bg-blue-700 hover:shadow-blue-500/40 hover:scale-[1.02]'
+                                                : 'bg-white dark:bg-white/10 text-slate-800 dark:text-white border-2 border-slate-200 dark:border-white/20 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 hover:scale-[1.02]'
+                                        }`}
                                     >
-                                        Choose Plan
+                                        Select {plan.name} Plan
                                         <ArrowRight size={18} />
                                     </button>
                                     <Link_Next
@@ -728,8 +757,8 @@ const ValueComparison = () => {
                             <tr className="bg-ice-blue dark:bg-white/5 border-b border-border dark:border-white/10">
                                 <th className="p-6 font-bold text-deep-navy dark:text-white">Feature</th>
                                 <th className="p-6 font-bold text-deep-navy dark:text-white text-center">Foundation</th>
-                                <th className="p-6 font-bold text-primary text-center bg-blue-50/30 dark:bg-blue-900/10">Mastery</th>
-                                <th className="p-6 font-bold text-deep-navy dark:text-white text-center">Elite</th>
+                                <th className="p-6 font-bold text-deep-navy dark:text-white text-center">Mastery</th>
+                                <th className="p-6 font-bold text-indigo-600 dark:text-indigo-400 text-center bg-indigo-50/50 dark:bg-indigo-900/10">Elite</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border dark:divide-white/5">
@@ -739,10 +768,10 @@ const ValueComparison = () => {
                                     <td className="p-6 text-center text-sm font-medium">
                                         {typeof feat.foundation === 'boolean' ? (feat.foundation ? <Check size={18} className="mx-auto text-green-500" /> : '-') : feat.foundation}
                                     </td>
-                                    <td className="p-6 text-center text-sm font-bold bg-blue-50/10 dark:bg-blue-900/5 text-primary">
+                                    <td className="p-6 text-center text-sm font-medium">
                                         {typeof feat.mastery === 'boolean' ? (feat.mastery ? <Check size={18} className="mx-auto text-green-500" /> : '-') : feat.mastery}
                                     </td>
-                                    <td className="p-6 text-center text-sm font-medium">
+                                    <td className="p-6 text-center text-sm font-bold bg-indigo-50/30 dark:bg-indigo-900/5 text-indigo-600 dark:text-indigo-400">
                                         {typeof feat.elite === 'boolean' ? (feat.elite ? <Check size={18} className="mx-auto text-green-500" /> : '-') : feat.elite}
                                     </td>
                                 </tr>
@@ -848,7 +877,9 @@ export default function PricingPage() {
     if (isAppShell) {
         return (
             <main className="min-h-full bg-[#0a0a0f]">
-                <PricingPlans />
+                <React.Suspense fallback={<div className="p-8 text-center text-white/50">Loading plans...</div>}>
+                    <PricingPlans />
+                </React.Suspense>
             </main>
         );
     }
@@ -856,7 +887,9 @@ export default function PricingPage() {
     return (
         <main className="bg-background">
             <HeroPricing />
-            <PricingPlans />
+            <React.Suspense fallback={<div className="p-8 text-center">Loading plans...</div>}>
+                <PricingPlans />
+            </React.Suspense>
             <ValueComparison />
             <PricingFAQ />
             <StickyPricingCTA />

@@ -2,17 +2,17 @@
 'use client';
 
 import React from 'react';
-import { addHours, format, addDays, startOfToday, isSameDay } from 'date-fns';
+import { addMinutes, addHours, format, addDays, startOfToday, isSameDay } from 'date-fns';
 import { Clock } from 'lucide-react';
 
 interface TimeSlotPickerProps {
     start: string; // ISO string
     end: string;
     onSelect: (start: string, end: string) => void;
-    durationHours?: number;
+    durationMinutes?: number;
 }
 
-export const TimeSlotPicker = ({ start, end, onSelect, durationHours = 1 }: TimeSlotPickerProps) => {
+export const TimeSlotPicker = ({ start, end, onSelect, durationMinutes = 45 }: TimeSlotPickerProps) => {
     // Generate next 5 days
     const today = startOfToday();
     const days = Array.from({ length: 5 }).map((_, i) => addDays(today, i));
@@ -61,7 +61,7 @@ export const TimeSlotPicker = ({ start, end, onSelect, durationHours = 1 }: Time
                                 if (isDisabled) return;
                                 // Auto-select first available slot
                                 const firstSlot = availableSlots[0];
-                                onSelect(firstSlot.toISOString(), addHours(firstSlot, durationHours).toISOString());
+                                onSelect(firstSlot.toISOString(), addMinutes(firstSlot, durationMinutes).toISOString());
                             }}
                             className={`
                                 flex flex-col items-center justify-center min-w-[80px] h-20 rounded-2xl border transition-all
@@ -91,7 +91,7 @@ export const TimeSlotPicker = ({ start, end, onSelect, durationHours = 1 }: Time
                                 <button
                                     key={slot.toISOString()}
                                     onClick={() => {
-                                        onSelect(slot.toISOString(), addHours(slot, durationHours).toISOString());
+                                        onSelect(slot.toISOString(), addMinutes(slot, durationMinutes).toISOString());
                                     }}
                                     className={`
                                         py-2 px-3 rounded-xl text-sm font-medium border transition-all relative overflow-hidden group
@@ -120,7 +120,7 @@ export const TimeSlotPicker = ({ start, end, onSelect, durationHours = 1 }: Time
                         onChange={(e) => {
                             const d = new Date(e.target.value);
                             if (!isNaN(d.getTime())) {
-                                onSelect(d.toISOString(), addHours(d, durationHours).toISOString());
+                                onSelect(d.toISOString(), addMinutes(d, durationMinutes).toISOString());
                             }
                         }}
                         className="w-full bg-transparent border-none p-0 text-white text-lg font-mono focus:ring-0 focus:outline-none placeholder-gray-600"

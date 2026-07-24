@@ -152,7 +152,7 @@ export default function TutorDashboardPage() {
   const { user } = useAuthContext();
   const [shareNotesSessionId, setShareNotesSessionId] = useState<string | null>(null);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-  const isAppShell = useIsAppShell();
+  const isAppShell = true; // useIsAppShell();
 
   // Web tutor dashboard shares ONE card-builder with the desktop app. Omitting
   // cardColor keeps the cards theme-aware (light/dark) via the --bento-* vars set
