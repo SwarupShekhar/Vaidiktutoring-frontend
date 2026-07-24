@@ -576,7 +576,7 @@ const PricingPlans = () => {
                                             <span className="text-sm font-bold text-sapphire">Monthly Credits</span>
                                             <div className="text-right">
                                                 <div className="text-lg font-black text-deep-navy dark:text-white">{plan.credits}<span className="text-xs"> sessions</span></div>
-                                                <div className="text-[10px] text-text-secondary uppercase tracking-widest font-bold">30-min sprints</div>
+                                                <div className="text-[10px] text-text-secondary uppercase tracking-widest font-bold">Sessions</div>
                                             </div>
                                         </div>
                                     </div>

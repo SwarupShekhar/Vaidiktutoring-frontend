@@ -331,7 +331,7 @@ const CheckoutContent = () => {
 
                     <p className="mt-3 flex items-start gap-2 rounded-xl bg-emerald-500/10 p-3 text-xs text-emerald-200 ring-1 ring-emerald-400/20">
                         <ShieldCheck size={15} className="mt-0.5 shrink-0" />
-                        Secure payment via Razorpay — card details are encrypted and never stored. Includes {currentCredits} monthly 30-min session credits.
+                        Secure payment via Razorpay — card details are encrypted and never stored. Includes {currentCredits} monthly session credits.
                     </p>
 
                     <div className="mt-6">
@@ -418,7 +418,7 @@ const CheckoutContent = () => {
 
                             <div className="flex items-start gap-3 p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800/30 text-green-800 dark:text-green-200 text-xs font-medium leading-relaxed">
                                 <CheckCircle size={16} className="shrink-0 mt-0.5" />
-                                <p>Secure payment powered by Razorpay. Your card details are encrypted and never stored on our servers. You get {currentCredits} monthly credits for 30-minute tutoring sessions.</p>
+                                <p>Secure payment powered by Razorpay. Your card details are encrypted and never stored on our servers. You get {currentCredits} monthly credits for tutoring sessions.</p>
                             </div>
 
                             {/* Promo / Coupon Code Section */}
