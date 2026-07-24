@@ -276,7 +276,7 @@ const CheckoutContent = () => {
         const code = (codeToApply || couponInput).trim().toUpperCase();
         if (!code) return;
 
-        if (['SPECIAL349', 'COUNSELOR349', 'STUDY349'].includes(code)) {
+        if (code === 'SPECIAL349') {
             if (basePrice > 349) {
                 const discount = basePrice - 349;
                 setCouponDiscountAmount(discount);
@@ -287,26 +287,6 @@ const CheckoutContent = () => {
                 setAppliedCoupon(code);
                 setCouponMsg({ text: `Coupon "${code}" active! Price is locked at ${currentConfig.currency}${basePrice}/mo.`, type: 'success' });
             }
-        } else if (['STUDYHOURS10', 'WELCOME10', 'COUNSELOR10', 'SAVE10'].includes(code)) {
-            const discount = Math.round(basePrice * 0.10);
-            setCouponDiscountAmount(discount);
-            setAppliedCoupon(code);
-            setCouponMsg({ text: `10% Off Coupon "${code}" applied!`, type: 'success' });
-        } else if (['STUDYHOURS20', 'WELCOME20', 'COUNSELOR20', 'SAVE20'].includes(code)) {
-            const discount = Math.round(basePrice * 0.20);
-            setCouponDiscountAmount(discount);
-            setAppliedCoupon(code);
-            setCouponMsg({ text: `20% Off Coupon "${code}" applied!`, type: 'success' });
-        } else if (['STUDYHOURS25', 'SPECIAL25'].includes(code)) {
-            const discount = Math.round(basePrice * 0.25);
-            setCouponDiscountAmount(discount);
-            setAppliedCoupon(code);
-            setCouponMsg({ text: `25% Off Coupon "${code}" applied!`, type: 'success' });
-        } else if (['SAVE50', 'STUDYHOURS50'].includes(code)) {
-            const discount = Math.min(50, basePrice - 1);
-            setCouponDiscountAmount(discount);
-            setAppliedCoupon(code);
-            setCouponMsg({ text: `Special Coupon "${code}" applied (${currentConfig.currency}50 off)!`, type: 'success' });
         } else {
             setCouponMsg({ text: `Invalid or expired promo code.`, type: 'error' });
         }
@@ -453,7 +433,7 @@ const CheckoutContent = () => {
                                 <div className="flex gap-2">
                                     <input
                                         type="text"
-                                        placeholder="e.g. WINTER20, COUNSELOR10"
+                                        placeholder="e.g. SPECIAL349"
                                         value={couponInput}
                                         onChange={(e) => setCouponInput(e.target.value)}
                                         onKeyDown={(e) => {
